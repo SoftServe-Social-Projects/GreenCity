@@ -54,7 +54,14 @@ public interface EcoNewsService {
      * @param title title to search.
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags, String title, Long authorId);
+    PageableAdvancedDto<EcoNewsGenericDto> find(
+            Pageable page,
+            List<String> tags,
+            String title,
+            Long authorId,
+            boolean favorite,
+            String email
+    );
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
@@ -154,14 +161,6 @@ public interface EcoNewsService {
      * @param email     - user email.
      */
     void removeFromFavorites(Long ecoNewsId, String email);
-
-    /**
-     * Method for getting a list of user's favorite eco news.
-     *
-     * @param email - user email.
-     * @return list of {@link EcoNewsDto} instances.
-     */
-    List<EcoNewsDto> getFavorites(String email);
 
     /**
      * Find {@link EcoNewsVO} for management.

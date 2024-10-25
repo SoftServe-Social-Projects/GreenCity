@@ -149,13 +149,20 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags, String title, Long authorId) {
-        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null
+    public PageableAdvancedDto<EcoNewsGenericDto> find(
+            Pageable page,
+            List<String> tags,
+            String title,
+            Long authorId,
+            boolean favorite,
+            String email
+    ) {
+        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))))
             : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId),
+                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, email),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))));
     }
@@ -343,16 +350,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return getEcoNewsGenericDtoWithAllTags(toUpdate);
-    }
-
-    @Override
-    public List<EcoNewsDto> getFavorites(String email) {
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-
-        List<EcoNews> favoriteEcoNews = new ArrayList<>(currentUser.getFavoriteEcoNews());
-
-        return mapEcoNewsListToEcoNewsDtoList(favoriteEcoNews);
     }
 
     @Override
@@ -717,8 +714,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return usersDislikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
     }
 
-    Predicate getPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder, List<String> tags, String title,
-        Long authorId) {
+    Predicate getPredicate(
+            Root<EcoNews> root,
+            CriteriaBuilder criteriaBuilder,
+            List<String> tags,
+            String title,
+            Long authorId,
+            boolean favorite,
+            String email
+    ) {
         List<Predicate> predicates = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tags)) {
             predicates.add(predicateForTags(criteriaBuilder, root, tags));
@@ -730,6 +734,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (authorId != null) {
             Join<EcoNews, User> users = root.join("author");
             predicates.add(criteriaBuilder.equal(users.get(ECO_NEWS_AUTHOR_ID), authorId));
+        }
+        if (favorite) {
+            User currentUser = getUserByEmail(email);
+            Join<EcoNews, User> followers = root.join("followers");
+            predicates.add(criteriaBuilder.equal(followers.get(ECO_NEWS_AUTHOR_ID), currentUser.getId()));
         }
 
         Predicate result;
@@ -749,8 +758,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 criteriaBuilder.lower(ecoNewsTag.get(ECO_NEWS_TAG_TRANSLATION).get(ECO_NEWS_TAG_TRANSLATION_NAME)),
                 "%" + partOfSearchingText.toLowerCase() + "%"))));
         return predicateList.size() == 1
-            ? predicateList.getFirst()
-            : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+                ? predicateList.getFirst()
+                : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**

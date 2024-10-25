@@ -274,6 +274,7 @@ public class SecurityConfig {
                     FRIENDS + "/{userId}/all-user-friends",
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
+                    ECO_NEWS + "/favorites",
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -316,6 +317,7 @@ public class SecurityConfig {
                     "/habit/custom",
                     "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
                     FRIENDS + "/{friendId}",
+                    ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
                     "place/v2/save")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -370,6 +372,7 @@ public class SecurityConfig {
                     "/user/{userId}/userFriend/{friendId}",
                     "/habit/assign/delete/{habitAssignId}",
                     "/habit/delete/{customHabitId}",
+                    ECO_NEWS + "/{ecoNewsId}/favorites",
                     FRIENDS,
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",

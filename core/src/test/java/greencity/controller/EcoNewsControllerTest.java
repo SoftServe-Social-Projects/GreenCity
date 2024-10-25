@@ -10,6 +10,8 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.EcoNews;
+import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EcoNewsService;
@@ -17,8 +19,13 @@ import greencity.service.TagsService;
 import greencity.service.UserService;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +33,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +42,8 @@ import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -124,6 +134,36 @@ class EcoNewsControllerTest {
     }
 
     @Test
+    void findFavoritesTest() {
+        // Arrange
+        int pageNumber = 0;
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        String email = "user@example.com";
+
+        // Mocking the user
+        User user = new User();
+        user.setId(1L);
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+
+        // Mocking the ecoNews page
+        EcoNews ecoNews = new EcoNews();
+        Page<EcoNews> ecoNewsPage = new PageImpl<>(Collections.singletonList(ecoNews), pageable, 1);
+
+        when(ecoNewsRepo.findAll(any(), any(Pageable.class))).thenReturn(ecoNewsPage);
+        when(modelMapper.map(any(), eq(EcoNewsDto.class))).thenReturn(new EcoNewsDto());
+
+        // Act
+        PageableAdvancedDto<EcoNewsDto> result = ecoNewsService.find(pageable, null, null, null, true, email);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(ecoNewsRepo, times(1)).findAll(any(), any(Pageable.class));
+        verify(modelMapper, times(1)).map(any(), eq(EcoNewsDto.class));
+    }
+
+    @Test
     void findAllTest() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
@@ -132,7 +172,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null);
+        verify(ecoNewsService).find(pageable, null, null, null, false, null);
     }
 
     @Test
@@ -144,7 +184,27 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?author-id=1&page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, 1L);
+        verify(ecoNewsService).find(pageable, null, null, 1L, false, null);
+    }
+
+    @Test
+    void getPredicateTest() {
+        // Arrange
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Root<EcoNews> root = mock(Root.class);
+
+        // Mocking the user
+        User user = new User();
+        user.setId(1L);
+
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+
+        // Calling the actual method
+        Predicate predicate = ecoNewsService.getPredicate(root, cb, null, null, null, true, "user@example.com");
+
+        // Verifying the result
+        assertNotNull(predicate);
+        verify(root).join("followers");
     }
 
     @Test
