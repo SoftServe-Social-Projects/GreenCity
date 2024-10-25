@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class ManagementUserStatisticsServiceImplTest {
     @Mock
     private UserRepo userRepo;
@@ -44,9 +44,10 @@ class ManagementUserStatisticsServiceImplTest {
         when(mockTuple.get(1, Long.class)).thenReturn(10L);
 
         when(userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularity))
-                .thenReturn(List.of(mockTuple));
+            .thenReturn(List.of(mockTuple));
 
-        List<UserRegistrationStatisticDto> result = managementUserStatisticsServiceImpl.getUserRegistrationsByDateRange(startDate, endDate, granularity);
+        List<UserRegistrationStatisticDto> result =
+            managementUserStatisticsServiceImpl.getUserRegistrationsByDateRange(startDate, endDate, granularity);
 
         assertEquals(1, result.size());
         assertEquals(startDate, result.getFirst().getDate());
@@ -82,7 +83,8 @@ class ManagementUserStatisticsServiceImplTest {
         List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("City", 50L));
         when(userRepo.getUserLocationsDistributionByCity()).thenReturn(mockResult);
 
-        List<UserLocationStatisticDto> result = managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
+        List<UserLocationStatisticDto> result =
+            managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
 
         assertEquals(mockResult, result);
         verify(userRepo, times(1)).getUserLocationsDistributionByCity();
@@ -93,7 +95,8 @@ class ManagementUserStatisticsServiceImplTest {
         List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("Dnipropetrovsk", 30L));
         when(userRepo.getUserLocationsDistributionByRegion()).thenReturn(mockResult);
 
-        List<UserLocationStatisticDto> result = managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
+        List<UserLocationStatisticDto> result =
+            managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
 
         assertEquals(mockResult, result);
         verify(userRepo, times(1)).getUserLocationsDistributionByRegion();
@@ -104,7 +107,8 @@ class ManagementUserStatisticsServiceImplTest {
         List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("Ukraine", 70L));
         when(userRepo.getUserLocationsDistributionByCountry()).thenReturn(mockResult);
 
-        List<UserLocationStatisticDto> result = managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
+        List<UserLocationStatisticDto> result =
+            managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
 
         assertEquals(mockResult, result);
         verify(userRepo, times(1)).getUserLocationsDistributionByCountry();
@@ -112,10 +116,12 @@ class ManagementUserStatisticsServiceImplTest {
 
     @Test
     void testGetUserEmailPreferencesDistribution() {
-        List<UserEmailPreferencesStatisticDto> mockResult = List.of(new UserEmailPreferencesStatisticDto(EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY, 25L));
+        List<UserEmailPreferencesStatisticDto> mockResult =
+            List.of(new UserEmailPreferencesStatisticDto(EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY, 25L));
         when(userRepo.getUserEmailPreferencesDistribution()).thenReturn(mockResult);
 
-        List<UserEmailPreferencesStatisticDto> result = managementUserStatisticsServiceImpl.getUserEmailPreferencesDistribution();
+        List<UserEmailPreferencesStatisticDto> result =
+            managementUserStatisticsServiceImpl.getUserEmailPreferencesDistribution();
 
         assertEquals(mockResult, result);
         verify(userRepo, times(1)).getUserEmailPreferencesDistribution();
