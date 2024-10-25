@@ -36,4 +36,5 @@ public class HabitDto {
     private Boolean isCustomHabit;
     private Long usersIdWhoCreatedCustomHabit;
     private HabitAssignStatus habitAssignStatus;
+    private Boolean isAssigned;
 }

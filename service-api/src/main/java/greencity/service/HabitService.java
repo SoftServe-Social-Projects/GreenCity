@@ -30,7 +30,15 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+
+    /**
+     * Method returns all habits of the current user.
+     *
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link HabitDto}.
+     */
+    PageableDto<HabitDto> getMyHabits(Long userId, Pageable pageable, String languageCode);
 
     /**
      * Method returns all habits of a friend, both default and custom, for the
@@ -41,7 +49,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable);
+    PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable, String languageCode);
 
     /**
      * Method returns all mutual habits, both default and custom, that are shared
@@ -53,7 +61,8 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable);
+    PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable,
+        String languageCode);
 
     /**
      * Method returns shopping list in specific language by habit id.

@@ -1583,6 +1583,7 @@ public class ModelUtils {
             .defaultDuration(1)
             .tags(new ArrayList<>())
             .habitAssignStatus(HabitAssignStatus.INPROGRESS)
+            .isAssigned(true)
             .build();
     }
 

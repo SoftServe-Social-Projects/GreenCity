@@ -57,6 +57,17 @@ public interface HabitTranslationRepo
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
+    @Query("SELECT DISTINCT ht FROM HabitTranslation ht "
+        + "JOIN ht.habit h "
+        + "WHERE ht.language = (SELECT l FROM Language l WHERE l.code = :languageCode) "
+        + "AND (h.id IN (SELECT ha.habit.id FROM HabitAssign ha "
+        + "WHERE ha.user.id = :userId "
+        + "AND (ha.status = 'INPROGRESS' "
+        + "OR ha.status = 'ACQUIRED' "
+        + "OR ha.status = 'REQUESTED')) "
+        + "OR (h.userId = :userId AND h.isDeleted = false))")
+    Page<HabitTranslation> findMyHabits(Pageable pageable, Long userId, String languageCode);
+
     /**
      * Method that finds all habit translations of a friend's habits that are not
      * private and are either in progress or acquired. The query retrieves distinct
