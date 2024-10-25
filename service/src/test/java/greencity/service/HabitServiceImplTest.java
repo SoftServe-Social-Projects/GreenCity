@@ -240,20 +240,15 @@ class HabitServiceImplTest {
         Habit habit = ModelUtils.getHabit();
         habit.setIsCustomHabit(true);
         habit.setUserId(1L);
-        UserVO userVO = ModelUtils.getUserVO();
-        List<Long> requestedCustomHabitIds = List.of(1L);
 
         when(habitTranslationRepo.findMyHabits(pageable, userId, languageCode))
             .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-            requestedCustomHabitIds, userVO.getId(), languageCode)).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
             .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
-        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn(languageCode);
 
         assertEquals(pageableDto, habitService.getMyHabits(userId, pageable, languageCode));
 
