@@ -108,7 +108,8 @@ public class CommentServiceImpl implements CommentService {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
 
-            if (!parentComment.getArticleId().equals(articleId)) {
+            if (!(parentComment.getArticleId().equals(articleId)
+                && parentComment.getArticleType().equals(articleType))) {
                 String message = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
                     + " in " + articleType.getName() + " with id: " + articleId;
                 throw new NotFoundException(message);
