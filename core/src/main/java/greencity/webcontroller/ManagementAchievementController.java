@@ -56,6 +56,7 @@ public class ManagementAchievementController {
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAllForManagement());
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("query", query);
         return "core/management_achievement";
     }
 

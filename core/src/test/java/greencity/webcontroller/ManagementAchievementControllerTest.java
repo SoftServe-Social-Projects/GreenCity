@@ -99,6 +99,7 @@ class ManagementAchievementControllerTest {
             .andExpect(model().attribute("pageable", allAchievements))
             .andExpect(model().attribute("categoryList", achievementCategoryList))
             .andExpect(model().attribute("languages", languages))
+            .andExpect(model().attribute("query", "query"))
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
         verify(achievementService).searchAchievementBy(pageable, "query");
