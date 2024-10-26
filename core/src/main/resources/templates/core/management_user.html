@@ -129,26 +129,25 @@
                                 <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
                             </button>
                             <div class="form-popup" id="filter">
-                                <form class="form-container"
-                                      style="width: 280px" method="post" th:action="@{/management/users/filter-save}">
-                                   <label>[[#{greenCity.pages.table.filtername}]]</label>
-                                    <input type="text" name="name" class="form-control" required>
-                                    <label>[[#{greenCity.pages.table.search}]]</label>
-                                    <input type="text" name="searchCriteria" class="form-control" required>
+                                <form class="form-container" style="width: 280px; height: 400px;" method="get" th:action="@{/management/users}">
+
+                                    <label>[[#{greenCity.pages.table.userName}]]</label>
+                                    <input type="text" name="query" class="form-control" style="background-color: white; border: 1px solid #ced4da;">
+
                                     <div class="form-group">
                                         <label>[[#{greenCity.pages.table.role}]]</label>
-                                        <select class="form-control" name="userRole">
-                                            <option selected="selected" value="all">All types</option>
-                                            <option value="0">ROLE_USER</option>
-                                            <option value="1">ROLE_ADMIN</option>
-                                            <option value="2">ROLE_MODERATOR</option>
+                                        <select class="form-control" name="role">
+                                            <option selected="selected" value="all">[[#{greenCity.pages.popup.types.}]]</option>
+                                            <option value="USER">ROLE_USER</option>
+                                            <option value="ADMIN">ROLE_ADMIN</option>
+                                            <option value="MODERATOR">ROLE_MODERATOR</option>
                                         </select>
                                         <span th:id="errorModalSaverole" class="errorSpan"></span>
                                     </div>
                                     <div class="form-group">
                                         <label>[[#{greenCity.pages.table.status}]]</label>
-                                        <select class="form-control" name="userStatus">
-                                            <option selected="selected" value="all">All types</option>
+                                        <select class="form-control" name="status">
+                                            <option selected="selected" value="all">[[#{greenCity.pages.popup.types.}]]</option>
                                             <option value="2">ACTIVATED</option>
                                             <option value="1">DEACTIVATED</option>
                                             <option value="0">BLOCKED</option>
@@ -165,7 +164,7 @@
                                     <span th:if="${filters.size() == 3}" style="color: red;">[[#{greenCity.pages.table.filtermessage}]]</span>
                                     <div style="float: right;margin-top: 30px; margin-bottom: 18px; ">
                                         <button type="submit" class="filter-btn" style="float: right" th:if="${filters.size() <= 3}">
-                                            <b>[[#{greenCity.pages.popup.save.}]]</b>
+                                            <b>[[#{greenCity.pages.filter}]]</b>
                                         </button>
                                     </div>
                                 </form>
@@ -451,7 +450,8 @@
                             <!-- Previous page button -->
                             <li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
                                 <a class="page-link" th:if="${!isFirst}"
-                                   th:href="@{/management/users(page=${previousPage}, size=${pageSize}, sort=${sortModel}, query=${request.query})}">
+                                   th:href="@{/management/users(page=${previousPage}, size=${pageSize}, sort=${sortModel},
+                                   query=${request.query}, role=${request.role}, status=${request.status})}">
                                     <i class="arrow fas fa-chevron-left"></i>
                                 </a>
                                 <a class="page-link" th:if="${isFirst}">
@@ -464,7 +464,8 @@
                                 th:if="${pageNum >= 0 && pageNum < users.getTotalPages()}"
                                 th:classappend="${pageNum == pageNumber} ? 'active' : ''">
                                 <a class="page-link"
-                                   th:href="@{/management/users(page=${pageNum}, size=${pageSize}, sort=${sortModel}, query=${request.query})}">
+                                   th:href="@{/management/users(page=${pageNum}, size=${pageSize}, sort=${sortModel},
+                                   query=${request.query}, role=${request.role}, status=${request.status})}">
                                     [[${pageNum + 1}]]
                                 </a>
                             </li>
@@ -472,7 +473,8 @@
                             <!-- Next page button -->
                             <li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
                                 <a class="page-link" th:if="${!isLast}"
-                                   th:href="@{/management/users(page=${nextPage}, size=${pageSize}, sort=${sortModel}, query=${request.query})}">
+                                   th:href="@{/management/users(page=${nextPage}, size=${pageSize}, sort=${sortModel},
+                                   query=${request.query}, role=${request.role}, status=${request.status})}">
                                     <i class="arrow fas fa-chevron-right"></i>
                                 </a>
                                 <a class="page-link" th:if="${isLast}">
