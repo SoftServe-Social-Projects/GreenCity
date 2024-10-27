@@ -46,7 +46,6 @@ import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserShoppingListItemResponseDto;
-import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.User;
@@ -70,8 +69,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
-
-import static greencity.TestConst.USER_ID;
 import static greencity.enums.PlaceStatus.PROPOSED;
 import static greencity.enums.UserStatus.ACTIVATED;
 
