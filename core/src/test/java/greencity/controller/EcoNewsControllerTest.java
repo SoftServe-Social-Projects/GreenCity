@@ -58,11 +58,7 @@ class EcoNewsControllerTest {
     @Mock
     private TagsService tagsService;
     @Mock
-    private EcoNewsRepo ecoNewsRepo;
-    @Mock
     private UserService userService;
-    @Mock
-    private  UserRepo userRepo;
     @Mock
     private ModelMapper modelMapper;
     @Mock
