@@ -65,10 +65,15 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
+
+import static greencity.TestConst.ROLE_ADMIN;
+import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.enums.PlaceStatus.PROPOSED;
 import static greencity.enums.UserStatus.ACTIVATED;
 
@@ -542,5 +547,17 @@ public class ModelUtils {
 
     public static PageableDto<UserManagementVO> getUserAdvancedDto() {
         return new PageableDto<>(getListUserManagementVO(), 20, 0, 1);
+    }
+
+    public static Map<String, String> getUserStatusBody() {
+        Map<String, String> body = new HashMap<>();
+        body.put("userStatus", STATUS_ACTIVATED);
+        return body;
+    }
+
+    public static Map<String, String> getUserRoleBody() {
+        Map<String, String> body = new HashMap<>();
+        body.put("role", ROLE_ADMIN);
+        return body;
     }
 }
