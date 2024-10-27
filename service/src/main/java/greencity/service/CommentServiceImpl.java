@@ -89,7 +89,9 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
         AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO, Locale locale) {
-        if (getArticleAuthor(articleType, articleId) == null) {
+
+        final User articleAuthor = getArticleAuthor(articleType, articleId);
+        if (articleAuthor == null) {
             throw new NotFoundException("Article author not found");
         }
 
@@ -136,7 +138,9 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
 
-        createCommentNotification(articleType, articleId, comment, userVO, locale);
+        if (!articleAuthor.getId().equals(userVO.getId())) {
+            createCommentNotification(articleType, articleId, comment, userVO, locale);
+        }
         sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, locale);
 
         return addCommentDtoResponse;
