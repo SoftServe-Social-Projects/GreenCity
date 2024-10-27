@@ -779,9 +779,11 @@ table.table .avatar {
 }
 
 .dropbtn.status {
-    width: 130px;
+    width: 150px;
     height: 25px;
     background-color: #ffffff00;
+    text-align: left;
+    border-radius: 0;
     border: solid 1px #ffffff00;
 }
 
@@ -988,11 +990,7 @@ table.table .avatar {
     display: block;
     background-color: #ffffff;
     z-index: 10000;
-    width: 185px;
-    height: 60px;
-    margin-left: -11px;
-    border: 1px solid #CACFD3;
-    border-top: 0px solid #CACFD3;
+    border-radius: 0;
 }
 
 .dropdown-content.status a {
@@ -1003,10 +1001,9 @@ table.table .avatar {
 }
 
 .dropdown.status {
-    position: relative;
+    vertical-align: middle;
     display: flex;
-    padding-right: 20px;
-    margin-left: 0 !important;
+    align-items: stretch;
 }
 
 .dropdown-content.status a:hover {

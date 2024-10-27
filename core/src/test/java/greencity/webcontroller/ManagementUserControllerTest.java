@@ -15,6 +15,7 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -47,6 +48,7 @@ import static greencity.ModelUtils.getUserVO;
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
+import static greencity.TestConst.USER_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -92,6 +94,14 @@ class ManagementUserControllerTest {
         body.put("role", "ROLE_ADMIN");
         managementUserController.changeRole(5L, body);
         verify(restClient, times(1)).updateRole(5L, Role.ROLE_ADMIN);
+    }
+
+    @Test
+    void changeStatusTest() {
+        Map<String, String> body = new HashMap<>();
+        body.put("userStatus", STATUS_ACTIVATED);
+        managementUserController.changeStatus(USER_ID, body);
+        verify(restClient).updateStatus(USER_ID, UserStatus.ACTIVATED);
     }
 
     @Test

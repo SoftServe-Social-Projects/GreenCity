@@ -129,7 +129,7 @@
                                 <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
                             </button>
                             <div class="form-popup" id="filter">
-                                <form class="form-container" style="width: 280px; height: 400px;" method="get" th:action="@{/management/users}">
+                                <form class="form-container" style="width: 280px; height: 440px;" method="get" th:action="@{/management/users}">
 
                                     <label>[[#{greenCity.pages.table.userName}]]</label>
                                     <input type="text" name="query" class="form-control" style="background-color: white; border: 1px solid #ced4da;">
@@ -162,9 +162,13 @@
                                         </tr>
                                     </table>
                                     <span th:if="${filters.size() == 3}" style="color: red;">[[#{greenCity.pages.table.filtermessage}]]</span>
-                                    <div style="float: right;margin-top: 30px; margin-bottom: 18px; ">
-                                        <button type="submit" class="filter-btn" style="float: right" th:if="${filters.size() <= 3}">
+                                    <div style="float: right; margin-top: 30px; margin-bottom: 18px;">
+                                        <button type="submit" class="filter-btn" style="float: right; margin-bottom: 5px;" th:if="${filters.size() <= 3}">
                                             <b>[[#{greenCity.pages.filter}]]</b>
+                                        </button>
+                                        <button type="button" class="filter-btn" style="float: right; background-color: grey;
+                                        color: white; border: none; margin-top: 5px;" onclick="window.location.href='/management/users'">
+                                            <b>[[#{greenCity.pages.reset}]]</b>
                                         </button>
                                     </div>
                                 </form>
@@ -353,22 +357,24 @@
                                     </div>
                                 </td>
                                 <td
-                                    th:class="|${user.userStatus.name().equals('PENDING') ? 'whiteHover cyan':''}
+                                    th:class="|${user.userStatus.name().equals('BLOCKED') ? 'whiteHover cyan':''}
                                     ${user.userStatus.name().equals('ACTIVATED') ? 'whiteHover lightgreen':''}
-                                    ${user.userStatus.name().equals('WARNED') ? 'whiteHover lightmustard':''}
-                                    ${user.userStatus.name().equals('PENDING') ? 'whiteHover lightpink':''}
+                                    ${user.userStatus.name().equals('CREATED') ? 'whiteHover lightmustard':''}
                                     ${user.userStatus.name().equals('DEACTIVATED') ? 'whiteHover lightpink':''}|"
                                 >
                                     <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        <button class="dropbtn status"  th:text="${user.userStatus.name()}">
                                         </button>
-                                        <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <img class="rotate dropdown-arrow" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
                                             <a
-                                               th:each="status : ${T(greencity.enums.UserStatus).values()}"
-                                               th:text="${status}"
-                                               th:value="${status}"
-                                               th:selected="${status} == ${user.getUserStatus()}"
+                                               th:each="userStatus : ${T(greencity.enums.UserStatus).values()}"
+                                               th:text="${userStatus}"
+                                               th:value="${userStatus}"
+                                               th:selected="${userStatus} == ${user.getUserStatus()}"
+                                               th:data-status="${userStatus}"
+                                               th:data-userId="${user.id}"
+                                               onclick="changeStatus(this.getAttribute('data-userId'), this.getAttribute('data-status'));"
                                             ></a>
                                         </div>
                                     </div>

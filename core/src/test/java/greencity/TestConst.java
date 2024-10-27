@@ -9,4 +9,5 @@ public final class TestConst {
     public static final String STATUS_ACTIVATED = "ACTIVATED";
     public static final String TEST_QUERY = "Test";
     public static final Long EVENT_ID = 1L;
+    public static final Long USER_ID = 2L;
 }
