@@ -656,7 +656,7 @@ class EcoNewsServiceImplTest {
         when(criteriaBuilder.and(any())).thenReturn(mock(Predicate.class));
         when(criteriaBuilder.equal(any(), any())).thenReturn(mock(Predicate.class));
 
-        ecoNewsService.getPredicate(root, criteriaBuilder, tags, "1", 1L);
+        ecoNewsService.getPredicate(root, criteriaBuilder, tags, "1", 1L, false, "user@example.com");
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
@@ -666,7 +666,7 @@ class EcoNewsServiceImplTest {
 
         when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
-        ecoNewsService.find(pageable, tags, "1", 1L);
+        ecoNewsService.find(pageable, tags, "1", 1L, false, "user@example.com");
         verify(ecoNewsRepo, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
@@ -676,7 +676,7 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNewsList = Collections.singletonList(ModelUtils.getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNewsList, pageable, ecoNewsList.size());
         when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
-        ecoNewsService.find(pageable, null, null, null);
+        ecoNewsService.find(pageable, null, null, null, false, "user@example.com");
         verify(ecoNewsRepo, times(1)).findAll(any(Pageable.class));
     }
 
@@ -937,54 +937,5 @@ class EcoNewsServiceImplTest {
         assertEquals(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
         verify(userRepo).findByEmail(TestConst.EMAIL);
-    }
-
-    @Test
-    void getFavorites_ShouldReturnListOfFavoriteEcoNewsDto() {
-        User user = ModelUtils.getUser();
-        EcoNews ecoNews1 = ModelUtils.getEcoNews();
-        EcoNews ecoNews2 = ModelUtils.getEcoNews();
-
-        ecoNews1.setId(1L);
-        ecoNews2.setId(2L);
-
-        user.setFavoriteEcoNews(new HashSet<>(List.of(ecoNews1, ecoNews2)));
-
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
-        when(modelMapper.map(ecoNews1, EcoNewsDto.class)).thenReturn(ModelUtils.getEcoNewsDto());
-        when(modelMapper.map(ecoNews2, EcoNewsDto.class)).thenReturn(ModelUtils.getEcoNewsDto());
-
-        List<EcoNewsDto> favorites = ecoNewsService.getFavorites(TestConst.EMAIL);
-
-        assertEquals(2, favorites.size());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
-        verify(modelMapper).map(ecoNews1, EcoNewsDto.class);
-        verify(modelMapper).map(ecoNews2, EcoNewsDto.class);
-    }
-
-    @Test
-    void getFavorites_ShouldThrowExceptionIfUserNotFound() {
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.getFavorites(TestConst.EMAIL));
-
-        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
-        verifyNoInteractions(modelMapper);
-    }
-
-    @Test
-    void getFavorites_ShouldReturnEmptyListIfNoFavorites() {
-        User user = ModelUtils.getUser();
-        user.setFavoriteEcoNews(new HashSet<>());
-
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
-
-        List<EcoNewsDto> favorites = ecoNewsService.getFavorites(TestConst.EMAIL);
-
-        assertTrue(favorites.isEmpty());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
-        verifyNoInteractions(modelMapper);
     }
 }

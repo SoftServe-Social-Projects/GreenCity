@@ -162,7 +162,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))))
             : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, email),
+                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite, email),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))));
     }
