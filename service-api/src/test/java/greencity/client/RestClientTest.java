@@ -55,7 +55,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -201,8 +200,7 @@ class RestClientTest {
 
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         restClient.updateStatus(USER_ID, UserStatus.ACTIVATED);
-
-        verify(restTemplate).exchange(eq(url), eq(HttpMethod.PATCH), eq(entity), eq(Object.class));
+        verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
         verify(jwtTool).createAccessToken(anyString(), any(Role.class));
     }
 
