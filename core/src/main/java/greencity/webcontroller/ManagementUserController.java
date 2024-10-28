@@ -3,7 +3,7 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserFilterDtoRequest;
@@ -19,8 +19,6 @@ import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -72,28 +70,22 @@ public class ManagementUserController {
     @GetMapping
     public String getAllUsers(@ModelAttribute UserFilterDto request, @CurrentUser UserVO currentUser, Model model,
         @Parameter(hidden = true) Pageable pageable) {
-        PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(request, pageable);
-
-        int currentPage = pageable.getPageNumber();
-        int totalPages = found.getTotalPages();
-
-        int startPage = Math.max(0, currentPage - 3);
-        int endPage = Math.min(currentPage + 3, totalPages - 1);
-        List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
+        PageableDetailedDto<UserManagementVO> users = userService.getAllUsersByCriteria(request, pageable);
+        List<UserFilterDtoResponse> filters = filterService.getAllFilters(currentUser.getId());
 
         model.addAttribute("request", request);
-        model.addAttribute("users", found);
+        model.addAttribute("users", users);
         model.addAttribute("paging", pageable);
-        model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
+        model.addAttribute("filters", filters);
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("isFirst", currentPage == 0);
-        model.addAttribute("isLast", currentPage == totalPages - 1);
-        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("isFirst", users.isFirst());
+        model.addAttribute("isLast", users.isLast());
+        model.addAttribute("pageNumbers", users.getPageNumbers());
         model.addAttribute("pageSize", pageable.getPageSize());
-        model.addAttribute("pageNumber", currentPage);
-        model.addAttribute("sortModel", pageable.getSort());
-        model.addAttribute("previousPage", Math.max(0, currentPage - 1));
-        model.addAttribute("nextPage", Math.min(totalPages - 1, currentPage + 1));
+        model.addAttribute("pageNumber", users.getPageNumber());
+        model.addAttribute("sortModel", users.getSortModel());
+        model.addAttribute("previousPage", Math.max(0, users.getPageNumber() - 1));
+        model.addAttribute("nextPage", Math.min(users.getTotalPages() - 1, users.getPageNumber() + 1));
 
         return "core/management_user";
     }

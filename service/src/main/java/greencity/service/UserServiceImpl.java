@@ -2,7 +2,8 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.PageableDto;
+import greencity.dto.PageInfoDto;
+import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -228,24 +230,19 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable) {
+    public PageableDetailedDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable) {
         var userFilterDto = createUserFilterDto(request.getQuery(), request.getRole(), request.getStatus());
-
-        if (pageable.getSort().isUnsorted()) {
-            pageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by(Sort.Direction.DESC, "id"));
-        }
+        pageable = applyDefaultSorting(pageable);
 
         Page<User> users = userRepo.findAll(new UserFilter(userFilterDto), pageable);
         Page<UserManagementVO> userManagementVOs = userManagementVOMapper.mapAllToPage(users);
 
-        return new PageableDto<>(
-            userManagementVOs.getContent(),
-            userManagementVOs.getTotalElements(),
-            userManagementVOs.getPageable().getPageNumber(),
-            userManagementVOs.getTotalPages());
+        var pageInfo = getPageInfo(pageable, userManagementVOs);
+        String sortModel = getSortModel(pageable);
+
+        return new PageableDetailedDto<>(userManagementVOs.getContent(), userManagementVOs.getTotalElements(),
+            pageInfo.currentPage(), pageInfo.pageNumbers(), pageInfo.totalPages(), sortModel,
+            pageInfo.currentPage() == 0, pageInfo.currentPage() == pageInfo.totalPages() - 1);
     }
 
     /**
@@ -288,5 +285,31 @@ public class UserServiceImpl implements UserService {
         return userRepo.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference.name(), periodicity.name()).stream()
             .map(u -> modelMapper.map(u, UserVO.class))
             .toList();
+    }
+
+    private Pageable applyDefaultSorting(Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            return PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
+        }
+        return pageable;
+    }
+
+    private String getSortModel(Pageable pageable) {
+        return pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
+    }
+
+    private PageInfoDto getPageInfo(Pageable pageable, Page<UserManagementVO> userManagementVOs) {
+        int currentPage = pageable.getPageNumber();
+        int totalPages = userManagementVOs.getTotalPages();
+        int startPage = Math.max(0, currentPage - 3);
+        int endPage = Math.min(currentPage + 3, totalPages - 1);
+        List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
+
+        return new PageInfoDto(currentPage, totalPages, pageNumbers);
     }
 }
