@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
@@ -128,13 +128,13 @@ public interface UserService {
      * @param pageable pagination information including page number, size, and
      *                 sorting options.
      *
-     * @return a {@link PageableDto} containing a list of {@link UserManagementVO}
-     *         filtered by the given criteria, role, and status, along with
-     *         pagination details.
+     * @return a {@link PageableDetailedDto} containing a list of
+     *         {@link UserManagementVO} filtered by the given criteria, role, and
+     *         status, along with pagination details.
      *
      * @author Anton Bondar
      */
-    PageableDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable);
+    PageableDetailedDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable);
 
     /**
      * Method that update user's rating.
