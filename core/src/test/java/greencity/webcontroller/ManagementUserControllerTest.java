@@ -5,7 +5,7 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getUserAdvancedDto;
 import static greencity.ModelUtils.getUserFilterDtoResponse;
+import static greencity.ModelUtils.getUserPageableDetailedDto;
 import static greencity.ModelUtils.getUserRoleBody;
 import static greencity.ModelUtils.getUserStatusBody;
 import static greencity.ModelUtils.getUserVO;
@@ -112,23 +112,23 @@ class ManagementUserControllerTest {
         var principal = getPrincipal();
         List<UserFilterDtoResponse> response = List.of(getUserFilterDtoResponse());
 
-        PageableDto<UserManagementVO> userAdvancedDto = getUserAdvancedDto();
+        PageableDetailedDto<UserManagementVO> userPageableDetailedDto = getUserPageableDetailedDto();
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(userService.getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class)))
-            .thenReturn(userAdvancedDto);
-        when(filterService.getAllFilters(1L)).thenReturn(response);
+            .thenReturn(userPageableDetailedDto);
+        when(filterService.getAllFilters(USER_ID)).thenReturn(response);
 
         mockMvc.perform(get(MANAGEMENT_USER_LINK + "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")
             .principal(principal)
             .param("status", STATUS_ACTIVATED)
             .param("role", ROLE_ADMIN)
             .param("query", TEST_QUERY))
-            .andExpect(model().attribute("users", userAdvancedDto));
+            .andExpect(model().attribute("users", userPageableDetailedDto));
 
         verify(userService).findByEmail(anyString());
         verify(userService).getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class));
-        verify(filterService).getAllFilters(1L);
+        verify(filterService).getAllFilters(USER_ID);
     }
 
     @Test

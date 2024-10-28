@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
@@ -290,7 +290,7 @@ class UserServiceImplTest {
         when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
         when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
 
-        PageableDto<UserManagementVO> allUsersByCriteria =
+        PageableDetailedDto<UserManagementVO> allUsersByCriteria =
             userService.getAllUsersByCriteria(request, sortedPageable);
 
         assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
@@ -312,7 +312,7 @@ class UserServiceImplTest {
         when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
         when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
 
-        PageableDto<UserManagementVO> allUsersByCriteria =
+        PageableDetailedDto<UserManagementVO> allUsersByCriteria =
             userService.getAllUsersByCriteria(request, unsortedPageable);
 
         assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));

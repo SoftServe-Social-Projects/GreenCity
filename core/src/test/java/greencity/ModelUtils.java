@@ -1,6 +1,7 @@
 package greencity;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDetailedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
@@ -545,8 +546,9 @@ public class ModelUtils {
         return UserFilterDtoResponse.builder().build();
     }
 
-    public static PageableDto<UserManagementVO> getUserAdvancedDto() {
-        return new PageableDto<>(getListUserManagementVO(), 20, 0, 1);
+    public static PageableDetailedDto<UserManagementVO> getUserPageableDetailedDto() {
+        return new PageableDetailedDto<>(getListUserManagementVO(), 100, 1,
+            List.of(1, 2), 100, "", true, false);
     }
 
     public static Map<String, String> getUserStatusBody() {
