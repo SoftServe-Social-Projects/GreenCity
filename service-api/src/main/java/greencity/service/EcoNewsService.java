@@ -55,13 +55,12 @@ public interface EcoNewsService {
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
     PageableAdvancedDto<EcoNewsGenericDto> find(
-            Pageable page,
-            List<String> tags,
-            String title,
-            Long authorId,
-            boolean favorite,
-            String email
-    );
+        Pageable page,
+        List<String> tags,
+        String title,
+        Long authorId,
+        boolean favorite,
+        String email);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.

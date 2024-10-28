@@ -5,14 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 
-
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
-import greencity.repository.EcoNewsRepo;
-import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -130,8 +127,8 @@ class EcoNewsControllerTest {
         String userEmail = "user@example.com";
 
         mockMvc.perform(get(ecoNewsLink + "?favorite=true&page=1")
-                        .header("email", userEmail))
-                .andExpect(status().isOk());
+            .header("email", userEmail))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).find(pageable, null, null, null, true, userEmail);
     }

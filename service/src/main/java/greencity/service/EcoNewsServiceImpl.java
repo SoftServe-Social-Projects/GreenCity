@@ -150,19 +150,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> find(
-            Pageable page,
-            List<String> tags,
-            String title,
-            Long authorId,
-            boolean favorite,
-            String email
-    ) {
+        Pageable page,
+        List<String> tags,
+        String title,
+        Long authorId,
+        boolean favorite,
+        String email) {
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))))
             : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite, email),
+                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
+                    email),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))));
     }
@@ -715,14 +715,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     Predicate getPredicate(
-            Root<EcoNews> root,
-            CriteriaBuilder criteriaBuilder,
-            List<String> tags,
-            String title,
-            Long authorId,
-            boolean favorite,
-            String email
-    ) {
+        Root<EcoNews> root,
+        CriteriaBuilder criteriaBuilder,
+        List<String> tags,
+        String title,
+        Long authorId,
+        boolean favorite,
+        String email) {
         List<Predicate> predicates = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tags)) {
             predicates.add(predicateForTags(criteriaBuilder, root, tags));
@@ -758,13 +757,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 criteriaBuilder.lower(ecoNewsTag.get(ECO_NEWS_TAG_TRANSLATION).get(ECO_NEWS_TAG_TRANSLATION_NAME)),
                 "%" + partOfSearchingText.toLowerCase() + "%"))));
         return predicateList.size() == 1
-                ? predicateList.getFirst()
-                : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+            ? predicateList.getFirst()
+            : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
     private User getUserByEmail(String email) {
         return userRepo.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
