@@ -603,6 +603,9 @@ public class HabitServiceImpl implements HabitService {
 
     private boolean isHabitAssign(Long userId, Long habitId) {
         List<HabitAssign> habitAssigns = habitAssignRepo.findHabitsByHabitIdAndUserId(habitId, userId);
+        if (habitAssigns.isEmpty()) {
+            return false;
+        }
         return assignHabitStatus(habitAssigns) == HabitAssignStatus.INPROGRESS;
     }
 }
