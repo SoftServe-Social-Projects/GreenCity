@@ -14,6 +14,7 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailPreferencePeriodicity;
@@ -23,6 +24,8 @@ import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import java.util.UUID;
+
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
@@ -33,6 +36,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static greencity.TestConst.ACCESS_TOKEN;
+import static greencity.TestConst.USER_ID;
+import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
     public static UserVO getUserVO() {
@@ -189,5 +196,16 @@ public class ModelUtils {
             .baseLink("test")
             .email("test@gmail.com")
             .build();
+    }
+
+    public static UserStatusDto getUserStatusDto() {
+        return UserStatusDto.builder().id(USER_ID).userStatus(ACTIVATED).build();
+    }
+
+    public static HttpEntity<UserStatusDto> getEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(getUserStatusDto(), headers);
     }
 }

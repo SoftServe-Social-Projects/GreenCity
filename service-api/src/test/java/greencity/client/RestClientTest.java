@@ -1,8 +1,15 @@
 package greencity.client;
 
+import static greencity.ModelUtils.getEntity;
+import static greencity.TestConst.ACCESS_TOKEN;
+import static greencity.TestConst.GREEN_CITY_USER_ADDRESS;
+import static greencity.TestConst.SYSTEM_EMAIL;
+import static greencity.TestConst.TOKEN;
+import static greencity.TestConst.UPDATE_STATUS_URL;
+import static greencity.TestConst.USER_ID;
 import static greencity.constant.AppConstant.AUTHORIZATION;
-
 import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
@@ -16,6 +23,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -57,18 +65,18 @@ import static org.mockito.Mockito.anyString;
 class RestClientTest {
     @Mock
     private RestTemplate restTemplate;
+
     @Mock
     private HttpServletRequest httpServletRequest;
+
     @Mock
     private Object object;
+
     @Mock
     private RequestAttributes requestAttributes;
 
-    private static final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
-    private static final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
-    private static final String TOKEN = "token";
-    private static final String ACCESS_TOKEN = "Bearer token";
     private RestClient restClient;
+
     @Mock
     private JwtTool jwtTool;
 
@@ -183,6 +191,17 @@ class RestClientTest {
         restClient.updateRole(1L, newRole);
 
         verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
+    }
+
+    @Test
+    void updateStatusTest() {
+        String url = GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER + UPDATE_STATUS_URL;
+        HttpEntity<UserStatusDto> entity = getEntity();
+
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
+        restClient.updateStatus(USER_ID, UserStatus.ACTIVATED);
+        verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
+        verify(jwtTool).createAccessToken(anyString(), any(Role.class));
     }
 
     @Test
