@@ -81,6 +81,10 @@ public class ManagementUserController {
         int endPage = Math.min(currentPage + 3, totalPages - 1);
         List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
 
+        String sortModel = pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
+
         model.addAttribute("request", request);
         model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
@@ -91,7 +95,7 @@ public class ManagementUserController {
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("pageSize", pageable.getPageSize());
         model.addAttribute("pageNumber", currentPage);
-        model.addAttribute("sortModel", pageable.getSort());
+        model.addAttribute("sortModel", sortModel);
         model.addAttribute("previousPage", Math.max(0, currentPage - 1));
         model.addAttribute("nextPage", Math.min(totalPages - 1, currentPage + 1));
 
