@@ -124,7 +124,6 @@ class EcoNewsControllerTest {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Principal principal = () -> "user@example.com";
 
         mockMvc.perform(get(ecoNewsLink + "?favorite=true&page=1")
             .principal(principal)
@@ -139,14 +138,13 @@ class EcoNewsControllerTest {
         int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Principal principal = () -> "defaultUser";
 
         mockMvc.perform(get(ecoNewsLink + "?page=0")
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, false, "defaultUser");
+        verify(ecoNewsService).find(pageable, null, null, null, false, "test@gmail.com");
     }
 
     @Test
@@ -154,14 +152,13 @@ class EcoNewsControllerTest {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Principal principal = () -> "defaultUser";
 
         mockMvc.perform(get(ecoNewsLink + "?author-id=1&page=1")
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, 1L, false, "defaultUser");
+        verify(ecoNewsService).find(pageable, null, null, 1L, false, "test@gmail.com");
     }
 
     @Test
