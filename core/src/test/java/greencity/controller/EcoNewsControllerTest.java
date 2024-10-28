@@ -144,7 +144,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, false, "test@gmail.com");
+        verify(ecoNewsService).find(pageable, null, null, null, false, principal.getName());
     }
 
     @Test
@@ -158,7 +158,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, 1L, false, "test@gmail.com");
+        verify(ecoNewsService).find(pageable, null, null, 1L, false, principal.getName());
     }
 
     @Test
