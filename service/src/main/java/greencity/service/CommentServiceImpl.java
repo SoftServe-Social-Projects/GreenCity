@@ -89,7 +89,6 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
         AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO, Locale locale) {
-
         final User articleAuthor = getArticleAuthor(articleType, articleId);
         if (articleAuthor == null) {
             throw new NotFoundException("Article author not found");
@@ -120,15 +119,7 @@ public class CommentServiceImpl implements CommentService {
                 modelMapper.map(parentComment.getUser(), UserVO.class), locale);
         }
 
-        if (images != null && images.length > 0 && images[0] != null) {
-            List<CommentImages> commentImages = new ArrayList<>();
-            for (MultipartFile image : images) {
-                if (image != null) {
-                    commentImages.add(CommentImages.builder().comment(comment).link(fileService.upload(image)).build());
-                }
-            }
-            comment.setAdditionalImages(commentImages);
-        }
+        addImagesToComment(comment, images);
 
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
@@ -144,6 +135,21 @@ public class CommentServiceImpl implements CommentService {
         sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, locale);
 
         return addCommentDtoResponse;
+    }
+
+    private void addImagesToComment(Comment comment, MultipartFile[] images) {
+        if (images != null && images.length > 0 && images[0] != null) {
+            List<CommentImages> commentImages = new ArrayList<>();
+            for (MultipartFile image : images) {
+                if (image != null) {
+                    commentImages.add(CommentImages.builder()
+                        .comment(comment)
+                        .link(fileService.upload(image))
+                        .build());
+                }
+            }
+            comment.setAdditionalImages(commentImages);
+        }
     }
 
     /**
