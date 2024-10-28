@@ -88,7 +88,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
-        AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO, Locale locale) {
+        AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO,
+        Locale locale) {
         final User articleAuthor = getArticleAuthor(articleType, articleId);
         if (articleAuthor == null) {
             throw new NotFoundException("Article author not found");
@@ -100,7 +101,9 @@ public class CommentServiceImpl implements CommentService {
         comment.setUser(modelMapper.map(userVO, User.class));
         comment.setStatus(CommentStatus.ORIGINAL);
 
-        if (addCommentDtoRequest.getParentCommentId() != null && addCommentDtoRequest.getParentCommentId() > 0) {
+        boolean isCommentReply = addCommentDtoRequest.getParentCommentId() != null
+            && addCommentDtoRequest.getParentCommentId() > 0;
+        if (isCommentReply) {
             Long parentCommentId = addCommentDtoRequest.getParentCommentId();
             Comment parentComment = commentRepo.findById(parentCommentId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId));
@@ -116,12 +119,14 @@ public class CommentServiceImpl implements CommentService {
                 throw new NotFoundException(message);
             }
             comment.setParentComment(parentComment);
-            createCommentReplyNotification(articleType, articleId, comment,
-                modelMapper.map(parentComment.getUser(), UserVO.class), locale);
+            if (checkUserIsNotAuthor(userVO, parentComment.getUser())) {
+                createCommentReplyNotification(articleType, articleId, comment,
+                    userVO,
+                    modelMapper.map(parentComment.getUser(), UserVO.class), locale);
+            }
         }
 
         addImagesToComment(comment, images);
-
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
@@ -129,8 +134,7 @@ public class CommentServiceImpl implements CommentService {
         AddCommentDtoResponse addCommentDtoResponse = modelMapper.map(
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
-
-        if (!articleAuthor.getId().equals(userVO.getId())) {
+        if (checkUserIsNotAuthor(userVO, articleAuthor) && !isCommentReply) {
             createCommentNotification(articleType, articleId, comment, userVO, locale);
         }
         sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, locale);
@@ -138,6 +142,26 @@ public class CommentServiceImpl implements CommentService {
         return addCommentDtoResponse;
     }
 
+    /**
+     * Checks if the specified user is not the author of the article.
+     *
+     * @param userVO        the {@link UserVO} object representing the user to check
+     * @param articleAuthor the {@link User} object representing the author of the
+     *                      article
+     * @return {@code true} if the user is not the author of the article;
+     *         {@code false} otherwise
+     */
+    private boolean checkUserIsNotAuthor(final UserVO userVO, final User articleAuthor) {
+        return !articleAuthor.getId().equals(userVO.getId());
+    }
+
+    /**
+     * Adds a list of images to a comment.
+     *
+     * @param comment the {@link Comment} object to which images will be added
+     * @param images  an array of {@link MultipartFile} objects representing the
+     *                images to be added to the comment
+     */
     private void addImagesToComment(Comment comment, MultipartFile[] images) {
         if (images != null && images.length > 0 && images[0] != null) {
             List<CommentImages> commentImages = new ArrayList<>();
@@ -222,7 +246,8 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
                 HabitTranslation habitTranslation =
                     habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
-                        .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
+                        .orElseThrow(() -> new NotFoundException(
+                            ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
                 articleName = habitTranslation.getName();
             }
             case ECO_NEWS -> {
@@ -359,10 +384,9 @@ public class CommentServiceImpl implements CommentService {
      *                    {@link Locale}.
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
-        UserVO receiver, Locale locale) {
+        UserVO sender, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
-            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-            getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
+            sender, getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
     }
 
     /**
@@ -521,7 +545,7 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param comment the {@link Comment} entity to be converted.
      * @param user    the {@link UserVO} representing the current user, which is
-     *                used to determine if the user has liked the comment.
+     *                used to determine if the current user has liked the comment.
      * @return a {@link CommentDto} that contains the mapped information from the
      *         provided {@link Comment} entity.
      */
@@ -574,7 +598,8 @@ public class CommentServiceImpl implements CommentService {
     public void countLikes(AmountCommentLikesDto amountCommentLikesDto) {
         Comment comment = commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED)
             .orElseThrow(
-                () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId()));
+                () -> new NotFoundException(
+                    ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId()));
         boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
             .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
         int size = comment.getUsersLiked().size();
