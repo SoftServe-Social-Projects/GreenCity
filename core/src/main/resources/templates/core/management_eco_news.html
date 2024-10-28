@@ -449,8 +449,8 @@
                                 <ul class="pagination">
                                     <li class="page-item"
                                         th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
-                                        <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${0}, sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
+                                        <a class="page-link" rel="tooltip" id="prevPageLink" th:if="${!pageable.isFirst()}"
+                                           onclick="buildUrlPage(0)"><i
                                                 class="arrow fas fa-chevron-left"></i></a>
                                         <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
                                                 class="arrow fas fa-chevron-left"></i></a>
@@ -461,13 +461,15 @@
                                         th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
                                         th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
                                         <a class="page-link"
-                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}">[[${pageNumber}+1]]</a>
+                                           href="javascript:void(0)"
+                                           th:onclick="'buildUrlPage(' + ${pageNumber} + ')'">[[${pageNumber}+1]]</a>
                                     </li>
 
                                     <li class="page-item"
                                         th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
                                         <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                                           th:href="@{/management/eco-news?&page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageable.getTotalPages()-1},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
+                                           th:onclick="'buildUrlPage(' + (${pageable.getTotalPages()} - 1) + ')'"
+                                        ><i
                                                 class="arrow fas fa-chevron-right"></i></a>
                                         <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
                                                 class="arrow fas fa-chevron-right"></i></a>

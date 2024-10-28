@@ -550,7 +550,6 @@ $(document).ready(function () {
         }
         if (inputForm.length !== 0) {
             const id = inputForm.attr('id');
-            console.log('id: ', id);
             const filterField = id.split('-').pop();
             if (isFilterActive(filterField)) {
                 $(this).addClass('filtered');
@@ -563,10 +562,8 @@ $(document).ready(function () {
         const order = $(this).data('order');
         if (isSortActive(field, order)) {
             $(this).find('i').addClass('sorted');
-            console.log('sorted field: ', field);
         } else {
             $(this).find('i').removeClass('sorted');
-            console.log('unsorted field: ', field)
         }
     });
 });
@@ -635,6 +632,21 @@ function searchByNameField(searchValue, fieldName, searchValue2 = null, fieldNam
     if (searchValue2 !== null && searchValue2 !== "") {
         urlSearch.set(fieldName2, searchValue2);
     }
+
+    let url = "/management/eco-news?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function buildUrlPage(pageNumber) {
+    console.log("page number:", pageNumber);
+    let urlSearch = getUrlSearchParams();
+    urlSearch.set("page", pageNumber);
 
     let url = "/management/eco-news?";
     $.ajax({
