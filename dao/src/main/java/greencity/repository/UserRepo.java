@@ -1,11 +1,16 @@
 package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
+import greencity.dto.user.UserEmailPreferencesStatisticDto;
+import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserRoleStatisticDto;
+import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import jakarta.persistence.Tuple;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -510,4 +516,125 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             WHERE uep.email_preference = :emailPreference AND uep.periodicity = :periodicity
         """)
     List<User> findAllByEmailPreferenceAndEmailPeriodicity(String emailPreference, String periodicity);
+
+    /**
+     * Counts users grouped by their registration date within a specified date range
+     * and granularity.
+     *
+     * @param startDate   The start date of the range to consider (inclusive).
+     * @param endDate     The end date of the range to consider (inclusive).
+     * @param granularity The time unit for grouping results ('hour', 'day', 'week',
+     *                    'month', or 'year').
+     * @return A list of tuples containing the date group and the count of users
+     *         registered in that group.
+     */
+    @Query(value = """
+            SELECT
+                CASE
+                    WHEN :granularity = 'hour' THEN DATE_TRUNC('hour', u.date_of_registration)
+                    WHEN :granularity = 'day' THEN DATE_TRUNC('day', u.date_of_registration)
+                    WHEN :granularity = 'week' THEN DATE_TRUNC('week', u.date_of_registration)
+                    WHEN :granularity = 'month' THEN DATE_TRUNC('month', u.date_of_registration)
+                    WHEN :granularity = 'year' THEN DATE_TRUNC('year', u.date_of_registration)
+                    ELSE DATE_TRUNC('day', u.date_of_registration) -- Default to day
+                END as dateGroup,
+                COUNT(u.id) as count
+            FROM users u
+            WHERE u.date_of_registration >= :startDate
+            AND u.date_of_registration <= :endDate
+            GROUP BY dateGroup
+            ORDER BY dateGroup
+        """, nativeQuery = true)
+    List<Tuple> countUsersByRegistrationDateBetween(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate,
+        @Param("granularity") String granularity);
+
+    /**
+     * Retrieves the distribution of user roles for active users.
+     *
+     * @return A list of UserRoleStatisticDto objects containing the role and the
+     *         count of users with that role.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserRoleStatisticDto(u.role, COUNT(u.id))
+        FROM User u
+        WHERE u.userStatus = 2
+        GROUP BY u.role
+        """)
+    List<UserRoleStatisticDto> getUserRolesDistribution();
+
+    /**
+     * Retrieves the distribution of user statuses across all users.
+     *
+     * @return A list of UserStatusStatisticDto objects containing the status and
+     *         the count of users with that status.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserStatusStatisticDto(u.userStatus, COUNT(u.id))
+        FROM User u
+        GROUP BY u.userStatus
+        """)
+    List<UserStatusStatisticDto> getUserStatusesDistribution();
+
+    /**
+     * Retrieves the distribution of users by city.
+     *
+     * @return A list of UserLocationStatisticDto objects containing the city name
+     *         and the count of users in that city.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserLocationStatisticDto(
+               COALESCE(ul.cityEn, 'No Location'), COUNT(u.id))
+        FROM User u
+        LEFT JOIN u.userLocation ul
+        GROUP BY ul.cityEn
+        """)
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCity();
+
+    /**
+     * Retrieves the distribution of users by region.
+     *
+     * @return A list of UserLocationStatisticDto objects containing the region name
+     *         and the count of users in that region.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserLocationStatisticDto(
+               COALESCE(ul.regionEn, 'No Location'), COUNT(u.id))
+        FROM User u
+        LEFT JOIN u.userLocation ul
+        GROUP BY ul.regionEn
+        """)
+    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion();
+
+    /**
+     * Retrieves the distribution of users by country.
+     *
+     * @return A list of UserLocationStatisticDto objects containing the country
+     *         name and the count of users in that country.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserLocationStatisticDto(
+               COALESCE(ul.countryEn, 'No Location'), COUNT(u.id))
+        FROM User u
+        LEFT JOIN u.userLocation ul
+        GROUP BY ul.countryEn
+        """)
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
+
+    /**
+     * Retrieves the distribution of user email preferences and their periodicity.
+     *
+     * @return A list of UserEmailPreferencesStatisticDto objects containing the
+     *         email preference, periodicity, and the count of users with that
+     *         combination.
+     */
+    @Query("""
+             SELECT new greencity.dto.user.UserEmailPreferencesStatisticDto(
+                 uep.emailPreference, uep.periodicity, COUNT(uep.id)
+             )
+             FROM UserNotificationPreference uep
+             GROUP BY uep.emailPreference, uep.periodicity
+        """)
+    List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
 }
