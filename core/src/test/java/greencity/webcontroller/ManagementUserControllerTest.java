@@ -15,6 +15,7 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -34,22 +35,23 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.security.Principal;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserAdvancedDto;
 import static greencity.ModelUtils.getUserFilterDtoResponse;
+import static greencity.ModelUtils.getUserRoleBody;
+import static greencity.ModelUtils.getUserStatusBody;
 import static greencity.ModelUtils.getUserVO;
+import static greencity.TestConst.MANAGEMENT_USER_LINK;
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
+import static greencity.TestConst.USER_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,21 +65,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ManagementUserControllerTest {
     @Mock
     private ModelMapper modelMapper;
+
     @Mock
     private RestClient restClient;
-    @InjectMocks
-    private ManagementUserController managementUserController;
-    private ObjectMapper objectMapper;
-    private MockMvc mockMvc;
-    private static final String managementUserLink = "/management/users";
+
     @Mock
     private UserService userService;
+
     @Mock
     HabitAssignService habitAssignService;
+
     @Mock
     private FilterService filterService;
 
-    private Principal principal = getPrincipal();
+    @InjectMocks
+    private ManagementUserController managementUserController;
+
+    private ObjectMapper objectMapper;
+
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
@@ -88,15 +94,22 @@ class ManagementUserControllerTest {
 
     @Test
     void changeRoleTest() {
-        Map<String, String> body = new HashMap<>();
-        body.put("role", "ROLE_ADMIN");
-        managementUserController.changeRole(5L, body);
-        verify(restClient, times(1)).updateRole(5L, Role.ROLE_ADMIN);
+        Map<String, String> body = getUserRoleBody();
+        managementUserController.changeRole(USER_ID, body);
+        verify(restClient).updateRole(USER_ID, Role.ROLE_ADMIN);
+    }
+
+    @Test
+    void changeStatusTest() {
+        Map<String, String> body = getUserStatusBody();
+        managementUserController.changeStatus(USER_ID, body);
+        verify(restClient).updateStatus(USER_ID, UserStatus.ACTIVATED);
     }
 
     @Test
     void getAllUsersTest() throws Exception {
         var userVO = getUserVO();
+        var principal = getPrincipal();
         List<UserFilterDtoResponse> response = List.of(getUserFilterDtoResponse());
 
         PageableDto<UserManagementVO> userAdvancedDto = getUserAdvancedDto();
@@ -106,7 +119,7 @@ class ManagementUserControllerTest {
             .thenReturn(userAdvancedDto);
         when(filterService.getAllFilters(1L)).thenReturn(response);
 
-        mockMvc.perform(get(managementUserLink + "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")
+        mockMvc.perform(get(MANAGEMENT_USER_LINK + "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")
             .principal(principal)
             .param("status", STATUS_ACTIVATED)
             .param("role", ROLE_ADMIN)
@@ -128,7 +141,7 @@ class ManagementUserControllerTest {
         PageableAdvancedDto<UserManagementVO> userAdvancedDto =
             new PageableAdvancedDto<>(userManagementVOS, 20, 0, 0, 0, true, true, true, true);
         when(restClient.search(pageable, userViewDto)).thenReturn(userAdvancedDto);
-        mockMvc.perform(post(managementUserLink + "/search").content(content).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/search").content(content).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
 
@@ -138,21 +151,21 @@ class ManagementUserControllerTest {
         when(restClient.getDeactivationReason(1L, "en")).thenReturn(test);
         this.mockMvc
             .perform(
-                get(managementUserLink + "/reasons" + "?id=1" + "&admin=en").contentType(MediaType.APPLICATION_JSON))
+                get(MANAGEMENT_USER_LINK + "/reasons" + "?id=1" + "&admin=en").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).getDeactivationReason(1L, "en");
     }
 
     @Test
     void setActivatedStatus() throws Exception {
-        mockMvc.perform(post(managementUserLink + "/activate" + "?id=1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/activate" + "?id=1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).setActivatedStatus(1L);
     }
 
     @Test
     void getUserLang() throws Exception {
-        this.mockMvc.perform(get(managementUserLink + "/lang" + "?id=1").contentType(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(MANAGEMENT_USER_LINK + "/lang" + "?id=1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).getUserLang(1L);
     }
@@ -162,7 +175,7 @@ class ManagementUserControllerTest {
         List<String> test = List.of("test", "test");
         String json = objectMapper.writeValueAsString(test);
         mockMvc.perform(
-            post(managementUserLink + "/deactivate" + "?id=1").content(json).contentType(MediaType.APPLICATION_JSON))
+            post(MANAGEMENT_USER_LINK + "/deactivate" + "?id=1").content(json).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).deactivateUser(1L, test);
     }
@@ -171,7 +184,7 @@ class ManagementUserControllerTest {
     void saveUserTest() throws Exception {
         UserManagementDto dto = ModelUtils.getUserManagementDto();
 
-        mockMvc.perform(post(managementUserLink + "/register").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register").contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("id", dto.getId().toString()).param("name", dto.getName()).param("email", dto.getEmail())
             .param("userCredo", dto.getUserCredo()).param("role", dto.getRole().toString())
             .param("userStatus", dto.getUserStatus().toString())).andExpect(status().is3xxRedirection());
@@ -184,7 +197,7 @@ class ManagementUserControllerTest {
         UserManagementDto userManagementDto = ModelUtils.getUserManagementDto();
         String context = objectMapper.writeValueAsString(userManagementDto);
 
-        mockMvc.perform(put(managementUserLink + "/").content(context).accept(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(MANAGEMENT_USER_LINK + "/").content(context).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
         verify(restClient).updateUser(userManagementDto);
@@ -192,14 +205,14 @@ class ManagementUserControllerTest {
 
     @Test
     void getUserById() throws Exception {
-        mockMvc.perform(get(managementUserLink + "/findById" + "?id=1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(MANAGEMENT_USER_LINK + "/findById" + "?id=1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).findById(1L);
     }
 
     @Test
     void findFriendsByIdTest() throws Exception {
-        mockMvc.perform(get(managementUserLink + "/" + 1L + "/friends").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(MANAGEMENT_USER_LINK + "/" + 1L + "/friends").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).findUserFriendsByUserId(1L);
     }
@@ -210,13 +223,13 @@ class ManagementUserControllerTest {
         String context = objectMapper.writeValueAsString(list);
         mockMvc
             .perform(
-                post(managementUserLink + "/deactivateAll").content(context).contentType(MediaType.APPLICATION_JSON))
+                post(MANAGEMENT_USER_LINK + "/deactivateAll").content(context).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         context = objectMapper.writeValueAsString(null);
 
         mockMvc
             .perform(
-                post(managementUserLink + "/deactivateAll").content(context).contentType(MediaType.APPLICATION_JSON))
+                post(MANAGEMENT_USER_LINK + "/deactivateAll").content(context).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
         verify(restClient).deactivateAllUsers(list);
@@ -225,13 +238,14 @@ class ManagementUserControllerTest {
     @Test
     void updateUserRole() throws Exception {
         mockMvc.perform(
-            put(managementUserLink + "/updateShoppingItem/" + 1L + "/" + 1L).contentType(MediaType.APPLICATION_JSON))
+            put(MANAGEMENT_USER_LINK + "/updateShoppingItem/" + 1L + "/" + 1L).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateShoppingItem(1L, 1L);
     }
 
     @Test
     void saveUserFilterTest() throws Exception {
+        var principal = getPrincipal();
         UserFilterDtoRequest dto = UserFilterDtoRequest.builder().name("Test").userRole("ADMIN").userStatus("ACTIVATED")
             .searchCriteria("Test").build();
         UserVO userVO = getUserVO();
@@ -241,7 +255,7 @@ class ManagementUserControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
-        mockMvc.perform(post(managementUserLink + "/filter-save").content(content).principal(principal)
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/filter-save").content(content).principal(principal)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isFound());
     }
 
@@ -251,7 +265,7 @@ class ManagementUserControllerTest {
         UserFilterDtoResponse dto = UserFilterDtoResponse.builder().id(1L).name("Test").userRole("ROLE_ADMIN")
             .userStatus("ACTIVATED").searchCriteria("Test").build();
         when(filterService.getFilterById(id)).thenReturn(dto);
-        mockMvc.perform(get(managementUserLink + "/select-filter/" + id).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(MANAGEMENT_USER_LINK + "/select-filter/" + id).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isFound());
 
         verify(filterService).getFilterById(id);
@@ -260,7 +274,7 @@ class ManagementUserControllerTest {
     @Test
     void deleteUserFilterTest() throws Exception {
         Long id = 1L;
-        mockMvc.perform(get(managementUserLink + "/" + id + "/delete-filter").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(MANAGEMENT_USER_LINK + "/" + id + "/delete-filter").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isFound());
 
         verify(filterService).deleteFilterById(id);

@@ -160,6 +160,20 @@ function changeRole(userId, role) {
     });
 }
 
+function changeStatus(userId, userStatus) {
+    let href = '/management/users/' + userId + '/status';
+    let payload = { 'userStatus': userStatus };
+    $.ajax({
+        url: href,
+        type: 'PATCH',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function(){
+            history.go();
+        }
+    });
+}
+
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }

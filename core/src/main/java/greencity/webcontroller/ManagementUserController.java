@@ -13,6 +13,7 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -167,6 +168,21 @@ public class ManagementUserController {
         @RequestBody Map<String, String> body) {
         Role role = Role.valueOf(body.get("role"));
         restClient.updateRole(id, role);
+    }
+
+    /**
+     * Method that change user's Status {@link UserStatus} by given id.
+     *
+     * @param id   {@link Long} - user's id.
+     * @param body map with new user's Status.
+     *
+     * @author Anton Bondar.
+     */
+    @PatchMapping("/{id}/status")
+    @ResponseBody
+    public void changeStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        UserStatus status = UserStatus.valueOf(body.get("userStatus"));
+        restClient.updateStatus(id, status);
     }
 
     /**

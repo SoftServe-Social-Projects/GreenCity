@@ -8,6 +8,7 @@ import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.Role;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -245,6 +247,23 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserRoleDto userRoleDto = new UserRoleDto(role);
         HttpEntity<UserRoleDto> entity = new HttpEntity<>(userRoleDto, headers);
+        restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
+    }
+
+    /**
+     * Method for sending change status request.
+     *
+     * @param id     of user whose status is being changed
+     * @param status new status
+     *
+     * @author Anton Bondar
+     */
+    public void updateStatus(Long id, UserStatus status) {
+        String url = greenCityUserServerAddress + RestTemplateLinks.USER + "/status";
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        UserStatusDto userStatusDto = new UserStatusDto(id, status);
+        HttpEntity<UserStatusDto> entity = new HttpEntity<>(userStatusDto, headers);
         restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
     }
 
