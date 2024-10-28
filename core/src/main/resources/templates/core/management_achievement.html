@@ -24,7 +24,7 @@
     <script th:src="@{/management/achievements/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 </head>
-<body>
+<body th:with="baseUrl='/management/achievement'" th:data-base-url="${baseUrl}">
 <div id="header" th:insert="~{core/header}"></div>
 <div id="sidebar" th:insert="~{core/sidepanel}"></div>
 <div class="main-content">
@@ -65,11 +65,56 @@
                                     <label for="selectAll"></label>
                                 </span>
                         </th>
-                        <th>[[#{greenCity.pages.table.id}]]</th>
-                        <th>[[#{greenCity.pages.table.title}]]</th>
-                        <th>[[#{greenCity.pages.table.name}]]</th>
-                        <th>[[#{greenCity.pages.table.achievement.category}]]</th>
-                        <th>[[#{greenCity.pages.table.condition}]]</th>
+                        <th>[[#{greenCity.pages.table.id}]]
+                            <span onclick="orderByField('id','asc')">
+                                <i id="id-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('id','desc')">
+                                <i id="id-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.title}]]
+                            <span onclick="orderByField('title','asc')">
+                                <i id="title-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('title','desc')">
+                                <i id="title-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.name}]]
+                            <span onclick="orderByField('name','asc')">
+                                <i id="name-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('name','desc')">
+                                <i id="name-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.achievement.category}]]
+                            <span onclick="orderByField('achievementCategory.name','asc')">
+                                <i id="category-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('achievementCategory.name','desc')">
+                                <i id="category-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.condition}]]
+                            <span onclick="orderByField('condition','asc')">
+                                <i id="condition-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('condition','desc')">
+                                <i id="condition-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
                         <th>[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     </thead>
