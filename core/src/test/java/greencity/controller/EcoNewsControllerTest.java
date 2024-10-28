@@ -124,25 +124,29 @@ class EcoNewsControllerTest {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        String userEmail = "user@example.com";
+        Principal principal = () -> "user@example.com";
 
         mockMvc.perform(get(ecoNewsLink + "?favorite=true&page=1")
-            .header("email", userEmail))
-            .andExpect(status().isOk());
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, true, userEmail);
+        verify(ecoNewsService).find(pageable, null, null, null, true, principal.getName());
     }
 
     @Test
     void findAllTest() throws Exception {
-        int pageNumber = 1;
+        int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Principal principal = () -> "defaultUser";
 
-        mockMvc.perform(get(ecoNewsLink + "?page=1"))
-            .andExpect(status().isOk());
+        mockMvc.perform(get(ecoNewsLink + "?page=0")
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, false, null);
+        verify(ecoNewsService).find(pageable, null, null, null, false, "defaultUser");
     }
 
     @Test
@@ -150,11 +154,14 @@ class EcoNewsControllerTest {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Principal principal = () -> "defaultUser";
 
-        mockMvc.perform(get(ecoNewsLink + "?author-id=1&page=1"))
-            .andExpect(status().isOk());
+        mockMvc.perform(get(ecoNewsLink + "?author-id=1&page=1")
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, 1L, false, null);
+        verify(ecoNewsService).find(pageable, null, null, 1L, false, "defaultUser");
     }
 
     @Test
