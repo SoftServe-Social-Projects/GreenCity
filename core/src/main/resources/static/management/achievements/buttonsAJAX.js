@@ -204,3 +204,94 @@ $(document).ready(function () {
         });
     });
  });
+
+function orderByField(fieldName = null, sortOrder = null) {
+    let urlSearch = new URLSearchParams(window.location.search);
+    let sortParams = [];
+    const baseUrl = document.body.getAttribute('data-base-url');
+    urlSearch.forEach((value, key) => {
+        if (key === "sort" && value !== "") {
+            sortParams.push(value);
+        }
+    });
+
+    if (fieldName && sortOrder) {
+        let updated = false;
+
+        for (let i = 0; i < sortParams.length; i++) {
+            let [field, order] = sortParams[i].split(',');
+            if (field === fieldName) {
+                if (order === sortOrder) {
+                    sortParams.splice(i, 1);
+                } else {
+                    sortParams[i] = `${fieldName},${sortOrder}`;
+                }
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            sortParams.push(`${fieldName},${sortOrder}`);
+        }
+
+        urlSearch.delete("sort");
+        sortParams.forEach(param => urlSearch.append("sort", param));
+
+        const url = baseUrl + `?${urlSearch.toString()}`;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function () {
+                window.location.href = url;
+            }
+        });
+    }
+
+    const fieldMapping = {
+        'id': ['id-icon-asc', 'id-icon-desc'],
+        'title': ['title-icon-asc', 'title-icon-desc'],
+        'name': ['name-icon-asc', 'name-icon-desc'],
+        'achievementCategory.name': ['category-icon-asc', 'category-icon-desc'],
+        'condition': ['condition-icon-asc', 'condition-icon-desc']
+    };
+
+    sortParams.forEach(param => {
+        let [field, order] = param.split(',');
+        const icons = fieldMapping[field];
+        if (icons) {
+            const direction = order.toLowerCase() === 'asc' ? 0 : 1;
+            document.getElementById(icons[direction]).style.color = 'green';
+        }
+    });
+
+    updatePaginationLinks(urlSearch);
+}
+
+function updatePaginationLinks(urlSearch) {
+    const paginationLinks = document.querySelectorAll('.pagination a.page-link');
+
+    paginationLinks.forEach(link => {
+        const url = new URL(link.getAttribute('href'), window.location.origin);
+        const pageParam = url.searchParams.get('page');
+        const queryParam = url.searchParams.get('query');
+
+        urlSearch.delete('page');
+        urlSearch.delete('query');
+
+        url.search = urlSearch.toString();
+
+        if (pageParam) {
+            url.searchParams.set('page', pageParam);
+        }
+        if (queryParam) {
+            url.searchParams.set('query', queryParam);
+        }
+
+        link.setAttribute('href', url.toString());
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    orderByField();
+});
