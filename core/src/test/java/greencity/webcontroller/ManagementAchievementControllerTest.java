@@ -64,7 +64,7 @@ class ManagementAchievementControllerTest {
 
     @Test
     void getAllAchievementTest() throws Exception {
-        Pageable paging = PageRequest.of(0, 3, Sort.by("id").descending());
+        Pageable paging = PageRequest.of(0, 3);
         List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
         PageableAdvancedDto<AchievementVO> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
             3, 0, false, true, true, false);
@@ -84,7 +84,7 @@ class ManagementAchievementControllerTest {
 
     @Test
     void getAllAchievementSearchByQueryTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 3, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(0, 3);
         List<AchievementVO> list = Collections.singletonList(new AchievementVO());
         PageableAdvancedDto<AchievementVO> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
             3, 0, false, true, true, false);
