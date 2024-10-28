@@ -127,9 +127,9 @@ class EcoNewsControllerTest {
         Principal principal = () -> "user@example.com";
 
         mockMvc.perform(get(ecoNewsLink + "?favorite=true&page=1")
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).find(pageable, null, null, null, true, principal.getName());
     }
@@ -142,9 +142,9 @@ class EcoNewsControllerTest {
         Principal principal = () -> "defaultUser";
 
         mockMvc.perform(get(ecoNewsLink + "?page=0")
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).find(pageable, null, null, null, false, "defaultUser");
     }
@@ -157,9 +157,9 @@ class EcoNewsControllerTest {
         Principal principal = () -> "defaultUser";
 
         mockMvc.perform(get(ecoNewsLink + "?author-id=1&page=1")
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).find(pageable, null, null, 1L, false, "defaultUser");
     }
