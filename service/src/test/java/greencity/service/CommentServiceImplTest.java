@@ -158,10 +158,10 @@ class CommentServiceImplTest {
         commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
-        verify(habitRepo, times(3)).findById(anyLong());
+        verify(habitRepo, times(1)).findById(anyLong());
         verify(commentRepo).save(any(Comment.class));
         verify(commentRepo).findById(anyLong());
-        verify(userRepo, times(2)).findById(anyLong());
+        verify(userRepo, times(1)).findById(anyLong());
         verify(modelMapper).map(userVO, CommentAuthorDto.class);
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
@@ -203,10 +203,10 @@ class CommentServiceImplTest {
         commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
-        verify(habitRepo, times(3)).findById(anyLong());
+        verify(habitRepo, times(1)).findById(anyLong());
         verify(commentRepo).save(any(Comment.class));
         verify(commentRepo).findById(anyLong());
-        verify(userRepo, times(2)).findById(anyLong());
+        verify(userRepo, times(1)).findById(anyLong());
         verify(modelMapper).map(userVO, CommentAuthorDto.class);
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
@@ -245,10 +245,10 @@ class CommentServiceImplTest {
         commentService.save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
-        verify(econewsRepo, times(3)).findById(anyLong());
+        verify(econewsRepo, times(1)).findById(anyLong());
         verify(commentRepo).save(any(Comment.class));
         verify(commentRepo).findById(anyLong());
-        verify(userRepo, times(2)).findById(anyLong());
+        verify(userRepo, times(1)).findById(anyLong());
         verify(modelMapper).map(userVO, CommentAuthorDto.class);
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
@@ -285,10 +285,10 @@ class CommentServiceImplTest {
         commentService.save(ArticleType.EVENT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
-        verify(eventRepo, times(3)).findById(anyLong());
+        verify(eventRepo, times(1)).findById(anyLong());
         verify(commentRepo).save(any(Comment.class));
         verify(commentRepo).findById(anyLong());
-        verify(userRepo, times(2)).findById(anyLong());
+        verify(userRepo, times(1)).findById(anyLong());
         verify(modelMapper).map(userVO, CommentAuthorDto.class);
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
