@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -54,7 +55,6 @@ public class ManagementHabitController {
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
-
     @GetMapping
     @ApiPageable
     public String findAllHabits(Model model, @Parameter(hidden = true) Pageable pageable,
@@ -66,8 +66,14 @@ public class ManagementHabitController {
         @RequestParam(value = "withImage", required = false) Boolean withImage) {
         PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
             durationFrom, durationTo, complexity, withoutImage, withImage, pageable);
+
+        String sortModel = pageable.getSort().stream()
+                .map(order -> order.getProperty() + "," + order.getDirection())
+                .collect(Collectors.joining(","));
+
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("sortModel", sortModel);
         return "core/management_user_habits";
     }
 

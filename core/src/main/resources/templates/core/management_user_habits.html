@@ -26,6 +26,7 @@
     <link rel="stylesheet" th:href="@{/management/css/slider.css}">
     <link rel="stylesheet" th:href="@{/css/sidebar.css}">
 
+    <script th:src="@{/management/habit/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 
     <script>
@@ -190,27 +191,41 @@
                                     <label for="selectAll"></label>
                                 </span>
                                 </th>
-                                <th>
-                                    [[#{greenCity.pages.table.id}]]
+                                <th style="width: 120px;">
+                                    <span>[[#{greenCity.pages.table.id}]]</span>
+                                    <img id="id-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
+                                    <span class="table-filter-icon"></span>
+                                </th>
+                                <th style="width: 200px;">
+                                    <span>[[#{greenCity.pages.table.icon}]]</span>
                                     <span class="table-filter-icon filter"></span>
                                 </th>
-                                <th>
-                                    [[#{greenCity.pages.table.icon}]]
-                                    <span class="table-filter-icon filter"></span>
-                                </th>
-                                <th>[[#{greenCity.pages.table.category}]]
-                                    <span class="table-filter-icon filter"></span></th>
+                                <!--                                <th>[[#{greenCity.pages.table.category}]]-->
+                                <!--                                    <span class="table-filter-icon filter"></span></th>-->
                                 <th>[[#{greenCity.pages.table.complexity}]]
+                                    <img id="complexity-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('complexity')">
+                                    <span class="table-filter-icon "></span>
+                                </th>
+                                <th>
+                                    <span>[[#{greenCity.pages.table.duration}]]</span>
+                                    <img id="duration-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('defaultDuration')">
+                                    <span class="table-filter-icon"></span>
+                                </th>
+                                <th>[[#{greenCity.pages.table.name}]]
+                                    <img id="name-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('habitTranslations.name')">
                                     <span class="table-filter-icon filter"></span>
                                 </th>
-                                <th>[[#{greenCity.pages.table.duration}]]
-                                    <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.description}]]
-                                    <span class="table-filter-icon filter"></span></th>
-                                <th></th>
-                                <th>
-                                    [[#{greenCity.pages.table.connection}]]
+                                    <img id="description-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('description')">
+                                    <span class="table-filter-icon filter"></span>
                                 </th>
+                                <!--                                <th>-->
+                                <!--                                    [[#{greenCity.pages.table.connection}]]-->
+                                <!--                                </th>-->
+                                <th>
+                                    [[#{greenCity.pages.table.actions}]]
+                                </th>
+
                             </tr>
                             </thead>
                             <th:block th:each="habit, iterStatus :${pageable.getPage()}">
@@ -225,67 +240,93 @@
                                 </span>
                                     </td>
                                     <td><a class="id-link" th:text="${habit.id}"
-                                           th:href="@{/management/habits/{id} (id=${habit.id})}"/></td>
-
+                                           th:href="@{/management/habits/{id} (id=${habit.id})}"/>
+                                    </td>
                                     <td style="min-width: 98px">
                                         <div class="habit_img">
                                             <img th:src="${habit.image}" style="height:inherit; max-width: 51px">
-                                            <i id="change_img" class="table-download-icon"
-                                               th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>
+                                            <!--                                            <i id="change_img" class="table-download-icon"-->
+                                            <!--                                               th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>-->
                                         </div>
-
                                     </td>
 
-                                    <td>
-                                        [[${translation.habitItem}]]
-                                        <i class="table-edit-icon"></i>
-
-
-                                    </td>
-                                    <td class="habit_complexity" th:data-complexity="${habit.complexity}">
-                                        <i class="table-edit-icon"
-                                           th:href="@{|/management/habits/${habit.getId()}/find|}"></i>
-                                    </td>
-                                    <td>
-
-                                        [[${habit.defaultDuration}]]
-                                        <i class="table-edit-icon"></i>
-                                    </td>
+                                    <!--                                    <td>-->
+                                    <!--                                        [[${translation.habitItem}]]-->
+                                    <!--                                        <i class="table-edit-icon"></i>-->
+                                    <!--                                    </td>-->
+                                    <td class="habit_complexity" th:text="${habit.getComplexity()}"></td>
+                                    <!--                                    <td><a class="habit_complexity" th:text="${habit.getComplexity()}"-->
+                                    <!--                                           th:href="@{/management/habits/{id} (complexity=${habit.complexity})}"/></td>-->
+                                    <!--                                    <td>-->
+                                    <!--                                        [[${habit.complexity}]]-->
+                                    <!--                                        <i class="table-edit-icon"></i>-->
+                                    <!--                                    </td>-->
+                                    <td class="habit_defaultDuration" th:text="${habit.getDefaultDuration()}"></td>
+<!--                                    <td>-->
+<!--                                        [[${habit.defaultDuration}]]-->
+<!--                                        &lt;!&ndash;                                        <i class="table-edit-icon"></i>&ndash;&gt;-->
+<!--                                    </td>-->
                                     <td>
                                         <div class="pr" style="width: 27em">[[${translation.name}]]</div>
-                                        <i id="habit_translation" class="table-edit-translation-icon"
-                                           th:href="@{|/management/habits/${habit.getId()}/find|}"></i>
-
+                                        <!--                                        <i id="habit_name" class="table-edit-translation-icon"-->
+                                        <!--                                           th:href="@{|/management/habits/${habit.getId()}/find|}"></i>-->
                                     </td>
-                                    <td style="white-space: nowrap">
-                                        <a href="#"> <img th:src="@{/img/lock.png}"></a>
+                                    <td>
+                                        <div class="pr" style="width: 27em">[[${translation.description}]]</div>
+                                        <!--                                        <i id="habit_translation" class="table-edit-translation-icon"-->
+                                        <!--                                           th:href="@{|/management/habits/${habit.getId()}/find|}"></i>-->
                                     </td>
-                                    <td style="white-space: nowrap">
-                                        <a href="#">
-                                            <img th:src="@{/img/shopping_list_dark.png}">
-                                        </a>
-                                    </td>
+                                    <!--                                    <td style="white-space: nowrap">-->
+                                    <!--                                        <a href="#"> <img th:src="@{/img/lock.png}"></a>-->
+                                    <!--                                    </td>-->
+                                    <!--                                    <td style="white-space: nowrap">-->
+                                    <!--                                        <a href="#">-->
+                                    <!--                                            <img th:src="@{/img/shopping_list_dark.png}">-->
+                                    <!--                                        </a>-->
+                                    <!--                                    </td>-->
                                 </tr>
                                 </tbody>
                             </th:block>
                         </table>
+                        <!--                        <div class="clearfix">-->
+                        <!--                            <ul class="pagination">-->
+                        <!--                                <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a-->
+                        <!--                                        th:href="@{habits(page=${pageable.getCurrentPage()-1})}" class="page-link">-->
+                        <!--                                    <i class="arrow fas fa-chevron-left"></i>-->
+                        <!--                                </a>-->
+                        <!--                                </li>-->
+                        <!--                                <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"-->
+                        <!--                                    th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a-->
+                        <!--                                        th:href="@{habits(page=${i})}" sort=${sortModel} class="page-link" th:text="${i+1}">1</a></li>-->
+                        <!--                                <li class="page-item"-->
+                        <!--                                    th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}">-->
+                        <!--                                    <a-->
+                        <!--                                            th:href="@{habits(page=${pageable.getCurrentPage()+1})}"-->
+                        <!--                                            class="page-link">-->
+                        <!--                                        <i class="arrow fas fa-chevron-right"></i>-->
+                        <!--                                    </a></li>-->
+                        <!--                            </ul>-->
+                        <!--                        </div>-->
                         <div class="clearfix">
                             <ul class="pagination">
-                                <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                        th:href="@{habits(page=${pageable.getCurrentPage()-1})}" class="page-link">
-                                    <i class="arrow fas fa-chevron-left"></i>
-                                </a>
+                                <li class="page-item" th:classappend="${pageable.getCurrentPage() == 0 ? 'disabled' : ''}">
+                                    <a th:href="@{habits(page=${pageable.getCurrentPage()-1}, sort=${sortModel})}"
+                                       class="page-link">
+                                        <i class="arrow fas fa-chevron-left"></i>
+                                    </a>
                                 </li>
-                                <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
-                                    th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                        th:href="@{habits(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
-                                <li class="page-item"
-                                    th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}">
-                                    <a
-                                            th:href="@{habits(page=${pageable.getCurrentPage()+1})}"
-                                            class="page-link">
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, pageable.getTotalPages()-1)}"
+                                    th:classappend="${pageable.getCurrentPage() == i ? 'active' : ''}">
+                                    <a th:href="@{habits(page=${i}, sort=${sortModel})}"
+                                       class="page-link"
+                                       th:text="${i + 1}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${pageable.getCurrentPage() == pageable.getTotalPages() - 1 ? 'disabled' : ''}">
+                                    <a th:href="@{habits(page=${pageable.getCurrentPage()+1}, sort=${sortModel})}"
+                                       class="page-link">
                                         <i class="arrow fas fa-chevron-right"></i>
-                                    </a></li>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

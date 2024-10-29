@@ -18,7 +18,9 @@ import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,9 +57,16 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     @Override
     public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-        Integer durationTo, Integer complexity, Boolean withoutImage,
-        Boolean withImage,
-        Pageable pageable) {
+                                                           Integer durationTo, Integer complexity, Boolean withoutImage,
+                                                           Boolean withImage,
+                                                           Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "id"));
+        }
+
         if (withImage == null) {
             withImage = false;
         }
@@ -73,7 +82,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
-            .collect(Collectors.toList());
+            .toList();
         return new PageableDto<>(
             habitDtos,
             habits.getTotalElements(),
