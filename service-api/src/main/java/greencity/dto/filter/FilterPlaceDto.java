@@ -22,4 +22,5 @@ public class FilterPlaceDto {
     private FilterDistanceDto distanceFromUserDto;
     private String searchReg;
     private String[] categories;
+    private Boolean isSaved;
 }

@@ -25,4 +25,6 @@ public class RepoConstants {
     public static final String NAME = "name";
     public static final String AUTHOR = "author";
     public static final String ID = "id";
+    public static final String FAVORITE_PLACES = "favoritePlaces";
+    public static final String USER = "user";
 }
