@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -71,7 +72,6 @@ public class PlaceController {
      *
      * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
-     * @author Kateryna Horokh
      */
     @Operation(summary = "Propose new place.")
     @ApiResponses(value = {
@@ -98,7 +98,6 @@ public class PlaceController {
      *
      * @param dto - Place dto for updating with all parameters.
      * @return new {@code Place}.
-     * @author Kateryna Horokh
      */
     @Operation(summary = "Update place")
     @ApiResponses(value = {
@@ -127,7 +126,6 @@ public class PlaceController {
      *
      * @param id place
      * @return info about place
-     * @author Dmytro Dovhal
      */
     @Operation(summary = "Get info about place")
     @ApiResponses(value = {
@@ -150,7 +148,6 @@ public class PlaceController {
      *
      * @param placeId - {@code Place} id
      * @return info about {@code Place} with name as in {@code FavoritePlace}
-     * @author Zakhar Skaletskyi
      */
     @Operation(summary = "Get info about favourite place")
     @ApiResponses(value = {
@@ -174,7 +171,6 @@ public class PlaceController {
      *
      * @param favoritePlaceDto -{@link FavoritePlaceDto}
      * @return principal - user e,ail
-     * @author Zakhar Skaletskyi
      */
     @Operation(summary = "Save place as favourite.")
     @ApiResponses(value = {
@@ -204,7 +200,6 @@ public class PlaceController {
      *
      * @param filterPlaceDto Contains South-West and North-East bounds of map .
      * @return a list of {@code PlaceByBoundsDto}
-     * @author Marian Milian
      */
     @Operation(summary = "Get list of places by Map Bounds.")
     @ApiResponses(value = {
@@ -235,7 +230,6 @@ public class PlaceController {
      * @param pageable pageable configuration.
      * @return response {@link PageableDto} object. Contains a list of
      *         {@link AdminPlaceDto}.
-     * @author Roman Zahorui
      */
     @Operation(summary = "Get places by status(APPROVED, PROPOSED, DECLINED, DELETED).")
     @ApiResponses(value = {
@@ -265,7 +259,6 @@ public class PlaceController {
      *
      * @param filterDto contains all information about the filtering of the list.
      * @return a list of {@code PlaceByBoundsDto}
-     * @author Roman Zahorui
      */
     @Operation(summary = "Return a list places filtered by values contained "
         + "in the incoming FilterPlaceDto object")
@@ -283,9 +276,9 @@ public class PlaceController {
     })
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
-        @Valid @RequestBody FilterPlaceDto filterDto) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.getPlacesByFilter(filterDto));
+        @Valid @RequestBody FilterPlaceDto filterDto,
+        @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 
     /**
@@ -295,7 +288,6 @@ public class PlaceController {
      *            {@link PlaceStatus}.
      * @return response object with {@link UpdatePlaceStatusDto} and OK status if
      *         everything is ok.
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Update status of place")
     @ApiResponses(value = {
@@ -325,7 +317,6 @@ public class PlaceController {
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
      * @return a list of {@link PageableDto}
-     * @author Rostyslav Khasanov
      */
     @Operation(summary = "Return a list places filtered by values contained "
         + "in the incoming FilterPlaceDto object")
@@ -357,7 +348,6 @@ public class PlaceController {
      *
      * @param id place
      * @return response {@link PlaceUpdateDto} object.
-     * @author Kateryna Horokh
      */
     @Operation(summary = "Get place by id.")
     @ApiResponses(value = {
@@ -383,7 +373,6 @@ public class PlaceController {
      *            updated {@link PlaceStatus}
      * @return list of {@link UpdatePlaceStatusDto} with updated {@link PlaceVO}'s
      *         and {@link PlaceStatus}'s
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Bulk update place statuses")
     @ApiResponses(value = {
@@ -409,7 +398,6 @@ public class PlaceController {
      * The method which return array of {@link PlaceStatus}.
      *
      * @return array of statuses
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Get array of available place statuses")
     @ApiResponses(value = {
@@ -430,7 +418,6 @@ public class PlaceController {
      * DELETED).
      *
      * @param id - {@link PlaceVO} id
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Delete place")
     @ApiResponses(value = {
@@ -457,7 +444,6 @@ public class PlaceController {
      * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to
      *            be deleted
      * @return count of deleted {@link PlaceVO}'s
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Bulk delete places")
     @ApiResponses(value = {
@@ -519,7 +505,6 @@ public class PlaceController {
      * loggedIn User.
      *
      * @return pageableDto of {@link AdminPlaceDto}.
-     * @author Olena Sotnik.
      */
     @Operation(summary = "Get all places with info if place isFavorite")
     @ApiResponses(value = {

@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
+import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import java.security.Principal;
 import java.util.List;
@@ -169,7 +170,7 @@ public interface PlaceService {
      * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
-    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO);
 
     /**
      * The method finds all {@link PlaceVO}'s filtered by the parameters contained

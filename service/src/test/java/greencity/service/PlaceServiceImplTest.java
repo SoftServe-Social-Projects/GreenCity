@@ -176,8 +176,6 @@ class PlaceServiceImplTest {
     @Mock
     private DiscountService discountService;
     @Mock
-    private NotificationService notificationService;
-    @Mock
     private CategoryRepo categoryRepo;
     private final ZoneId zoneId = ZoneId.of("Europe/Kiev");
     private PlaceService placeService;
@@ -197,7 +195,7 @@ class PlaceServiceImplTest {
     @BeforeEach
     void init() {
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
-            specificationService, openingHoursService, userService, discountService, notificationService, zoneId,
+            specificationService, openingHoursService, userService, discountService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
             userNotificationService);
     }
@@ -612,7 +610,7 @@ class PlaceServiceImplTest {
         when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
         when(modelMapper.map(place, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
-        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
+        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto, null);
 
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
@@ -634,7 +632,7 @@ class PlaceServiceImplTest {
         when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
         when(modelMapper.map(genericEntity1, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
-        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
+        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto, null);
 
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
