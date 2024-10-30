@@ -118,3 +118,28 @@ function unlinkShop(habitId) {
 function linknew() {
     // TODO: create request
 }
+
+function sortByFieldName(nameField) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    var page = urlSearch.get("page");
+    if (page !== null) {
+        urlSearch.set("page", "0");
+    }
+    if (sort === nameField + ",asc") {
+        urlSearch.set("sort", nameField + ",desc");
+        localStorage.setItem("sort", nameField + ",desc");
+    } else {
+        urlSearch.set("sort", nameField + ",asc");
+        localStorage.setItem("sort", nameField + ",asc");
+    }
+    let url = "/management/habits?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
