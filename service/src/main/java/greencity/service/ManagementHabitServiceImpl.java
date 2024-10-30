@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
@@ -18,7 +18,9 @@ import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,10 +56,17 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+    public PageableHabitManagementDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
         Integer durationTo, Integer complexity, Boolean withoutImage,
         Boolean withImage,
         Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
+        }
+
         if (withImage == null) {
             withImage = false;
         }
@@ -73,12 +82,13 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
-            .collect(Collectors.toList());
-        return new PageableDto<>(
+            .toList();
+        return new PageableHabitManagementDto<>(
             habitDtos,
             habits.getTotalElements(),
             habits.getPageable().getPageNumber(),
-            habits.getTotalPages());
+            habits.getTotalPages(),
+            getSortModel(pageable));
     }
 
     /**
@@ -203,5 +213,11 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     @Transactional
     public void deleteAll(List<Long> listId) {
         listId.forEach(this::delete);
+    }
+
+    private String getSortModel(Pageable pageable) {
+        return pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
     }
 }

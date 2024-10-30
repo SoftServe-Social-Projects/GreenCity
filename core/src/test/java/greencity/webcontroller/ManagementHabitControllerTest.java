@@ -1,7 +1,7 @@
 package greencity.webcontroller;
 
 import com.google.gson.Gson;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
@@ -64,7 +64,8 @@ class ManagementHabitControllerTest {
     void findAllHabits() throws Exception {
         Pageable pageable = PageRequest.of(0, 5);
         List<HabitManagementDto> habitManagementDtos = Collections.singletonList(new HabitManagementDto());
-        PageableDto<HabitManagementDto> habitManagementDtoPageableDto = new PageableDto<>(habitManagementDtos, 4, 0, 3);
+        PageableHabitManagementDto<HabitManagementDto> habitManagementDtoPageableDto =
+            new PageableHabitManagementDto<>(habitManagementDtos, 4, 0, 3, null);
 
         when(managementHabitService.getAllHabitsDto(null, null, null, null,
             null, null, pageable)).thenReturn(habitManagementDtoPageableDto);
