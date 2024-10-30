@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import java.util.List;
@@ -23,10 +23,10 @@ public interface ManagementHabitService {
      * @return list of {@link HabitManagementDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-        Integer durationTo, Integer complexity, Boolean withoutImage,
-        Boolean withImage,
-        Pageable pageable);
+    PageableHabitManagementDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+                                                                   Integer durationTo, Integer complexity, Boolean withoutImage,
+                                                                   Boolean withImage,
+                                                                   Pageable pageable);
 
     /**
      * Method saves {@code Habit} with it's {@code HabitTranslation}'s.

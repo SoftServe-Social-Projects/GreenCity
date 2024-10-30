@@ -3,7 +3,7 @@ package greencity.webcontroller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -64,16 +63,11 @@ public class ManagementHabitController {
         @RequestParam(value = "complexity", required = false) Integer complexity,
         @RequestParam(value = "withoutImage", required = false) Boolean withoutImage,
         @RequestParam(value = "withImage", required = false) Boolean withImage) {
-        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
+        PageableHabitManagementDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
             durationFrom, durationTo, complexity, withoutImage, withImage, pageable);
-
-        String sortModel = pageable.getSort().stream()
-                .map(order -> order.getProperty() + "," + order.getDirection())
-                .collect(Collectors.joining(","));
-
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
-        model.addAttribute("sortModel", sortModel);
+        model.addAttribute("sortModel", allHabits.getSortModel());
         return "core/management_user_habits";
     }
 

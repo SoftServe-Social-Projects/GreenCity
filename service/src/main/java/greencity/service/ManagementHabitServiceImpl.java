@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
@@ -56,10 +56,10 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-                                                           Integer durationTo, Integer complexity, Boolean withoutImage,
-                                                           Boolean withImage,
-                                                           Pageable pageable) {
+    public PageableHabitManagementDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+                                                                          Integer durationTo, Integer complexity, Boolean withoutImage,
+                                                                          Boolean withImage,
+                                                                          Pageable pageable) {
         if (pageable.getSort().isUnsorted()) {
             pageable = PageRequest.of(
                     pageable.getPageNumber(),
@@ -83,11 +83,12 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
             .toList();
-        return new PageableDto<>(
+        return new PageableHabitManagementDto<>(
             habitDtos,
             habits.getTotalElements(),
             habits.getPageable().getPageNumber(),
-            habits.getTotalPages());
+            habits.getTotalPages(),
+                getSortModel(pageable));
     }
 
     /**
@@ -212,5 +213,11 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     @Transactional
     public void deleteAll(List<Long> listId) {
         listId.forEach(this::delete);
+    }
+
+    private String getSortModel(Pageable pageable) {
+        return pageable.getSort().stream()
+                .map(order -> order.getProperty() + "," + order.getDirection())
+                .collect(Collectors.joining(","));
     }
 }

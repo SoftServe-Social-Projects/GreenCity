@@ -16,13 +16,16 @@
                 <img th:src="@{/img/arrow-icon.png}">
             </div>
         </block>
-        <li>
-            <a onclick="Order()" >
+<!--        <li>-->
+<!--            <a onclick="Order()" >-->
+<!--            <div class="img_n"><img th:src="@{/img/icon_user.png}"></div>-->
+<!--            <span id="to_be_white">[[#{greenCity.sidebar.users}]]</span>-->
+<!--            </a>-->
+<!--        </li>-->
+        <li><a th:href="@{/management/users}">
             <div class="img_n"><img th:src="@{/img/icon_user.png}"></div>
-            <span id="to_be_white">[[#{greenCity.sidebar.users}]]</span>
-            </a>
+            <span>[[#{greenCity.sidebar.users}]]</span></a>
         </li>
-
         <li class="accordion">
             <dropdown>
                 <div class="img_n"><img th:src="@{/img/habits_white.svg}"></div>
