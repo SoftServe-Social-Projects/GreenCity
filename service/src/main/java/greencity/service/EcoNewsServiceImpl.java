@@ -165,7 +165,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 currentUserId)
             : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
-                        currentUserId),
+                    currentUserId),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))),
                 currentUserId);
@@ -188,10 +188,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsPage.isLast());
     }
 
-    private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGenericDto(Page<EcoNews> ecoNewsPage, Long currentUserId) {
+    private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGenericDto(Page<EcoNews> ecoNewsPage,
+        Long currentUserId) {
         List<EcoNewsGenericDto> ecoNewsDtos = ecoNewsPage.stream()
-                .map(ecoNews -> getEcoNewsGenericDtoWithEnTags(ecoNews, currentUserId))
-                .collect(Collectors.toList());
+            .map(ecoNews -> getEcoNewsGenericDtoWithEnTags(ecoNews, currentUserId))
+            .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
             ecoNewsDtos,
@@ -639,7 +640,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private boolean isCurrentUserFollower(EcoNews ecoNews, Long currentUserId) {
         return ecoNews.getFollowers().stream()
-                .anyMatch(user -> user.getId().equals(currentUserId));
+            .anyMatch(user -> user.getId().equals(currentUserId));
     }
 
     private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
@@ -776,8 +777,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private Long getUserIdByEmail(String email) {
         return userRepo.findByEmail(email)
-                .map(User::getId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+            .map(User::getId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**

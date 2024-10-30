@@ -705,13 +705,13 @@ class EcoNewsServiceImplTest {
         when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Predicate result = ecoNewsService.getPredicate(
-                root,
-                criteriaBuilder,
-                Collections.emptyList(),
-                null,
-                null,
-                true,
-                mockUser.getId());
+            root,
+            criteriaBuilder,
+            Collections.emptyList(),
+            null,
+            null,
+            true,
+            mockUser.getId());
 
         verify(root, times(1)).join("followers");
         verify(followersJoin, times(1)).get("id");
