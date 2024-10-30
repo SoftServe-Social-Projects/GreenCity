@@ -156,7 +156,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Long authorId,
         boolean favorite,
         String email) {
-        Long currentUserId = email != null ? getUserIdByEmail(email) : null;
+        Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
 
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
