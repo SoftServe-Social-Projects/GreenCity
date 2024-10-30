@@ -16,6 +16,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SubscriptionRepo;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -46,7 +47,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         checkSubscriptionDoesNotExist(subscriptionRequestDto.getEmail(), subscriptionRequestDto.getSubscriptionType());
 
         Subscription subscription = modelMapper.map(subscriptionRequestDto, Subscription.class);
-        return modelMapper.map(subscriptionRepo.save(subscription), SubscriptionResponseDto.class);
+        Subscription savedSubscription = subscriptionRepo.save(subscription);
+        SubscriptionResponseDto responseDto = modelMapper.map(savedSubscription, SubscriptionResponseDto.class);
+
+        sendInterestingEcoNewsToNewSubscriber(savedSubscription);
+
+        return responseDto;
     }
 
     private void checkSubscriptionDoesNotExist(String email, SubscriptionType subscriptionType) {
@@ -135,5 +141,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscriber.setLanguage(user.getLanguageVO().getCode());
             });
         return subscriber;
+    }
+
+    private void sendInterestingEcoNewsToNewSubscriber(Subscription subscription) {
+        List<ShortEcoNewsDto> interestingEcoNews = getInterestingEcoNews();
+        if (interestingEcoNews.isEmpty()) {
+            return;
+        }
+
+        SubscriberDto newSubscriber = modelMapper.map(subscription, SubscriberDto.class);
+        UserVO user = userService.findByEmail(subscription.getEmail());
+        if(Objects.nonNull(user)){
+            newSubscriber.setName(user.getName());
+            newSubscriber.setLanguage(user.getLanguageVO().getCode());
+        }
+
+        restClient.sendInterestingEcoNews(new InterestingEcoNewsDto(interestingEcoNews, List.of(newSubscriber)));
     }
 }
