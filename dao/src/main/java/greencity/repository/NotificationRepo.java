@@ -90,8 +90,8 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      * @return List of unread notification that have specific type
      */
     @Query("SELECT n FROM Notification n "
-        + "JOIN FETCH n.targetUser "
-        + "JOIN FETCH n.actionUsers "
+        + "JOIN FETCH n.targetUser tu "
+        + "JOIN FETCH tu.language "
         + "WHERE n.notificationType = :notificationType "
         + "AND n.viewed = false "
         + "AND n.emailSent = false")
@@ -118,6 +118,28 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
         Long targetUserId,
         NotificationType notificationType,
         Long targetId);
+
+    /**
+     * Method to return count of action user in notification by target user, type,
+     * target id and not viewed and email not sent.
+     *
+     * @param targetUserId     id of target user
+     * @param notificationType type of notification
+     * @param targetId         id of object related to notification
+     *
+     * @return count of action users
+     */
+    @Query("SELECT COUNT(n) FROM Notification n "
+            + "JOIN n.actionUsers u "
+            + "WHERE n.targetUser.id = :targetUserId "
+            + "AND n.notificationType = :notificationType "
+            + "AND n.targetId = :targetId "
+            + "AND n.viewed = false "
+            + "AND n.emailSent = false")
+    long countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndEmailSentIsFalse(
+            Long targetUserId,
+            NotificationType notificationType,
+            Long targetId);
 
     /**
      * Checks if a notification with the specified ID exists for the specified user.
