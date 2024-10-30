@@ -1,5 +1,7 @@
 package greencity.controller;
 
+import greencity.converters.UserArgumentResolver;
+import greencity.service.UserService;
 import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -50,7 +52,9 @@ import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import static greencity.ModelUtils.getFilterPlaceDto;
+import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,6 +82,9 @@ class PlaceControllerTest {
     private PlaceService placeService;
 
     @Mock
+    private UserService userService;
+
+    @Mock
     private FavoritePlaceService favoritePlaceService;
 
     @Mock
@@ -91,7 +98,8 @@ class PlaceControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
             .build();
     }
 
@@ -381,6 +389,7 @@ class PlaceControllerTest {
 
     @Test
     void getFilteredPlaces() throws Exception {
+        UserVO userVO = getUserVO();
         FilterPlaceDto filterPlaceDto = getFilterPlaceDto();
         String json = """
             {
@@ -408,13 +417,15 @@ class PlaceControllerTest {
             }
             """;
 
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
         this.mockMvc.perform(post(placeLink + "/filter")
             .content(json)
-
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(placeService).getPlacesByFilter(filterPlaceDto);
+        verify(placeService).getPlacesByFilter(filterPlaceDto, userVO);
     }
 
     @Test

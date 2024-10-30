@@ -90,7 +90,6 @@ public class PlaceServiceImpl implements PlaceService {
     private final OpenHoursService openingHoursService;
     private final UserService userService;
     private final DiscountService discountService;
-    private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
     private final ProposePlaceService proposePlaceService;
     private final CategoryRepo categoryRepo;
@@ -436,10 +435,11 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO) {
+        Long userId = userVO == null ? null : userVO.getId();
         List<Place> list =
             ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
-                : placeRepo.findAll(new PlaceFilter(filterDto));
+                : placeRepo.findAll(new PlaceFilter(filterDto, userId));
         list = getPlacesByDistanceFromUser(filterDto, list);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
