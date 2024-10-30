@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +34,8 @@ import static greencity.ModelUtils.getHabitManagementDtoWithoutImage;
 import static greencity.ModelUtils.getHabitWithDefaultImage;
 import static greencity.ModelUtils.getLanguage;
 import static greencity.ModelUtils.getLanguageDTO;
+import static greencity.ModelUtils.getSortModel;
+import static greencity.ModelUtils.getSortedPageable;
 import static greencity.TestConst.LANGUAGE_CODE_EN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -70,17 +72,20 @@ class ManagementHabitServiceImplTest {
 
     @Test
     void getAllHabitsDtoTest() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<HabitManagementDto> habitManagementDtos = Collections.singletonList(new HabitManagementDto());
+        Pageable sortedPageable = getSortedPageable();
+        HabitManagementDto habitManagementDto = getHabitManagementDtoWithoutImage();
+        List<HabitManagementDto> habitManagementDtos = Collections.singletonList(habitManagementDto);
         List<Habit> habits = Collections.singletonList(ModelUtils.getHabit());
-        Page<Habit> listHabits = new PageImpl<>(habits, pageRequest, habits.size());
+        Page<Habit> listHabits = new PageImpl<>(habits, sortedPageable, habits.size());
 
-        PageableDto<HabitManagementDto> result =
-            new PageableDto<>(habitManagementDtos, habitManagementDtos.size(), 0, 1);
+        String sorted = getSortModel(sortedPageable);
+
+        PageableHabitManagementDto<HabitManagementDto> result =
+            new PageableHabitManagementDto<>(habitManagementDtos, habitManagementDtos.size(), 0, 1, sorted);
         when(modelMapper.map(habits.getFirst(), HabitManagementDto.class)).thenReturn(habitManagementDtos.getFirst());
-        when(habitRepo.findAll(any(HabitFilter.class), eq(pageRequest))).thenReturn(listHabits);
+        when(habitRepo.findAll(any(HabitFilter.class), eq(sortedPageable))).thenReturn(listHabits);
         assertEquals(result, managementHabitService.getAllHabitsDto(null, null, null,
-            null, false, false, pageRequest));
+            null, false, false, sortedPageable));
     }
 
     @Test

@@ -57,14 +57,14 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     @Override
     public PageableHabitManagementDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-                                                                          Integer durationTo, Integer complexity, Boolean withoutImage,
-                                                                          Boolean withImage,
-                                                                          Pageable pageable) {
+        Integer durationTo, Integer complexity, Boolean withoutImage,
+        Boolean withImage,
+        Pageable pageable) {
         if (pageable.getSort().isUnsorted()) {
             pageable = PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "id"));
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
         }
 
         if (withImage == null) {
@@ -88,7 +88,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
             habits.getTotalElements(),
             habits.getPageable().getPageNumber(),
             habits.getTotalPages(),
-                getSortModel(pageable));
+            getSortModel(pageable));
     }
 
     /**
@@ -217,7 +217,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
     private String getSortModel(Pageable pageable) {
         return pageable.getSort().stream()
-                .map(order -> order.getProperty() + "," + order.getDirection())
-                .collect(Collectors.joining(","));
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
     }
 }

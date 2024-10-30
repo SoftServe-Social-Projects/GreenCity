@@ -64,7 +64,8 @@ class ManagementHabitControllerTest {
     void findAllHabits() throws Exception {
         Pageable pageable = PageRequest.of(0, 5);
         List<HabitManagementDto> habitManagementDtos = Collections.singletonList(new HabitManagementDto());
-        PageableHabitManagementDto<HabitManagementDto> habitManagementDtoPageableDto = new PageableHabitManagementDto<>(habitManagementDtos, 4, 0, 3, null);
+        PageableHabitManagementDto<HabitManagementDto> habitManagementDtoPageableDto =
+            new PageableHabitManagementDto<>(habitManagementDtos, 4, 0, 3, null);
 
         when(managementHabitService.getAllHabitsDto(null, null, null, null,
             null, null, pageable)).thenReturn(habitManagementDtoPageableDto);

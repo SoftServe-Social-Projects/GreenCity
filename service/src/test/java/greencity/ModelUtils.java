@@ -214,6 +214,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
@@ -3080,5 +3081,11 @@ public class ModelUtils {
             .role(ROLE_ADMIN)
             .status(STATUS_ACTIVATED)
             .build();
+    }
+
+    public static String getSortModel(Pageable pageable) {
+        return pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
     }
 }
