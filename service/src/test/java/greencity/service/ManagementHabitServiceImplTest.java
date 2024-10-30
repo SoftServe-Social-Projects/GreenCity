@@ -20,7 +20,9 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,6 +88,25 @@ class ManagementHabitServiceImplTest {
         when(habitRepo.findAll(any(HabitFilter.class), eq(sortedPageable))).thenReturn(listHabits);
         assertEquals(result, managementHabitService.getAllHabitsDto(null, null, null,
             null, false, false, sortedPageable));
+    }
+
+    @Test
+    void getAllHabitsDtoUnsortedPageableTest() {
+        Pageable unsortedPageable = PageRequest.of(0, 10);
+        HabitManagementDto habitManagementDto = getHabitManagementDtoWithoutImage();
+        List<HabitManagementDto> habitManagementDtos = Collections.singletonList(habitManagementDto);
+        List<Habit> habits = Collections.singletonList(ModelUtils.getHabit());
+        Page<Habit> listHabits = new PageImpl<>(habits, unsortedPageable, habits.size());
+
+        String sorted = getSortModel(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")));
+
+        PageableHabitManagementDto<HabitManagementDto> result =
+            new PageableHabitManagementDto<>(habitManagementDtos, habitManagementDtos.size(), 0, 1, sorted);
+        when(modelMapper.map(habits.getFirst(), HabitManagementDto.class)).thenReturn(habitManagementDtos.getFirst());
+        when(habitRepo.findAll(any(HabitFilter.class), eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")))))
+            .thenReturn(listHabits);
+        assertEquals(result, managementHabitService.getAllHabitsDto(null, null, null,
+            null, false, false, unsortedPageable));
     }
 
     @Test
