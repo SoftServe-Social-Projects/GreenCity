@@ -350,6 +350,11 @@ class NotificationServiceImplTest {
                 EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY)).thenReturn(false);
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
                 EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY)).thenReturn(false);
+            when(notificationRepo
+                .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndEmailSentIsFalse(
+                    notification.getTargetUser().getId(), notification.getNotificationType(),
+                    notification.getTargetId()))
+                .thenReturn(1L);
 
             notificationService.sendCommentScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
