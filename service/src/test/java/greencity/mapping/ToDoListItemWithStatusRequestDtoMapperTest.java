@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.UserShoppingListItem;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ class ShoppingListItemWithStatusRequestDtoMapperTest {
     void convert() {
         ShoppingListItemWithStatusRequestDto itemDto = new ShoppingListItemWithStatusRequestDto();
         Long id = 1L;
-        ShoppingListItemStatus status = ShoppingListItemStatus.DONE;
+        ToDoListItemStatus status = ToDoListItemStatus.DONE;
         itemDto.setId(id);
         itemDto.setStatus(status);
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Herchanivska-12" author="Viktoriia Herchanivska">
+        <dropColumn tableName="custom_to_do_list_items" columnName="date_completed"/>
+        <addColumn tableName="custom_to_do_list_items">
+            <column name="is_default" defaultValue="true"><constraints nullable="false"/></column>
+        </addColumn>
+        <addColumn tableName="to_do_list_items">
+            <column name="status" defaultValue="ACTIVE"><constraints nullable="false"/></column>
+        </addColumn>
+        <dropColumn tableName="user_to_do_list" columnName="shopping_list_item_id"/>
+        <addColumn tableName="user_to_do_list">
+            <column name="target_id"><constraints nullable="false"/></column>
+        </addColumn>
+        <addColumn tableName="user_to_do_list">
+            <column name="is_custom_to_do_list_item" defaultValue="false"><constraints nullable="false"/></column>
+        </addColumn>
+        <dropDefaultValue tableName="user_to_do_list" columnName="status"/>
+        <addDefaultValue tableName="user_to_do_list" columnName="status" defaultValue="INPROGRESS"/>
+    </changeSet>
+</databaseChangeLog>

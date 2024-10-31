@@ -15,7 +15,7 @@ import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
@@ -95,13 +95,13 @@ class CustomShoppingListItemServiceImplTest {
             .habit(habit)
             .user(user)
             .text("item")
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
 
     @Test
     void findAll() {
         CustomShoppingListItemResponseDto dtoExpected = new CustomShoppingListItemResponseDto(3L, "text",
-            ShoppingListItemStatus.ACTIVE);
+            ToDoListItemStatus.ACTIVE);
         when(customShoppingListItemRepo.findAll()).thenReturn(Collections.singletonList(item));
         when(modelMapper.map(any(), any())).thenReturn(dtoExpected);
 
@@ -111,7 +111,7 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void findById() {
         CustomShoppingListItemResponseDto expected = new CustomShoppingListItemResponseDto(3L,
-            "text", ShoppingListItemStatus.ACTIVE);
+            "text", ToDoListItemStatus.ACTIVE);
         when(customShoppingListItemRepo.findById(1L)).thenReturn(Optional.of(item));
         when(modelMapper.map(any(), eq(CustomShoppingListItemResponseDto.class)))
             .thenReturn(expected);
@@ -122,7 +122,7 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void FindAllByUserAndHabit() {
         CustomShoppingListItemResponseDto dtoExpected = new CustomShoppingListItemResponseDto(3L, "text",
-            ShoppingListItemStatus.ACTIVE);
+            ToDoListItemStatus.ACTIVE);
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L))
             .thenReturn(Collections.singletonList(item));
         when(modelMapper.map(any(CustomShoppingListItem.class), eq(CustomShoppingListItemResponseDto.class)))
@@ -190,7 +190,7 @@ class CustomShoppingListItemServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(dtoToSave, CustomShoppingListItem.class)).thenReturn(customShoppingListItem);
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
-            .thenReturn(new CustomShoppingListItemResponseDto(1L, "bar", ShoppingListItemStatus.DONE));
+            .thenReturn(new CustomShoppingListItemResponseDto(1L, "bar", ToDoListItemStatus.DONE));
         List<CustomShoppingListItemResponseDto> saveResult = customShoppingListItemService.save(
             new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave)),
             1L, 1L);
@@ -228,7 +228,7 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void findAllTest() {
         CustomShoppingListItem customShoppingListItem =
-            new CustomShoppingListItem(1L, "foo", null, null, ShoppingListItemStatus.DONE, null);
+            new CustomShoppingListItem(1L, "foo", null, null, ToDoListItemStatus.DONE, null);
         when(customShoppingListItemRepo.findAll()).thenReturn(Collections.singletonList(customShoppingListItem));
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
             .thenReturn(new CustomShoppingListItemResponseDto(customShoppingListItem.getId(),
@@ -248,7 +248,7 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void findByIdTest() {
         CustomShoppingListItem customShoppingListItem =
-            new CustomShoppingListItem(1L, "foo", null, null, ShoppingListItemStatus.DONE, null);
+            new CustomShoppingListItem(1L, "foo", null, null, ToDoListItemStatus.DONE, null);
         when(customShoppingListItemRepo.findById(anyLong())).thenReturn(java.util.Optional.of(customShoppingListItem));
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
             .thenReturn(new CustomShoppingListItemResponseDto(customShoppingListItem.getId(),
@@ -261,17 +261,17 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void updateItemStatus() {
         CustomShoppingListItem customShoppingListItem =
-            new CustomShoppingListItem(1L, "test", null, null, ShoppingListItemStatus.DONE, null);
+            new CustomShoppingListItem(1L, "test", null, null, ToDoListItemStatus.DONE, null);
         CustomShoppingListItemResponseDto test =
-            new CustomShoppingListItemResponseDto(1L, "test", ShoppingListItemStatus.DONE);
+            new CustomShoppingListItemResponseDto(1L, "test", ToDoListItemStatus.DONE);
         when(customShoppingListItemRepo.findByUserIdAndItemId(64L, 1L)).thenReturn(customShoppingListItem);
         when(customShoppingListItemRepo.save(customShoppingListItem)).thenReturn(customShoppingListItem);
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class)).thenReturn(test);
         assertEquals(test, customShoppingListItemService.updateItemStatus(64L, 1L, "DONE"));
         CustomShoppingListItem customShoppingListItem1 =
-            new CustomShoppingListItem(2L, "test", null, null, ShoppingListItemStatus.ACTIVE, null);
+            new CustomShoppingListItem(2L, "test", null, null, ToDoListItemStatus.ACTIVE, null);
         CustomShoppingListItemResponseDto test1 =
-            new CustomShoppingListItemResponseDto(2L, "test", ShoppingListItemStatus.ACTIVE);
+            new CustomShoppingListItemResponseDto(2L, "test", ToDoListItemStatus.ACTIVE);
         when(customShoppingListItemRepo.findByUserIdAndItemId(12L, 2L)).thenReturn(customShoppingListItem1);
         when(customShoppingListItemRepo.save(customShoppingListItem1)).thenReturn(customShoppingListItem1);
         when(modelMapper.map(customShoppingListItem1, CustomShoppingListItemResponseDto.class)).thenReturn(test1);
@@ -304,7 +304,7 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void findAllByUserWithExistentIdTest() {
         CustomShoppingListItem customShoppingListItem =
-            new CustomShoppingListItem(1L, "foo", user, habit, ShoppingListItemStatus.DONE, null);
+            new CustomShoppingListItem(1L, "foo", user, habit, ToDoListItemStatus.DONE, null);
         CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
             new CustomShoppingListItemResponseDto(customShoppingListItem.getId(), customShoppingListItem.getText(),
                 customShoppingListItem.getStatus());
@@ -343,11 +343,11 @@ class CustomShoppingListItemServiceImplTest {
         Long userShoppingListItemId = 1L;
         UserShoppingListItem userShoppingListItem =
             new UserShoppingListItem(1L, ModelUtils.getHabitAssignWithUserShoppingListItem(), shoppingListItem,
-                ShoppingListItemStatus.ACTIVE, LocalDateTime.now());
+                ToDoListItemStatus.ACTIVE, LocalDateTime.now());
         when(userShoppingListItemRepo.getByUserAndItemId(1L, 1L)).thenReturn(Optional.of(userShoppingListItemId));
         when(userShoppingListItemRepo.getReferenceById(userShoppingListItemId)).thenReturn(userShoppingListItem);
         customShoppingListItemService.updateItemStatusToDone(1L, 1L);
-        userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
+        userShoppingListItem.setStatus(ToDoListItemStatus.DONE);
         verify(userShoppingListItemRepo).save(userShoppingListItem);
     }
 
@@ -388,7 +388,7 @@ class CustomShoppingListItemServiceImplTest {
 
         CustomShoppingListItemResponseDto expectedDto = ModelUtils.getCustomShoppingListItemResponseDto();
         expectedDto.setText("item");
-        expectedDto.setStatus(ShoppingListItemStatus.ACTIVE);
+        expectedDto.setStatus(ToDoListItemStatus.ACTIVE);
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));

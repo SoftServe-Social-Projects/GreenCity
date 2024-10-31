@@ -1,7 +1,6 @@
 package greencity.entity;
 
-import greencity.enums.ShoppingListItemStatus;
-import java.time.LocalDateTime;
+import greencity.enums.ToDoListItemStatus;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @NoArgsConstructor
@@ -18,10 +16,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"user", "dateCompleted"})
-@Table(name = "custom_shopping_list_items")
+@ToString(exclude = {"user"})
+@Table(name = "custom_to_do_list_items")
 @Builder
-public class CustomShoppingListItem {
+public class CustomToDoListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,9 +38,7 @@ public class CustomShoppingListItem {
     @Column(nullable = false)
     @Builder.Default
     @Enumerated(value = EnumType.STRING)
-    private ShoppingListItemStatus status = ShoppingListItemStatus.ACTIVE;
+    private ToDoListItemStatus status = ToDoListItemStatus.ACTIVE;
 
-    @Column
-    @DateTimeFormat(pattern = "yyyy-MM-dd-HH-mm-ss.zzz")
-    private LocalDateTime dateCompleted;
+    private boolean isDefault;
 }

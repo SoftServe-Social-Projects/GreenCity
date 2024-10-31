@@ -5,7 +5,7 @@ import greencity.dto.shoppinglistitem.ShoppingListItemVO;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.UserShoppingListItem;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class UserShoppingListItemVOMapperTest {
         userShoppingListItem.setShoppingListItem(ShoppingListItem.builder().id(13L).build());
 
         UserShoppingListItemVO expected = ModelUtils.getUserShoppingListItemVO();
-        expected.setStatus(ShoppingListItemStatus.ACTIVE);
+        expected.setStatus(ToDoListItemStatus.ACTIVE);
         expected.setShoppingListItemVO(ShoppingListItemVO.builder().id(13L).build());
         expected.setDateCompleted(userShoppingListItem.getDateCompleted());
 

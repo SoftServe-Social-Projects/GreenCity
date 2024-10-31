@@ -20,7 +20,7 @@ import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -199,7 +199,7 @@ class ShoppingListItemServiceImplTest {
         Long habitId = 1L;
         String languageEn = "en";
         UserShoppingListItem userShoppingListItem =
-            UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
+            UserShoppingListItem.builder().id(1L).status(ToDoListItemStatus.ACTIVE).build();
 
         List<UserShoppingListItemResponseDto> expected =
             List.of(ModelUtils.getUserShoppingListItemResponseDto());
@@ -223,7 +223,7 @@ class ShoppingListItemServiceImplTest {
         List<ShoppingListItemDto> shoppingListItemDto = shoppingListItemTranslations
             .stream()
             .map(translation -> new ShoppingListItemDto(translation.getShoppingListItem().getId(),
-                translation.getContent(), ShoppingListItemStatus.ACTIVE.toString()))
+                translation.getContent(), ToDoListItemStatus.ACTIVE.toString()))
             .collect(Collectors.toList());
 
         when(modelMapper.map(shoppingListItemTranslations.getFirst(), ShoppingListItemDto.class))
@@ -274,28 +274,28 @@ class ShoppingListItemServiceImplTest {
         UserShoppingListItem userShoppingListItem = ModelUtils.getPredefinedUserShoppingListItem();
         when(userShoppingListItemRepo.getReferenceById(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
         when(modelMapper.map(any(), eq(UserShoppingListItemResponseDto.class)))
-            .thenReturn(new UserShoppingListItemResponseDto(2L, null, ShoppingListItemStatus.DONE));
+            .thenReturn(new UserShoppingListItemResponseDto(2L, null, ToDoListItemStatus.DONE));
         when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language,
             userShoppingListItem.getId())).thenReturn(shoppingListItemTranslations.getFirst());
         UserShoppingListItemResponseDto userShoppingListItemResponseDto =
             shoppingListItemService.updateUserShopingListItemStatus(userId, userShoppingListItem.getId(), "uk");
 
-        assertEquals(ShoppingListItemStatus.DONE, userShoppingListItem.getStatus());
+        assertEquals(ToDoListItemStatus.DONE, userShoppingListItem.getStatus());
         assertEquals(userShoppingListItemResponseDto.getId(),
             new UserShoppingListItemResponseDto(2L, shoppingListItemTranslations.getFirst().getContent(),
-                ShoppingListItemStatus.DONE).getId());
+                ToDoListItemStatus.DONE).getId());
         verify(userShoppingListItemRepo).save(userShoppingListItem);
     }
 
     @Test
     void updateUserShoppingListItemStatusWithDoneItemStateTest() {
         UserShoppingListItem userShoppingListItem =
-            new UserShoppingListItem(1L, null, null, ShoppingListItemStatus.DONE, null);
+            new UserShoppingListItem(1L, null, null, ToDoListItemStatus.DONE, null);
         when(userShoppingListItemRepo.getReferenceById(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
         Long userShoppingListItemId = userShoppingListItem.getId();
         assertThrows(UserShoppingListItemStatusNotUpdatedException.class,
             () -> shoppingListItemService.updateUserShopingListItemStatus(userId, userShoppingListItemId, "en"));
-        assertNotEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
+        assertNotEquals(ToDoListItemStatus.ACTIVE, userShoppingListItem.getStatus());
     }
 
     @Test
@@ -306,7 +306,7 @@ class ShoppingListItemServiceImplTest {
         when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
             .thenReturn(UserShoppingListItemResponseDto.builder()
                 .id(1L)
-                .status(ShoppingListItemStatus.DONE)
+                .status(ToDoListItemStatus.DONE)
                 .build());
         when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId("en", 1L))
             .thenReturn(ModelUtils.getShoppingListItemTranslation());
@@ -314,7 +314,7 @@ class ShoppingListItemServiceImplTest {
         List<UserShoppingListItemResponseDto> result = shoppingListItemService
             .updateUserShoppingListItemStatus(2L, 1L, "en", "DONE");
 
-        assertEquals(ShoppingListItemStatus.DONE, result.getFirst().getStatus());
+        assertEquals(ToDoListItemStatus.DONE, result.getFirst().getStatus());
 
         verify(userShoppingListItemRepo).getAllByUserShoppingListIdAndUserId(1L, 2L);
         verify(modelMapper).map(userShoppingListItem, UserShoppingListItemResponseDto.class);
@@ -436,7 +436,7 @@ class ShoppingListItemServiceImplTest {
         String ids = "1,2,3,4,5,6";
         List<Long> expected = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L);
         UserShoppingListItem userShoppingListItem =
-            new UserShoppingListItem(1L, null, shoppingListItem, ShoppingListItemStatus.ACTIVE, null);
+            new UserShoppingListItem(1L, null, shoppingListItem, ToDoListItemStatus.ACTIVE, null);
 
         when(userShoppingListItemRepo.findById(anyLong())).thenReturn(Optional.of(userShoppingListItem));
 
@@ -448,7 +448,7 @@ class ShoppingListItemServiceImplTest {
     void deleteUserShoppingListItemsFailed() {
         String ids = "1,2,3,4,5,6";
         UserShoppingListItem userShoppingListItem =
-            new UserShoppingListItem(1L, null, shoppingListItem, ShoppingListItemStatus.ACTIVE, null);
+            new UserShoppingListItem(1L, null, shoppingListItem, ToDoListItemStatus.ACTIVE, null);
 
         when(userShoppingListItemRepo.findById(anyLong())).thenReturn(Optional.of(userShoppingListItem));
         when(userShoppingListItemRepo.findById(3L)).thenThrow(NotFoundException.class);
@@ -459,7 +459,7 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getUserShoppingListItemTest() {
         UserShoppingListItem userShoppingListItem =
-            UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
+            UserShoppingListItem.builder().id(1L).status(ToDoListItemStatus.ACTIVE).build();
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
@@ -497,10 +497,10 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getUserShoppingListItemWithStatusInProgressTest() {
         UserShoppingListItem item = UserShoppingListItem
-            .builder().id(1L).status(ShoppingListItemStatus.INPROGRESS).build();
+            .builder().id(1L).status(ToDoListItemStatus.INPROGRESS).build();
 
         UserShoppingListItemResponseDto itemResponseDto = UserShoppingListItemResponseDto
-            .builder().id(1L).status(ShoppingListItemStatus.INPROGRESS).build();
+            .builder().id(1L).status(ToDoListItemStatus.INPROGRESS).build();
 
         when(userShoppingListItemRepo.findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(1L))
             .thenReturn(List.of(
@@ -605,7 +605,7 @@ class ShoppingListItemServiceImplTest {
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setId(userShoppingListItemId);
-        userShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
+        userShoppingListItem.setStatus(ToDoListItemStatus.ACTIVE);
 
         UserShoppingListItemResponseDto userShoppingListItemResponseDto =
             ModelUtils.getUserShoppingListItemResponseDto();

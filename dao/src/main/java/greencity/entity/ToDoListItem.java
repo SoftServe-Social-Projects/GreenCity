@@ -1,8 +1,13 @@
 package greencity.entity;
 
-import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.entity.localization.ToDoListItemTranslation;
 import java.util.List;
 import java.util.Set;
+
+import greencity.enums.ToDoListItemStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import jakarta.persistence.CascadeType;
@@ -25,22 +30,23 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(
-    exclude = {"userShoppingListItems"})
-@EqualsAndHashCode(exclude = {"userShoppingListItems", "translations"})
-@Table(name = "shopping_list_items")
+@ToString
+@EqualsAndHashCode(exclude = {"translations"})
+@Table(name = "to_do_list_items")
 @Builder
-public class ShoppingListItem {
+public class ToDoListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "shoppingListItem", fetch = FetchType.LAZY)
-    private List<UserShoppingListItem> userShoppingListItems;
+    @Column(nullable = false)
+    @Builder.Default
+    @Enumerated(value = EnumType.STRING)
+    private ToDoListItemStatus status = ToDoListItemStatus.ACTIVE;
 
-    @ManyToMany(mappedBy = "shoppingListItems", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "toDoListItems", fetch = FetchType.LAZY)
     private Set<Habit> habits;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "shoppingListItem", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<ShoppingListItemTranslation> translations;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "toDoListItem", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<ToDoListItemTranslation> translations;
 }
