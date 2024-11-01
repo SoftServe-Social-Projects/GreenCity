@@ -34,7 +34,7 @@ public class ManagementHabitToDoListItemController {
             toDoListItemService.findAllToDoListItemsForManagementPageNotContained(id, pageable));
         model.addAttribute("habitId", id);
         model.addAttribute("currentToDoListItems", toDoListItemService.getToDoListByHabitId(id));
-        return "management_habit_to_do_list_item";
+        return "core/management_habit_to_do_list_item";
     }
 
     /**
