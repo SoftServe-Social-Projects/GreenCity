@@ -54,4 +54,7 @@ public class EcoNewsGenericDto {
     private int countComments;
 
     private int countOfEcoNews;
+
+    @Builder.Default
+    private boolean isFavorite = false;
 }
