@@ -56,7 +56,7 @@ public class ManagementToDoListItemsController {
             : toDoListItemService.searchBy(paging, query);
         model.addAttribute("toDoListItems", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
-        return "management_to_do_list_items";
+        return "core/management_to_do_list_items";
     }
 
     /**
@@ -162,6 +162,6 @@ public class ManagementToDoListItemsController {
         model.addAttribute("toDoListItems", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
         model.addAttribute("fields", goal);
-        return "management_to_do_list_items";
+        return "core/management_to_do_list_items";
     }
 }
