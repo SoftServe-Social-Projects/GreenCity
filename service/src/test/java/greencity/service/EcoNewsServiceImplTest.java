@@ -648,9 +648,15 @@ class EcoNewsServiceImplTest {
         ArrayList<String> tags = new ArrayList<>();
         tags.add("новини");
         tags.add("news");
+
+        User mockUser = ModelUtils.getUser();
+        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
+
         Root<EcoNews> root = mock(Root.class);
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
         Join join = mock(Join.class);
+        Predicate mockPredicate = mock(Predicate.class);
+
         when(root.join(ECO_NEWS_JOIN_TAG)).thenReturn(join);
         Path tagTranslations = mock(Path.class);
         Path name = mock(Path.class);
@@ -663,11 +669,13 @@ class EcoNewsServiceImplTest {
         when(userJoin.get("id")).thenReturn(path);
 
         when(criteriaBuilder.lower(any())).thenReturn(name);
-        when(criteriaBuilder.like(any(), anyString())).thenReturn(mock(Predicate.class));
-        when(criteriaBuilder.and(any())).thenReturn(mock(Predicate.class));
-        when(criteriaBuilder.equal(any(), any())).thenReturn(mock(Predicate.class));
+        when(criteriaBuilder.like(any(), anyString())).thenReturn(mockPredicate);
+        when(criteriaBuilder.and(any())).thenReturn(mockPredicate);
+        when(criteriaBuilder.equal(any(), any())).thenReturn(mockPredicate);
 
-        ecoNewsService.getPredicate(root, criteriaBuilder, tags, "1", 1L, false, "user@example.com");
+        Long currentUserId = mockUser.getId();
+
+        ecoNewsService.getPredicate(root, criteriaBuilder, tags, "1", 1L, false, currentUserId);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
@@ -684,7 +692,6 @@ class EcoNewsServiceImplTest {
     @Test
     void getPredicate_ReturnsCorrectPredicate_WhenFavoriteIsTrue() {
         User mockUser = ModelUtils.getUser();
-        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Root<EcoNews> root = mock(Root.class);
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
@@ -695,6 +702,7 @@ class EcoNewsServiceImplTest {
         when(root.<EcoNews, User>join("followers")).thenReturn(followersJoin);
         when(followersJoin.<Long>get("id")).thenReturn(userIdPath);
         when(criteriaBuilder.equal(userIdPath, mockUser.getId())).thenReturn(favoritePredicate);
+        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Predicate result = ecoNewsService.getPredicate(
             root,
@@ -703,9 +711,8 @@ class EcoNewsServiceImplTest {
             null,
             null,
             true,
-            "user@example.com");
+            mockUser.getId());
 
-        verify(userRepo, times(1)).findByEmail("user@example.com");
         verify(root, times(1)).join("followers");
         verify(followersJoin, times(1)).get("id");
         verify(criteriaBuilder, times(1)).equal(userIdPath, mockUser.getId());
@@ -716,10 +723,12 @@ class EcoNewsServiceImplTest {
 
     @Test
     void find_ReturnsCorrectResult_WhenTagsAndTitleAreEmpty() {
+        User mockUser = ModelUtils.getUser();
         Pageable pageable = PageRequest.of(0, 2);
         List<EcoNews> ecoNewsList = Collections.singletonList(ModelUtils.getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNewsList, pageable, ecoNewsList.size());
 
+        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
         when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
 
         ecoNewsService.find(pageable, null, null, null, false, "user@example.com");

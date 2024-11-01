@@ -156,15 +156,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Long authorId,
         boolean favorite,
         String email) {
+        Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
+
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))))
+                    Sort.by(Sort.Direction.DESC, "creationDate"))),
+                currentUserId)
             : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
-                    email),
+                    currentUserId),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))));
+                    Sort.by(Sort.Direction.DESC, "creationDate"))),
+                currentUserId);
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
@@ -184,9 +188,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsPage.isLast());
     }
 
-    private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGenericDto(Page<EcoNews> ecoNewsPage) {
+    private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGenericDto(Page<EcoNews> ecoNewsPage,
+        Long currentUserId) {
         List<EcoNewsGenericDto> ecoNewsDtos = ecoNewsPage.stream()
-            .map(this::getEcoNewsGenericDtoWithEnTags)
+            .map(ecoNews -> getEcoNewsGenericDtoWithEnTags(ecoNews, currentUserId))
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
@@ -590,10 +595,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .map(TagTranslation::getName)
             .collect(Collectors.toList());
 
-        return buildEcoNewsGenericDto(ecoNews, tags);
+        return buildEcoNewsGenericDto(ecoNews, tags, null);
     }
 
-    private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews) {
+    private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews, Long currentUserId) {
         List<String> tags = new ArrayList<>();
         for (String language : languageCode) {
             tags.addAll(ecoNews.getTags().stream()
@@ -603,14 +608,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .toList());
         }
 
-        return buildEcoNewsGenericDto(ecoNews, tags);
+        return buildEcoNewsGenericDto(ecoNews, tags, currentUserId);
     }
 
-    private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags) {
+    private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags, Long currentUserId) {
         User author = ecoNews.getAuthor();
         EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
+
         int countOfComments = commentService.countCommentsForEcoNews(ecoNews.getId());
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
+
+        boolean isFavorite = isCurrentUserFollower(ecoNews, currentUserId);
+
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())
             .imagePath(ecoNews.getImagePath())
@@ -625,7 +634,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .likes(ecoNews.getUsersLikedNews() != null ? ecoNews.getUsersLikedNews().size() : 0)
             .countComments(countOfComments)
             .countOfEcoNews(countOfEcoNews)
+            .isFavorite(isFavorite)
             .build();
+    }
+
+    private boolean isCurrentUserFollower(EcoNews ecoNews, Long currentUserId) {
+        return ecoNews.getFollowers().stream()
+            .anyMatch(user -> user.getId().equals(currentUserId));
     }
 
     private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
@@ -721,7 +736,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String title,
         Long authorId,
         boolean favorite,
-        String email) {
+        Long currentUserId) {
         List<Predicate> predicates = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tags)) {
             predicates.add(predicateForTags(criteriaBuilder, root, tags));
@@ -735,9 +750,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             predicates.add(criteriaBuilder.equal(users.get(ECO_NEWS_AUTHOR_ID), authorId));
         }
         if (favorite) {
-            User currentUser = getUserByEmail(email);
             Join<EcoNews, User> followers = root.join("followers");
-            predicates.add(criteriaBuilder.equal(followers.get(ECO_NEWS_AUTHOR_ID), currentUser.getId()));
+            predicates.add(criteriaBuilder.equal(followers.get(ECO_NEWS_AUTHOR_ID), currentUserId));
         }
 
         Predicate result;
@@ -761,8 +775,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private User getUserByEmail(String email) {
+    private Long getUserIdByEmail(String email) {
         return userRepo.findByEmail(email)
+            .map(User::getId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
