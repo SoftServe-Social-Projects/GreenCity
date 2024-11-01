@@ -58,8 +58,7 @@ public class CustomToDoListItemController {
     /**
      * Method saves custom to-do list items for user.
      *
-     * @param dto    {@link BulkSaveCustomToDoListItemDto} with list objects to
-     *               save
+     * @param dto    {@link BulkSaveCustomToDoListItemDto} with list objects to save
      * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
@@ -105,8 +104,8 @@ public class CustomToDoListItemController {
     })
     @PatchMapping("/{userId}/custom-to-do-list-items")
     public ResponseEntity<CustomToDoListItemResponseDto> updateItemStatus(@PathVariable @CurrentUserId Long userId,
-                                                                          @RequestParam("itemId") Long itemId,
-                                                                          @RequestParam("status") String itemStatus) {
+        @RequestParam("itemId") Long itemId,
+        @RequestParam("status") String itemStatus) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customToDoListItemService.updateItemStatus(userId, itemId, itemStatus));
     }

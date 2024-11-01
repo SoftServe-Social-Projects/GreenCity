@@ -33,8 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static greencity.constant.ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID;
 
 /**
- * The class provides implementation of the
- * {@code CustomToDoListItemService}.
+ * The class provides implementation of the {@code CustomToDoListItemService}.
  */
 @Service
 @AllArgsConstructor
@@ -56,7 +55,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
     @Transactional
     @Override
     public List<CustomToDoListItemResponseDto> save(BulkSaveCustomToDoListItemDto bulkSave, Long userId,
-                                                    Long habitAssignId) {
+        Long habitAssignId) {
         UserVO userVO = restClient.findById(userId);
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitAssignId));
@@ -79,14 +78,13 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
     }
 
     /**
-     * Method for finding duplicates {@link CustomToDoListItem} in user data
-     * before saving.
+     * Method for finding duplicates {@link CustomToDoListItem} in user data before
+     * saving.
      *
-     * @param dto  {@link CustomToDoListItemSaveRequestDto}`s for saving and
-     *             finding duplicates.
+     * @param dto  {@link CustomToDoListItemSaveRequestDto}`s for saving and finding
+     *             duplicates.
      * @param user {@link User} for whom to-do list item are will saving.
-     * @return list with the text of {@link CustomToDoListItem} which is
-     *         duplicated.
+     * @return list with the text of {@link CustomToDoListItem} which is duplicated.
      * @author Bogdan Kuzenko.
      */
     private List<String> findDuplicates(List<CustomToDoListItemSaveRequestDto> dto,
@@ -236,7 +234,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
 
     @Override
     public List<CustomToDoListItemResponseDto> findAllCustomToDoListItemsWithStatusInProgress(Long userId,
-                                                                                              Long habitId) {
+        Long habitId) {
         return customToDoListItemRepo
             .findAllCustomToDoListItemsForUserIdAndHabitIdInProgress(userId, habitId)
             .stream()
@@ -250,7 +248,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      */
     @Override
     public List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItemsByHabitAssignId(Long userId,
-                                                                                                  Long habitAssignId) {
+        Long habitAssignId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
@@ -306,7 +304,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      */
     @Override
     public List<CustomToDoListItemResponseDto> findAllUsersCustomToDoListItemsByStatus(Long userId,
-                                                                                       String status) {
+        String status) {
         List<CustomToDoListItem> customToDoListItems;
         if (status != null
             && Arrays.stream(ToDoListItemStatus.values())

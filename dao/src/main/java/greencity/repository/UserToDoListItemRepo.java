@@ -3,7 +3,6 @@ package greencity.repository;
 import greencity.entity.UserToDoListItem;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +23,7 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
      * Method delete selected item from users to-do list.
      *
      * @param toDoListItemId id of needed goal
-     * @param habitAssignId      id of needed habit assign
+     * @param habitAssignId  id of needed habit assign
      */
     @Modifying
     @Transactional
@@ -74,8 +73,7 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<UserToDoListItem> getAllAssignedToDoListItemsFull(Long id);
 
     /**
-     * Method returns user to-do list items by habitAssignId and INPROGRESS
-     * status.
+     * Method returns user to-do list items by habitAssignId and INPROGRESS status.
      *
      * @param habitAssignId id of needed habit assign
      * @return List of {@link UserToDoListItem}
@@ -113,11 +111,11 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     Optional<Long> getByUserAndItemId(Long userId, Long itemId);
 
     /**
-     * Method returns {@link UserToDoListItem} by user to-do list item id and
-     * user id.
+     * Method returns {@link UserToDoListItem} by user to-do list item id and user
+     * id.
      *
      * @param userToDoListItemId {@link Long}
-     * @param userId                 {@link Long}
+     * @param userId             {@link Long}
      * @return {@link UserToDoListItem}
      * @author Anton Bondar
      */

@@ -174,7 +174,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void saveCustomToDoListItems(List<CustomToDoListItemSaveRequestDto> saveList,
-                                         User user, Habit habit) {
+        User user, Habit habit) {
         if (!CollectionUtils.isEmpty(saveList)) {
             saveList.forEach(item -> {
                 CustomToDoListItem customToDoListItem = modelMapper.map(item, CustomToDoListItem.class);
@@ -213,7 +213,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void saveDefaultToDoListItems(HabitAssign habitAssign,
-                                          List<Long> defaultToDoListItems) {
+        List<Long> defaultToDoListItems) {
         if (!defaultToDoListItems.isEmpty()) {
             List<ToDoListItem> toDoList =
                 toDoListItemRepo.getToDoListByListOfId(defaultToDoListItems);
@@ -389,7 +389,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private List<UserToDoListItemAdvanceDto> buildUserToDoListItemAdvanceDto(HabitAssign habitAssign,
-                                                                             String language) {
+        String language) {
         List<UserToDoListItemAdvanceDto> userItemsDTO = new ArrayList<>();
         boolean isContains;
         List<ToDoListItemTranslation> listItemTranslations = toDoListItemTranslationRepo
@@ -496,8 +496,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * Method changes statuses in toDoListItems.
      *
-     * @param status            String status to set.
-     * @param habitAssignId     Long id.
+     * @param status        String status to set.
+     * @param habitAssignId Long id.
      * @param toDoListItems list with habit's items.
      */
     private void changeStatuses(String status, Long habitAssignId,
@@ -981,7 +981,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * Method update to-do item by habitAssign id and toDoListItem id.
      *
-     * @param habitAssignId      {@link Long} habit id.
+     * @param habitAssignId  {@link Long} habit id.
      * @param toDoListItemId {@link Long} item id.
      */
     @Transactional
@@ -1027,8 +1027,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
-     * @param list          {@link UserToDoListItemResponseDto} User To-Do
-     *                      lists.
+     * @param list          {@link UserToDoListItemResponseDto} User To-Do lists.
      * @param language      {@link String} of language code value.
      */
     private void fullUpdateUserToDoList(
@@ -1041,14 +1040,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that save {@link UserToDoListItemResponseDto} for item with id =
-     * null.
+     * Method that save {@link UserToDoListItemResponseDto} for item with id = null.
      *
-     * @param userId           {@code User} id.
-     * @param habitAssignId    {@code HabitAssign} id.
-     * @param userToDoList {@link UserToDoListItemResponseDto} User to-do
-     *                         lists.
-     * @param language         {@link String} of language code value.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param userToDoList  {@link UserToDoListItemResponseDto} User to-do lists.
+     * @param language      {@link String} of language code value.
      */
     private void saveUserToDoListWithStatuses(
         Long userId,
@@ -1154,10 +1151,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method that update or delete {@link UserToDoListItem}. Not founded items,
      * except DISABLED, will be deleted.
      *
-     * @param userId           {@code User} id.
-     * @param habitAssignId    {@code HabitAssign} id.
-     * @param userToDoList {@link UserToDoListItemResponseDto} User to-do
-     *                         lists.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param userToDoList  {@link UserToDoListItemResponseDto} User to-do lists.
      */
     private void updateAndDeleteUserToDoListWithStatuses(
         Long userId,
@@ -1241,8 +1237,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
-     * @param list          {@link CustomToDoListItemResponseDto} Custom
-     *                      To-Do lists.
+     * @param list          {@link CustomToDoListItemResponseDto} Custom To-Do
+     *                      lists.
      */
     private void fullUpdateCustomToDoList(
         Long userId,
@@ -1256,10 +1252,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method that save {@link CustomToDoListItemResponseDto} for item with id =
      * null.
      *
-     * @param userId             {@code User} id.
-     * @param habitAssignId      {@code HabitAssign} id.
-     * @param customToDoList {@link CustomToDoListItemResponseDto} Custom
-     *                           to-do lists.
+     * @param userId         {@code User} id.
+     * @param habitAssignId  {@code HabitAssign} id.
+     * @param customToDoList {@link CustomToDoListItemResponseDto} Custom to-do
+     *                       lists.
      */
     private void saveCustomToDoListWithStatuses(
         Long userId,
@@ -1301,13 +1297,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that update or delete {@link CustomToDoListItem}. Not founded
-     * items, except DISABLED, will be deleted.
+     * Method that update or delete {@link CustomToDoListItem}. Not founded items,
+     * except DISABLED, will be deleted.
      *
-     * @param userId             {@code User} id.
-     * @param habitAssignId      {@code HabitAssign} id.
-     * @param customToDoList {@link CustomToDoListItemResponseDto} Custom
-     *                           to-do lists.
+     * @param userId         {@code User} id.
+     * @param habitAssignId  {@code HabitAssign} id.
+     * @param customToDoList {@link CustomToDoListItemResponseDto} Custom to-do
+     *                       lists.
      */
     private void updateAndDeleteCustomToDoListWithStatuses(
         Long userId,

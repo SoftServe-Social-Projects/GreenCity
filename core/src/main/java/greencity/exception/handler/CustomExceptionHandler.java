@@ -327,7 +327,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(NotCurrentUserException.class)
     public final ResponseEntity<Object> handleUserToDoListItemWhereNotSavedException(NotCurrentUserException ex,
-                                                                                     WebRequest request) {
+        WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -368,8 +368,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception
-     * {@link UserToDoListItemStatusNotUpdatedException}.
+     * Method intercept exception {@link UserToDoListItemStatusNotUpdatedException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception

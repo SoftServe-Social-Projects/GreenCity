@@ -48,8 +48,8 @@ public class ManagementToDoListItemsController {
      */
     @GetMapping
     public String getAllToDoListItems(@RequestParam(required = false, name = "query") String query,
-                                      Pageable pageable,
-                                      Model model) {
+        Pageable pageable,
+        Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").ascending());
         PageableAdvancedDto<ToDoListItemManagementDto> pageableDto = query == null || query.isEmpty()
             ? toDoListItemService.findToDoListItemsForManagementByPage(paging)
@@ -86,7 +86,7 @@ public class ManagementToDoListItemsController {
     @PutMapping("/{id}")
     @ResponseBody
     public GenericResponseDto update(
-            @Valid @RequestBody ToDoListItemPostDto toDoListItemPostDto, BindingResult bindingResult) {
+        @Valid @RequestBody ToDoListItemPostDto toDoListItemPostDto, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             toDoListItemService.update(toDoListItemPostDto);
         }

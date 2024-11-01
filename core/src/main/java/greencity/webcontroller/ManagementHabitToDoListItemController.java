@@ -47,7 +47,7 @@ public class ManagementHabitToDoListItemController {
      */
     @DeleteMapping("/deleteAll/")
     public ResponseEntity<List<Long>> deleteAllToDoListItem(@RequestParam("habitId") Long habitId,
-                                                            @RequestBody List<Long> listId) {
+        @RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.deleteAllToDoListItemsByListOfId(habitId, listId));
     }
@@ -63,7 +63,7 @@ public class ManagementHabitToDoListItemController {
      */
     @PostMapping("/addAll/")
     public ResponseEntity<List<Long>> addAllToDoListItem(@RequestParam("habitId") Long habitId,
-                                                         @RequestBody List<Long> listId) {
+        @RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.addAllToDoListItemsByListOfId(habitId, listId));
     }
@@ -71,8 +71,7 @@ public class ManagementHabitToDoListItemController {
     /**
      * Controller for c the {@link ToDoListItemDto} instance by its id.
      *
-     * @param itemId  - {@link ToDoListItemDto} instance id which will be
-     *                deleted.
+     * @param itemId  - {@link ToDoListItemDto} instance id which will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @return {@link ResponseEntity}
@@ -80,7 +79,7 @@ public class ManagementHabitToDoListItemController {
      */
     @DeleteMapping("/delete/")
     public ResponseEntity<Long> deleteToDoListItem(@RequestParam("habitId") Long habitId,
-                                                   @RequestParam("itemId") Long itemId) {
+        @RequestParam("itemId") Long itemId) {
         habitService.deleteToDoListItem(habitId, itemId);
         return ResponseEntity.status(HttpStatus.OK).body(itemId);
     }
@@ -95,7 +94,7 @@ public class ManagementHabitToDoListItemController {
      */
     @PostMapping("/add/")
     public ResponseEntity<Long> addToDoListItemToHabit(@RequestParam("habitId") Long habitId,
-                                                       @RequestParam("itemId") Long itemId) {
+        @RequestParam("itemId") Long itemId) {
         habitService.addToDoListItemToHabit(habitId, itemId);
         return ResponseEntity.status(HttpStatus.OK).body(itemId);
     }

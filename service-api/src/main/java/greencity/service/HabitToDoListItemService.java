@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.todolistitem.ToDoListItemVO;
-
 import java.util.List;
 
 public interface HabitToDoListItemService {

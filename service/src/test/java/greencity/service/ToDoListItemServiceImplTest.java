@@ -207,7 +207,7 @@ class ToDoListItemServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
             .thenReturn(Optional.of(habitAssign));
         when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
-                userToDoListItem));
+            userToDoListItem));
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class)).thenReturn(expected.get(0));
         when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(languageEn, 1L))
             .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
@@ -463,7 +463,7 @@ class ToDoListItemServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
-                userToDoListItem));
+            userToDoListItem));
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
             .thenReturn(UserToDoListItemResponseDto.builder().id(1L).build());
         when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId("en", 1L))
@@ -555,7 +555,7 @@ class ToDoListItemServiceImplTest {
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(1L)).thenReturn(listID);
         when(toDoListItemRepo.getToDoListByListOfId(listID)).thenReturn(toDoListItemList);
         when(modelMapper.map(toDoListItem, ToDoListItemManagementDto.class)).thenReturn(
-                toDoListItemManagementDto);
+            toDoListItemManagementDto);
         assertEquals(toDoListItemManagementDtos, toDoListItemService.getToDoListByHabitId(1L));
 
     }
@@ -578,7 +578,7 @@ class ToDoListItemServiceImplTest {
         when(toDoListItemRepo.getAllToDoListItemsByHabitIdNotContained(1L)).thenReturn(listID);
         when(toDoListItemRepo.getToDoListByListOfIdPageable(listID, pageable)).thenReturn(page);
         when(modelMapper.map(toDoListItem, ToDoListItemManagementDto.class)).thenReturn(
-                toDoListItemManagementDto);
+            toDoListItemManagementDto);
         PageableAdvancedDto<ToDoListItemManagementDto> actual =
             toDoListItemService.findAllToDoListItemsForManagementPageNotContained(1L, pageable);
         assertEquals(expected, actual);
@@ -622,7 +622,7 @@ class ToDoListItemServiceImplTest {
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(userToDoListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.singletonList(
-                userToDoListItem));
+            userToDoListItem));
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
             .thenReturn(userToDoListItemResponseDto);
         when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(languageDefault,

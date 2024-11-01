@@ -3,7 +3,6 @@ package greencity.entity;
 import greencity.entity.localization.ToDoListItemTranslation;
 import java.util.List;
 import java.util.Set;
-
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import jakarta.persistence.CascadeType;

@@ -20,8 +20,8 @@ public class CustomToDoListResponseDtoMapper
     }
 
     /**
-     * Method that build {@link List} of {@link CustomToDoListItemResponseDto}
-     * from {@link List} of {@link CustomToDoListItemResponseDto}.
+     * Method that build {@link List} of {@link CustomToDoListItemResponseDto} from
+     * {@link List} of {@link CustomToDoListItemResponseDto}.
      *
      * @param itemList {@link List} of {@link CustomToDoListItemResponseDto}
      * @return {@link List} of {@link CustomToDoListItemResponseDto}

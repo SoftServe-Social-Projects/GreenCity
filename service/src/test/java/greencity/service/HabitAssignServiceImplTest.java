@@ -467,7 +467,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
-                habitAssignCustomPropertiesDtoWithCustomToDoListItem);
+            habitAssignCustomPropertiesDtoWithCustomToDoListItem);
 
         assertEquals(List.of(habitAssignManagementDto), actual);
 
@@ -494,7 +494,7 @@ class HabitAssignServiceImplTest {
 
         CustomToDoListItemNotSavedException exception = assertThrows(CustomToDoListItemNotSavedException.class,
             () -> habitAssignService.assignCustomHabitForUser(1L, userVO,
-                    habitAssignCustomPropertiesDtoWithCustomToDoListItem));
+                habitAssignCustomPropertiesDtoWithCustomToDoListItem));
         System.out.println(exception.getMessage());
         assertEquals(expectedErrorMessage, exception.getMessage());
 

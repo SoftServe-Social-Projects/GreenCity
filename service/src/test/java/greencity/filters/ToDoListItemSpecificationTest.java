@@ -104,7 +104,7 @@ class ToDoListItemSpecificationTest {
         when(toDoListItemTranslationRootMock.get(content)).thenReturn(stringPath);
         when(criteriaBuilderMock.like(stringPath, "%" + buildContent.getValue() + "%")).thenReturn(expected);
         when(toDoListItemTranslationRootMock.get(ToDoListItemTranslation_.toDoListItem)).thenReturn(
-                toDoListItemPath);
+            toDoListItemPath);
         when(toDoListItemPath.get(ToDoListItem_.id)).thenReturn(longPathMock);
         when(toDoListItemRootMock.get(ToDoListItem_.id)).thenReturn(longPathMock);
         when(criteriaBuilderMock.equal(longPathMock, longPathMock)).thenReturn(expected);

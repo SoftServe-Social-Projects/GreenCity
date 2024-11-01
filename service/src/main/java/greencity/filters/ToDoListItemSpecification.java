@@ -18,7 +18,7 @@ public class ToDoListItemSpecification implements MySpecification<ToDoListItem> 
 
     @Override
     public Predicate toPredicate(Root<ToDoListItem> root, CriteriaQuery<?> criteriaQuery,
-                                 CriteriaBuilder criteriaBuilder) {
+        CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             if (searchCriteria.getType().equals("id")) {
@@ -34,7 +34,7 @@ public class ToDoListItemSpecification implements MySpecification<ToDoListItem> 
     }
 
     private Predicate getTranslationPredicate(Root<ToDoListItem> root, CriteriaQuery<?> criteriaQuery,
-                                              CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
+        CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         Root<ToDoListItemTranslation> itemTranslationroot = criteriaQuery.from(ToDoListItemTranslation.class);
         return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
             : criteriaBuilder.and(criteriaBuilder.like(itemTranslationroot.get(Translation_.content),

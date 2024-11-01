@@ -106,8 +106,7 @@ public interface HabitService {
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
-     * Method that add to-do list item To Habit by habit id and to-do list
-     * item id.
+     * Method that add to-do list item To Habit by habit id and to-do list item id.
      *
      * @author Marian Diakiv
      */
@@ -116,8 +115,7 @@ public interface HabitService {
     /**
      * Method for deleting the {@link ToDoListItemDto} instance by its id.
      *
-     * @param itemId  - {@link ToDoListItemDto} instance id which will be
-     *                deleted.
+     * @param itemId  - {@link ToDoListItemDto} instance id which will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @author Marian Diakiv

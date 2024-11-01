@@ -2,7 +2,6 @@ package greencity.entity;
 
 import greencity.entity.localization.ToDoListItemTranslation;
 import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
 

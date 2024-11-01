@@ -99,15 +99,6 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         }
     }
 
-    private void updateTranslations(List<ToDoListItemTranslation> oldTranslations,
-        List<LanguageTranslationDTO> newTranslations) {
-        oldTranslations.forEach(itemTranslation -> itemTranslation.setContent(newTranslations.stream()
-            .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                .equals(itemTranslation.getLanguage().getCode()))
-            .findFirst().get()
-            .getContent()));
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -139,27 +130,13 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
      */
     @Override
     public PageableAdvancedDto<ToDoListItemManagementDto> findToDoListItemsForManagementByPage(
-        Pageable pageable) {
+            Pageable pageable) {
         Page<ToDoListItem> toDoListItems = toDoListItemRepo.findAll(pageable);
         List<ToDoListItemManagementDto> toDoListItemManagementDtos =
-            toDoListItems.getContent().stream()
-                .map(item -> modelMapper.map(item, ToDoListItemManagementDto.class))
-                .collect(Collectors.toList());
+                toDoListItems.getContent().stream()
+                        .map(item -> modelMapper.map(item, ToDoListItemManagementDto.class))
+                        .collect(Collectors.toList());
         return getPagebleAdvancedDto(toDoListItemManagementDtos, toDoListItems);
-    }
-
-    private PageableAdvancedDto<ToDoListItemManagementDto> getPagebleAdvancedDto(
-            List<ToDoListItemManagementDto> toDoListItemManagementDtos, Page<ToDoListItem> toDoListItems) {
-        return new PageableAdvancedDto<>(
-                toDoListItemManagementDtos,
-            toDoListItems.getTotalElements(),
-            toDoListItems.getPageable().getPageNumber(),
-            toDoListItems.getTotalPages(),
-            toDoListItems.getNumber(),
-            toDoListItems.hasPrevious(),
-            toDoListItems.hasNext(),
-            toDoListItems.isFirst(),
-            toDoListItems.isLast());
     }
 
     /**
@@ -178,9 +155,226 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     public PageableAdvancedDto<ToDoListItemManagementDto> searchBy(Pageable paging, String query) {
         Page<ToDoListItem> toDoListItems = toDoListItemRepo.searchBy(paging, query);
         List<ToDoListItemManagementDto> toDoListItemManagementDtos = toDoListItems.stream()
-            .map(item -> modelMapper.map(item, ToDoListItemManagementDto.class))
-            .collect(Collectors.toList());
+                .map(item -> modelMapper.map(item, ToDoListItemManagementDto.class))
+                .collect(Collectors.toList());
         return getPagebleAdvancedDto(toDoListItemManagementDtos, toDoListItems);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<ToDoListItemManagementDto> getFilteredDataForManagementByPage(Pageable pageable,
+                                                                                             ToDoListItemViewDto dto) {
+        Page<ToDoListItem> pages = toDoListItemRepo.findAll(getSpecification(dto), pageable);
+        return getPagesFilteredPages(pages);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<UserToDoListItemResponseDto> saveUserToDoListItems(Long userId, Long habitId,
+                                                                   List<ToDoListItemRequestDto> dtoList,
+                                                                   String language) {
+        if (dtoList != null) {
+            Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
+            if (habitAssign.isPresent()) {
+                saveToDoListItemsForHabitAssign(habitAssign.get(), dtoList);
+            } else {
+                throw new UserHasNoToDoListItemsException(ErrorMessage.USER_HAS_NO_TO_DO_LIST_ITEMS);
+            }
+        }
+        return getUserToDoList(userId, habitId, language);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<UserToDoListItemResponseDto> getUserToDoList(Long userId, Long habitId, String language) {
+        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
+        if (habitAssign.isPresent()) {
+            List<UserToDoListItemResponseDto> itemsDtos = getAllUserToDoListItems(habitAssign.get());
+            itemsDtos.forEach(el -> setTextForUserToDoListItem(el, language));
+            return itemsDtos;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserToDoListItemResponseDto> getUserToDoListByHabitAssignId(Long userId, Long habitAssignId,
+                                                                            String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        List<UserToDoListItemResponseDto> itemsDtos = getAllUserToDoListItems(habitAssign);
+        itemsDtos.forEach(el -> setTextForUserToDoListItem(el, language));
+        return itemsDtos;
+    }
+
+    @Transactional
+    @Override
+    public List<UserToDoListItemResponseDto> getUserToDoListItemsByHabitAssignIdAndStatusInProgress(
+            Long habitAssignId, String language) {
+        return userToDoListItemRepo
+                .findUserToDoListItemsByHabitAssignIdAndStatusInProgress(habitAssignId)
+                .stream()
+                .map(userToDoListItem -> converterUserToDoListItemResponseDto(userToDoListItem, language))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteUserToDoListItemByItemIdAndUserIdAndHabitId(Long itemId, Long userId, Long habitId) {
+        userToDoListItemRepo.deleteByToDoListItemIdAndHabitAssignId(itemId,
+                getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(userId, habitId).getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public UserToDoListItemResponseDto updateUserToDoListItemStatus(Long userId, Long itemId, String language) {
+        UserToDoListItem userToDoListItem;
+        userToDoListItem = userToDoListItemRepo.getReferenceById(itemId);
+        if (isActive(userToDoListItem)) {
+            changeStatusToDone(userToDoListItem);
+        } else {
+            throw new UserToDoListItemStatusNotUpdatedException(
+                    ErrorMessage.USER_TO_DO_LIST_ITEMS_STATUS_IS_ALREADY_DONE + userToDoListItem.getId());
+        }
+        UserToDoListItemResponseDto updatedUserToDoListItem =
+                modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
+        setTextForUserToDoListItem(updatedUserToDoListItem, language);
+        return updatedUserToDoListItem;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<UserToDoListItemResponseDto> updateUserToDoListItemStatus(Long userId,
+                                                                          Long userToDoListItemId,
+                                                                          String language,
+                                                                          String status) {
+        String statusUpperCase = status.toUpperCase();
+        List<UserToDoListItem> userToDoListItems =
+                userToDoListItemRepo.getAllByUserToDoListIdAndUserId(userToDoListItemId, userId);
+        if (userToDoListItems == null || userToDoListItems.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID);
+        }
+        if (Arrays.stream(ToDoListItemStatus.values()).noneMatch(s -> s.name().equalsIgnoreCase(statusUpperCase))) {
+            throw new BadRequestException(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
+        }
+        userToDoListItems.forEach(u -> u.setStatus(ToDoListItemStatus.valueOf(statusUpperCase)));
+        userToDoListItemRepo.saveAll(userToDoListItems);
+        List<UserToDoListItemResponseDto> userToDoListItemResponseDtoList =
+                userToDoListItems.stream()
+                        .map(u -> modelMapper.map(u, UserToDoListItemResponseDto.class))
+                        .collect(Collectors.toList());
+        userToDoListItemResponseDtoList.forEach(u -> setTextForUserToDoListItem(u, language));
+        return userToDoListItemResponseDtoList;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Bogdan Kuzenko
+     */
+    @Transactional
+    @Override
+    public List<Long> deleteUserToDoListItems(String ids) {
+        List<Long> arrayId = Arrays.stream(ids.split(","))
+                .map(Long::valueOf)
+                .toList();
+
+        List<Long> deleted = new ArrayList<>();
+        for (Long id : arrayId) {
+            deleted.add(deleteUserToDoListItem(id));
+        }
+        return deleted;
+    }
+
+    @Override
+    public List<ToDoListItemManagementDto> getToDoListByHabitId(Long habitId) {
+        List<Long> idList =
+                toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId);
+        List<ToDoListItem> toDoListItems;
+        if (!idList.isEmpty()) {
+            toDoListItems = toDoListItemRepo.getToDoListByListOfId(idList);
+        } else {
+            toDoListItems = new ArrayList<>();
+        }
+
+        return toDoListItems.stream()
+                .map(listItem -> modelMapper.map(listItem, ToDoListItemManagementDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageableAdvancedDto<ToDoListItemManagementDto> findAllToDoListItemsForManagementPageNotContained(
+            Long habitId,
+            Pageable pageable) {
+        List<Long> items =
+                toDoListItemRepo.getAllToDoListItemsByHabitIdNotContained(habitId);
+        Page<ToDoListItem> toDoListItems =
+                toDoListItemRepo
+                        .getToDoListByListOfIdPageable(items, pageable);
+        List<ToDoListItemManagementDto> toDoListItemManagementDtos =
+                toDoListItems.getContent().stream()
+                        .map(item -> modelMapper.map(item, ToDoListItemManagementDto.class))
+                        .collect(Collectors.toList());
+        return getPagebleAdvancedDto(toDoListItemManagementDtos, toDoListItems);
+    }
+
+    @Override
+    public List<ToDoListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
+        List<ToDoListItemDto> toDoListItemDtos = toDoListItemRepo
+                .findInProgressByUserIdAndLanguageCode(userId, code)
+                .stream()
+                .map(toDoListItemTranslation -> modelMapper.map(toDoListItemTranslation, ToDoListItemDto.class))
+                .collect(Collectors.toList());
+        toDoListItemDtos.forEach(x -> x.setStatus(ToDoListItemStatus.INPROGRESS.toString()));
+        return toDoListItemDtos;
+    }
+
+    private void updateTranslations(List<ToDoListItemTranslation> oldTranslations,
+        List<LanguageTranslationDTO> newTranslations) {
+        oldTranslations.forEach(itemTranslation -> itemTranslation.setContent(newTranslations.stream()
+            .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                .equals(itemTranslation.getLanguage().getCode()))
+            .findFirst().get()
+            .getContent()));
+    }
+
+    private PageableAdvancedDto<ToDoListItemManagementDto> getPagebleAdvancedDto(
+        List<ToDoListItemManagementDto> toDoListItemManagementDtos, Page<ToDoListItem> toDoListItems) {
+        return new PageableAdvancedDto<>(
+            toDoListItemManagementDtos,
+            toDoListItems.getTotalElements(),
+            toDoListItems.getPageable().getPageNumber(),
+            toDoListItems.getTotalPages(),
+            toDoListItems.getNumber(),
+            toDoListItems.hasPrevious(),
+            toDoListItems.hasNext(),
+            toDoListItems.isFirst(),
+            toDoListItems.isLast());
     }
 
     /**
@@ -224,16 +418,6 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableAdvancedDto<ToDoListItemManagementDto> getFilteredDataForManagementByPage(Pageable pageable,
-                                                                                             ToDoListItemViewDto dto) {
-        Page<ToDoListItem> pages = toDoListItemRepo.findAll(getSpecification(dto), pageable);
-        return getPagesFilteredPages(pages);
-    }
-
     private PageableAdvancedDto<ToDoListItemManagementDto> getPagesFilteredPages(Page<ToDoListItem> pages) {
         List<ToDoListItemManagementDto> toDoListItemManagementDtos = pages.getContent()
             .stream()
@@ -243,32 +427,13 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public List<UserToDoListItemResponseDto> saveUserToDoListItems(Long userId, Long habitId,
-                                                                   List<ToDoListItemRequestDto> dtoList,
-                                                                   String language) {
-        if (dtoList != null) {
-            Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
-            if (habitAssign.isPresent()) {
-                saveToDoListItemsForHabitAssign(habitAssign.get(), dtoList);
-            } else {
-                throw new UserHasNoToDoListItemsException(ErrorMessage.USER_HAS_NO_TO_DO_LIST_ITEMS);
-            }
-        }
-        return getUserToDoList(userId, habitId, language);
-    }
-
-    /**
      * Method save user to-do list item with item dictionary.
      *
      * @param dtoList list {@link ToDoListItemRequestDto} for saving
      * @author Dmytro Khonko
      */
     private void saveToDoListItemsForHabitAssign(HabitAssign habitAssign,
-                                                 List<ToDoListItemRequestDto> dtoList) {
+        List<ToDoListItemRequestDto> dtoList) {
         for (ToDoListItemRequestDto el : dtoList) {
             saveUserToDoListItemForToDoList(el, habitAssign);
         }
@@ -303,40 +468,6 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         userToDoListItemRepo.saveAll(habitAssign.getUserToDoListItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public List<UserToDoListItemResponseDto> getUserToDoList(Long userId, Long habitId, String language) {
-        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
-        if (habitAssign.isPresent()) {
-            List<UserToDoListItemResponseDto> itemsDtos = getAllUserToDoListItems(habitAssign.get());
-            itemsDtos.forEach(el -> setTextForUserToDoListItem(el, language));
-            return itemsDtos;
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<UserToDoListItemResponseDto> getUserToDoListByHabitAssignId(Long userId, Long habitAssignId,
-                                                                            String language) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        if (!habitAssign.getUser().getId().equals(userId)) {
-            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        List<UserToDoListItemResponseDto> itemsDtos = getAllUserToDoListItems(habitAssign);
-        itemsDtos.forEach(el -> setTextForUserToDoListItem(el, language));
-        return itemsDtos;
-    }
 
     private List<UserToDoListItemResponseDto> getAllUserToDoListItems(HabitAssign habitAssign) {
         return userToDoListItemRepo
@@ -357,39 +488,20 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         dto.setText(text);
     }
 
-    @Transactional
-    @Override
-    public List<UserToDoListItemResponseDto> getUserToDoListItemsByHabitAssignIdAndStatusInProgress(
-        Long habitAssignId, String language) {
-        return userToDoListItemRepo
-            .findUserToDoListItemsByHabitAssignIdAndStatusInProgress(habitAssignId)
-            .stream()
-            .map(userToDoListItem -> converterUserToDoListItemResponseDto(userToDoListItem, language))
-            .collect(Collectors.toList());
-    }
 
     /**
-     * Method converts UserToDoListItem to UserToDoListItemResponseDto and
-     * sets text for UserToDoListItemResponseDto with localization.
+     * Method converts UserToDoListItem to UserToDoListItemResponseDto and sets text
+     * for UserToDoListItemResponseDto with localization.
      *
      * @param userToDoListItem {@link UserToDoListItem}
-     * @param language             {@link String}
+     * @param language         {@link String}
      */
     private UserToDoListItemResponseDto converterUserToDoListItemResponseDto(
-            UserToDoListItem userToDoListItem, String language) {
+        UserToDoListItem userToDoListItem, String language) {
         UserToDoListItemResponseDto dto =
             modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
         setTextForUserToDoListItem(dto, language);
         return dto;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteUserToDoListItemByItemIdAndUserIdAndHabitId(Long itemId, Long userId, Long habitId) {
-        userToDoListItemRepo.deleteByToDoListItemIdAndHabitAssignId(itemId,
-            getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(userId, habitId).getId());
     }
 
     private HabitAssign getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(Long userId, Long habitId) {
@@ -400,25 +512,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public UserToDoListItemResponseDto updateUserToDoListItemStatus(Long userId, Long itemId, String language) {
-        UserToDoListItem userToDoListItem;
-        userToDoListItem = userToDoListItemRepo.getReferenceById(itemId);
-        if (isActive(userToDoListItem)) {
-            changeStatusToDone(userToDoListItem);
-        } else {
-            throw new UserToDoListItemStatusNotUpdatedException(
-                ErrorMessage.USER_TO_DO_LIST_ITEMS_STATUS_IS_ALREADY_DONE + userToDoListItem.getId());
-        }
-        UserToDoListItemResponseDto updatedUserToDoListItem =
-            modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
-        setTextForUserToDoListItem(updatedUserToDoListItem, language);
-        return updatedUserToDoListItem;
-    }
+
 
     private boolean isActive(UserToDoListItem userToDoListItem) {
         try {
@@ -438,52 +532,6 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         userToDoListItemRepo.save(userToDoListItem);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public List<UserToDoListItemResponseDto> updateUserToDoListItemStatus(Long userId,
-                                                                          Long userToDoListItemId,
-                                                                          String language,
-                                                                          String status) {
-        String statusUpperCase = status.toUpperCase();
-        List<UserToDoListItem> userToDoListItems =
-            userToDoListItemRepo.getAllByUserToDoListIdAndUserId(userToDoListItemId, userId);
-        if (userToDoListItems == null || userToDoListItems.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID);
-        }
-        if (Arrays.stream(ToDoListItemStatus.values()).noneMatch(s -> s.name().equalsIgnoreCase(statusUpperCase))) {
-            throw new BadRequestException(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
-        }
-        userToDoListItems.forEach(u -> u.setStatus(ToDoListItemStatus.valueOf(statusUpperCase)));
-        userToDoListItemRepo.saveAll(userToDoListItems);
-        List<UserToDoListItemResponseDto> userToDoListItemResponseDtoList =
-            userToDoListItems.stream()
-                .map(u -> modelMapper.map(u, UserToDoListItemResponseDto.class))
-                .collect(Collectors.toList());
-        userToDoListItemResponseDtoList.forEach(u -> setTextForUserToDoListItem(u, language));
-        return userToDoListItemResponseDtoList;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Bogdan Kuzenko
-     */
-    @Transactional
-    @Override
-    public List<Long> deleteUserToDoListItems(String ids) {
-        List<Long> arrayId = Arrays.stream(ids.split(","))
-            .map(Long::valueOf)
-            .toList();
-
-        List<Long> deleted = new ArrayList<>();
-        for (Long id : arrayId) {
-            deleted.add(deleteUserToDoListItem(id));
-        }
-        return deleted;
-    }
 
     /**
      * Method for deleting user to-do list item by id.
@@ -497,48 +545,5 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
             .findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND + id));
         userToDoListItemRepo.delete(userToDoListItem);
         return id;
-    }
-
-    @Override
-    public List<ToDoListItemManagementDto> getToDoListByHabitId(Long habitId) {
-        List<Long> idList =
-            toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId);
-        List<ToDoListItem> toDoListItems;
-        if (!idList.isEmpty()) {
-            toDoListItems = toDoListItemRepo.getToDoListByListOfId(idList);
-        } else {
-            toDoListItems = new ArrayList<>();
-        }
-
-        return toDoListItems.stream()
-            .map(listItem -> modelMapper.map(listItem, ToDoListItemManagementDto.class))
-            .collect(Collectors.toList());
-    }
-
-    @Override
-    public PageableAdvancedDto<ToDoListItemManagementDto> findAllToDoListItemsForManagementPageNotContained(
-        Long habitId,
-        Pageable pageable) {
-        List<Long> items =
-            toDoListItemRepo.getAllToDoListItemsByHabitIdNotContained(habitId);
-        Page<ToDoListItem> toDoListItems =
-            toDoListItemRepo
-                .getToDoListByListOfIdPageable(items, pageable);
-        List<ToDoListItemManagementDto> toDoListItemManagementDtos =
-            toDoListItems.getContent().stream()
-                .map(item -> modelMapper.map(item, ToDoListItemManagementDto.class))
-                .collect(Collectors.toList());
-        return getPagebleAdvancedDto(toDoListItemManagementDtos, toDoListItems);
-    }
-
-    @Override
-    public List<ToDoListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
-        List<ToDoListItemDto> toDoListItemDtos = toDoListItemRepo
-            .findInProgressByUserIdAndLanguageCode(userId, code)
-            .stream()
-            .map(toDoListItemTranslation -> modelMapper.map(toDoListItemTranslation, ToDoListItemDto.class))
-            .collect(Collectors.toList());
-        toDoListItemDtos.forEach(x -> x.setStatus(ToDoListItemStatus.INPROGRESS.toString()));
-        return toDoListItemDtos;
     }
 }

@@ -158,8 +158,8 @@ public interface HabitAssignService {
         Long userId, Long currentUserId, Pageable pageable);
 
     /**
-     * Method that return user to-do list and custom to-do list by
-     * habitAssignId for specific language.
+     * Method that return user to-do list and custom to-do list by habitAssignId for
+     * specific language.
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssignId} id.
@@ -170,8 +170,8 @@ public interface HabitAssignService {
         Long userId, Long habitAssignId, String language);
 
     /**
-     * Method that finds list of user to-do list items and custom to-do list
-     * items by userId, specific language and INPROGRESS status.
+     * Method that finds list of user to-do list items and custom to-do list items
+     * by userId, specific language and INPROGRESS status.
      *
      * @param userId   {@link Long} id.
      * @param language {@link String} of language code value.
@@ -179,7 +179,7 @@ public interface HabitAssignService {
      * @author Lilia Mokhnatska
      */
     List<UserToDoAndCustomToDoListsDto> getListOfUserAndCustomToDoListsWithStatusInprogress(Long userId,
-                                                                                            String language);
+        String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
@@ -322,12 +322,12 @@ public interface HabitAssignService {
      *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
-     * @param listDto  {@link UserToDoAndCustomToDoListsDto} User and Custom
-     *                 To-Do lists.
+     * @param listDto  {@link UserToDoAndCustomToDoListsDto} User and Custom To-Do
+     *                 lists.
      * @param language {@link String} of language code value.
      */
     void fullUpdateUserAndCustomToDoLists(Long userId, Long habitId, UserToDoAndCustomToDoListsDto listDto,
-                                          String language);
+        String language);
 
     /**
      * Method updates value progressNotificationHasDisplayed to true.

@@ -28,7 +28,7 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
         + "AND cg.habit.id=:habitId "
         + "ORDER BY cg.id")
     List<CustomToDoListItem> findAllAvailableCustomToDoListItemsForUserId(@Param("userId") Long userId,
-                                                                          @Param("habitId") Long habitId);
+        @Param("habitId") Long habitId);
 
     /**
      * Method returns list of custom to-do list items by userId and habitId and
@@ -76,7 +76,7 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
     @Query(value = "SELECT * from custom_to_do_list_items where user_id = :userId and status = :stat",
         nativeQuery = true)
     List<CustomToDoListItem> findAllByUserIdAndStatus(@Param(value = "userId") Long userId,
-                                                      @Param(value = "stat") String status);
+        @Param(value = "stat") String status);
 
     /**
      * Method returns all custom to-do list items.

@@ -105,7 +105,7 @@ public class ToDoListItemController {
      * Method deletes from toDoList item saved by user.
      *
      * @param toDoListItemId {@link Long} with needed to-do list item id.
-     * @param habitId            {@link Long} with needed habit id.
+     * @param habitId        {@link Long} with needed habit id.
      * @author Dmytro Khonko
      */
 

@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.ToDoListItem;
 import java.util.List;
-
 import greencity.entity.localization.ToDoListItemTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -87,7 +86,7 @@ public interface ToDoListItemRepo
         and ha.user.id = :userId
         and lang.code = :code""")
     List<ToDoListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
-                                                                        @Param("code") String code);
+        @Param("code") String code);
 
     /**
      * Method returns {@link ToDoListItem} by habitId, list of name and language
@@ -103,5 +102,5 @@ public interface ToDoListItemRepo
         + "JOIN sli.habits h ON h.id = :habitId"
         + " WHERE slt.language.code = :languageCode AND slt.content in :listOfName")
     List<ToDoListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
-                                   String languageCode);
+        String languageCode);
 }

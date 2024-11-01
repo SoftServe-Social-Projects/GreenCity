@@ -8,8 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map
- * {@link ToDoListItemTranslation} into {@link ToDoListItemDto}.
+ * Class that used by {@link ModelMapper} to map {@link ToDoListItemTranslation}
+ * into {@link ToDoListItemDto}.
  */
 @Component
 public class ToDoListItemDtoMapper extends AbstractConverter<ToDoListItemTranslation, ToDoListItemDto> {

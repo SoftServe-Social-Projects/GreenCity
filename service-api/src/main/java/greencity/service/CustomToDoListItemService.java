@@ -16,12 +16,12 @@ public interface CustomToDoListItemService {
      * Method saves list of custom to-do list items for user.
      *
      * @param bulkSaveCustomToDoListItemDto {@link BulkSaveCustomToDoListItemDto}
-     *                                          with objects list for saving.
-     * @param userId                            {@link UserVO} current user id
+     *                                      with objects list for saving.
+     * @param userId                        {@link UserVO} current user id
      * @return list of saved {@link CustomToDoListItemResponseDto}
      */
     List<CustomToDoListItemResponseDto> save(BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto,
-                                             Long userId, Long habitAssignId);
+        Long userId, Long habitAssignId);
 
     /**
      * Method for finding all custom to-do list items.
@@ -89,7 +89,7 @@ public interface CustomToDoListItemService {
      * @return list of {@link CustomToDoListItemVO}
      */
     List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItemsByHabitAssignId(Long userId,
-                                                                                           Long habitAssignId);
+        Long habitAssignId);
 
     /**
      * Method for finding custom to-do list items by userId and habitId and
@@ -100,7 +100,7 @@ public interface CustomToDoListItemService {
      * @return list of {@link CustomToDoListItemResponseDto}
      */
     List<CustomToDoListItemResponseDto> findAllCustomToDoListItemsWithStatusInProgress(Long userId,
-                                                                                       Long habitId);
+        Long habitId);
 
     /**
      * Method returns all user's custom to-do items by status(if is defined).

@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.localization.ToDoListItemTranslation;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,14 +11,14 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      * Method for getting all to-do list item translations for given language.
      *
      * @param languageCode code of needed language
-     * @return List of {@link ToDoListItemTranslation}, that contains all
-     *         to-do list item translations for needed language.
+     * @return List of {@link ToDoListItemTranslation}, that contains all to-do list
+     *         item translations for needed language.
      */
     List<ToDoListItemTranslation> findAllByLanguageCode(String languageCode);
 
     /**
-     * Method returns to-do list item translation for particular selected item
-     * for specific user and language code.
+     * Method returns to-do list item translation for particular selected item for
+     * specific user and language code.
      *
      * @param itemId       target user id
      * @param languageCode code of needed language
@@ -36,12 +35,12 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      *
      * @param languageCode code of needed language
      * @param habitId      code of needed language
-     * @return List of {@link ToDoListItemTranslation}, that contains all
-     *         to-do list item translations for needed habit.
+     * @return List of {@link ToDoListItemTranslation}, that contains all to-do list
+     *         item translations for needed habit.
      */
     @Query("SELECT it FROM ToDoListItemTranslation it JOIN ToDoListItem i ON i.id = it.toDoListItem.id "
         + "JOIN i.habits h ON h.id = :habitId"
         + " WHERE it.language.code = :languageCode")
     List<ToDoListItemTranslation> findToDoListByHabitIdAndByLanguageCode(String languageCode,
-                                                                         @Param(value = "habitId") Long habitId);
+        @Param(value = "habitId") Long habitId);
 }

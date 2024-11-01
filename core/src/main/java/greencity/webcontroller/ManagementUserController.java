@@ -275,7 +275,7 @@ public class ManagementUserController {
     @PutMapping(value = "/updateToDoItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
     public void updateToDoItem(@PathVariable("itemId") Long itemId,
-                               @PathVariable("habitId") Long habitId) {
+        @PathVariable("habitId") Long habitId) {
         habitAssignService.updateToDoItem(habitId, itemId);
     }
 

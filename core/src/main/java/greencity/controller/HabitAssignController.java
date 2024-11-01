@@ -387,8 +387,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method that return list of UserToDoLists and CustomToDoLists for
-     * current user, specific language and INPROGRESS status.
+     * Method that return list of UserToDoLists and CustomToDoLists for current
+     * user, specific language and INPROGRESS status.
      *
      * @param userVO {@link UserVO} instance.
      * @param locale needed language code.

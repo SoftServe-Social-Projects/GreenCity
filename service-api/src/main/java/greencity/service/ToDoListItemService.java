@@ -84,7 +84,7 @@ public interface ToDoListItemService {
      * @author Dmytro Khonko
      */
     PageableAdvancedDto<ToDoListItemManagementDto> getFilteredDataForManagementByPage(Pageable pageable,
-                                                                                      ToDoListItemViewDto dto);
+        ToDoListItemViewDto dto);
 
     /**
      * Method assign to user list of user to-do list items available for habit.
@@ -96,7 +96,7 @@ public interface ToDoListItemService {
      *         language.
      */
     List<UserToDoListItemResponseDto> saveUserToDoListItems(Long userId, Long habitId,
-                                                            List<ToDoListItemRequestDto> dto, String language);
+        List<ToDoListItemRequestDto> dto, String language);
 
     /**
      * Method returns list of user to-do list for specific language.
@@ -127,7 +127,7 @@ public interface ToDoListItemService {
      * @return List of {@link UserToDoListItemResponseDto}.
      */
     List<UserToDoListItemResponseDto> getUserToDoListByHabitAssignId(Long userId, Long habitAssignId,
-                                                                     String language);
+        String language);
 
     /**
      * Method for deleting to-do list item from user`s to-do list.
@@ -151,17 +151,17 @@ public interface ToDoListItemService {
     /**
      * Method update status of user to-do list item to do.
      *
-     * @param userId                 id of the {@link UserVO} current user.
-     * @param userToDoListItemId - {@link UserToDoListItemVO}'s id that
-     *                               should be updated.
-     * @param language               needed language code.
-     * @param status                 needed language code.
+     * @param userId             id of the {@link UserVO} current user.
+     * @param userToDoListItemId - {@link UserToDoListItemVO}'s id that should be
+     *                           updated.
+     * @param language           needed language code.
+     * @param status             needed language code.
      * @return {@link UserToDoListItemResponseDto} with specific language.
      */
     List<UserToDoListItemResponseDto> updateUserToDoListItemStatus(Long userId,
-                                                                   Long userToDoListItemId,
-                                                                   String language,
-                                                                   String status);
+        Long userToDoListItemId,
+        String language,
+        String status);
 
     /**
      * Method for deleted list of user to-do list items.
