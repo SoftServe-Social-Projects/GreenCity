@@ -170,10 +170,10 @@
             </div>
 
 
-            <!-- Shopping List table-->
+            <!-- To-Do List table-->
             <div class="table-header">
-                <h3>[[#{greenCity.sidebar.habits.shoppingList}]]:
-                    <td th:text="${hshops.size()}"/>
+                <h3>[[#{greenCity.sidebar.habits.toDoList}]]:
+                    <td th:text="${htodos.size()}"/>
                 </h3>
                 <div class="hide-button">
                     <button id="button3" value="hide" onclick="hideTable(this.id)">
@@ -183,7 +183,7 @@
                 </div>
                 <div class="complexity-line">
                     <a id="unlinktable3" class="btn btn-secondary disabled"
-                       th:onclick="'unlinkShop('+${habit.id}+')'">
+                       th:onclick="'unlinkToDo('+${habit.id}+')'">
                         <div>Unlink</div>
                     </a>
 
@@ -210,20 +210,20 @@
                     </thead>
 
                     <tbody id="table3">
-                    <th:block class="list-of" th:each="shopitem, iterStatus :${hshops}">
+                    <th:block class="list-of" th:each="todoitem, iterStatus :${htodos}">
                         <tr class="light-text">
                             <td style="width: 20px">
                                     <span class="custom-checkbox" style="">
-                                            <input type="checkbox" th:id="'Shopcheckbox'+${iterStatus.count}"
+                                            <input type="checkbox" th:id="'ToDocheckbox'+${iterStatus.count}"
                                                    id="checkbox3"
-                                                   name="options[]" th:value="${shopitem.id}"
-                                                   th:onclick="'updateCheckBoxCountShop('+${iterStatus.count}+','+${shopitem.id}+')'">
-                                            <label th:for="'Shopcheckbox'+${iterStatus.count}" for="checkbox3"></label>
+                                                   name="options[]" th:value="${todoitem.id}"
+                                                   th:onclick="'updateCheckBoxCountToDo('+${iterStatus.count}+','+${todoitem.id}+')'">
+                                            <label th:for="'ToDocheckbox'+${iterStatus.count}" for="checkbox3"></label>
                                     </span>
                             </td>
 
                             <td id="translations3" style="width: 300px">
-                                <div th:each="translation : ${shopitem.getTranslations()}">
+                                <div th:each="translation : ${todoitem.getTranslations()}">
                                     <h5 th:if="${translation.getLanguage().getCode()==('uk'==#locale.getLanguage() ?
                                     'ua' : #locale.getLanguage())}"
                                         th:text="${translation.getContent()}">

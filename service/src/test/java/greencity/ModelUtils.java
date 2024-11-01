@@ -69,7 +69,7 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -97,10 +97,10 @@ import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
+import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
+import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -118,9 +118,9 @@ import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserSearchDto;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
-import greencity.dto.user.UserShoppingListItemResponseDto;
-import greencity.dto.user.UserShoppingListItemVO;
+import greencity.dto.user.UserToDoListItemAdvanceDto;
+import greencity.dto.user.UserToDoListItemResponseDto;
+import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
@@ -132,7 +132,7 @@ import greencity.entity.BreakTime;
 import greencity.entity.Category;
 import greencity.entity.Comment;
 import greencity.entity.CommentImages;
-import greencity.entity.CustomShoppingListItem;
+import greencity.entity.CustomToDoListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
 import greencity.entity.FactOfTheDay;
@@ -151,21 +151,21 @@ import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.PlaceComment;
-import greencity.entity.ShoppingListItem;
+import greencity.entity.ToDoListItem;
 import greencity.entity.SocialNetworkImage;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
-import greencity.entity.UserShoppingListItem;
+import greencity.entity.UserToDoListItem;
 import greencity.entity.VerifyEmail;
 import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
@@ -175,7 +175,7 @@ import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
@@ -273,7 +273,7 @@ public class ModelUtils {
     public static LocalDateTime localDateTime = LocalDateTime.now();
     public static String habitTranslationName = "use shopper";
     public static String habitTranslationDescription = "Description";
-    public static String shoppingListText = "buy a shopper";
+    public static String toDoListText = "buy a shopper";
     public static String habitItem = "Item";
     public static String habitDefaultImage = "img/habit-default.png";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
@@ -568,7 +568,7 @@ public class ModelUtils {
             .userLocationDto(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .showShoppingList(true)
+            .showToDoList(true)
             .showEcoPlace(true)
             .showLocation(true)
             .socialNetworks(Collections.singletonList(
@@ -681,46 +681,46 @@ public class ModelUtils {
             Collections.emptySet());
     }
 
-    public static ShoppingListItemTranslation getShoppingListItemTranslation() {
-        return ShoppingListItemTranslation.builder()
+    public static ToDoListItemTranslation getToDoListItemTranslation() {
+        return ToDoListItemTranslation.builder()
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
-            .shoppingListItem(
-                new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+            .toDoListItem(
+                new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
             .build();
     }
 
-    public static ShoppingListItemTranslation getShoppingListItemTranslations1() {
-        return ShoppingListItemTranslation.builder()
+    public static ToDoListItemTranslation getToDoListItemTranslations1() {
+        return ToDoListItemTranslation.builder()
             .id(1L)
             .language(
                 new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
-            .shoppingListItem(
-                new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+            .toDoListItem(
+                new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
             .build();
     }
 
-    public static ShoppingListItemWithStatusRequestDto getShoppingListItemWithStatusRequestDto() {
-        return ShoppingListItemWithStatusRequestDto.builder()
+    public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
+        return ToDoListItemWithStatusRequestDto.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static CustomShoppingListItemWithStatusSaveRequestDto getCustomShoppingListItemWithStatusSaveRequestDto() {
-        return CustomShoppingListItemWithStatusSaveRequestDto.builder()
+    public static CustomToDoListItemWithStatusSaveRequestDto getCustomToDoListItemWithStatusSaveRequestDto() {
+        return CustomToDoListItemWithStatusSaveRequestDto.builder()
             .text("TEXT")
-            .status(ShoppingListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.INPROGRESS)
             .build();
     }
 
-    public static CustomShoppingListItemSaveRequestDto getCustomShoppingListItemSaveRequestDto() {
-        return CustomShoppingListItemSaveRequestDto.builder().text("TEXT").build();
+    public static CustomToDoListItemSaveRequestDto getCustomToDoListItemSaveRequestDto() {
+        return CustomToDoListItemSaveRequestDto.builder().text("TEXT").build();
     }
 
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
@@ -779,7 +779,7 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
-            .userShoppingListItems(new ArrayList<>())
+            .userToDoListItems(new ArrayList<>())
             .workingDays(0)
             .duration(0)
             .habitStreak(0)
@@ -808,7 +808,7 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
-            .userShoppingListItems(new ArrayList<>())
+            .userToDoListItems(new ArrayList<>())
             .workingDays(0)
             .duration(3)
             .habitStreak(0)
@@ -838,7 +838,7 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
-            .userShoppingListItems(new ArrayList<>())
+            .userToDoListItems(new ArrayList<>())
             .workingDays(0)
             .duration(3)
             .habitStreak(0)
@@ -890,7 +890,7 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
-            .userShoppingListItems(getUserShoppingListItemList())
+            .userToDoListItems(getUserToDoListItemList())
             .workingDays(0)
             .duration(0)
             .habitStreak(0)
@@ -919,77 +919,77 @@ public class ModelUtils {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
 
-    public static UserShoppingListItem getCustomUserShoppingListItem() {
-        return UserShoppingListItem.builder()
+    public static UserToDoListItem getCustomUserToDoListItem() {
+        return UserToDoListItem.builder()
             .id(1L)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(ShoppingListItemStatus.DONE)
+            .status(ToDoListItemStatus.DONE)
             .build();
     }
 
-    public static UserShoppingListItem getFullUserShoppingListItem() {
-        return UserShoppingListItem.builder()
+    public static UserToDoListItem getFullUserToDoListItem() {
+        return UserToDoListItem.builder()
             .id(1L)
-            .shoppingListItem(getShoppingListItem())
+            .toDoListItem(getToDoListItem())
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(ShoppingListItemStatus.DONE)
+            .status(ToDoListItemStatus.DONE)
             .build();
     }
 
-    public static List<UserShoppingListItem> getUserShoppingListItemList() {
-        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList<>();
-        getUserShoppingListItemList.add(getFullUserShoppingListItem());
-        getUserShoppingListItemList.add(getFullUserShoppingListItem());
-        getUserShoppingListItemList.add(getFullUserShoppingListItem());
+    public static List<UserToDoListItem> getUserToDoListItemList() {
+        List<UserToDoListItem> getUserToDoListItemList = new ArrayList<>();
+        getUserToDoListItemList.add(getFullUserToDoListItem());
+        getUserToDoListItemList.add(getFullUserToDoListItem());
+        getUserToDoListItemList.add(getFullUserToDoListItem());
 
-        return getUserShoppingListItemList;
+        return getUserToDoListItemList;
     }
 
-    public static List<ShoppingListItemTranslation> getShoppingListItemTranslationList() {
-        ShoppingListItemTranslation translation = getShoppingListItemTranslations1();
-        ShoppingListItemTranslation translation2 = getShoppingListItemTranslations1();
-        ShoppingListItemTranslation translation3 = getShoppingListItemTranslations1();
-        List<ShoppingListItemTranslation> list = new ArrayList<>();
+    public static List<ToDoListItemTranslation> getToDoListItemTranslationList() {
+        ToDoListItemTranslation translation = getToDoListItemTranslations1();
+        ToDoListItemTranslation translation2 = getToDoListItemTranslations1();
+        ToDoListItemTranslation translation3 = getToDoListItemTranslations1();
+        List<ToDoListItemTranslation> list = new ArrayList<>();
         list.add(translation);
         list.add(translation2);
         list.add(translation3);
         return list;
     }
 
-    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
-        return UserShoppingListItemResponseDto.builder()
+    public static UserToDoListItemResponseDto getUserToDoListItemResponseDto() {
+        return UserToDoListItemResponseDto.builder()
             .id(1L)
             .text("Buy electric car")
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static UserShoppingListItem getPredefinedUserShoppingListItem() {
-        return UserShoppingListItem.builder()
+    public static UserToDoListItem getPredefinedUserToDoListItem() {
+        return UserToDoListItem.builder()
             .id(2L)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(ShoppingListItemStatus.ACTIVE)
-            .shoppingListItem(ShoppingListItem.builder().id(1L).userShoppingListItems(Collections.emptyList())
+            .status(ToDoListItemStatus.ACTIVE)
+            .toDoListItem(ToDoListItem.builder().id(1L).userToDoListItems(Collections.emptyList())
                 .translations(
-                    getShoppingListItemTranslations())
+                    getToDoListItemTranslations())
                 .build())
             .build();
     }
 
-    public static UserShoppingListItemVO getUserShoppingListItemVO() {
-        return UserShoppingListItemVO.builder()
+    public static UserToDoListItemVO getUserToDoListItemVO() {
+        return UserToDoListItemVO.builder()
             .id(1L)
             .habitAssign(HabitAssignVO.builder()
                 .id(1L)
                 .build())
-            .status(ShoppingListItemStatus.DONE)
+            .status(ToDoListItemStatus.DONE)
             .build();
     }
 
-    public static UserShoppingListItem getUserShoppingListItem() {
-        return UserShoppingListItem.builder()
+    public static UserToDoListItem getUserToDoListItem() {
+        return UserToDoListItem.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.DONE)
+            .status(ToDoListItemStatus.DONE)
             .habitAssign(HabitAssign.builder()
                 .id(1L)
                 .status(HabitAssignStatus.ACQUIRED)
@@ -998,30 +998,30 @@ public class ModelUtils {
                 .lastEnrollmentDate(ZonedDateTime.now())
                 .workingDays(5)
                 .build())
-            .shoppingListItem(ShoppingListItem.builder()
+            .toDoListItem(ToDoListItem.builder()
                 .id(1L)
                 .build())
             .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
             .build();
     }
 
-    public static List<ShoppingListItemTranslation> getShoppingListItemTranslations() {
+    public static List<ToDoListItemTranslation> getToDoListItemTranslations() {
         return Arrays.asList(
-            ShoppingListItemTranslation.builder()
+            ToDoListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
-                .shoppingListItem(
-                    new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .toDoListItem(
+                    new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build(),
-            ShoppingListItemTranslation.builder()
+            ToDoListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
-                .shoppingListItem(
-                    new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .toDoListItem(
+                    new ToDoListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build());
     }
 
@@ -1588,21 +1588,21 @@ public class ModelUtils {
             .build();
     }
 
-    public static ShoppingListItem getShoppingListItem() {
-        return ShoppingListItem.builder()
+    public static ToDoListItem getToDoListItem() {
+        return ToDoListItem.builder()
             .id(1L)
-            .translations(getShoppingListItemTranslations())
+            .translations(getToDoListItemTranslations())
             .build();
     }
 
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
         return HabitAssignPropertiesDto.builder()
-            .defaultShoppingListItems(List.of(1L))
+            .defaultToDoListItems(List.of(1L))
             .duration(20)
             .build();
     }
 
-    public static HabitAssign getHabitAssignWithUserShoppingListItem() {
+    public static HabitAssign getHabitAssignWithUserToDoListItem() {
         return HabitAssign.builder()
             .id(1L)
             .user(User.builder().id(21L).build())
@@ -1610,10 +1610,10 @@ public class ModelUtils {
             .status(HabitAssignStatus.INPROGRESS)
             .workingDays(0)
             .duration(20)
-            .userShoppingListItems(List.of(UserShoppingListItem.builder()
+            .userToDoListItems(List.of(UserToDoListItem.builder()
                 .id(1L)
-                .shoppingListItem(ShoppingListItem.builder().id(1L).build())
-                .status(ShoppingListItemStatus.INPROGRESS)
+                .toDoListItem(ToDoListItem.builder().id(1L).build())
+                .status(ToDoListItemStatus.INPROGRESS)
                 .build()))
             .build();
     }
@@ -1637,10 +1637,10 @@ public class ModelUtils {
             .habit(HabitDto.builder().id(1L).build())
             .userId(1L)
             .duration(null)
-            .userShoppingListItems(List.of(UserShoppingListItemAdvanceDto.builder()
+            .userToDoListItems(List.of(UserToDoListItemAdvanceDto.builder()
                 .id(1L)
-                .shoppingListItemId(1L)
-                .status(ShoppingListItemStatus.INPROGRESS)
+                .toDoListItemId(1L)
+                .status(ToDoListItemStatus.INPROGRESS)
                 .build()))
             .habitStatusCalendarDtoList(List.of(getHabitStatusCalendarDto()))
             .habitStreak(1)
@@ -1660,10 +1660,10 @@ public class ModelUtils {
                 .habitTranslations(null)
                 .build())
             .user(null)
-            .userShoppingListItems(List.of(UserShoppingListItem.builder()
+            .userToDoListItems(List.of(UserToDoListItem.builder()
                 .id(1L)
                 .habitAssign(null)
-                .shoppingListItem(ShoppingListItem.builder()
+                .toDoListItem(ToDoListItem.builder()
                     .id(1L)
                     .habits(null)
                     .translations(null)
@@ -1724,18 +1724,18 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
-        return CustomShoppingListItemResponseDto.builder()
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
+        return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.INPROGRESS)
             .text("TEXT")
             .build();
     }
 
-    public static CustomShoppingListItem getCustomShoppingListItem() {
-        return CustomShoppingListItem.builder()
+    public static CustomToDoListItem getCustomToDoListItem() {
+        return CustomToDoListItem.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.INPROGRESS)
             .text("TEXT")
             .build();
     }
@@ -2479,10 +2479,10 @@ public class ModelUtils {
         return new AddCommentDtoRequest("text", 10L);
     }
 
-    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
-        return UserShoppingAndCustomShoppingListsDto.builder()
-            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
-            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return UserToDoAndCustomToDoListsDto.builder()
+            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
+            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();
     }
 
@@ -2515,11 +2515,11 @@ public class ModelUtils {
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
-            .customShoppingListItemDto(List.of(
-                CustomShoppingListItemResponseDto.builder()
+            .customToDoListItemDto(List.of(
+                CustomToDoListItemResponseDto.builder()
                     .id(1L)
-                    .status(ShoppingListItemStatus.ACTIVE)
-                    .text(shoppingListText)
+                    .status(ToDoListItemStatus.ACTIVE)
+                    .text(toDoListText)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
@@ -2533,23 +2533,23 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomShoppingListItem() {
+    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomToDoListItem() {
         return CustomHabitDtoRequest.builder()
-            .customShoppingListItemDto(List.of(
-                CustomShoppingListItemResponseDto.builder()
+            .customToDoListItemDto(List.of(
+                CustomToDoListItemResponseDto.builder()
                     .id(null)
-                    .status(ShoppingListItemStatus.ACTIVE)
-                    .text(shoppingListText)
+                    .status(ToDoListItemStatus.ACTIVE)
+                    .text(toDoListText)
                     .build()))
             .tagIds(Set.of(20L))
             .build();
     }
 
-    public static CustomShoppingListItem getCustomShoppingListItemForUpdate() {
-        return CustomShoppingListItem.builder()
+    public static CustomToDoListItem getCustomToDoListItemForUpdate() {
+        return CustomToDoListItem.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.ACTIVE)
-            .text(shoppingListText)
+            .status(ToDoListItemStatus.ACTIVE)
+            .text(toDoListText)
             .build();
     }
 
@@ -2563,11 +2563,11 @@ public class ModelUtils {
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequestWithImage() {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
-            .customShoppingListItemDto(List.of(
-                CustomShoppingListItemResponseDto.builder()
+            .customToDoListItemDto(List.of(
+                CustomToDoListItemResponseDto.builder()
                     .id(1L)
-                    .status(ShoppingListItemStatus.ACTIVE)
-                    .text(shoppingListText)
+                    .status(ToDoListItemStatus.ACTIVE)
+                    .text(toDoListText)
                     .build()))
             .defaultDuration(7)
             .image(habitDefaultImage)
@@ -2586,11 +2586,11 @@ public class ModelUtils {
         return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(2)
-            .customShoppingListItemDto(List.of(
-                CustomShoppingListItemResponseDto.builder()
+            .customToDoListItemDto(List.of(
+                CustomToDoListItemResponseDto.builder()
                     .id(1L)
-                    .status(ShoppingListItemStatus.ACTIVE)
-                    .text(shoppingListText)
+                    .status(ToDoListItemStatus.ACTIVE)
+                    .text(toDoListText)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
@@ -2611,20 +2611,20 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoForServiceTest() {
-        return CustomShoppingListItemResponseDto.builder()
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoForServiceTest() {
+        return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.ACTIVE)
-            .text(shoppingListText)
+            .status(ToDoListItemStatus.ACTIVE)
+            .text(toDoListText)
             .build();
     }
 
-    public static CustomShoppingListItem getCustomShoppingListItemForServiceTest() {
-        return CustomShoppingListItem.builder()
+    public static CustomToDoListItem getCustomToDoListItemForServiceTest() {
+        return CustomToDoListItem.builder()
             .id(1L)
             .habit(getCustomHabitForServiceTest())
-            .status(ShoppingListItemStatus.ACTIVE)
-            .text(shoppingListText)
+            .status(ToDoListItemStatus.ACTIVE)
+            .text(toDoListText)
             .user(getUser())
             .build();
     }
@@ -2667,7 +2667,7 @@ public class ModelUtils {
             .createDate(ZonedDateTime.now())
             .habit(habit)
             .user(getUser())
-            .userShoppingListItems(new ArrayList<>())
+            .userToDoListItems(new ArrayList<>())
             .workingDays(0)
             .duration(7)
             .habitStreak(0)
@@ -2691,23 +2691,23 @@ public class ModelUtils {
             .userId(1L).build();
     }
 
-    public static CustomShoppingListItem getCustomShoppingListItemWithStatusInProgress() {
-        return CustomShoppingListItem.builder()
+    public static CustomToDoListItem getCustomToDoListItemWithStatusInProgress() {
+        return CustomToDoListItem.builder()
             .id(2L)
             .habit(Habit.builder()
                 .id(3L)
                 .build())
             .user(getUser())
             .text("item")
-            .status(ShoppingListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.INPROGRESS)
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoWithStatusInProgress() {
-        return CustomShoppingListItemResponseDto.builder()
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoWithStatusInProgress() {
+        return CustomToDoListItemResponseDto.builder()
             .id(2L)
             .text("item")
-            .status(ShoppingListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.INPROGRESS)
             .build();
     }
 

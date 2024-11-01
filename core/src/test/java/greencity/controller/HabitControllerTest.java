@@ -331,12 +331,12 @@ class HabitControllerTest {
     }
 
     @Test
-    void getShoppingListItems() throws Exception {
+    void getToDoListItems() throws Exception {
 
-        mockMvc.perform(get(habitLink + "/{id}/shopping-list", 1L))
+        mockMvc.perform(get(habitLink + "/{id}/to-do-list", 1L))
             .andExpect(status().isOk());
 
-        verify(habitService).getShoppingListForHabit(1L, "en");
+        verify(habitService).getToDoListForHabit(1L, "en");
     }
 
     @Test

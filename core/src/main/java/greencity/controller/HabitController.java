@@ -10,7 +10,7 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.*;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -169,25 +169,25 @@ public class HabitController {
     }
 
     /**
-     * Method finds shoppingList for habit in specific language.
+     * Method finds toDoList for habit in specific language.
      *
      * @param locale {@link Locale} with needed language code.
      * @param id     {@link Long} with needed habit id.
-     * @return List of {@link ShoppingListItemDto}.
+     * @return List of {@link ToDoListItemDto}.
      */
-    @Operation(summary = "Get shopping list.")
+    @Operation(summary = "Get to-do list.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
     })
-    @GetMapping("{id}/shopping-list")
+    @GetMapping("{id}/to-do-list")
     @ApiLocale
-    public ResponseEntity<List<ShoppingListItemDto>> getShoppingListItems(
+    public ResponseEntity<List<ToDoListItemDto>> getToDoListItems(
         @PathVariable Long id,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getShoppingListForHabit(id, locale.getLanguage()));
+            habitService.getToDoListForHabit(id, locale.getLanguage()));
     }
 
     /**

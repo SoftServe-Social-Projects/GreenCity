@@ -3,17 +3,17 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
-import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,14 +48,14 @@ class HabitDtoMapperTest {
                 .flatMap(tag -> tag.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
-            .shoppingListItems(habit.getShoppingListItems() != null ? habit.getShoppingListItems().stream()
-                .map(shoppingListItem -> ShoppingListItemDto.builder()
+            .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
+                .map(shoppingListItem -> ToDoListItemDto.builder()
                     .id(shoppingListItem.getId())
-                    .status(ShoppingListItemStatus.ACTIVE.toString())
+                    .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(shoppingListItem.getTranslations().stream()
                         .filter(shoppingListItemTranslation -> shoppingListItemTranslation
                             .getLanguage().equals(language))
-                        .map(ShoppingListItemTranslation::getContent)
+                        .map(ToDoListItemTranslation::getContent)
                         .findFirst().orElse(null))
                     .build())
                 .collect(Collectors.toList()) : new ArrayList<>())

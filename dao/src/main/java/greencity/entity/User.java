@@ -137,10 +137,10 @@ import java.util.Set;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
-        "customShoppingListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+        "customToDoListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
-        "customShoppingListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+        "customToDoListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -185,7 +185,7 @@ public class User {
 
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<CustomShoppingListItem> customShoppingListItems = new ArrayList<>();
+    private List<CustomToDoListItem> customToDoListItems = new ArrayList<>();
 
     @Column(name = "profile_picture")
     private String profilePicturePath;
@@ -226,8 +226,8 @@ public class User {
     @Column(name = "show_eco_place")
     private Boolean showEcoPlace;
 
-    @Column(name = "show_shopping_list")
-    private Boolean showShoppingList;
+    @Column(name = "show_to_do_list")
+    private Boolean showToDoList;
 
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;
