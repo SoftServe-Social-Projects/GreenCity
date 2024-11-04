@@ -11,7 +11,6 @@ import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
-import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
@@ -366,20 +365,17 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
                 NotificationType.HABIT_INVITE, habitId);
 
-        String customMessage;
         if (existingNotification.isPresent()) {
             Notification notification = existingNotification.get();
             notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
 
-            customMessage = createInvitationNotificationMessage(notification.getActionUsers(), habitName);
-
-            notification.setCustomMessage(customMessage);
+            notification
+                .setCustomMessage(createInvitationNotificationMessage(notification.getActionUsers(), habitName));
             notification.setTime(LocalDateTime.now());
             notificationRepo.save(notification);
         } else {
-            customMessage = String.format("%s invites you to add new habit %s.",
+            String customMessage = String.format("%s invites you to add new habit %s.",
                 actionUserVO.getName(), habitName);
-
             createNotification(targetUserVO, actionUserVO, NotificationType.HABIT_INVITE, habitId, customMessage);
         }
     }
@@ -404,7 +400,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             targetUserVO.getId(), notificationType, newsId)
             .ifPresentOrElse(notification -> {
                 List<User> actionUsers = notification.getActionUsers();
-
                 actionUsers.removeIf(user -> user.getId().equals(actionUserVO.getId()));
                 if (isLike) {
                     actionUsers.add(modelMapper.map(actionUserVO, User.class));
@@ -413,43 +408,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 if (actionUsers.isEmpty()) {
                     notificationRepo.delete(notification);
                 } else {
-                    notification.setCustomMessage(createLikeNotificationMessage(actionUsers, newsTitle,
-                        notificationType));
+                    notification.setCustomMessage(newsTitle);
                     notification.setTime(LocalDateTime.now());
                     notificationRepo.save(notification);
                 }
             }, () -> {
                 if (isLike) {
-                    String customMessage = String.format("%s likes your %s %s.",
-                        actionUserVO.getName(), getNotificationLikeMessage(notificationType), newsTitle);
-                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, customMessage);
+                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, newsTitle);
                 }
             });
-    }
-
-    private String createLikeNotificationMessage(List<User> actionUsers, String newsTitle,
-        NotificationType notificationType) {
-        int userCount = actionUsers.size();
-
-        return switch (userCount) {
-            case 1 -> String.format("%s likes your %s %s.",
-                actionUsers.get(0).getName(), getNotificationLikeMessage(notificationType), newsTitle);
-            case 2 -> String.format("%s and %s like your %s %s.",
-                actionUsers.get(0).getName(), actionUsers.get(1).getName(),
-                getNotificationLikeMessage(notificationType), newsTitle);
-            default -> String.format("%s, %s and other users like your %s %s.",
-                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(),
-                getNotificationLikeMessage(notificationType), newsTitle);
-        };
-    }
-
-    private String getNotificationLikeMessage(NotificationType notificationType) {
-        return switch (notificationType) {
-            case HABIT_COMMENT_LIKE, EVENT_COMMENT_LIKE, ECONEWS_COMMENT_LIKE -> "comment";
-            case ECONEWS_LIKE -> "news";
-            case HABIT_LIKE -> "habit";
-            case EVENT_LIKE -> "event";
-            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
-        };
     }
 }

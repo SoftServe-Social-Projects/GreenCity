@@ -10,7 +10,6 @@ import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.entity.Notification;
 import greencity.entity.Place;
-import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
@@ -351,14 +350,11 @@ public class NotificationServiceImpl implements NotificationService {
         String subject = bundle.getString(notification.getNotificationType() + "_TITLE");
         String bodyTemplate = bundle.getString(notification.getNotificationType().toString());
         String actionUserText;
-        long size = notificationRepo
-            .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndEmailSentIsFalse(
-                notification.getTargetUser().getId(), notification.getNotificationType(), notification.getTargetId());
-        if (size > 1) {
-            actionUserText = size + " " + bundle.getString("USERS");
-        } else if (size == 1) {
-            User actionUser = notification.getActionUsers().getFirst();
-            actionUserText = actionUser != null ? actionUser.getName() : "";
+        long actionUsersSize = notification.getActionUsers().size();
+        if (actionUsersSize > 1) {
+            actionUserText = actionUsersSize + " " + bundle.getString("USERS");
+        } else if (actionUsersSize == 1) {
+            actionUserText = notification.getActionUsers().getFirst().getName();
         } else {
             actionUserText = "";
         }

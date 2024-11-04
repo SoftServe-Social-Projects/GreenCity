@@ -120,28 +120,6 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
         Long targetId);
 
     /**
-     * Method to return count of action user in notification by target user, type,
-     * target id and not viewed and email not sent.
-     *
-     * @param targetUserId     id of target user
-     * @param notificationType type of notification
-     * @param targetId         id of object related to notification
-     *
-     * @return count of action users
-     */
-    @Query("SELECT COUNT(n) FROM Notification n "
-        + "JOIN n.actionUsers u "
-        + "WHERE n.targetUser.id = :targetUserId "
-        + "AND n.notificationType = :notificationType "
-        + "AND n.targetId = :targetId "
-        + "AND n.viewed = false "
-        + "AND n.emailSent = false")
-    long countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndEmailSentIsFalse(
-        Long targetUserId,
-        NotificationType notificationType,
-        Long targetId);
-
-    /**
      * Checks if a notification with the specified ID exists for the specified user.
      *
      * @param notificationId the ID of the notification to check
