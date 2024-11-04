@@ -521,7 +521,7 @@ class EcoNewsServiceImplTest {
 
         ecoNewsService.like(userVO, 1L);
 
-        assertEquals(0, ecoNewsVO.getUsersLikedNews().size());
+        assertEquals(1, ecoNews.getUsersLikedNews().size());
     }
 
     @Test
