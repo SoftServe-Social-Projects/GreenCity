@@ -135,14 +135,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Danylo Hlynskyi.
      */
     @Override
     public List<EcoNewsDto> getAllByUser(UserVO user) {
-        return ecoNewsRepo.findAllByAuthorId(user.getId()).stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+        return mapEcoNewsListToEcoNewsDtoList(ecoNewsRepo.findAllByAuthorId(user.getId()));
     }
 
     /**
@@ -211,8 +207,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsVO findById(Long id) {
+        return modelMapper.map(findEcoNewsById(id), EcoNewsVO.class);
+    }
+
+    private EcoNews findEcoNewsById(Long id) {
         return ecoNewsRepo.findById(id)
-            .map(n -> modelMapper.map(n, EcoNewsVO.class))
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
     }
 
@@ -221,8 +220,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
-        EcoNews ecoNews = ecoNewsRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
+        EcoNews ecoNews = findEcoNewsById(id);
         List<String> tags = new ArrayList<>();
         for (String lang : languageCode) {
             tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
@@ -239,15 +237,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id, UserVO user) {
-        EcoNewsVO ecoNewsVO = findById(id);
-        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
+        EcoNews ecoNews = findEcoNewsById(id);
+        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNews.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_NEWS"), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
 
-        ecoNewsRepo.deleteById(ecoNewsVO.getId());
+        ecoNewsRepo.deleteById(ecoNews.getId());
     }
 
     @Transactional
@@ -327,7 +325,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile image) {
-        EcoNews toUpdate = modelMapper.map(findById(ecoNewsDtoManagement.getId()), EcoNews.class);
+        EcoNews toUpdate = findEcoNewsById(ecoNewsDtoManagement.getId());
         enhanceWithNewManagementData(toUpdate, ecoNewsDtoManagement, image);
         try {
             ecoNewsRepo.save(toUpdate);
@@ -343,7 +341,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
-        EcoNews toUpdate = modelMapper.map(findById(updateEcoNewsDto.getId()), EcoNews.class);
+        EcoNews toUpdate = findEcoNewsById(updateEcoNewsDto.getId());
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
@@ -359,8 +357,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public void addToFavorites(Long ecoNewsId, String email) {
-        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId));
+        EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
         User currentUser = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -375,8 +372,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public void removeFromFavorites(Long ecoNewsId, String email) {
-        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId));
+        EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
         User currentUser = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -442,21 +438,21 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public void like(UserVO userVO, Long id) {
-        EcoNewsVO ecoNewsVO = findById(id);
+        EcoNews ecoNews = findEcoNewsById(id);
 
-        ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        ecoNews.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
 
-        boolean isLiked = ecoNewsVO.getUsersLikedNews().stream()
+        boolean isLiked = ecoNews.getUsersLikedNews().stream()
             .anyMatch(u -> u.getId().equals(userVO.getId()));
 
-        boolean isAuthor = ecoNewsVO.getAuthor().getId().equals(userVO.getId());
+        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
 
         if (isLiked) {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_NEWS, AchievementAction.DELETE);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_NEWS"),
                 userVO);
-            ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+            ecoNews.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
             if (isAuthor) {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -464,18 +460,17 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
-            ecoNewsVO.getUsersLikedNews().add(userVO);
+            ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
         }
 
-        sendNotification(ecoNewsVO, userVO, !isLiked);
-        ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+        sendNotification(ecoNews, userVO, !isLiked);
+        ecoNewsRepo.save(modelMapper.map(ecoNews, EcoNews.class));
     }
 
-    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser, boolean isLike) {
-        UserVO targetUser = userService.findById(ecoNewsVO.getAuthor().getId());
-        userNotificationService.createOrUpdateLikeNotification(
-            targetUser, actionUser, ecoNewsVO.getId(), formatNewsTitle(ecoNewsVO.getTitle()),
-            NotificationType.ECONEWS_LIKE, isLike);
+    private void sendNotification(EcoNews ecoNews, UserVO actionUser, boolean isLike) {
+        UserVO targetUser = userService.findById(ecoNews.getAuthor().getId());
+        userNotificationService.createOrUpdateLikeNotification(targetUser, actionUser, ecoNews.getId(),
+            formatNewsTitle(ecoNews.getTitle()), NotificationType.ECONEWS_LIKE, isLike);
     }
 
     private String formatNewsTitle(String newsTitle) {
@@ -491,18 +486,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public void dislike(UserVO userVO, Long id) {
-        EcoNewsVO ecoNewsVO = findById(id);
-        if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-            userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO, id,
-                NotificationType.ECONEWS_LIKE);
+        EcoNews ecoNews = findEcoNewsById(id);
+        if (ecoNews.getUsersLikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            ecoNews.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(ecoNews.getAuthor(), UserVO.class),
+                userVO, id, NotificationType.ECONEWS_LIKE);
         }
-        if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        if (ecoNews.getUsersDislikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            ecoNews.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
-            ecoNewsVO.getUsersDislikedNews().add(userVO);
+            ecoNews.getUsersDislikedNews().add(modelMapper.map(userVO, User.class));
         }
-        ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+        ecoNewsRepo.save(ecoNews);
     }
 
     /**
@@ -510,8 +505,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public Integer countLikesForEcoNews(Long id) {
-        EcoNewsVO ecoNewsVO = findById(id);
-        return ecoNewsVO.getUsersLikedNews().size();
+        return findEcoNewsById(id).getUsersLikedNews().size();
     }
 
     /**
@@ -519,8 +513,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public Integer countDislikesForEcoNews(Long id) {
-        EcoNewsVO ecoNewsV0 = findById(id);
-        return ecoNewsV0.getUsersDislikedNews().size();
+        return findEcoNewsById(id).getUsersDislikedNews().size();
     }
 
     /**
@@ -528,8 +521,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public Boolean checkNewsIsLikedByUser(Long id, Long userId) {
-        EcoNewsVO ecoNewsVO = findById(id);
-        return ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userId));
+        return findEcoNewsById(id).getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**
@@ -668,9 +660,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id) {
-        EcoNews ecoNews = ecoNewsRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
-        return getContentSourceEcoNewsDto(ecoNews);
+        return getContentSourceEcoNewsDto(findEcoNewsById(id));
     }
 
     private EcoNewContentSourceDto getContentSourceEcoNewsDto(EcoNews ecoNews) {
@@ -713,30 +703,20 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public Set<UserVO> findUsersWhoLikedPost(Long id) {
-        EcoNews ecoNews = ecoNewsRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
-        Set<User> usersLikedNews = ecoNews.getUsersLikedNews();
-        return usersLikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
+        return findEcoNewsById(id).getUsersLikedNews().stream()
+            .map(u -> modelMapper.map(u, UserVO.class))
+            .collect(Collectors.toSet());
     }
 
     @Override
     public Set<UserVO> findUsersWhoDislikedPost(Long id) {
-        EcoNews ecoNews = ecoNewsRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
-        Set<User> usersDislikedNews = ecoNews.getUsersDislikedNews();
-        return usersDislikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
+        return findEcoNewsById(id).getUsersDislikedNews().stream()
+            .map(u -> modelMapper.map(u, UserVO.class))
+            .collect(Collectors.toSet());
     }
 
-    Predicate getPredicate(
-        Root<EcoNews> root,
-        CriteriaBuilder criteriaBuilder,
-        List<String> tags,
-        String title,
-        Long authorId,
-        boolean favorite,
-        Long currentUserId) {
+    Predicate getPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder, List<String> tags, String title,
+        Long authorId, boolean favorite, Long currentUserId) {
         List<Predicate> predicates = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tags)) {
             predicates.add(predicateForTags(criteriaBuilder, root, tags));
@@ -783,8 +763,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Viktoriia Herchanivska.
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
@@ -792,11 +770,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        EcoNews ecoNews = ecoNewsRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
+        EcoNews ecoNews = findEcoNewsById(id);
         ecoNews.setHidden(value);
-
         ecoNewsRepo.save(ecoNews);
     }
 
