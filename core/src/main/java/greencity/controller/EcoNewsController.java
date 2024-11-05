@@ -35,11 +35,13 @@ import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -201,9 +203,11 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @Parameter(hidden = true) Principal principal) {
+        @AuthenticationPrincipal Principal principal) {
+        String userEmail = principal != null ? principal.getName() : null;
+
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.find(page, tags, title, authorId, favorite, principal.getName()));
+            ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
     }
 
     /**
