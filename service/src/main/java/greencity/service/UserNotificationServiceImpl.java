@@ -336,15 +336,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
-        dto.setBodyText(bundle.getString(dto.getNotificationType()));
-        int size = new HashSet<>(notification.getActionUsers()).size();
-        if (size == 1) {
-            User actionUser = notification.getActionUsers().getFirst();
-            dto.setActionUserId(actionUser.getId());
-            dto.setActionUserText(actionUser.getName());
-        } else {
-            dto.setActionUserText(size + " " + bundle.getString("USERS"));
+        final List<User> uniqueActionUsers = new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
+        int size = new HashSet<>(uniqueActionUsers).size();
+        dto.setActionUserText(uniqueActionUsers.stream().map(User::getName).toList());
+        dto.setActionUserId(uniqueActionUsers.stream().map(User::getId).toList());
+        String bodyTextTemplate = bundle.getString(dto.getNotificationType());
+        String bodyText;
+        switch (size) {
+            case 1 -> bodyText = bodyTextTemplate;
+            case 2 -> bodyText = bodyTextTemplate.replace("{user}", "{user1} and {user2}");
+            default -> bodyText = bodyTextTemplate.replace("{user}", "{user1}, {user2}, and other users");
         }
+        dto.setBodyText(bodyText);
         return dto;
     }
 
