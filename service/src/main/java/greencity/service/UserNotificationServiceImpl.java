@@ -344,8 +344,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         String bodyText;
         switch (size) {
             case 1 -> bodyText = bodyTextTemplate;
-            case 2 -> bodyText = bodyTextTemplate.replace("{user}", "{user1} and {user2}");
-            default -> bodyText = bodyTextTemplate.replace("{user}", "{user1}, {user2}, and other users");
+            case 2 -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("TWO_USERS"));
+            default -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
         }
         dto.setBodyText(bodyText);
         return dto;
