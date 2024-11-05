@@ -89,12 +89,14 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      * @param notificationType type of notification
      * @return List of unread notification that have specific type
      */
-    @Query("SELECT n FROM Notification n "
-        + "JOIN FETCH n.targetUser tu "
-        + "JOIN FETCH tu.language "
-        + "WHERE n.notificationType = :notificationType "
-        + "AND n.viewed = false "
-        + "AND n.emailSent = false")
+    @Query("""
+        SELECT n FROM Notification n
+        JOIN FETCH n.targetUser tu
+        JOIN FETCH tu.language
+        JOIN FETCH n.actionUsers
+        WHERE n.notificationType = :notificationType
+        AND n.viewed = false
+        AND n.emailSent = false""")
     List<Notification> findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(
         NotificationType notificationType);
 
