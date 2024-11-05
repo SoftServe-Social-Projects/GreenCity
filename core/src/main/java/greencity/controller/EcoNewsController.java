@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
