@@ -24,7 +24,7 @@
     <script th:src="@{/management/factoftheday/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 </head>
-<body>
+<body th:with="baseUrl='/management/factoftheday/findAll'" th:data-base-url="${baseUrl}">
 <div id="header" th:insert="~{core/header}"></div>
 <div id="sidebar" th:insert="~{core/sidepanel}"></div>
 <div class="main-content">
@@ -60,16 +60,52 @@
                                 <label for="selectAll"></label>
                             </span>
                         </th>
-                        <th rowspan="2" class="mobile-hidden">[[#{greenCity.pages.table.id}]]</th>
-                        <th rowspan="2">[[#{greenCity.pages.table.name}]]</th>
+                        <th rowspan="2" class="mobile-hidden" style="min-width: 70px;">[[#{greenCity.pages.table.id}]]
+                            <span onclick="orderByField('id','asc')">
+                                <i id="id-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('id','desc')">
+                                <i id="id-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th rowspan="2" style="min-width: 100px;">[[#{greenCity.pages.table.name}]]
+                            <span onclick="orderByField('name','asc')">
+                                <i id="name-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('name','desc')">
+                                <i id="name-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
                         <th colspan="3">[[#{greenCity.pages.table.translations}]]</th>
-                        <th rowspan="2" class="mobile-hidden">[[#{greenCity.pages.table.creation.date}]]</th>
+                        <th rowspan="2" class="mobile-hidden" style="min-width: 150px;">[[#{greenCity.pages.table.creation.date}]]
+                            <span onclick="orderByField('createDate','asc')">
+                                <i id="date-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('createDate','desc')">
+                                <i id="date-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
                         <th rowspan="2">[[#{greenCity.pages.table.tags}]]</th>
                         <th rowspan="2">[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     <tr class="table-secondary">
                         <th class="small-column mobile-hidden">[[#{greenCity.pages.table.translation.id}]]</th>
-                        <th>[[#{greenCity.pages.table.content}]]</th>
+                        <th>[[#{greenCity.pages.table.content}]]
+                            <span onclick="orderByField('factOfTheDayTranslations.content','asc')">
+                                <i id="content-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('factOfTheDayTranslations.content','desc')">
+                                <i id="content-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
                         <th class="small-column">[[#{greenCity.pages.table.language.code}]]</th>
                     </tr>
                 </thead>
@@ -112,8 +148,8 @@
                             </table>
                         </td>
                         <td>
-                            <a th:href="@{/factoftheday/find(id=${factOfTheDay.getId()})}" class="edit eBtn"><i
-                                    class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
+                            <a class="edit eBtn">
+                                <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
                             <a th:href="@{/management/factoftheday/(id=${factOfTheDay.getId()})}"
                                class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
                                                                              data-toggle="tooltip"
@@ -129,15 +165,15 @@
                         th:text="${pageable.getTotalElements()}">25</b> entries
                 </div>
                 <ul class="pagination">
-                    <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                            th:href="@{findAll(page=${pageable.getCurrentPage()-1}, query=${query})}" class="page-link">Previous</a>
+                    <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}">
+                        <a th:href="@{${baseUrl}(page=${pageable.getCurrentPage()-1}, query=${query})}" class="page-link">Previous</a>
                     </li>
                     <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
-                        th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                            th:href="@{findAll(page=${i}, query=${query})}" class="page-link" th:text="${i+1}">1</a></li>
+                        th:classappend="${pageable.getCurrentPage()==i?'active':''}">
+                        <a th:href="@{${baseUrl}(page=${i}, query=${query})}" class="page-link" th:text="${i+1}">1</a></li>
                     <li class="page-item"
-                        th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                            th:href="@{findAll(page=${pageable.getCurrentPage()+1}, query=${query})}"
+                        th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}">
+                        <a th:href="@{${baseUrl}(page=${pageable.getCurrentPage()+1}, query=${query})}"
                             class="page-link">Next</a></li>
                 </ul>
             </div>
