@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div class="grid-stack-item-content" id="userActivityStatisticTable" style="display:block" th:fragment="userStatisticsTable">
+        <button class="delete-btn" onclick="removeWidget(this)">×</button>
+        <div class="table-responsive eco-news">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <h2>User Statistics</h2>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Count of Posts</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user, iterStat : ${pageable.getPage()}">
+                        <td th:text="${user.number}"></td>
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.name}"></td>
+                        <td th:text="${user.ecoNewsPostsCount}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${pageable.isFirst()} ? 'disabled'">
+                        <a class="page-link" th:onclick="'fetchUserData(' + ${pageable.getNumber() - 1} + ')'">Previous</a>
+                    </li>
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, pageable.getTotalPages() - 1)}"
+                        th:classappend="${pageNumber == pageable.getNumber()} ? 'active'">
+                        <a class="page-link" th:onclick="'fetchUserData(' + ${pageNumber} + ')'"
+                           th:text="${pageNumber + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${pageable.isLast()} ? 'disabled'">
+                        <a class="page-link" th:onclick="'fetchUserData(' + ${pageable.getNumber() + 1} + ')'">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
