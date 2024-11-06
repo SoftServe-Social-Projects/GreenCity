@@ -588,6 +588,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.cityEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
+        WHERE u.userStatus = 2
         GROUP BY ul.cityEn
         """)
     List<UserLocationStatisticDto> getUserLocationsDistributionByCity();
@@ -603,6 +604,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.regionEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
+        WHERE u.userStatus = 2
         GROUP BY ul.regionEn
         """)
     List<UserLocationStatisticDto> getUserLocationsDistributionByRegion();
@@ -618,6 +620,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.countryEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
+        WHERE u.userStatus = 2
         GROUP BY ul.countryEn
         """)
     List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
@@ -634,6 +637,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                  uep.emailPreference, uep.periodicity, COUNT(uep.id)
              )
              FROM UserNotificationPreference uep
+             LEFT JOIN User u
+             WHERE u.userStatus = 2
              GROUP BY uep.emailPreference, uep.periodicity
         """)
     List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
