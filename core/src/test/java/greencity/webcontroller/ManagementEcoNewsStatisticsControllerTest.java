@@ -58,7 +58,8 @@ class ManagementEcoNewsStatisticsControllerTest {
 
     @Test
     void testGetTagStatistic() {
-        List<EcoNewsTagStatistic> expectedStatistics = Collections.singletonList(new EcoNewsTagStatistic("News, Ads",4L));
+        List<EcoNewsTagStatistic> expectedStatistics =
+            Collections.singletonList(new EcoNewsTagStatistic("News, Ads", 4L));
         when(ecoNewsStatisticService.getTagStatistics()).thenReturn(expectedStatistics);
 
         ResponseEntity<List<EcoNewsTagStatistic>> response = controller.getTagStatistic();
@@ -88,7 +89,8 @@ class ManagementEcoNewsStatisticsControllerTest {
 
         String viewName = controller.getUserActivityPage(page, size, model);
 
-        ArgumentCaptor<PageableAdvancedDto<EcoNewsAuthorStatisticDto>> captor = ArgumentCaptor.forClass(PageableAdvancedDto.class);
+        ArgumentCaptor<PageableAdvancedDto<EcoNewsAuthorStatisticDto>> captor =
+            ArgumentCaptor.forClass(PageableAdvancedDto.class);
         verify(model).addAttribute(eq("pageable"), captor.capture());
         assertEquals(expectedStats, captor.getValue());
         assertEquals("core/fragments/statistic/eco-news-user-activity-statistic :: userStatisticsTable", viewName);
