@@ -155,7 +155,9 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * Retrieves tag combinations and their respective counts, indicating how many
      * articles are associated with each combination of tags.
      *
-     * <p>For example, it may return results like:</p>
+     * <p>
+     * For example, it may return results like:
+     * </p>
      * <ul>
      * <li>News: 3</li>
      * <li>Ads, News: 1</li>
