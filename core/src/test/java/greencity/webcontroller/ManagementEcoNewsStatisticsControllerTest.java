@@ -6,24 +6,32 @@ import greencity.dto.econews.EcoNewsTagStatistic;
 import greencity.service.ManagementEcoNewsStatisticsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+@ExtendWith(MockitoExtension.class)
 class ManagementEcoNewsStatisticsControllerTest {
+
+    private MockMvc mockMvc;
 
     @InjectMocks
     private ManagementEcoNewsStatisticsController controller;
@@ -31,68 +39,77 @@ class ManagementEcoNewsStatisticsControllerTest {
     @Mock
     private ManagementEcoNewsStatisticsService ecoNewsStatisticService;
 
-    @Mock
-    private Model model;
-
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
     @Test
-    void testGetStatisticsPage() {
-        String viewName = controller.getStatisticsPage();
-        assertEquals("core/management_econews_statistics", viewName);
+    void testGetStatisticsPage() throws Exception {
+        mockMvc.perform(get("/management/econews/statistics"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/management_econews_statistics"));
     }
 
     @Test
-    void testGetPublicationCount() {
+    void testGetPublicationCount() throws Exception {
         Long expectedCount = 10L;
         when(ecoNewsStatisticService.getPublicationCount()).thenReturn(expectedCount);
 
-        ResponseEntity<Long> response = controller.getPublicationCount();
+        ResultActions resultActions = mockMvc.perform(get("/management/econews/statistics/publication/count")
+            .accept(MediaType.APPLICATION_JSON));
 
-        assertEquals(ResponseEntity.ok().body(expectedCount), response);
+        resultActions.andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().string(expectedCount.toString()));
+
         verify(ecoNewsStatisticService, times(1)).getPublicationCount();
     }
 
     @Test
-    void testGetTagStatistic() {
+    void testGetTagStatistic() throws Exception {
         List<EcoNewsTagStatistic> expectedStatistics =
             Collections.singletonList(new EcoNewsTagStatistic("News, Ads", 4L));
         when(ecoNewsStatisticService.getTagStatistics()).thenReturn(expectedStatistics);
 
-        ResponseEntity<List<EcoNewsTagStatistic>> response = controller.getTagStatistic();
+        ResultActions resultActions = mockMvc.perform(get("/management/econews/statistics/tags")
+            .accept(MediaType.APPLICATION_JSON));
 
-        assertEquals(ResponseEntity.ok().body(expectedStatistics), response);
+        resultActions.andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$[0].tags").value("News, Ads"))
+            .andExpect(jsonPath("$[0].count").value(4));
+
         verify(ecoNewsStatisticService, times(1)).getTagStatistics();
     }
 
     @Test
-    void testGetTagStatistic_NoContent() {
+    void testGetTagStatistic_NoContent() throws Exception {
         when(ecoNewsStatisticService.getTagStatistics()).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<EcoNewsTagStatistic>> response = controller.getTagStatistic();
+        ResultActions resultActions = mockMvc.perform(get("/management/econews/statistics/tags")
+                .accept(MediaType.APPLICATION_JSON));
 
-        assertEquals(ResponseEntity.noContent().build(), response);
+        resultActions.andExpect(status().isNoContent());
+
         verify(ecoNewsStatisticService, times(1)).getTagStatistics();
     }
 
     @Test
-    void testGetUserActivityPage() {
+    void testGetUserActivityPage() throws Exception {
         int page = 0;
         int size = 20;
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
         PageableAdvancedDto<EcoNewsAuthorStatisticDto> expectedStats = new PageableAdvancedDto<>();
+        when(ecoNewsStatisticService.getEcoNewsAuthorStatistic(PageRequest.of(page, size))).thenReturn(expectedStats);
 
-        when(ecoNewsStatisticService.getEcoNewsAuthorStatistic(pageable)).thenReturn(expectedStats);
+        ResultActions resultActions = mockMvc.perform(get("/management/econews/statistics/user/activity")
+            .param("page", String.valueOf(page))
+            .param("size", String.valueOf(size))
+            .accept(MediaType.TEXT_HTML));
 
-        String viewName = controller.getUserActivityPage(page, size, model);
+        resultActions.andExpect(status().isOk())
+            .andExpect(view().name("core/fragments/statistic/eco-news-user-activity-statistic :: userStatisticsTable"));
 
-        ArgumentCaptor<PageableAdvancedDto<EcoNewsAuthorStatisticDto>> captor =
-            ArgumentCaptor.forClass(PageableAdvancedDto.class);
-        verify(model).addAttribute(eq("pageable"), captor.capture());
-        assertEquals(expectedStats, captor.getValue());
-        assertEquals("core/fragments/statistic/eco-news-user-activity-statistic :: userStatisticsTable", viewName);
+        verify(ecoNewsStatisticService, times(1)).getEcoNewsAuthorStatistic(PageRequest.of(page, size));
     }
 }
