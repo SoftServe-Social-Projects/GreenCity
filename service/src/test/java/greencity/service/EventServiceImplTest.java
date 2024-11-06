@@ -1127,7 +1127,7 @@ class EventServiceImplTest {
         assertTrue(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
 
         verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            eventAuthorVO, userVO, event.getId(), event.getTitle(), NotificationType.EVENT_LIKE, true);
+            eventAuthorVO, userVO, event.getId(), event.getTitle(), NotificationType.EVENT_LIKE, true, null, null);
         verify(eventRepo).findById(event.getId());
         verify(userRepo).findById(eventAuthor.getId());
         verify(modelMapper).map(userVO, User.class);

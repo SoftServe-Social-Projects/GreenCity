@@ -363,14 +363,19 @@ public class CommentServiceImpl implements CommentService {
      * Creates a notification for a comment like on an article.
      *
      * @param articleType the type of the article, {@link ArticleType}.
+     * @param articleId   the ID of the article, {@link Long}.
      * @param comment     the comment that was made, {@link Comment}.
      * @param actionUser  the user who made the comment, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
      */
-    private void createCommentLikeNotification(ArticleType articleType, Comment comment, UserVO actionUser) {
+    private void createCommentLikeNotification(ArticleType articleType, Long articleId, Comment comment,
+        UserVO actionUser, Locale locale) {
         UserVO targetUser = modelMapper.map(comment.getUser(), UserVO.class);
         userNotificationService.createOrUpdateLikeNotification(
-            targetUser, actionUser, comment.getId(), comment.getText(),
-            getNotificationType(articleType, CommentActionType.COMMENT_LIKE), true);
+            targetUser, actionUser, articleId, comment.getText(),
+            getNotificationType(articleType, CommentActionType.COMMENT_LIKE), true, comment.getId(),
+            getArticleTitle(articleType, comment.getArticleId(), locale));
     }
 
     /**
@@ -585,7 +590,7 @@ public class CommentServiceImpl implements CommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-            createCommentLikeNotification(comment.getArticleType(), comment, userVO);
+            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
         }
         commentRepo.save(comment);
     }

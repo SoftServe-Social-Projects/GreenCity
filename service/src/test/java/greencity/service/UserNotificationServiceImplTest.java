@@ -379,7 +379,7 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
 
         userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, true);
+            NotificationType.ECONEWS_COMMENT_LIKE, true, null, null);
 
         assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
 
@@ -409,7 +409,7 @@ class UserNotificationServiceImplTest {
         when(actionUser.getId()).thenReturn(1L);
 
         userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, false);
+            NotificationType.ECONEWS_COMMENT_LIKE, false, null, null);
 
         assertTrue(actionUsers.isEmpty(), "Action users should be empty after unliking.");
 
@@ -432,7 +432,7 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
 
         userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, true);
+            NotificationType.ECONEWS_COMMENT_LIKE, true, null, null);
 
         verify(notificationRepo, times(1)).save(any(Notification.class));
     }

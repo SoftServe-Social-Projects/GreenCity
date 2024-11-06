@@ -195,17 +195,20 @@ public interface UserNotificationService {
      * users who liked the article. If the list becomes empty as a result, the
      * notification will be deleted.
      *
-     * @param targetUserVO the user who owns the news article and will receive the
-     *                     notification.
-     * @param actionUserVO the user who liked or unliked the news article.
-     * @param newsId       the ID of the news article that was liked or unliked.
-     * @param newsTitle    the title of the news article, which may be shortened for
-     *                     the notification.
-     * @param isLike       a boolean flag indicating whether the action is a like
-     *                     (true) or an unlike (false).
+     * @param targetUserVO      the user who owns the news article and will receive
+     *                          the notification.
+     * @param actionUserVO      the user who liked or unliked the news article.
+     * @param newsId            the ID of the news article that was liked or
+     *                          unliked.
+     * @param newsTitle         the title of the news article, which may be
+     *                          shortened for the notification.
+     * @param isLike            a boolean flag indicating whether the action is a
+     *                          like (true) or an unlike (false).
+     * @param secondMessageId   if to secondMessageText
+     * @param secondMessageText additional text, {secondMessage} in template
      */
     void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        NotificationType notificationType, boolean isLike);
+        NotificationType notificationType, boolean isLike, Long secondMessageId, String secondMessageText);
 
     /**
      * Method to send notification on last day of primary duration habit has 20%-79%

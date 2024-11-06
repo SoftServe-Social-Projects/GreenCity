@@ -470,7 +470,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private void sendNotification(EcoNews ecoNews, UserVO actionUser, boolean isLike) {
         UserVO targetUser = userService.findById(ecoNews.getAuthor().getId());
         userNotificationService.createOrUpdateLikeNotification(targetUser, actionUser, ecoNews.getId(),
-            formatNewsTitle(ecoNews.getTitle()), NotificationType.ECONEWS_LIKE, isLike);
+            formatNewsTitle(ecoNews.getTitle()), NotificationType.ECONEWS_LIKE, isLike, null, null);
     }
 
     private String formatNewsTitle(String newsTitle) {

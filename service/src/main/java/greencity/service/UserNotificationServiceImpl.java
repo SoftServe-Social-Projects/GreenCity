@@ -336,7 +336,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
-        final List<User> uniqueActionUsers = new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
+        final List<User> uniqueActionUsers =
+            new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
         int size = new HashSet<>(uniqueActionUsers).size();
         dto.setActionUserText(uniqueActionUsers.stream().map(User::getName).toList());
         dto.setActionUserId(uniqueActionUsers.stream().map(User::getId).toList());
@@ -398,7 +399,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     @Override
     public void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        NotificationType notificationType, boolean isLike) {
+        NotificationType notificationType, boolean isLike, Long secondMessageId, String secondMessageText) {
         notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
             targetUserVO.getId(), notificationType, newsId)
             .ifPresentOrElse(notification -> {
@@ -417,7 +418,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 }
             }, () -> {
                 if (isLike) {
-                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, newsTitle);
+                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, newsTitle,
+                        secondMessageId, secondMessageText);
                 }
             });
     }

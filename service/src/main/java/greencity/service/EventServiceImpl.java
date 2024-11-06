@@ -788,7 +788,7 @@ public class EventServiceImpl implements EventService {
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
         userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
-            actionUser, eventId, event.getTitle(), NotificationType.EVENT_LIKE, true);
+            actionUser, eventId, event.getTitle(), NotificationType.EVENT_LIKE, true, null, null);
     }
 
     private List<EventDto> mapTupleListToEventDtoList(List<Tuple> page, List<Long> sortedIds) {

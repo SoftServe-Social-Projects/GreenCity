@@ -576,7 +576,7 @@ public class HabitServiceImpl implements HabitService {
     private void sendHabitLikeNotification(User targetUser, UserVO actionUser, Long habitId, Habit habit) {
         userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
             actionUser, habitId, habit.getHabitTranslations().getFirst().getName(),
-            NotificationType.HABIT_LIKE, true);
+            NotificationType.HABIT_LIKE, true, null, null);
     }
 
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
