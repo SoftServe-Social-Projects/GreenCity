@@ -40,7 +40,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -202,7 +201,7 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
+        @Parameter(hidden = true) Principal principal) {
         String userEmail = principal != null ? principal.getName() : null;
 
         return ResponseEntity.status(HttpStatus.OK).body(
