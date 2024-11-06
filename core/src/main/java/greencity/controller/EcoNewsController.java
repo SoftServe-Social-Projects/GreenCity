@@ -202,7 +202,7 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @AuthenticationPrincipal Principal principal) {
+        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         String userEmail = principal != null ? principal.getName() : null;
 
         return ResponseEntity.status(HttpStatus.OK).body(
