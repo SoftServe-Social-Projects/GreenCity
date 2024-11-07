@@ -255,20 +255,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void search() {
-        SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
-        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1, 2);
-        Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
-
-        when(ecoNewsSearchRepo.find(PageRequest.of(0, 3), "test", "en")).thenReturn(page);
-        when(modelMapper.map(ecoNews, SearchNewsDto.class)).thenReturn(searchNewsDto);
-
-        PageableDto<SearchNewsDto> actual = ecoNewsService.search("test", "en");
-
-        assertEquals(pageableDto, actual);
-    }
-
-    @Test
     void getThreeRecommendedEcoNews() {
         List<EcoNewsDto> dtoList = List.of(ModelUtils.getEcoNewsDto());
 

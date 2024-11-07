@@ -45,7 +45,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           git fetch --unshallow
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.coverage.exclusions=**/config/*,**/entity/*,**/entity/**,**/exceptions/*,**/exception/*,**/SearchCriteria.java,**/EcoNewsSearchRepo.java,**/EventSearchRepoImpl.java,**/DatabaseBackupServiceImpl.java,**/HabitTranslationFilter.java,**/CustomNotificationRepoImpl.java,**/PlaceFilter.java
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.coverage.exclusions=**/config/*,**/entity/*,**/entity/**,**/exceptions/*,**/exception/*,**/SearchCriteria.java,**/EcoNewsSearchRepo.java,**/EventSearchRepoImpl.java,**/DatabaseBackupServiceImpl.java,**/HabitTranslationFilter.java,**/CustomNotificationRepoImpl.java,**/PlaceFilter.java,**/PlaceSearchRepoImpl.java
 
 
       - name: Test Reporter

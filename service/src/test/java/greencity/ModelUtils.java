@@ -1561,8 +1561,7 @@ public class ModelUtils {
     }
 
     public static SearchNewsDto getSearchNewsDto() {
-        return new SearchNewsDto(1L, "title", getEcoNewsAuthorDto(), ZonedDateTime.now(),
-            Collections.singletonList("tag"));
+        return new SearchNewsDto(1L, "title", List.of("tag"));
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {

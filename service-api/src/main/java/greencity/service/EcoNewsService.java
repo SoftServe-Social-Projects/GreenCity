@@ -96,15 +96,6 @@ public interface EcoNewsService {
     void deleteAll(List<Long> listId);
 
     /**
-     * Method for getting EcoNews by searchQuery.
-     *
-     * @param searchQuery query to search
-     * @return list of {@link SearchNewsDto}
-     * @author Vadym Makitra
-     */
-    PageableDto<SearchNewsDto> search(String searchQuery, String languageCode);
-
-    /**
      * Method for getting all EcoNews by searchQuery.
      *
      * @param pageable    {@link Pageable}.
