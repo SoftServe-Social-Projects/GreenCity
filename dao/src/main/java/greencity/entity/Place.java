@@ -52,7 +52,7 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
     private Set<DiscountValue> discountValues = new HashSet<>();
 
-    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Location location;
 
     @Builder.Default
@@ -63,7 +63,7 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = CascadeType.ALL)
     private Category category;
 
     @Builder.Default

@@ -25,12 +25,11 @@ public interface EventSearchRepo {
     Page<Long> findEventsIdsManagement(Pageable pageable, FilterEventDto filterEventDto, Long userId);
 
     /**
-     * Method for search events by title,text,short info and tag name.
+     * Method for search events by title and text.
      *
      * @param pageable      {@link Pageable}.
      * @param searchingText text criteria for searching.
-     * @return all finding events, their tags and also count of finding events.
-     * @author Anton Bondar
+     * @return {@link Page} of {@link Event}.
      */
     Page<Event> find(Pageable pageable, String searchingText);
 }

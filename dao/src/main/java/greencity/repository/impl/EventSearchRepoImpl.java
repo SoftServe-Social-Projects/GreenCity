@@ -114,6 +114,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery)
             .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
             .setMaxResults(pageable.getPageSize());
+
         List<Event> resultList = typedQuery.getResultList();
         long total = getEventsCount(searchingText);
 
@@ -122,7 +123,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
 
     private Predicate getPredicate(String searchingText, Root<Event> root) {
         List<Predicate> predicates = new ArrayList<>();
-        addFormEventsLikePredicate(searchingText, root, predicates);
+        addEventsLikePredicate(searchingText, root, predicates);
         return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
     }
 
@@ -208,7 +209,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         }
     }
 
-    private void addFormEventsLikePredicate(String searchingText, Root<Event> root, List<Predicate> predicates) {
+    private void addEventsLikePredicate(String searchingText, Root<Event> root, List<Predicate> predicates) {
         Arrays.stream(searchingText.split(" ")).forEach(p -> predicates.add(
             criteriaBuilder.or(
                 criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.TITLE)),

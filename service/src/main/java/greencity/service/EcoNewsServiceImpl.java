@@ -254,25 +254,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ecoNewsRepo.deleteEcoNewsWithIds(listId);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<SearchNewsDto> search(String searchQuery, String languageCode) {
-        Page<EcoNews> page = ecoNewsSearchRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
-        return getSearchNewsDtoPageableDto(page);
-    }
-
     @Override
     public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<EcoNews> page = ecoNewsSearchRepo.find(pageable, searchQuery, languageCode);
-        return getSearchNewsDtoPageableDto(page);
+        return getSearchNewsDtoPageableDto(ecoNewsSearchRepo.find(pageable, searchQuery, languageCode));
     }
 
     private PageableDto<SearchNewsDto> getSearchNewsDtoPageableDto(Page<EcoNews> page) {
         List<SearchNewsDto> searchNewsDtos = page.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
-            .collect(Collectors.toList());
+            .toList();
 
         return new PageableDto<>(
             searchNewsDtos,

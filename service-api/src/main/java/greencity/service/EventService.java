@@ -76,7 +76,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     * @author Anton Bondar.
      */
     void addToFavorites(Long eventId, String email);
 
@@ -85,7 +84,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     * @author Anton Bondar.
      */
     void removeFromFavorites(Long eventId, String email);
 
@@ -133,29 +131,16 @@ public interface EventService {
     /**
      * Method for getting Events by searchQuery.
      *
-     * @param searchQuery  query to search
-     * @param languageCode {@link String}
+     * @param pageable    {@link Pageable}
+     * @param searchQuery query to search
      * @return PageableDto of {@link SearchEventsDto} instances
-     * @author Anton Bondar
      */
-    PageableDto<SearchEventsDto> search(String searchQuery, String languageCode);
-
-    /**
-     * Method for getting Events by searchQuery.
-     *
-     * @param pageable     {@link Pageable}
-     * @param searchQuery  query to search
-     * @param languageCode {@link String}
-     * @return PageableDto of {@link SearchEventsDto} instances
-     * @author Anton Bondar
-     */
-    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery);
 
     /**
      * Method for getting all events' addresses.
      *
      * @return list of {@link AddressDto} instances.
-     * @author Olena Sotnik.
      */
     List<AddressDto> getAllEventsAddresses();
 
@@ -180,8 +165,6 @@ public interface EventService {
      *
      * @param eventId id of {@link EventVO} to like/dislike.
      * @param userVO  current {@link UserVO} who wants to like/dislike.
-     *
-     * @author Roman Kasarab
      */
     void like(Long eventId, UserVO userVO);
 

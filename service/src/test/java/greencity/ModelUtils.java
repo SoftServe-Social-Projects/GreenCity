@@ -97,6 +97,7 @@ import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
@@ -1561,8 +1562,7 @@ public class ModelUtils {
     }
 
     public static SearchNewsDto getSearchNewsDto() {
-        return new SearchNewsDto(1L, "title", getEcoNewsAuthorDto(), ZonedDateTime.now(),
-            Collections.singletonList("tag"));
+        return new SearchNewsDto(1L, "title", List.of("tag"));
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
@@ -3087,5 +3087,13 @@ public class ModelUtils {
         return pageable.getSort().stream()
             .map(order -> order.getProperty() + "," + order.getDirection())
             .collect(Collectors.joining(","));
+    }
+
+    public static SearchPlacesDto getSearchPlacesDto() {
+        return SearchPlacesDto.builder()
+            .id(1L)
+            .name("Forum")
+            .category("Category")
+            .build();
     }
 }
