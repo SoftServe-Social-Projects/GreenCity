@@ -1,18 +1,17 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchPlacesDto;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +29,6 @@ class SearchServiceImplTest {
     @Mock
     private PlaceService placeService;
 
-    @Mock
-    private ModelMapper modelMapper;
-
     @Test
     void searchEcoNewsTest() {
         PageRequest pageRequest = PageRequest.of(0, 2);
@@ -47,6 +43,38 @@ class SearchServiceImplTest {
 
         List<SearchNewsDto> expected = pageableDto.getPage();
         List<SearchNewsDto> actual = searchService.searchAllNews(pageRequest, "title", "en").getPage();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void searchEventsTest() {
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        List<SearchEventsDto> searchDto = List.of(
+            new SearchEventsDto(1L, "title", null),
+            new SearchEventsDto(2L, "title", null));
+        PageableDto<SearchEventsDto> pageableDto = new PageableDto<>(searchDto, searchDto.size(), 0, 1);
+
+        when(eventService.search(pageRequest, "title")).thenReturn(pageableDto);
+
+        List<SearchEventsDto> expected = pageableDto.getPage();
+        List<SearchEventsDto> actual = searchService.searchAllEvents(pageRequest, "title").getPage();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void searchPlacesTest() {
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        List<SearchPlacesDto> searchDto = List.of(
+            new SearchPlacesDto(1L, "title", "category"),
+            new SearchPlacesDto(2L, "title", "category"));
+        PageableDto<SearchPlacesDto> pageableDto = new PageableDto<>(searchDto, searchDto.size(), 0, 1);
+
+        when(placeService.search(pageRequest, "title")).thenReturn(pageableDto);
+
+        List<SearchPlacesDto> expected = pageableDto.getPage();
+        List<SearchPlacesDto> actual = searchService.searchAllPlaces(pageRequest, "title").getPage();
 
         assertEquals(expected, actual);
     }

@@ -21,6 +21,7 @@ import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.Language;
@@ -58,6 +59,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static greencity.ModelUtils.getPlace;
+import static greencity.ModelUtils.getSearchPlacesDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -202,7 +205,7 @@ class PlaceServiceImplTest {
 
     @Test
     void saveTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         when(userService.findByEmail(anyString())).thenReturn(userVOAdmin);
@@ -225,7 +228,7 @@ class PlaceServiceImplTest {
 
     @Test
     void updateStatusTest() {
-        Place genericEntity = ModelUtils.getPlace();
+        Place genericEntity = getPlace();
         genericEntity.setCategory(ModelUtils.getCategory());
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
@@ -265,7 +268,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getAllCreatedPlacesByUserId() {
-        List<Place> places = Collections.singletonList(ModelUtils.getPlace());
+        List<Place> places = Collections.singletonList(getPlace());
         List<PlaceVO> voList = Collections.singletonList(modelMapper.map(places, PlaceVO.class));
 
         when(modelMapper.map(places.getFirst(), PlaceVO.class)).thenReturn(voList.getFirst());
@@ -278,7 +281,7 @@ class PlaceServiceImplTest {
 
     @Test
     void updateStatusGivenTheSameStatusThenThrowException() {
-        Place genericEntity = ModelUtils.getPlace();
+        Place genericEntity = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
 
         when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
@@ -295,7 +298,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findByIdTest() {
-        Place genericEntity = ModelUtils.getPlace();
+        Place genericEntity = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
@@ -323,7 +326,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoByIdTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         place.setDescription("description");
         place.setEmail("http://www.websitetest.com");
         place.setPhotos(new ArrayList<>());
@@ -429,7 +432,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findAllTest() {
-        List<Place> list = List.of(ModelUtils.getPlace());
+        List<Place> list = List.of(getPlace());
         List<PlaceVO> expectedList = List.of(ModelUtils.getPlaceVO());
         when(placeRepo.findAll()).thenReturn(list);
         when(modelMapper.map(list, new TypeToken<List<PlaceVO>>() {
@@ -444,7 +447,7 @@ class PlaceServiceImplTest {
     @Test
     void findAllPageableWithoutPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(pageable)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos =
@@ -484,7 +487,7 @@ class PlaceServiceImplTest {
     void findAllWithPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
         Principal principal = ModelUtils.getPrincipal();
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
 
         when(placeRepo.findAll(pageable)).thenReturn(pages);
@@ -513,7 +516,7 @@ class PlaceServiceImplTest {
     @Test
     void updateTest() {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         placeUpdateDto.setId(1L);
         placeUpdateDto.setOpeningHoursList(new HashSet<>());
         placeUpdateDto.setDiscountValues(new HashSet<>());
@@ -536,7 +539,7 @@ class PlaceServiceImplTest {
 
     @Test
     void deleteByIdTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
         when(placeRepo.save(place)).thenReturn(place);
 
@@ -547,7 +550,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findByIdOptionalTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
         Optional<PlaceVO> resultOptional = placeService.findByIdOptional(place.getId());
@@ -559,7 +562,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoForUpdatingByIdTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         placeUpdateDto.setId(place.getId());
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
@@ -574,7 +577,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoForUpdatingThrowingExceptionTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> placeService.getInfoForUpdatingById(1L));
@@ -584,7 +587,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findPlacesByMapsBoundsTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         List<Place> places = Collections.singletonList(place);
         PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
@@ -601,7 +604,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getPlacesByFilterWithNullDistanceFromUserTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         List<Place> places = Collections.singletonList(place);
         FilterPlaceDto filterDto = new FilterPlaceDto();
         PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
@@ -619,7 +622,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getPlacesByFilterWithDistanceFromUserTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Location newLocation = new Location();
         newLocation.setLat(-80.0);
         newLocation.setLng(-170.0);
@@ -641,7 +644,7 @@ class PlaceServiceImplTest {
 
     @Test
     void filterPlaceBySearchPredicateTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Pageable pageable = PageRequest.of(0, 1);
         Page<Place> pageOfPlaces = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(any(PlaceFilter.class), any(Pageable.class))).thenReturn(pageOfPlaces);
@@ -659,7 +662,7 @@ class PlaceServiceImplTest {
 
     @Test
     void searchByTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         String searchQuery = "test";
         Pageable pageable = PageRequest.of(0, 1);
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
@@ -699,7 +702,7 @@ class PlaceServiceImplTest {
     void addPlaceFromUi() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
@@ -846,5 +849,22 @@ class PlaceServiceImplTest {
         verify(cb).equal(root.get("status"), PlaceStatus.APPROVED);
         verify(cb).like(authorJoin.get("name"), "%author name%");
         verify(cb).like(locationJoin.get("address"), "%test address%");
+    }
+
+    @Test
+    void searchTest() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Place place = getPlace();
+        place.setCategory(Category.builder().name("Category").build());
+        List<Place> places = List.of(place, place);
+        PageImpl<Place> page = new PageImpl<>(places, pageRequest, places.size());
+        SearchPlacesDto searchPlacesDto = getSearchPlacesDto();
+
+        when(placeRepo.find(pageRequest, "text")).thenReturn(page);
+        when(modelMapper.map(place, SearchPlacesDto.class)).thenReturn(searchPlacesDto);
+
+        PageableDto<SearchPlacesDto> result = placeService.search(pageRequest, "text");
+
+        assertEquals(List.of(searchPlacesDto, searchPlacesDto), result.getPage());
     }
 }

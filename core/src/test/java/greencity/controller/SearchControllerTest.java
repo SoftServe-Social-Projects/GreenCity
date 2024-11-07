@@ -28,7 +28,7 @@ class SearchControllerTest {
     private static final String mainSearchLink = "/search";
     private static final String ecoNewsSearchLinkPart = "/eco-news";
     private static final String eventsSearchLinkPart = "/events";
-    private static final String placesSearchLinkPart = "/events";
+    private static final String placesSearchLinkPart = "/places";
 
     @BeforeEach
     void setup() {
