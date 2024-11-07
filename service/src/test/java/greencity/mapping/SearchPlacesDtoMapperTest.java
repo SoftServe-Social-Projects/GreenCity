@@ -20,8 +20,8 @@ class SearchPlacesDtoMapperTest {
     void convertTest() {
         Place place = getPlace();
         place.setCategory(Category.builder()
-                .name("Name")
-                .nameUa("Назва")
+            .name("Name")
+            .nameUa("Назва")
             .build());
         String language = LocaleContextHolder.getLocale().getLanguage();
         SearchPlacesDto searchedPlace = SearchPlacesDto.builder()
