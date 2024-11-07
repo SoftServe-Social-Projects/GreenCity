@@ -25,6 +25,7 @@ import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.DiscountValue;
@@ -613,5 +614,25 @@ public class PlaceServiceImpl implements PlaceService {
             adminPlaceDto.setOpeningHoursList(openingHoursList);
             return adminPlaceDto;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery) {
+        return getSearchPlacesDtoPageableDto(placeRepo.find(pageable, searchQuery));
+    }
+
+    private PageableDto<SearchPlacesDto> getSearchPlacesDtoPageableDto(Page<Place> page) {
+        List<SearchPlacesDto> searchEventsDtos = page.stream()
+            .map(event -> modelMapper.map(event, SearchPlacesDto.class))
+            .toList();
+
+        return new PageableDto<>(
+            searchEventsDtos,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
     }
 }

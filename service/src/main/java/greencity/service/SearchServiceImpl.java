@@ -3,35 +3,17 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.search.SearchResponseDto;
-import lombok.AllArgsConstructor;
+import greencity.dto.search.SearchPlacesDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService {
     private final EcoNewsService ecoNewsService;
     private final EventService eventService;
-
-    /**
-     * Method that allow you to search {@link SearchResponseDto}.
-     *
-     * @param searchQuery query to search
-     * @return list of {@link SearchResponseDto}
-     */
-    @Override
-    public SearchResponseDto search(String searchQuery, String languageCode) {
-        PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchQuery, languageCode);
-        PageableDto<SearchEventsDto> events = eventService.search(searchQuery, languageCode);
-
-        return SearchResponseDto.builder()
-            .ecoNews(ecoNews.getPage())
-            .events(events.getPage())
-            .countOfEcoNewsResults(ecoNews.getTotalElements())
-            .countOfEventsResults(events.getTotalElements())
-            .build();
-    }
+    private final PlaceService placeService;
 
     /**
      * {@inheritDoc}
@@ -41,8 +23,19 @@ public class SearchServiceImpl implements SearchService {
         return ecoNewsService.search(pageable, searchQuery, languageCode);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery, String languageCode) {
-        return eventService.search(pageable, searchQuery, languageCode);
+    public PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery) {
+        return eventService.search(pageable, searchQuery);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery) {
+        return placeService.search(pageable, searchQuery);
     }
 }

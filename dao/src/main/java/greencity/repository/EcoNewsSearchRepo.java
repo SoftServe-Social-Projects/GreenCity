@@ -40,7 +40,6 @@ public class EcoNewsSearchRepo {
         Root<EcoNews> root = criteriaQuery.from(EcoNews.class);
 
         Predicate predicate = getPredicate(criteriaBuilder, searchingText, languageCode, root);
-
         criteriaQuery.select(root).distinct(true).where(predicate);
 
         TypedQuery<EcoNews> typedQuery = entityManager.createQuery(criteriaQuery)
