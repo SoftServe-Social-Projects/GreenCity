@@ -7,6 +7,7 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -15,6 +16,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -775,6 +777,20 @@ class EventServiceImplTest {
 
         verify(eventRepo).save(event);
         verify(restClient).findByEmail(user.getEmail());
+    }
+
+    @Test
+    void searchTest() {
+        List<Event> events = List.of(ModelUtils.getEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
+
+        when(eventRepo.find(pageRequest, "search", null, null)).thenReturn(page);
+        when(modelMapper.map(ModelUtils.getEvent(), SearchEventsDto.class)).thenReturn(ModelUtils.getSearchEventsDto());
+
+        PageableDto<SearchEventsDto> searched = eventService.search(pageRequest, "search", null, null);
+
+        assertEquals(List.of(ModelUtils.getSearchEventsDto()), searched.getPage());
     }
 
     @Test
