@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
+import greencity.dto.todolistitem.ToDoListItemManagementDto;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class ManagementHabitControllerTest {
     private LanguageService languageService;
 
     @Mock
-    private ShoppingListItemService shoppingListItemService;
+    private ToDoListItemService toDoListItemService;
 
     @Mock
     private HabitAssignService habitAssignService;
@@ -93,7 +93,7 @@ class ManagementHabitControllerTest {
 
     @Test
     void getHabitByIdPage() throws Exception {
-        List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
+        List<ToDoListItemManagementDto> htodos = toDoListItemService.getToDoListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
         Long acquired = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.ACQUIRED);
         Long inProgress = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.INPROGRESS);
@@ -103,7 +103,7 @@ class ManagementHabitControllerTest {
             .param("page", "0")
             .param("size", "5"))
             .andExpect(view().name("core/management_user_habit"))
-            .andExpect(model().attribute("hshops", hshops))
+            .andExpect(model().attribute("htodos", htodos))
             .andExpect(model().attribute("habit", habit))
             .andExpect(model().attribute("acquired", acquired))
             .andExpect(model().attribute("inProgress", inProgress))

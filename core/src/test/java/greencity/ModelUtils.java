@@ -28,14 +28,14 @@ import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemPostDto;
+import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
@@ -46,7 +46,7 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.User;
@@ -54,7 +54,7 @@ import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import java.security.Principal;
@@ -171,8 +171,8 @@ public class ModelUtils {
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
     }
 
-    public static ShoppingListItemPostDto getShoppingListItemPostDto() {
-        return new ShoppingListItemPostDto(getLanguageTranslationsDTOs(), new ShoppingListItemRequestDto(1L));
+    public static ToDoListItemPostDto getToDoListItemPostDto() {
+        return new ToDoListItemPostDto(getLanguageTranslationsDTOs(), new ToDoListItemRequestDto(1L));
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
@@ -203,7 +203,7 @@ public class ModelUtils {
 
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
         return HabitAssignPropertiesDto.builder()
-            .defaultShoppingListItems(List.of(1L, 2L))
+            .defaultToDoListItems(List.of(1L, 2L))
             .duration(20)
             .build();
     }
@@ -215,26 +215,26 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
-        return CustomShoppingListItemResponseDto.builder()
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
+        return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .text("text")
             .build();
     }
 
-    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
-        return UserShoppingListItemResponseDto.builder()
+    public static UserToDoListItemResponseDto getUserToDoListItemResponseDto() {
+        return UserToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .text("text")
             .build();
     }
 
-    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
-        return UserShoppingAndCustomShoppingListsDto.builder()
-            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
-            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return UserToDoAndCustomToDoListsDto.builder()
+            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
+            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();
     }
 
@@ -340,10 +340,10 @@ public class ModelUtils {
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
-            .customShoppingListItemDto(List.of(
-                CustomShoppingListItemResponseDto.builder()
+            .customToDoListItemDto(List.of(
+                CustomToDoListItemResponseDto.builder()
                     .id(1L)
-                    .status(ShoppingListItemStatus.ACTIVE)
+                    .status(ToDoListItemStatus.ACTIVE)
                     .text("buy a shopper")
                     .build()))
             .defaultDuration(7)

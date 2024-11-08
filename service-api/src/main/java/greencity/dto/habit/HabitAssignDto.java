@@ -1,6 +1,6 @@
 package greencity.dto.habit;
 
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.enums.HabitAssignStatus;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import java.time.ZonedDateTime;
@@ -24,7 +24,7 @@ public class HabitAssignDto {
     private ZonedDateTime createDateTime;
     private Integer duration;
     private HabitDto habit;
-    private List<UserShoppingListItemAdvanceDto> userShoppingListItems;
+    private List<UserToDoListItemAdvanceDto> userToDoListItems;
     private List<HabitStatusCalendarDto> habitStatusCalendarDtoList;
     private Integer habitStreak;
     private Long id;
