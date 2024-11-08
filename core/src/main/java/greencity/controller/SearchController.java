@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
-import greencity.annotations.ValidLanguage;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -18,7 +17,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -48,10 +46,13 @@ public class SearchController {
     @GetMapping("/eco-news")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchNewsDto>> searchEcoNews(
-        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestParam(required = false) Boolean isFavorite,
         String searchQuery) {
-        return ResponseEntity.ok().body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
+        validateIsFavoriteUsage(isFavorite, user);
+        Long userId = user != null ? user.getId() : null;
+        return ResponseEntity.ok().body(searchService.searchAllNews(pageable, searchQuery, isFavorite, userId));
     }
 
     /**

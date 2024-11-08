@@ -19,8 +19,9 @@ public class SearchServiceImpl implements SearchService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode) {
-        return ecoNewsService.search(pageable, searchQuery, languageCode);
+    public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId) {
+        return ecoNewsService.search(pageable, searchQuery, isFavorite, userId);
     }
 
     /**

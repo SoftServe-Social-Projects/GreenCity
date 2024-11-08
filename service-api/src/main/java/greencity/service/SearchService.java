@@ -17,7 +17,7 @@ public interface SearchService {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
-    PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method that allow you to search {@link SearchEventsDto}.

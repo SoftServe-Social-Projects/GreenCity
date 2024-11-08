@@ -38,7 +38,6 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsSearchRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -78,7 +77,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
-    private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
     private final UserRepo userRepo;
@@ -255,8 +253,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        return getSearchNewsDtoPageableDto(ecoNewsSearchRepo.find(pageable, searchQuery, languageCode));
+    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
+        return getSearchNewsDtoPageableDto(ecoNewsRepo.find(pageable, searchQuery, isFavorite, userId));
     }
 
     private PageableDto<SearchNewsDto> getSearchNewsDtoPageableDto(Page<EcoNews> page) {

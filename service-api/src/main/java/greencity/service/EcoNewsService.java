@@ -102,7 +102,7 @@ public interface EcoNewsService {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
-    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method for getting all published news by authorised user.

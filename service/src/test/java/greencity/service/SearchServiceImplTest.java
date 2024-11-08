@@ -39,10 +39,10 @@ class SearchServiceImplTest {
         PageableDto<SearchNewsDto> pageableDto =
             new PageableDto<>(searchDto, searchDto.size(), 0, 1);
 
-        when(ecoNewsService.search(pageRequest, "title", "en")).thenReturn(pageableDto);
+        when(ecoNewsService.search(pageRequest, "title", null, null)).thenReturn(pageableDto);
 
         List<SearchNewsDto> expected = pageableDto.getPage();
-        List<SearchNewsDto> actual = searchService.searchAllNews(pageRequest, "title", "en").getPage();
+        List<SearchNewsDto> actual = searchService.searchAllNews(pageRequest, "title", null, null).getPage();
 
         assertEquals(expected, actual);
     }
