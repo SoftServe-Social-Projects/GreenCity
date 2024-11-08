@@ -104,11 +104,11 @@ public class EventSearchRepoImpl implements EventSearchRepo {
      * {@inheritDoc}
      */
     @Override
-    public Page<Event> find(Pageable pageable, String searchingText) {
+    public Page<Event> find(Pageable pageable, String searchingText, Boolean isFavorite, Long userId) {
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
 
-        Predicate predicate = getPredicate(searchingText, root);
+        Predicate predicate = getPredicate(searchingText, isFavorite, userId, root);
         criteriaQuery.select(root).distinct(true).where(predicate);
 
         TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery)
@@ -116,15 +116,16 @@ public class EventSearchRepoImpl implements EventSearchRepo {
             .setMaxResults(pageable.getPageSize());
 
         List<Event> resultList = typedQuery.getResultList();
-        long total = getEventsCount(searchingText);
+        long total = getEventsCount(searchingText, isFavorite, userId);
 
         return new PageImpl<>(resultList, pageable, total);
     }
 
-    private Predicate getPredicate(String searchingText, Root<Event> root) {
+    private Predicate getPredicate(String searchingText, Boolean isFavorite, Long userId, Root<Event> root) {
         List<Predicate> predicates = new ArrayList<>();
         addEventsLikePredicate(searchingText, root, predicates);
-        return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+        addIsFavoritePredicate(isFavorite, userId, root, predicates);
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
     private Predicate getPredicate(FilterEventDto filterEventDto, Long userId, Root<Event> eventRoot) {
@@ -210,12 +211,26 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     }
 
     private void addEventsLikePredicate(String searchingText, Root<Event> root, List<Predicate> predicates) {
-        Arrays.stream(searchingText.split(" ")).forEach(p -> predicates.add(
+        ArrayList<Predicate> eventsLikePredicates = new ArrayList<>();
+        Arrays.stream(searchingText.split(" ")).forEach(p -> eventsLikePredicates.add(
             criteriaBuilder.or(
                 criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.TITLE)),
                     "%" + p.toLowerCase() + "%"),
                 criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.DESCRIPTION)),
                     "%" + p.toLowerCase() + "%"))));
+        predicates.add(criteriaBuilder.or(eventsLikePredicates.toArray(new Predicate[0])));
+    }
+
+    private void addIsFavoritePredicate(Boolean isFavorite, Long userId, Root<Event> root, List<Predicate> predicates) {
+        if (isFavorite == null) {
+            return;
+        }
+        SetJoin<Event, User> followersJoin = root.join(Event_.followers);
+        if (Boolean.TRUE.equals(isFavorite)) {
+            predicates.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
+        } else {
+            predicates.add(criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId));
+        }
     }
 
     private List<Order> getOrders(Long userId, Root<Event> eventRoot) {
@@ -294,11 +309,12 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         orders.add(criteriaBuilder.desc(datesJoin.get(EventDateLocation_.START_DATE)));
     }
 
-    private long getEventsCount(String searchingText) {
+    private long getEventsCount(String searchingText, Boolean isFavorite, Long userId) {
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Root<Event> countRoot = countQuery.from(Event.class);
 
-        countQuery.select(criteriaBuilder.count(countRoot)).where(getPredicate(searchingText, countRoot));
+        countQuery.select(criteriaBuilder.count(countRoot))
+            .where(getPredicate(searchingText, isFavorite, userId, countRoot));
         return entityManager.createQuery(countQuery).getSingleResult();
     }
 

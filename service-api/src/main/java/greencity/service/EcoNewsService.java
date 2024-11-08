@@ -101,9 +101,8 @@ public interface EcoNewsService {
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
-     * @author Vadym Maktra
      */
-    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method for getting all published news by authorised user.
@@ -156,12 +155,9 @@ public interface EcoNewsService {
      * Find {@link EcoNewsVO} for management.
      *
      * @return a dto of {@link PageableDto}.
-     * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
-        Pageable pageable,
-        EcoNewsViewDto ecoNewsViewDto,
-        Locale locale);
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query, Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto, Locale locale);
 
     /**
      * Method to mark news as liked by User.
