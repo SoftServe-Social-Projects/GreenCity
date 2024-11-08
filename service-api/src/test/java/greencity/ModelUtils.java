@@ -7,19 +7,19 @@ import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.place.PlaceNotificationDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
-import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -141,26 +141,26 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
-        return UserShoppingListItemResponseDto.builder()
+    public static UserToDoListItemResponseDto getUserToDoListItemResponseDto() {
+        return UserToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
-        return CustomShoppingListItemResponseDto.builder()
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
+        return CustomToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
-        return UserShoppingAndCustomShoppingListsDto.builder()
-            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
-            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return UserToDoAndCustomToDoListsDto.builder()
+            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
+            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();
     }
 

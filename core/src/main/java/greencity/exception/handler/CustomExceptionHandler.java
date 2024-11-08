@@ -17,16 +17,16 @@ import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
+import greencity.exception.exceptions.UserHasNoToDoListItemsException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
+import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -326,7 +326,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      *         exception.
      */
     @ExceptionHandler(NotCurrentUserException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(NotCurrentUserException ex,
+    public final ResponseEntity<Object> handleUserToDoListItemWhereNotSavedException(NotCurrentUserException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
@@ -334,16 +334,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link ShoppingListItemNotFoundException}.
+     * Method intercept exception {@link ToDoListItemNotFoundException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(ShoppingListItemNotFoundException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        ShoppingListItemNotFoundException ex,
+    @ExceptionHandler(ToDoListItemNotFoundException.class)
+    public final ResponseEntity<Object> handleUserToDoListItemWhereNotSavedException(
+        ToDoListItemNotFoundException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
@@ -351,16 +351,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link UserHasNoShoppingListItemsException}.
+     * Method intercept exception {@link UserHasNoToDoListItemsException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserHasNoShoppingListItemsException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        UserHasNoShoppingListItemsException ex,
+    @ExceptionHandler(UserHasNoToDoListItemsException.class)
+    public final ResponseEntity<Object> handleUserToDoListItemWhereNotSavedException(
+        UserHasNoToDoListItemsException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
@@ -368,17 +368,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception
-     * {@link UserShoppingListItemStatusNotUpdatedException}.
+     * Method intercept exception {@link UserToDoListItemStatusNotUpdatedException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserShoppingListItemStatusNotUpdatedException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        UserShoppingListItemStatusNotUpdatedException ex,
+    @ExceptionHandler(UserToDoListItemStatusNotUpdatedException.class)
+    public final ResponseEntity<Object> handleUserToDoListItemWhereNotSavedException(
+        UserToDoListItemStatusNotUpdatedException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);

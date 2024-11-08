@@ -267,16 +267,16 @@ public class ManagementUserController {
     }
 
     /**
-     * Method update shopping item by habitAssign id and shoppingListItem id.
+     * Method update to-do item by habitAssign id and toDoListItem id.
      *
      * @param habitId {@link Long} habitAssignId.
-     * @param itemId  {@link Long} shoppingListItemId.
+     * @param itemId  {@link Long} toDoListItemId.
      */
-    @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
+    @PutMapping(value = "/updateToDoItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void updateShoppingItem(@PathVariable("itemId") Long itemId,
+    public void updateToDoItem(@PathVariable("itemId") Long itemId,
         @PathVariable("habitId") Long habitId) {
-        habitAssignService.updateShoppingItem(habitId, itemId);
+        habitAssignService.updateToDoItem(habitId, itemId);
     }
 
     /**

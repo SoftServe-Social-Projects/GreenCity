@@ -76,42 +76,42 @@ function unlinkAdvices(habitId) {
     });
 }
 
-// Habit`s Shopping List
+// Habit`s To-Do List
 
-let checkedShopIds = [];
-let checkedChShop = 0;
+let checkedToDoIds = [];
+let checkedChToDo = 0;
 
-function updateCheckBoxCountShop(chInt, id) {
-    let chBox = $('#Shopcheckbox' + chInt);
+function updateCheckBoxCountToDo(chInt, id) {
+    let chBox = $('#ToDocheckbox' + chInt);
     if (chBox.is(":checked")) {
-        checkedChShop++;
-        checkedShopIds.push(id);
+        checkedChToDo++;
+        checkedToDoIds.push(id);
     } else {
-        checkedChShop--;
-        let pos = checkedShopIds.indexOf(id)
-        checkedShopIds.splice(pos, 1)
+        checkedChToDo--;
+        let pos = checkedToDoIds.indexOf(id)
+        checkedToDoIds.splice(pos, 1)
     }
 
     let deactivateButton = $('#unlinktable3');
-    if (checkedChShop === 0) {
+    if (checkedChToDo === 0) {
         deactivateButton.addClass("disabled");
     } else deactivateButton.removeClass("disabled");
 }
 
 
-function unlinkShop(habitId) {
+function unlinkToDo(habitId) {
     clearAllErrorsSpan();
 
     // Ajax request
     $.ajax({
-        url: '/management/shopping-list-items/unlink/' + habitId,
+        url: '/management/to-do-list-items/unlink/' + habitId,
         type: 'DELETE',
         dataType: 'json',
         contentType: 'application/json',
         success: function (data) {
             location.reload();
         },
-        data: JSON.stringify(checkedShopIds)
+        data: JSON.stringify(checkedToDoIds)
     });
 }
 

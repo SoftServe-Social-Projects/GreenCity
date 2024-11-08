@@ -72,7 +72,7 @@ public class HabitAssign {
     private Boolean isPrivate;
 
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserShoppingListItem> userShoppingListItems;
+    private List<UserToDoListItem> userToDoListItems;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "habit_id")

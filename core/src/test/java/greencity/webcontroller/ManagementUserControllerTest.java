@@ -238,9 +238,9 @@ class ManagementUserControllerTest {
     @Test
     void updateUserRole() throws Exception {
         mockMvc.perform(
-            put(MANAGEMENT_USER_LINK + "/updateShoppingItem/" + 1L + "/" + 1L).contentType(MediaType.APPLICATION_JSON))
+            put(MANAGEMENT_USER_LINK + "/updateToDoItem/" + 1L + "/" + 1L).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateShoppingItem(1L, 1L);
+        verify(habitAssignService).updateToDoItem(1L, 1L);
     }
 
     @Test
