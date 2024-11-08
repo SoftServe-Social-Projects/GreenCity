@@ -1993,3 +1993,9 @@ a.lightgrey {
 .filter-container__search.date {
     padding: 10px;
 }
+
+.chart-container {
+    width: 100%;
+    height: 65vh;
+    transition: height 0.3s ease;
+}
