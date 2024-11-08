@@ -620,8 +620,8 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery) {
-        return getSearchPlacesDtoPageableDto(placeRepo.find(pageable, searchQuery));
+    public PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
+        return getSearchPlacesDtoPageableDto(placeRepo.find(pageable, searchQuery, isFavorite, userId));
     }
 
     private PageableDto<SearchPlacesDto> getSearchPlacesDtoPageableDto(Page<Place> page) {

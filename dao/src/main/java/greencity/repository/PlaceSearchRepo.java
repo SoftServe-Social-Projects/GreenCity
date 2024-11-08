@@ -12,5 +12,5 @@ public interface PlaceSearchRepo {
      * @param searchingText text criteria for searching.
      * @return {@link Page} of {@link Place}.
      */
-    Page<Place> find(Pageable pageable, String searchingText);
+    Page<Place> find(Pageable pageable, String searchingText, Boolean isFavorite, Long userId);
 }

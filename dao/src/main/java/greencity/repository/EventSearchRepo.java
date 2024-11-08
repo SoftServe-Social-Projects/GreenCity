@@ -31,5 +31,5 @@ public interface EventSearchRepo {
      * @param searchingText text criteria for searching.
      * @return {@link Page} of {@link Event}.
      */
-    Page<Event> find(Pageable pageable, String searchingText);
+    Page<Event> find(Pageable pageable, String searchingText, Boolean isFavorite, Long userId);
 }

@@ -55,10 +55,10 @@ class SearchServiceImplTest {
             new SearchEventsDto(2L, "title", null));
         PageableDto<SearchEventsDto> pageableDto = new PageableDto<>(searchDto, searchDto.size(), 0, 1);
 
-        when(eventService.search(pageRequest, "title")).thenReturn(pageableDto);
+        when(eventService.search(pageRequest, "title", null, null)).thenReturn(pageableDto);
 
         List<SearchEventsDto> expected = pageableDto.getPage();
-        List<SearchEventsDto> actual = searchService.searchAllEvents(pageRequest, "title").getPage();
+        List<SearchEventsDto> actual = searchService.searchAllEvents(pageRequest, "title", null, null).getPage();
 
         assertEquals(expected, actual);
     }
@@ -71,10 +71,10 @@ class SearchServiceImplTest {
             new SearchPlacesDto(2L, "title", "category"));
         PageableDto<SearchPlacesDto> pageableDto = new PageableDto<>(searchDto, searchDto.size(), 0, 1);
 
-        when(placeService.search(pageRequest, "title")).thenReturn(pageableDto);
+        when(placeService.search(pageRequest, "title", null, null)).thenReturn(pageableDto);
 
         List<SearchPlacesDto> expected = pageableDto.getPage();
-        List<SearchPlacesDto> actual = searchService.searchAllPlaces(pageRequest, "title").getPage();
+        List<SearchPlacesDto> actual = searchService.searchAllPlaces(pageRequest, "title", null, null).getPage();
 
         assertEquals(expected, actual);
     }

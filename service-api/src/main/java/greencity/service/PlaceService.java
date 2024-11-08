@@ -250,5 +250,5 @@ public interface PlaceService {
      * @param searchQuery query to search
      * @return PageableDto of {@link SearchPlacesDto} instances
      */
-    PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery);
+    PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 }

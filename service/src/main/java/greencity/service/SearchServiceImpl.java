@@ -27,15 +27,17 @@ public class SearchServiceImpl implements SearchService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery) {
-        return eventService.search(pageable, searchQuery);
+    public PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId) {
+        return eventService.search(pageable, searchQuery, isFavorite, userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery) {
-        return placeService.search(pageable, searchQuery);
+    public PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId) {
+        return placeService.search(pageable, searchQuery, isFavorite, userId);
     }
 }

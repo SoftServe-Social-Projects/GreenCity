@@ -24,16 +24,20 @@ public interface SearchService {
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
+     * @param userId      current user id.
      * @return PageableDto of {@link SearchEventsDto} instances.
      */
-    PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery);
+    PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId);
 
     /**
      * Method that allow you to search {@link SearchPlacesDto}.
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
+     * @param userId      current user id.
      * @return PageableDto of {@link SearchPlacesDto} instances.
      */
-    PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery);
+    PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId);
 }

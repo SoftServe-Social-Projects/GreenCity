@@ -1,12 +1,16 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageableWithLocale;
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
+import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,9 +48,9 @@ public class SearchController {
     @GetMapping("/eco-news")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchNewsDto>> searchEcoNews(
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(description = "Query to search") @RequestParam String searchQuery,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        String searchQuery) {
         return ResponseEntity.ok().body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
     }
 
@@ -66,8 +70,12 @@ public class SearchController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchEventsDto>> searchEvents(
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(description = "Query to search") @RequestParam String searchQuery) {
-        return ResponseEntity.ok().body(searchService.searchAllEvents(pageable, searchQuery));
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestParam(required = false) Boolean isFavorite,
+        String searchQuery) {
+        validateIsFavoriteUsage(isFavorite, user);
+        Long userId = user != null ? user.getId() : null;
+        return ResponseEntity.ok().body(searchService.searchAllEvents(pageable, searchQuery, isFavorite, userId));
     }
 
     /**
@@ -86,7 +94,17 @@ public class SearchController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchPlacesDto>> searchPlaces(
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(description = "Query to search") @RequestParam String searchQuery) {
-        return ResponseEntity.ok().body(searchService.searchAllPlaces(pageable, searchQuery));
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestParam(required = false) Boolean isFavorite,
+        String searchQuery) {
+        validateIsFavoriteUsage(isFavorite, user);
+        Long userId = user != null ? user.getId() : null;
+        return ResponseEntity.ok().body(searchService.searchAllPlaces(pageable, searchQuery, isFavorite, userId));
+    }
+
+    private void validateIsFavoriteUsage(Boolean isFavorite, UserVO user) {
+        if (Boolean.TRUE.equals(isFavorite) && user == null) {
+            throw new BadRequestException(ErrorMessage.IS_FAVORITE_PARAM_REQUIRE_AUTHENTICATED_USER);
+        }
     }
 }
