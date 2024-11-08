@@ -1,6 +1,5 @@
 package greencity.dto.search;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchNewsDto {
+public class SearchPlacesDto {
     private Long id;
-    private String title;
-    private List<String> tags;
+    private String name;
+    private String category;
 }
