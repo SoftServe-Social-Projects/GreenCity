@@ -23,6 +23,7 @@ import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.NotificationType;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -275,6 +276,8 @@ public class HabitServiceImpl implements HabitService {
                     .setHabitItemUa(habitTranslationByUaLanguage.getHabitItem() != null
                         ? habitTranslationByUaLanguage.getHabitItem()
                         : "");
+                boolean isFavorite = isCurrentUserFollower(habitTranslation.getHabit(), userId);
+                habitDto.setIsFavorite(isFavorite);
                 return habitDto;
             })
             .collect(Collectors.toList());
@@ -607,5 +610,55 @@ public class HabitServiceImpl implements HabitService {
             return false;
         }
         return assignHabitStatus(habitAssigns) == HabitAssignStatus.INPROGRESS;
+    }
+
+    @Override
+    public void addToFavorites(Long habitId, String email) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (habit.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_HABIT_TO_FAVORITES);
+        }
+
+        habit.getFollowers().add(currentUser);
+
+        habitRepo.save(habit);
+    }
+
+    @Override
+    public void removeFromFavorites(Long habitId, String email) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!habit.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.HABIT_NOT_IN_FAVORITES);
+        }
+
+        habit.getFollowers().remove(currentUser);
+        habitRepo.save(habit);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable,
+        String languageCode) {
+        Long userId = userVO.getId();
+        Page<HabitTranslation> habitTranslationPage =
+            habitTranslationRepo.findMyFavoriteHabits(pageable, userId, languageCode);
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
+    }
+
+    private boolean isCurrentUserFollower(Habit habit, Long currentUserId) {
+        return habit.getFollowers().stream()
+            .anyMatch(user -> user.getId().equals(currentUserId));
     }
 }

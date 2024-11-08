@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -14,32 +15,33 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
+import greencity.entity.RatingPoints;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.HabitAssign;
-import greencity.entity.RatingPoints;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
+import greencity.mapping.CustomHabitMapper;
+import greencity.mapping.CustomShoppingListMapper;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
+import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
+import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.LanguageRepo;
 import greencity.repository.RatingPointsRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
-import greencity.mapping.CustomHabitMapper;
-import greencity.mapping.CustomShoppingListMapper;
-import greencity.mapping.HabitTranslationMapper;
-import greencity.repository.CustomShoppingListItemRepo;
-import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
@@ -54,19 +56,39 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.ArrayList;
 
-import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static greencity.ModelUtils.getHabit;
+import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getHabitDto;
+import static greencity.ModelUtils.getHabitTranslation;
+import static greencity.ModelUtils.getHabitTranslationUa;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserVO;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class HabitServiceImplTest {
@@ -1263,5 +1285,95 @@ class HabitServiceImplTest {
 
         verify(habitRepo).findById(habit.getId());
         verify(userRepo).findById(habit.getUserId());
+    }
+
+    @Test
+    void addToFavoritesTest() {
+        Habit habit = ModelUtils.getHabit();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(habitRepo.save(habit)).thenReturn(habit);
+
+        habitService.addToFavorites(1L, TestConst.EMAIL);
+
+        verify(habitRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(habitRepo).save(habit);
+    }
+
+    @Test
+    void addToFavoritesThrowsExceptionWhenHabitNotFoundTest() {
+        when(habitRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> habitService.addToFavorites(1L, TestConst.EMAIL));
+        verify(habitRepo).findById(any());
+    }
+
+    @Test
+    void addToFavoritesThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> habitService.addToFavorites(1L, TestConst.EMAIL));
+        verify(habitRepo).findById(any());
+    }
+
+    @Test
+    void addToFavoritesThrowsExceptionWhenUserHasAlreadyAddedHabitToFavoritesTest() {
+        User user = ModelUtils.getUser();
+        Habit habit = ModelUtils.getHabit().setFollowers((Set.of(user)));
+
+        when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> habitService.addToFavorites(1L, TestConst.EMAIL));
+
+        verify(habitRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void removeFromFavoritesTest() {
+        User user = ModelUtils.getUser();
+        Habit habit = ModelUtils.getHabit();
+        habit.getFollowers().add(user);
+        when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(habitRepo.save(habit)).thenReturn(habit);
+
+        habitService.removeFromFavorites(1L, TestConst.EMAIL);
+
+        verify(habitRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(habitRepo).save(habit);
+    }
+
+    @Test
+    void removeFromFavoritesThrowsExceptionWhenHabitNotFoundTest() {
+        when(habitRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> habitService.removeFromFavorites(1L, TestConst.EMAIL));
+        verify(habitRepo).findById(any());
+    }
+
+    @Test
+    void removeFromFavoritesThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> habitService.removeFromFavorites(1L, TestConst.EMAIL));
+        verify(habitRepo).findById(any());
+    }
+
+    @Test
+    void removeFromFavoritesThrowsExceptionWhenHabitIsNotInFavoritesTest() {
+        Habit habit = ModelUtils.getHabit();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> habitService.removeFromFavorites(1L, TestConst.EMAIL));
+
+        verify(habitRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 }

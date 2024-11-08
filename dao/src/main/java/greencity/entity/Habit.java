@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import jakarta.persistence.CascadeType;
@@ -31,9 +32,9 @@ import lombok.ToString;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "shoppingListItems"})
+    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "shoppingListItems"})
 @ToString(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "shoppingListItems"})
+    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "shoppingListItems"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,4 +91,11 @@ public class Habit {
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> usersLiked;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Builder.Default
+    @JoinTable(name = "habits_followers",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> followers = new HashSet<>();
 }

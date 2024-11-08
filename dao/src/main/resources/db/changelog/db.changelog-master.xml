@@ -245,4 +245,5 @@
     <include file="db/changelog/logs/ch-insert-into-rating-points-Kasarab.xml"/>
     <include file="db/changelog/logs/ch-add-table-eco-news-followers-Yehor.xml"/>
     <include file="db/changelog/logs/ch-drop-column-expiry-date-Rozhko.xml"/>
+    <include file="db/changelog/logs/ch-add-table-habit-followers-Holotsvan.xml"/>
 </databaseChangeLog>
