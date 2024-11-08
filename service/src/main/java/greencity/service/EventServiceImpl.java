@@ -680,8 +680,8 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery) {
-        return getSearchNewsDtoPageableDto(eventRepo.find(pageable, searchQuery));
+    public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
+        return getSearchNewsDtoPageableDto(eventRepo.find(pageable, searchQuery, isFavorite, userId));
     }
 
     private PageableDto<SearchEventsDto> getSearchNewsDtoPageableDto(Page<Event> page) {

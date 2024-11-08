@@ -135,7 +135,7 @@ public interface EventService {
      * @param searchQuery query to search
      * @return PageableDto of {@link SearchEventsDto} instances
      */
-    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery);
+    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method for getting all events' addresses.

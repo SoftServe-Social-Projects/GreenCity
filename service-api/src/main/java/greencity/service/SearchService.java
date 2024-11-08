@@ -17,23 +17,27 @@ public interface SearchService {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
-    PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method that allow you to search {@link SearchEventsDto}.
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
+     * @param userId      current user id.
      * @return PageableDto of {@link SearchEventsDto} instances.
      */
-    PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery);
+    PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId);
 
     /**
      * Method that allow you to search {@link SearchPlacesDto}.
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
+     * @param userId      current user id.
      * @return PageableDto of {@link SearchPlacesDto} instances.
      */
-    PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery);
+    PageableDto<SearchPlacesDto> searchAllPlaces(Pageable pageable, String searchQuery, Boolean isFavorite,
+        Long userId);
 }

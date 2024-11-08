@@ -495,7 +495,7 @@ class PlaceServiceImplTest {
             .thenReturn(Collections.singletonList(1L));
 
         PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal);
-        AdminPlaceDto actual = resultPageableDto.getPage().get(0);
+        AdminPlaceDto actual = resultPageableDto.getPage().getFirst();
 
         AdminPlaceDto expected = modelMapper.map(place, AdminPlaceDto.class);
         List<String> photoNames = Optional.ofNullable(place.getPhotos())
@@ -860,10 +860,10 @@ class PlaceServiceImplTest {
         PageImpl<Place> page = new PageImpl<>(places, pageRequest, places.size());
         SearchPlacesDto searchPlacesDto = getSearchPlacesDto();
 
-        when(placeRepo.find(pageRequest, "text")).thenReturn(page);
+        when(placeRepo.find(pageRequest, "text", null, null)).thenReturn(page);
         when(modelMapper.map(place, SearchPlacesDto.class)).thenReturn(searchPlacesDto);
 
-        PageableDto<SearchPlacesDto> result = placeService.search(pageRequest, "text");
+        PageableDto<SearchPlacesDto> result = placeService.search(pageRequest, "text", null, null);
 
         assertEquals(List.of(searchPlacesDto, searchPlacesDto), result.getPage());
     }

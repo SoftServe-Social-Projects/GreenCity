@@ -1565,6 +1565,10 @@ public class ModelUtils {
         return new SearchNewsDto(1L, "title", List.of("tag"));
     }
 
+    public static SearchEventsDto getSearchEventsDto() {
+        return new SearchEventsDto(1L, "title", List.of("tag"));
+    }
+
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
         return new EcoNewsDtoManagement(1L, "title", "text", ZonedDateTime.now(),
             Collections.singletonList("tag"), "imagePath", "source");

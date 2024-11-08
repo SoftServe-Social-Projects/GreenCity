@@ -38,7 +38,6 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsSearchRepo;
 import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -114,8 +113,6 @@ class EcoNewsServiceImplTest {
     FileService fileService;
     @Mock
     HttpServletRequest httpServletRequest;
-    @Mock
-    EcoNewsSearchRepo ecoNewsSearchRepo;
     @Mock
     private UserService userService;
     @Mock
@@ -294,9 +291,9 @@ class EcoNewsServiceImplTest {
         List<SearchNewsDto> searchNewsDtos = Collections.singletonList(searchNewsDto);
         PageableDto<SearchNewsDto> actual = new PageableDto<>(searchNewsDtos, page.getTotalElements(),
             page.getPageable().getPageNumber(), page.getTotalPages());
-        when(ecoNewsSearchRepo.find(pageable, "query", "en")).thenReturn(page);
+        when(ecoNewsRepo.find(pageable, "query", null, null)).thenReturn(page);
         when(modelMapper.map(ecoNewsList, SearchNewsDto.class)).thenReturn(searchNewsDto);
-        PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query", "en");
+        PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query", null, null);
         assertEquals(expected.getTotalPages(), actual.getTotalPages());
     }
 
