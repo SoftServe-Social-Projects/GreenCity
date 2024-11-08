@@ -97,6 +97,7 @@ import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
@@ -1538,7 +1539,7 @@ public class ModelUtils {
         String[] tagsUa = {"Новини"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tagsUa), List.of(tagsEn), 0, 1, 0);
+            List.of(tagsUa), List.of(tagsEn), 0, 1, 0, false);
     }
 
     public static ShortEcoNewsDto getShortEcoNewsDto() {
@@ -1561,8 +1562,11 @@ public class ModelUtils {
     }
 
     public static SearchNewsDto getSearchNewsDto() {
-        return new SearchNewsDto(1L, "title", getEcoNewsAuthorDto(), ZonedDateTime.now(),
-            Collections.singletonList("tag"));
+        return new SearchNewsDto(1L, "title", List.of("tag"));
+    }
+
+    public static SearchEventsDto getSearchEventsDto() {
+        return new SearchEventsDto(1L, "title", List.of("tag"));
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
@@ -3087,5 +3091,13 @@ public class ModelUtils {
         return pageable.getSort().stream()
             .map(order -> order.getProperty() + "," + order.getDirection())
             .collect(Collectors.joining(","));
+    }
+
+    public static SearchPlacesDto getSearchPlacesDto() {
+        return SearchPlacesDto.builder()
+            .id(1L)
+            .name("Forum")
+            .category("Category")
+            .build();
     }
 }

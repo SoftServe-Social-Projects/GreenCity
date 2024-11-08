@@ -137,10 +137,10 @@ import java.util.Set;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
-        "customToDoListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "subscribedEvents"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
-        "customToDoListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "subscribedEvents"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

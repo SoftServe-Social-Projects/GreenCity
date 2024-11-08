@@ -430,69 +430,11 @@ class UserNotificationServiceImplTest {
             any(), anyLong()))
             .thenReturn(Optional.empty());
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
-        when(actionUserVO.getName()).thenReturn("John");
 
         userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
             NotificationType.ECONEWS_COMMENT_LIKE, true);
 
         verify(notificationRepo, times(1)).save(any(Notification.class));
-    }
-
-    @Test
-    @DisplayName("createLikeNotificationMessage with two users")
-    void testCreateLikeNotificationMessage_TwoUsers() throws Exception {
-        User user1 = User.builder().name("Taras").build();
-        User user2 = User.builder().name("Petro").build();
-
-        List<User> actionUsers = List.of(user1, user2);
-        String newsTitle = "Test News";
-
-        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
-            String.class, NotificationType.class);
-        method.setAccessible(true);
-        String result =
-            (String) method.invoke(userNotificationService, actionUsers, newsTitle, NotificationType.ECONEWS_LIKE);
-
-        assertEquals("Taras and Petro like your news Test News.", result);
-    }
-
-    @Test
-    @DisplayName("createLikeNotificationMessage with more than two users")
-    void testCreateLikeNotificationMessage_MoreThanTwoUsers() throws Exception {
-        User user1 = User.builder().name("Taras").build();
-        User user2 = User.builder().name("Petro").build();
-        User user3 = User.builder().name("Vasyl").build();
-
-        List<User> actionUsers = List.of(user1, user2, user3);
-        String habitTitle = "Test Habit";
-
-        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
-            String.class, NotificationType.class);
-        method.setAccessible(true);
-        String result =
-            (String) method.invoke(userNotificationService, actionUsers, habitTitle, NotificationType.HABIT_LIKE);
-
-        assertEquals("Petro, Vasyl and other users like your habit Test Habit.", result);
-    }
-
-    @Test
-    @DisplayName("createLikeNotificationMessage with more than two users")
-    void testCreateLikeNotificationMessage_FourUsers() throws Exception {
-        User user1 = User.builder().name("Taras").build();
-        User user2 = User.builder().name("Petro").build();
-        User user3 = User.builder().name("Vasyl").build();
-        User user4 = User.builder().name("Ivan").build();
-
-        List<User> actionUsers = List.of(user1, user2, user3, user4);
-        String eventTitle = "Test Event";
-
-        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
-            String.class, NotificationType.class);
-        method.setAccessible(true);
-        String result =
-            (String) method.invoke(userNotificationService, actionUsers, eventTitle, NotificationType.EVENT_LIKE);
-
-        assertEquals("Vasyl, Ivan and other users like your event Test Event.", result);
     }
 
     @Test

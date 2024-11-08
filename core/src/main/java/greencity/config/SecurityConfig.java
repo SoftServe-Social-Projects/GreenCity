@@ -58,6 +58,8 @@ public class SecurityConfig {
     private static final String EVENTS = "/events";
     private static final String EVENT_ID = "/{eventId}";
     private static final String FAVORITES = "/favorites";
+    private static final String SEARCH = "/search";
+    private static final String PLACES = "/places";
     private static final String ATTENDERS = "/attenders";
     private static final String ORGANIZERS = "/organizers";
     private static final String RATINGS = "/ratings";
@@ -189,9 +191,9 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
                     "/languages/codes",
-                    "/search",
-                    "/search/econews",
-                    "/search/events",
+                    SEARCH + ECO_NEWS,
+                    SEARCH + EVENTS,
+                    SEARCH + PLACES,
                     "/user/emailNotifications",
                     "/user/activatedUsersAmount",
                     "/user/{userId}/habit/assign",

@@ -1,8 +1,7 @@
 package greencity.repository;
 
+import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +9,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificationExecutor<EcoNews> {
+public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, Long>,
+    JpaSpecificationExecutor<EcoNews> {
     /**
      * Method for deleting eco news by list of ids.
      *
@@ -84,7 +86,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @return list of {@link EcoNews}.
      */
     @Query(nativeQuery = true,
-        value = "Select DISTINCT e.* "
+        value = "SELECT DISTINCT e.* "
             + "FROM eco_news e "
             + "JOIN users u on u.id = e.author_id "
             + "JOIN eco_news_tags ent on e.id = ent.eco_news_id "
@@ -129,4 +131,59 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
             LIMIT 3;
             """)
     List<EcoNews> findThreeInterestingEcoNews();
+
+    /**
+     * Retrieves statistics about EcoNews authors, including the number of articles
+     * published by each author, ordered by the count of articles in descending
+     * order.
+     *
+     * @return a page of EcoNews author statistics.
+     */
+    @Query(value = """
+        SELECT new greencity.dto.econews.EcoNewsAuthorStatisticDto(
+            ROW_NUMBER() OVER (ORDER BY COUNT(e) DESC),
+            u.id,
+            u.name,
+            COUNT(e.id)
+        )
+        FROM EcoNews e
+        JOIN e.author u
+        GROUP BY u.id, u.name
+        """)
+    Page<EcoNewsAuthorStatisticDto> getEcoNewsAuthorStatistic(Pageable pageable);
+
+    /**
+     * Retrieves tag combinations and their respective counts, indicating how many
+     * articles are associated with each combination of tags.
+     *
+     * <p>
+     * For example, it may return results like:
+     * </p>
+     * <ul>
+     * <li>News: 3</li>
+     * <li>Ads, News: 1</li>
+     * <li>Events, News: 1</li>
+     * </ul>
+     *
+     * @return a list of objects, where each object contains a tag combination and
+     *         the count of articles associated with that combination.
+     */
+    @Query(value = """
+                    SELECT
+            tags,
+            COUNT(*) AS count
+        FROM (
+            SELECT
+                STRING_AGG(tt.name, ', ' ORDER BY tt.name) AS tags
+            FROM eco_news e
+            JOIN eco_news_tags ent ON e.id = ent.eco_news_id
+            JOIN tags t ON ent.tags_id = t.id
+            JOIN tag_translations tt ON ent.tags_id = tt.tag_id
+            WHERE tt.language_id = :languageId
+            AND t.type = 'ECO_NEWS'
+            GROUP BY e.id
+        ) AS tag_combinations
+        GROUP BY tags;
+        """, nativeQuery = true)
+    List<Object[]> getEcoNewsTagsStatistics(Long languageId);
 }

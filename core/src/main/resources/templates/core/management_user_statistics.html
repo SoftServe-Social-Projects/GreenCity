@@ -375,7 +375,7 @@
         if (document.getElementById('regionCheckbox').checked) selectedLocationTypes.push('region');
         if (document.getElementById('countryCheckbox').checked) selectedLocationTypes.push('country');
 
-        if(selectedLocationTypes.length === 0) return;
+        if (selectedLocationTypes.length === 0) return;
 
         if (Chart.getChart("locationsChart")) {
             Chart.getChart("locationsChart").destroy();
@@ -390,9 +390,6 @@
             type: "doughnut",
             data: data
         };
-
-
-
 
 
         try {

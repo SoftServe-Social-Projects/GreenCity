@@ -2,7 +2,19 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.*;
+import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterAdminPlaceDto;
+import greencity.dto.place.FilterPlaceCategory;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import java.security.Principal;
@@ -230,4 +242,13 @@ public interface PlaceService {
      * Method for create new place From UI.
      */
     PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images);
+
+    /**
+     * Method for getting Places by searchQuery.
+     *
+     * @param pageable    {@link Pageable}
+     * @param searchQuery query to search
+     * @return PageableDto of {@link SearchPlacesDto} instances
+     */
+    PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 }

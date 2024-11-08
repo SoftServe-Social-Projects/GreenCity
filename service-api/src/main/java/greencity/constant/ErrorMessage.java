@@ -4,8 +4,6 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ErrorMessage {
-    public static final String RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME =
-        "RatingCalculationEnum with such name does not exist: ";
     public static final String CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID =
         "Custom to-do list item with such id does not exist.";
     public static final String DUPLICATED_CUSTOM_TO_DO_LIST_ITEM = "CustomToDoListItems should be unique";
@@ -34,9 +32,6 @@ public class ErrorMessage {
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
-    public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
-    public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
-    public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
 
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_NAME = "The category does not exist by this name: ";
@@ -141,7 +136,6 @@ public class ErrorMessage {
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
     public static final String INVALID_DATE_RANGE = "The 'From' date must be earlier than the 'To' date";
     public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en' or 'ua'";
-    public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
         "Count of tags should be at least one but not more three";
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
@@ -181,7 +175,6 @@ public class ErrorMessage {
     public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES =
         "User has already added this event to favorites.";
     public static final String EVENT_IS_NOT_IN_FAVORITES = "This event is not in favorites.";
-    public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
@@ -206,4 +199,6 @@ public class ErrorMessage {
     public static final String NOTIFICATION_NOT_FOUND_BY_ID = "Notification doesn't exist by this id: ";
     public static final String DELETING_RATING_POINTS_NOT_ALLOWED =
         "Deleting this RatingPoints is not possible because an Achievement with such name still exists.";
+    public static final String IS_FAVORITE_PARAM_REQUIRE_AUTHENTICATED_USER =
+        "isFavorite param require authenticated user";
 }
