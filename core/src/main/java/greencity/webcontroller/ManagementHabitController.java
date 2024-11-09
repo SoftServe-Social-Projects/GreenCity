@@ -44,7 +44,7 @@ import java.util.List;
 public class ManagementHabitController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
-    private final ShoppingListItemService shoppingListItemService;
+    private final ToDoListItemService toDoListItemService;
     private final HabitAssignService habitAssignService;
 
     /**
@@ -107,7 +107,7 @@ public class ManagementHabitController {
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
         @Parameter(hidden = true) Model model) {
-        model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
+        model.addAttribute("htodos", toDoListItemService.getToDoListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("acquired",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));

@@ -4,17 +4,17 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ErrorMessage {
-    public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
-        "Custom shopping list item with such id does not exist.";
-    public static final String DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM = "CustomShoppingListItems should be unique";
-    public static final String SHOPPING_LIST_ITEM_NOT_DELETED = "Advice not deleted ";
-    public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID = "Shopping list item with such id does not exist ";
-    public static final String SHOPPING_LIST_ITEM_NOT_ASSIGNED_FOR_THIS_HABIT =
-        "Shopping list item with such id does not assigned fot this habit ";
-    public static final String SHOPPING_LIST_ITEM_ALREADY_SELECTED =
-        "Shopping list item with such id is already selected ";
-    public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES =
-        "Shopping list item with such name(s) does not exist: ";
+    public static final String CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID =
+        "Custom to-do list item with such id does not exist.";
+    public static final String DUPLICATED_CUSTOM_TO_DO_LIST_ITEM = "CustomToDoListItems should be unique";
+    public static final String TO_DO_LIST_ITEM_NOT_DELETED = "Advice not deleted ";
+    public static final String TO_DO_LIST_ITEM_NOT_FOUND_BY_ID = "To-do list item with such id does not exist ";
+    public static final String TO_DO_LIST_ITEM_NOT_ASSIGNED_FOR_THIS_HABIT =
+        "To-do list item with such id does not assigned fot this habit ";
+    public static final String TO_DO_LIST_ITEM_ALREADY_SELECTED =
+        "To-do list item with such id is already selected ";
+    public static final String TO_DO_LIST_ITEM_NOT_FOUND_BY_NAMES =
+        "To-do list item with such name(s) does not exist: ";
     public static final String PARSING_URL_FAILED = "Can't parse image's url: ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
@@ -24,8 +24,8 @@ public class ErrorMessage {
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
-    public static final String SHOPPING_LIST_ITEM_TRANSLATION_NOT_FOUND =
-        "Shopping list item translation not found for habit with id : ";
+    public static final String TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND =
+        "To-do list item translation not found for habit with id : ";
     public static final String END_TIME_LATE_THAN_START_TIME = "End time have to be late than start time";
     public static final String BREAK_TIME_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";
@@ -79,12 +79,12 @@ public class ErrorMessage {
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
-    public static final String USER_HAS_NO_SHOPPING_LIST_ITEMS =
-        "This user hasn't selected any shopping list items yet";
-    public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND = "UserShoppingListItem(s) with this id not found: ";
-    public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID =
-        "UserShoppingListItem(s) for this user not found";
-    public static final String DUPLICATED_USER_SHOPPING_LIST_ITEM = "UserShoppingListItems should be unique";
+    public static final String USER_HAS_NO_TO_DO_LIST_ITEMS =
+        "This user hasn't selected any to-do list items yet";
+    public static final String USER_TO_DO_LIST_ITEM_NOT_FOUND = "UserToDoListItem(s) with this id not found: ";
+    public static final String USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID =
+        "UserToDoListItem(s) for this user not found";
+    public static final String DUPLICATED_USER_TO_DO_LIST_ITEM = "UserToDoListItems should be unique";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
@@ -92,14 +92,14 @@ public class ErrorMessage {
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String FRIEND_REQUEST_ALREADY_SENT = "Friend request already exists between two users";
     public static final String FRIEND_REQUEST_NOT_SENT = "Friend request is not exists";
-    public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
-        "This CustomShoppingListItem(s) already exist(s): ";
-    public static final String CUSTOM_SHOPPING_LIST_ITEM_EXISTS =
-        "The CustomShoppingListItem with text: %s already exists";
-    public static final String CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND =
-        "CustomShoppingListItem(s) with this id not found: ";
-    public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
-        "The user doesn't have any custom shopping list item.";
+    public static final String CUSTOM_TO_DO_LIST_ITEM_WHERE_NOT_SAVED =
+        "This CustomToDoListItem(s) already exist(s): ";
+    public static final String CUSTOM_TO_DO_LIST_ITEM_EXISTS =
+        "The CustomToDoListItem with text: %s already exists";
+    public static final String CUSTOM_TO_DO_LIST_ITEM_WITH_THIS_ID_NOT_FOUND =
+        "CustomToDoListItem(s) with this id not found: ";
+    public static final String CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND =
+        "The user doesn't have any custom to-do list item.";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
     public static final String ECO_NEW_NOT_FOUND_BY_ID = "Eco new doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved";
@@ -129,8 +129,8 @@ public class ErrorMessage {
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
-    public static final String USER_SHOPPING_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
-        "The status of this shopping list item is already done ";
+    public static final String USER_TO_DO_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
+        "The status of this to-do list item is already done ";
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String WRONG_DATE_TIME_FORMAT =
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
