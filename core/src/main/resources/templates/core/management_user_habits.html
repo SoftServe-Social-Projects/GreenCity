@@ -370,7 +370,6 @@
                     <div class="modal-content">
                         <!-- Form for updating habit -->
                         <form th:action="@{management/habits/update}" method="post" enctype="multipart/form-data" id="editHabitForm">
-                            <input type="hidden" name="_method" value="PUT"/>
                             <div class="modal-header">
                                 <h4 class="modal-title">Edit Habit</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -417,7 +416,7 @@
                                                     <label>Name</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'editHabitName' + ${iterInfo.index}"
-                                                           th:id="'editHabitName' + ${iterInfo.index}">
+                                                           th:id="'editHabitName' + ${iterInfo.index}" required>
                                                     <span th:id="'errorModalEdithabitTranslations['+${iterInfo.index}+'].name'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -429,7 +428,7 @@
                                                     <label>Habit Item</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'editHabitItem' + ${iterInfo.index}"
-                                                           th:id="'editHabitItem' + ${iterInfo.index}">
+                                                           th:id="'editHabitItem' + ${iterInfo.index}" required>
                                                     <span th:id="'errorModalEdithabitTranslations['+${iterInfo.index}+'].habitItem'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -439,7 +438,7 @@
                                                     <label>Description</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'editHabitDescription' + ${iterInfo.index}"
-                                                           th:id="'editHabitDescription' + ${iterInfo.index}">
+                                                           th:id="'editHabitDescription' + ${iterInfo.index}" required>
                                                     <span th:id="'errorModalEdithabitTranslations['+${iterInfo.index}+'].description'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -714,16 +713,29 @@
                     if (!response.ok) throw new Error('Error fetching data');
 
                     const habitData = await response.json();
+                    console.log('Fetched habit data:', habitData);
+                    console.log('Habit Translations:', habitData.habitTranslations);
+
                     // Populate main habit fields
                     document.getElementById('editId').value = habitData.id;
                     document.getElementById('editComplexity').value = habitData.complexity;
                     document.getElementById('editDefaultDuration').value = habitData.defaultDuration;
                     // Populate translation fields
                     habitData.habitTranslations.forEach((translation, index) => {
-                        document.getElementById(`editHabitLanguageCode${index}`).value = translation.languageCode;
-                        document.getElementById(`editHabitName${index}`).value = translation.name;
-                        document.getElementById(`editHabitItem${index}`).value = translation.habitItem;
-                        document.getElementById(`editHabitDescription${index}`).value = translation.description;
+                        const languageCodeField = document.getElementById(`editHabitLanguageCode${index}`);
+                        const nameField = document.getElementById(`editHabitName${index}`);
+                        const habitItemField = document.getElementById(`editHabitItem${index}`);
+                        const descriptionField = document.getElementById(`editHabitDescription${index}`);
+
+                        if (languageCodeField && nameField && habitItemField && descriptionField) {
+                            languageCodeField.value = translation.languageCode;
+                            nameField.value = translation.name;
+                            habitItemField.value = translation.habitItem;
+                            descriptionField.value = translation.description;
+                            console.log(`Populated translation ${index}:`, translation);
+                        } else {
+                            console.warn(`Fields for translation ${index} not found in the form.`);
+                        }
                     });
                     // Show the modal
                     $('#editHabitModal').modal('show');
@@ -735,26 +747,98 @@
     });
 </script>
 <script th:inline="javascript">
-    $('#editHabitForm').on('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
+    $(document).ready(function() {
+        $('#editHabitForm').on('submit', function(event) {
+            event.preventDefault();
+            console.log("Submit event triggered");
+            const formData = new FormData();
 
-        $.ajax({
-            url: '/management/habits/update',
-            type: 'PUT',
-            data: formData,
-            processData: false,
-            contentType: false,
-            enctype: 'multipart/form-data',
-            success: function(response) {
-                alert(response.message);
-                $('#editHabitModal').modal('hide');
-                window.location.href = 'habits';
-            },
-            error: function(xhr) {
-                console.error('Failed to send multipart request', xhr);
-                alert('Error: Unable to update the habit. Try again.');
+            const habitManagementDto = {
+                id: document.getElementById("editId")?.value,
+                complexity: document.getElementById("editComplexity")?.value,
+                defaultDuration: document.getElementById("editDefaultDuration")?.value,
+                habitTranslations: []
+            };
+            const habitTranslations = [];
+
+            if (!habitManagementDto.complexity || !habitManagementDto.defaultDuration) {
+                alert("Please fill in all required fields.");
+                return;
             }
+            console.log("Collected basic habitManagementDto data", habitManagementDto);
+
+            let isValid = true;
+
+            $('.habit-translation-row').each(function () {
+                const $container = $(this);
+                const index = $container.data('index');
+                const name = $container.find('input[id="editHabitName' + index + '"]').val();
+                const habitItem = $container.find('input[id="editHabitItem' + index + '"]').val();
+                const description = $container.find('input[id="editHabitDescription' + index + '"]').val();
+                const languageCode = $container.find('input[id="editHabitLanguageCode' + index + '"]').val();
+
+                // Log values before adding to habitTranslations
+                console.log(`Checking translation data for index ${index}:`, {
+                    languageCode: languageCode,
+                    name: name,
+                    habitItem: habitItem,
+                    description: description
+                });
+
+                if (languageCode && name && habitItem && description) {
+                    habitTranslations.push({
+                        languageCode: languageCode,
+                        name: name,
+                        habitItem: habitItem,
+                        description: description
+                    });
+                } else {
+                    console.error(`Translation data missing for index ${index}:`, {
+                        languageCode: languageCode,
+                        name: name,
+                        habitItem: habitItem,
+                        description: description
+                    });
+                }
+            });
+            if (!isValid) {
+                console.error("Form validation failed, some translation fields are missing.");
+                return;
+            }
+            habitManagementDto.habitTranslations = habitTranslations;
+
+            console.log("Final habitManagementDto with translations", habitManagementDto);
+
+            try {
+                formData.append("habitManagementDto", new Blob([JSON.stringify(habitManagementDto)], { type: "application/json" }));
+            } catch (error) {
+                console.error("Failed to serialize habitManagementDto", error);
+                alert("Error: Unable to serialize habit data.");
+                return;
+            }
+
+            const fileInput = document.getElementById('fileEdit');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append("file", fileInput.files[0]);
+                console.log("File added to formData");
+            }
+
+            $.ajax({
+                url: '/management/habits/update',
+                type: 'PUT',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log("Success response received", response);
+                    alert('Habit updated successfully!');
+                    window.location.href = 'habits';
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to send multipart request', xhr, status, error);
+                    alert('Error: Unable to update the habit. Try again.');
+                }
+            });
         });
     });
 </script>
