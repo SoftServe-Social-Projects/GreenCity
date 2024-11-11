@@ -9,6 +9,7 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -574,9 +575,15 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void sendHabitLikeNotification(User targetUser, UserVO actionUser, Long habitId, Habit habit) {
-        userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
-            actionUser, habitId, habit.getHabitTranslations().getFirst().getName(),
-            NotificationType.HABIT_LIKE, true);
+        final LikeNotificationDto likeNotificationDto = LikeNotificationDto.builder()
+            .targetUserVO(modelMapper.map(targetUser, UserVO.class))
+            .actionUserVO(actionUser)
+            .newsId(habitId)
+            .newsTitle(habit.getHabitTranslations().getFirst().getName())
+            .notificationType(NotificationType.HABIT_LIKE)
+            .isLike(true)
+            .build();
+        userNotificationService.createOrUpdateLikeNotification(likeNotificationDto);
     }
 
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
