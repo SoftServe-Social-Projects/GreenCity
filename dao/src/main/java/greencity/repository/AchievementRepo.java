@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.achievement.StatisticsDto;
 import greencity.entity.Achievement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -136,4 +137,47 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @author Viktoriia Herchanivska
      */
     List<Achievement> findAllByAchievementCategoryId(Long achievementCategoryId);
+
+    /**
+     * Method retrieves statistics of users who have achieved each achievement. Each
+     * achievement's name (in English) and the count of users who achieved it are
+     * returned.
+     *
+     * @return List of {@link StatisticsDto} with achievement names and user counts
+     */
+    @Query("SELECT new greencity.dto.achievement.StatisticsDto(a.nameEng, COUNT(ua.user))"
+        + "FROM Achievement a "
+        + "JOIN UserAchievement ua ON ua.achievement = a "
+        + "GROUP BY a.nameEng ")
+    List<StatisticsDto> getStatisticsUsersWithAchievements();
+
+    /**
+     * Method retrieves statistics of users grouped by achievement category. Each
+     * category name and the count of users who achieved an achievement in that
+     * category are returned.
+     *
+     * @return List of {@link StatisticsDto} with category names and user counts
+     */
+    @Query("SELECT new greencity.dto.achievement.StatisticsDto(ac.name, COUNT(ua.user))"
+        + "FROM AchievementCategory ac "
+        + "JOIN Achievement a ON a.achievementCategory = ac "
+        + "JOIN UserAchievement ua ON ua.achievement = a "
+        + "GROUP BY ac.name ")
+    List<StatisticsDto> getStatisticsUsersWithAchievementsCategory();
+
+    /**
+     * Method retrieves the total count of users with and without achievements.
+     * Users are categorized into "Users with Achievements" and "Users without
+     * Achievements."
+     *
+     * @return List of {@link StatisticsDto} with user activity status and
+     *         respective counts
+     */
+    @Query("SELECT new greencity.dto.achievement.StatisticsDto("
+        + "CASE WHEN ua.user IS NULL THEN 'Users without Achievements' ELSE 'Users with Achievements' END, "
+        + "COUNT(DISTINCT u)) "
+        + "FROM User u "
+        + "LEFT JOIN UserAchievement ua ON ua.user = u "
+        + "GROUP BY CASE WHEN ua.user IS NULL THEN 'Users without Achievements' ELSE 'Users with Achievements' END")
+    List<StatisticsDto> getUserActivityStatistics();
 }
