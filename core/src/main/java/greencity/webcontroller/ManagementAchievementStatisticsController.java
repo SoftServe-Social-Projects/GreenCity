@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.achievement.StatisticsDto;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.service.AchievementStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ManagementAchievementStatisticsController {
         try {
             model.addAttribute("statisticalData", mapper.writeValueAsString(statisticsDtos));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new NotFoundException(e);
         }
         return "core/management_achievement_statistics";
     }
