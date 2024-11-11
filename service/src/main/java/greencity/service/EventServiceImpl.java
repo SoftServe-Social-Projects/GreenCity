@@ -18,6 +18,7 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
@@ -787,8 +788,15 @@ public class EventServiceImpl implements EventService {
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
-        userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
-            actionUser, eventId, event.getTitle(), NotificationType.EVENT_LIKE, true, null, null);
+        final LikeNotificationDto likeNotificationDto = LikeNotificationDto.builder()
+            .targetUserVO(modelMapper.map(targetUser, UserVO.class))
+            .actionUserVO(actionUser)
+            .newsId(eventId)
+            .newsTitle(event.getTitle())
+            .notificationType(NotificationType.EVENT_LIKE)
+            .isLike(true)
+            .build();
+        userNotificationService.createOrUpdateLikeNotification(likeNotificationDto);
     }
 
     private List<EventDto> mapTupleListToEventDtoList(List<Tuple> page, List<Long> sortedIds) {

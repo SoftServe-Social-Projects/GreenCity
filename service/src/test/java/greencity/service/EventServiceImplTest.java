@@ -15,6 +15,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -1126,8 +1127,7 @@ class EventServiceImplTest {
 
         assertTrue(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
 
-        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            eventAuthorVO, userVO, event.getId(), event.getTitle(), NotificationType.EVENT_LIKE, true, null, null);
+        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(any(LikeNotificationDto.class));
         verify(eventRepo).findById(event.getId());
         verify(userRepo).findById(eventAuthor.getId());
         verify(modelMapper).map(userVO, User.class);

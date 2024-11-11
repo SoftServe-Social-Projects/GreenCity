@@ -5,6 +5,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
@@ -398,28 +399,30 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     @Override
-    public void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        NotificationType notificationType, boolean isLike, Long secondMessageId, String secondMessageText) {
+    public void createOrUpdateLikeNotification(final LikeNotificationDto likeNotificationDto) {
         notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
-            targetUserVO.getId(), notificationType, newsId)
+            likeNotificationDto.getTargetUserVO().getId(), likeNotificationDto.getNotificationType(),
+            likeNotificationDto.getNewsId())
             .ifPresentOrElse(notification -> {
                 List<User> actionUsers = notification.getActionUsers();
-                actionUsers.removeIf(user -> user.getId().equals(actionUserVO.getId()));
-                if (isLike) {
-                    actionUsers.add(modelMapper.map(actionUserVO, User.class));
+                actionUsers.removeIf(user -> user.getId().equals(likeNotificationDto.getActionUserVO().getId()));
+                if (likeNotificationDto.isLike()) {
+                    actionUsers.add(modelMapper.map(likeNotificationDto.getActionUserVO(), User.class));
                 }
 
                 if (actionUsers.isEmpty()) {
                     notificationRepo.delete(notification);
                 } else {
-                    notification.setCustomMessage(newsTitle);
+                    notification.setCustomMessage(likeNotificationDto.getNewsTitle());
                     notification.setTime(LocalDateTime.now());
                     notificationRepo.save(notification);
                 }
             }, () -> {
-                if (isLike) {
-                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, newsTitle,
-                        secondMessageId, secondMessageText);
+                if (likeNotificationDto.isLike()) {
+                    createNotification(likeNotificationDto.getTargetUserVO(), likeNotificationDto.getActionUserVO(),
+                        likeNotificationDto.getNotificationType(), likeNotificationDto.getNewsId(),
+                        likeNotificationDto.getNewsTitle(), likeNotificationDto.getSecondMessageId(),
+                        likeNotificationDto.getSecondMessageText());
                 }
             });
     }

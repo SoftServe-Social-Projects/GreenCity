@@ -15,6 +15,7 @@ import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
@@ -469,8 +470,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private void sendNotification(EcoNews ecoNews, UserVO actionUser, boolean isLike) {
         UserVO targetUser = userService.findById(ecoNews.getAuthor().getId());
-        userNotificationService.createOrUpdateLikeNotification(targetUser, actionUser, ecoNews.getId(),
-            formatNewsTitle(ecoNews.getTitle()), NotificationType.ECONEWS_LIKE, isLike, null, null);
+        final LikeNotificationDto likeNotificationDto = LikeNotificationDto.builder()
+            .targetUserVO(targetUser)
+            .actionUserVO(actionUser)
+            .newsId(ecoNews.getId())
+            .newsTitle(formatNewsTitle(ecoNews.getTitle()))
+            .notificationType(NotificationType.ECONEWS_LIKE)
+            .isLike(isLike)
+            .build();
+        userNotificationService.createOrUpdateLikeNotification(likeNotificationDto);
     }
 
     private String formatNewsTitle(String newsTitle) {
