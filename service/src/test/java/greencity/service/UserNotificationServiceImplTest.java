@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
@@ -378,8 +379,14 @@ class UserNotificationServiceImplTest {
             .thenReturn(Optional.of(existingNotification));
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, true);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUserVO)
+            .actionUserVO(actionUserVO)
+            .newsId(newsId)
+            .newsTitle(newsTitle)
+            .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .isLike(true)
+            .build());
 
         assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
 
@@ -408,8 +415,14 @@ class UserNotificationServiceImplTest {
         when(actionUserVO.getId()).thenReturn(1L);
         when(actionUser.getId()).thenReturn(1L);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, false);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUserVO)
+            .actionUserVO(actionUserVO)
+            .newsId(newsId)
+            .newsTitle(newsTitle)
+            .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .isLike(false)
+            .build());
 
         assertTrue(actionUsers.isEmpty(), "Action users should be empty after unliking.");
 
@@ -431,8 +444,14 @@ class UserNotificationServiceImplTest {
             .thenReturn(Optional.empty());
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, true);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUserVO)
+            .actionUserVO(actionUserVO)
+            .newsId(newsId)
+            .newsTitle(newsTitle)
+            .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .isLike(true)
+            .build());
 
         verify(notificationRepo, times(1)).save(any(Notification.class));
     }

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
@@ -195,17 +196,10 @@ public interface UserNotificationService {
      * users who liked the article. If the list becomes empty as a result, the
      * notification will be deleted.
      *
-     * @param targetUserVO the user who owns the news article and will receive the
-     *                     notification.
-     * @param actionUserVO the user who liked or unliked the news article.
-     * @param newsId       the ID of the news article that was liked or unliked.
-     * @param newsTitle    the title of the news article, which may be shortened for
-     *                     the notification.
-     * @param isLike       a boolean flag indicating whether the action is a like
-     *                     (true) or an unlike (false).
+     * @param likeNotificationDto the DTO containing information about the like
+     *                            notification
      */
-    void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        NotificationType notificationType, boolean isLike);
+    void createOrUpdateLikeNotification(LikeNotificationDto likeNotificationDto);
 
     /**
      * Method to send notification on last day of primary duration habit has 20%-79%
