@@ -3,13 +3,11 @@ package greencity.service;
 import greencity.dto.achievement.StatisticsDto;
 import greencity.repository.AchievementRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@EnableCaching
 public class AchievementStatisticsServiceImpl implements AchievementStatisticsService {
     private final AchievementRepo achievementRepo;
 
