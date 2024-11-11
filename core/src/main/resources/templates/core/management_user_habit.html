@@ -48,33 +48,16 @@
                 <div class="title">
                     <br>
                     <h1 id="title_name"> Habit [[${habit.id}]]</h1>
-<!--                    <p> [[#{greenCity.pages.table.date}]]: 2021/07/07</p>-->
-<!--                    <p> [[#{greenCity.pages.table.author}]]: Jimmy Cornel</p>-->
                 </div>
             </div>
 
             <div class="row">
 
                 <div class="column aside-1">
-<!--                    <img src="/img/eco.png" style="width: 326px; height: 218px;">-->
+                    <!--                    <img src="/img/eco.png" style="width: 326px; height: 218px;">-->
                     <img th:src="@{${habit.image}}" style="width: 326px; height: 218px;">
                     <br>
-<!--                    <table class="light-text" style="text-align: center">-->
-<!--                        <tr>-->
-<!--                            <td style="width: 105px;">Type</td>-->
-<!--                            <td style="width: 221px;">System</td>-->
-<!--                        </tr>-->
-<!--                        <tr>-->
-<!--                            <td style="width: 105px;">Category</td>-->
-<!--                            <td style="width: 221px;">Water saving</td>-->
-<!--                        </tr>-->
-<!--                        <tr>-->
-<!--                            <td style="width: 105px;">Status</td>-->
-<!--                            <td style="width: 221px;">Active</td>-->
-<!--                        </tr>-->
-<!--                    </table>-->
                 </div>
-
 
                 <div class="column main">
                     <table class="light-text">
@@ -87,6 +70,9 @@
                         </tr>
                         <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'ua']}">
                             <td>&nbsp [[${translation.name}]]</td>
+                        </tr>
+                        <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'ua']}">
+                            <td>&nbsp [[${translation.description}]]</td>
                         </tr>
                     </table>
                     <br>
@@ -101,9 +87,11 @@
                         <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'en']}">
                             <td>&nbsp [[${translation.name}]]</td>
                         </tr>
+                        <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'en']}">
+                            <td>&nbsp [[${translation.description}]]</td>
+                        </tr>
                     </table>
                 </div>
-
 
                 <div class="column aside-2">
                     <p class="light-text"> [[#{greenCity.pages.table.duration}]]: [[${habit.defaultDuration}]]
