@@ -50,7 +50,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +107,7 @@ import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
@@ -681,24 +681,14 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {
-        Page<Event> page = eventRepo.find(PageRequest.of(0, 3), searchQuery);
-        return getSearchNewsDtoPageableDto(page);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<Event> page = eventRepo.find(pageable, searchQuery);
-        return getSearchNewsDtoPageableDto(page);
+    public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
+        return getSearchNewsDtoPageableDto(eventRepo.find(pageable, searchQuery, isFavorite, userId));
     }
 
     private PageableDto<SearchEventsDto> getSearchNewsDtoPageableDto(Page<Event> page) {
         List<SearchEventsDto> searchEventsDtos = page.stream()
-            .map(events -> modelMapper.map(events, SearchEventsDto.class))
-            .collect(Collectors.toList());
+            .map(event -> modelMapper.map(event, SearchEventsDto.class))
+            .toList();
 
         return new PageableDto<>(
             searchEventsDtos,

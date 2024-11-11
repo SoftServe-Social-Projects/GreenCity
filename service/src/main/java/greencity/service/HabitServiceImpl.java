@@ -10,10 +10,10 @@ import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.notification.LikeNotificationDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.CustomShoppingListItem;
+import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
@@ -29,14 +29,14 @@ import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomHabitMapper;
-import greencity.mapping.CustomShoppingListMapper;
-import greencity.mapping.CustomShoppingListResponseDtoMapper;
+import greencity.mapping.CustomToDoListMapper;
+import greencity.mapping.CustomToDoListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.RatingPointsRepo;
 import java.util.Objects;
@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
@@ -70,13 +70,13 @@ public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
-    private final CustomShoppingListResponseDtoMapper customShoppingListResponseDtoMapper;
+    private final CustomToDoListResponseDtoMapper customToDoListResponseDtoMapper;
     private final HabitTranslationDtoMapper habitTranslationDtoMapper;
-    private final CustomShoppingListMapper customShoppingListMapper;
+    private final CustomToDoListMapper customToDoListMapper;
     private final HabitTranslationMapper habitTranslationMapper;
     private final CustomHabitMapper customHabitMapper;
-    private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
-    private final CustomShoppingListItemRepo customShoppingListItemRepo;
+    private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
+    private final CustomToDoListItemRepo customToDoListItemRepo;
     private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
@@ -103,18 +103,18 @@ public class HabitServiceImpl implements HabitService {
         HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
         var habitDto = modelMapper.map(habitTranslation, HabitDto.class);
-        List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
-        shoppingListItemTranslationRepo
-            .findShoppingListByHabitIdAndByLanguageCode(languageCode, id)
-            .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
-        habitDto.setShoppingListItems(shoppingListItems);
+        List<ToDoListItemDto> toDoListItems = new ArrayList<>();
+        toDoListItemTranslationRepo
+            .findToDoListByHabitIdAndByLanguageCode(languageCode, id)
+            .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemDto.class)));
+        habitDto.setToDoListItems(toDoListItems);
         habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
         boolean isCustomHabit = habit.getIsCustomHabit();
         habitDto.setIsCustomHabit(isCustomHabit);
         habitDto.setUsersIdWhoCreatedCustomHabit(habit.getUserId());
         if (isCustomHabit) {
-            habitDto.setCustomShoppingListItems(
-                customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));
+            habitDto.setCustomToDoListItems(
+                customToDoListResponseDtoMapper.mapAllToList(habit.getCustomToDoListItems()));
         }
         return habitDto;
     }
@@ -302,8 +302,8 @@ public class HabitServiceImpl implements HabitService {
             } else {
                 habitDto.setIsAssigned(isHabitAssign(userId, habit.getId()));
             }
-            habitDto.setCustomShoppingListItems(
-                customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));
+            habitDto.setCustomToDoListItems(
+                customToDoListResponseDtoMapper.mapAllToList(habit.getCustomToDoListItems()));
         }
         return new PageableDto<>(habits,
             habitTranslationsPage.getTotalElements(),
@@ -315,32 +315,32 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public List<ShoppingListItemDto> getShoppingListForHabit(Long habitId, String lang) {
-        return shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(lang, habitId)
+    public List<ToDoListItemDto> getToDoListForHabit(Long habitId, String lang) {
+        return toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(lang, habitId)
             .stream()
-            .map(g -> modelMapper.map(g, ShoppingListItemDto.class))
+            .map(g -> modelMapper.map(g, ToDoListItemDto.class))
             .collect(Collectors.toList());
     }
 
     @Override
-    public void addShoppingListItemToHabit(Long habitId, Long itemId) {
-        habitRepo.addShopingListItemToHabit(habitId, itemId);
+    public void addToDoListItemToHabit(Long habitId, Long itemId) {
+        habitRepo.addToDoListItemToHabit(habitId, itemId);
     }
 
     @Override
-    public void deleteShoppingListItem(Long habitId, Long itemId) {
-        habitRepo.upadateShopingListItemInHabit(habitId, itemId);
+    public void deleteToDoListItem(Long habitId, Long itemId) {
+        habitRepo.upadateToDoListItemInHabit(habitId, itemId);
     }
 
     @Override
-    public List<Long> deleteAllShoppingListItemsByListOfId(Long habitId, List<Long> listId) {
-        listId.forEach(id -> deleteShoppingListItem(habitId, id));
+    public List<Long> deleteAllToDoListItemsByListOfId(Long habitId, List<Long> listId) {
+        listId.forEach(id -> deleteToDoListItem(habitId, id));
         return listId;
     }
 
     @Override
-    public List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId) {
-        listId.forEach(id -> addShoppingListItemToHabit(habitId, id));
+    public List<Long> addAllToDoListItemsByListOfId(Long habitId, List<Long> listId) {
+        listId.forEach(id -> addToDoListItemToHabit(habitId, id));
         return listId;
     }
 
@@ -364,7 +364,7 @@ public class HabitServiceImpl implements HabitService {
         habit.setIsDeleted(false);
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
-        setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
+        setCustomToDoListItemToHabit(addCustomHabitDtoRequest, habit, user);
         return buildAddCustomHabitDtoResponse(habit, user.getId());
     }
 
@@ -379,8 +379,8 @@ public class HabitServiceImpl implements HabitService {
     private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
         CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
 
-        response.setCustomShoppingListItemDto(customShoppingListResponseDtoMapper
-            .mapAllToList(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habit.getId())));
+        response.setCustomToDoListItemDto(customToDoListResponseDtoMapper
+            .mapAllToList(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, habit.getId())));
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
@@ -428,9 +428,9 @@ public class HabitServiceImpl implements HabitService {
         if (isNotEmpty(habitDto.getHabitTranslations())) {
             updateHabitTranslationsForCustomHabit(habitDto, toUpdate);
         }
-        if (isNotEmpty(habitDto.getCustomShoppingListItemDto())) {
-            updateExistingCustomShoppingListItems(habitDto, toUpdate, user);
-            saveNewCustomShoppingListItemsToUpdate(habitDto, toUpdate, user);
+        if (isNotEmpty(habitDto.getCustomToDoListItemDto())) {
+            updateExistingCustomToDoListItems(habitDto, toUpdate, user);
+            saveNewCustomToDoListItemsToUpdate(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
             image = fileService.convertToMultipartImage(habitDto.getImage());
@@ -443,33 +443,33 @@ public class HabitServiceImpl implements HabitService {
         }
     }
 
-    private void saveNewCustomShoppingListItemsToUpdate(CustomHabitDtoRequest habitDto, Habit habit, User user) {
-        List<CustomShoppingListItem> customShoppingListItems = customShoppingListMapper
-            .mapAllToList(habitDto.getCustomShoppingListItemDto());
+    private void saveNewCustomToDoListItemsToUpdate(CustomHabitDtoRequest habitDto, Habit habit, User user) {
+        List<CustomToDoListItem> customToDoListItems = customToDoListMapper
+            .mapAllToList(habitDto.getCustomToDoListItemDto());
 
-        customShoppingListItems.stream()
+        customToDoListItems.stream()
             .filter(item -> Objects.isNull(item.getId()))
-            .forEach(customShoppingListItem -> {
-                customShoppingListItem.setHabit(habit);
-                customShoppingListItem.setUser(user);
-                customShoppingListItemRepo.save(customShoppingListItem);
+            .forEach(customToDoListItem -> {
+                customToDoListItem.setHabit(habit);
+                customToDoListItem.setUser(user);
+                customToDoListItemRepo.save(customToDoListItem);
             });
     }
 
-    private void updateExistingCustomShoppingListItems(CustomHabitDtoRequest habitDto, Habit habit, User user) {
-        List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo
+    private void updateExistingCustomToDoListItems(CustomHabitDtoRequest habitDto, Habit habit, User user) {
+        List<CustomToDoListItem> customToDoListItems = customToDoListItemRepo
             .findAllByUserIdAndHabitId(user.getId(), habit.getId());
 
-        customShoppingListItems
-            .forEach(item -> habitDto.getCustomShoppingListItemDto().stream()
+        customToDoListItems
+            .forEach(item -> habitDto.getCustomToDoListItemDto().stream()
                 .filter(itemToUpdate -> item.getId().equals(itemToUpdate.getId()))
                 .forEach(itemToUpdate -> {
                     item.setStatus(itemToUpdate.getStatus());
                     item.setText(itemToUpdate.getText());
                 }));
 
-        customShoppingListItemRepo.deleteAll(customShoppingListItems.stream()
-            .filter(item -> habitDto.getCustomShoppingListItemDto().stream()
+        customToDoListItemRepo.deleteAll(customToDoListItems.stream()
+            .filter(item -> habitDto.getCustomToDoListItemDto().stream()
                 .noneMatch(itemToUpdate -> item.getId().equals(itemToUpdate.getId())))
             .collect(Collectors.toList()));
     }
@@ -509,13 +509,13 @@ public class HabitServiceImpl implements HabitService {
             .collect(Collectors.toSet()));
     }
 
-    private void setCustomShoppingListItemToHabit(CustomHabitDtoRequest habitDto, Habit habit, User user) {
-        List<CustomShoppingListItem> customShoppingListItems =
-            customShoppingListMapper.mapAllToList(habitDto.getCustomShoppingListItemDto());
-        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setHabit(habit));
-        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setUser(user));
-        customShoppingListItemRepo.saveAll(customShoppingListItems);
-        habit.setCustomShoppingListItems(customShoppingListItems);
+    private void setCustomToDoListItemToHabit(CustomHabitDtoRequest habitDto, Habit habit, User user) {
+        List<CustomToDoListItem> customToDoListItems =
+            customToDoListMapper.mapAllToList(habitDto.getCustomToDoListItemDto());
+        customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setHabit(habit));
+        customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setUser(user));
+        customToDoListItemRepo.saveAll(customToDoListItems);
+        habit.setCustomToDoListItems(customToDoListItems);
     }
 
     private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {

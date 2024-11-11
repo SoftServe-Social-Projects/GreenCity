@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static greencity.ModelUtils.getHabitAssignUserDurationDto;
-import static greencity.ModelUtils.getHabitAssignWithUserShoppingListItem;
+import static greencity.ModelUtils.getHabitAssignWithUserToDoListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -16,7 +16,7 @@ class HabitAssignUserDurationDtoMapperTest {
 
     @Test
     void convertHabitAssignToHabitAssignUserDurationDtoTest() {
-        var habitAssign = getHabitAssignWithUserShoppingListItem();
+        var habitAssign = getHabitAssignWithUserToDoListItem();
         var dto = getHabitAssignUserDurationDto();
         assertEquals(dto, mapper.convert(habitAssign));
     }

@@ -39,7 +39,6 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsSearchRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -79,7 +78,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
-    private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
     private final UserRepo userRepo;
@@ -255,25 +253,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ecoNewsRepo.deleteEcoNewsWithIds(listId);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public PageableDto<SearchNewsDto> search(String searchQuery, String languageCode) {
-        Page<EcoNews> page = ecoNewsSearchRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
-        return getSearchNewsDtoPageableDto(page);
-    }
-
-    @Override
-    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<EcoNews> page = ecoNewsSearchRepo.find(pageable, searchQuery, languageCode);
-        return getSearchNewsDtoPageableDto(page);
+    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
+        return getSearchNewsDtoPageableDto(ecoNewsRepo.find(pageable, searchQuery, isFavorite, userId));
     }
 
     private PageableDto<SearchNewsDto> getSearchNewsDtoPageableDto(Page<EcoNews> page) {
         List<SearchNewsDto> searchNewsDtos = page.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
-            .collect(Collectors.toList());
+            .toList();
 
         return new PageableDto<>(
             searchNewsDtos,

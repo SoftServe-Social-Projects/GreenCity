@@ -96,23 +96,13 @@ public interface EcoNewsService {
     void deleteAll(List<Long> listId);
 
     /**
-     * Method for getting EcoNews by searchQuery.
-     *
-     * @param searchQuery query to search
-     * @return list of {@link SearchNewsDto}
-     * @author Vadym Makitra
-     */
-    PageableDto<SearchNewsDto> search(String searchQuery, String languageCode);
-
-    /**
      * Method for getting all EcoNews by searchQuery.
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
-     * @author Vadym Maktra
      */
-    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method for getting all published news by authorised user.
@@ -165,12 +155,9 @@ public interface EcoNewsService {
      * Find {@link EcoNewsVO} for management.
      *
      * @return a dto of {@link PageableDto}.
-     * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
-        Pageable pageable,
-        EcoNewsViewDto ecoNewsViewDto,
-        Locale locale);
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query, Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto, Locale locale);
 
     /**
      * Method to mark news as liked by User.
