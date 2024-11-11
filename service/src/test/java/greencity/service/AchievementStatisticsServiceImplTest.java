@@ -30,7 +30,7 @@ class AchievementStatisticsServiceImplTest {
     }
 
     @Test
-    public void testStatisticsUsersWithAchievements() {
+    void testStatisticsUsersWithAchievements() {
         when(achievementRepo.getStatisticsUsersWithAchievements()).thenReturn(expectedStatistics);
 
         List<StatisticsDto> actualStatistics = achievementStatisticsService.statisticsUsersWithAchievements();
@@ -40,7 +40,7 @@ class AchievementStatisticsServiceImplTest {
     }
 
     @Test
-    public void testStatisticsUsersWithAchievementsCategory() {
+    void testStatisticsUsersWithAchievementsCategory() {
         when(achievementRepo.getStatisticsUsersWithAchievementsCategory()).thenReturn(expectedStatistics);
 
         List<StatisticsDto> actualStatistics = achievementStatisticsService.statisticsUsersWithAchievementsCategory();
@@ -50,7 +50,7 @@ class AchievementStatisticsServiceImplTest {
     }
 
     @Test
-    public void testStatisticsUsersActivity() {
+    void testStatisticsUsersActivity() {
         when(achievementRepo.getUserActivityStatistics()).thenReturn(expectedStatistics);
 
         List<StatisticsDto> actualStatistics = achievementStatisticsService.statisticsUsersActivity();

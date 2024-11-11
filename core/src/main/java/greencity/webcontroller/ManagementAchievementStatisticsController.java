@@ -2,9 +2,9 @@ package greencity.webcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.achievement.StatisticsDto;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.service.AchievementStatisticsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/management/achievement/statistics")
@@ -33,7 +34,7 @@ public class ManagementAchievementStatisticsController {
         try {
             model.addAttribute("statisticalData", mapper.writeValueAsString(statisticsDtos));
         } catch (Exception e) {
-            throw new NotFoundException(e);
+            log.error("An error occurred while processing: ", e);
         }
         return "core/management_achievement_statistics";
     }

@@ -22,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -36,7 +38,7 @@ class ManagementAchievementStatisticsControllerTest {
     private ManagementAchievementStatisticsController managementAchievementStatisticsController;
     private final String url = "/management/achievement/statistics";
 
-    private ObjectMapper mapper = new ObjectMapper();;
+    private ObjectMapper mapper = new ObjectMapper();
     private List<StatisticsDto> statisticsDtos = List.of(
         new StatisticsDto("Achievement 1", 10L),
         new StatisticsDto("Achievement 2", 20L));
@@ -49,7 +51,7 @@ class ManagementAchievementStatisticsControllerTest {
     }
 
     @Test
-    public void testGetAchievementStatistic() throws Exception {
+    void testGetAchievementStatistic() throws Exception {
         String expectedJson = mapper.writeValueAsString(statisticsDtos);
 
         when(achievementStatisticsService.statisticsUsersWithAchievements()).thenReturn(statisticsDtos);
@@ -64,7 +66,22 @@ class ManagementAchievementStatisticsControllerTest {
     }
 
     @Test
-    public void testGetAchievementCategoryStatistic() throws Exception {
+    void testGetAchievementStatisticWithProcessingError() throws Exception {
+        when(achievementStatisticsService.statisticsUsersWithAchievements()).thenReturn(statisticsDtos);
+
+        ObjectMapper faultyMapper = mock(ObjectMapper.class);
+        doThrow(new RuntimeException("JSON Processing Error")).when(faultyMapper).writeValueAsString(statisticsDtos);
+
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(view().name("core/management_achievement_statistics"))
+                .andExpect(model().attributeExists("statisticalData"));
+
+        verify(achievementStatisticsService, times(1)).statisticsUsersWithAchievements();
+    }
+
+    @Test
+    void testGetAchievementCategoryStatistic() throws Exception {
         when(achievementStatisticsService.statisticsUsersWithAchievementsCategory()).thenReturn(statisticsDtos);
 
         mockMvc.perform(get(url + "/by-category"))
@@ -74,7 +91,7 @@ class ManagementAchievementStatisticsControllerTest {
     }
 
     @Test
-    public void testGetUsersActivityStatistic() throws Exception {
+    void testGetUsersActivityStatistic() throws Exception {
         when(achievementStatisticsService.statisticsUsersActivity()).thenReturn(statisticsDtos);
 
         mockMvc.perform(get(url + "/by-activity"))
