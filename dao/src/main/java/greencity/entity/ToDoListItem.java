@@ -25,18 +25,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(
-    exclude = {"userToDoListItems"})
-@EqualsAndHashCode(exclude = {"userToDoListItems", "translations"})
+@ToString
+@EqualsAndHashCode(exclude = {"translations"})
 @Table(name = "to_do_list_items")
 @Builder
 public class ToDoListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToMany(mappedBy = "toDoListItem", fetch = FetchType.LAZY)
-    private List<UserToDoListItem> userToDoListItems;
 
     @ManyToMany(mappedBy = "toDoListItems", fetch = FetchType.LAZY)
     private Set<Habit> habits;

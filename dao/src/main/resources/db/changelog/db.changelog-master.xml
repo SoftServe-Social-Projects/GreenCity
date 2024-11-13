@@ -246,4 +246,8 @@
     <include file="db/changelog/logs/ch-add-table-eco-news-followers-Yehor.xml"/>
     <include file="db/changelog/logs/ch-drop-column-expiry-date-Rozhko.xml"/>
     <include file="db/changelog/logs/ch-rename-tables-shopping_list-to-to_do_list-Herchanivska-10.xml"/>
+    <include file="db/changelog/logs/ch-refactor-column-to_do_list_id-in-user_to_do_list-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-update-values-status-in-user_to_do_list-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-update-table-custom_to_do_list-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-update-values-status-in-habit_to_do_list_items-Herchanivska.xml"/>
 </databaseChangeLog>

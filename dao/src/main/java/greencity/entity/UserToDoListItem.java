@@ -1,8 +1,8 @@
 package greencity.entity;
 
-import greencity.enums.ToDoListItemStatus;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import greencity.enums.UserToDoListItemStatus;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -35,13 +35,16 @@ public class UserToDoListItem {
     @ManyToOne(fetch = FetchType.LAZY)
     private HabitAssign habitAssign;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ToDoListItem toDoListItem;
+    @Column(nullable = false)
+    private Long targetId;
+
+    @Column(nullable = false)
+    private Boolean isCustomItem;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     @Builder.Default
-    private ToDoListItemStatus status = ToDoListItemStatus.ACTIVE;
+    private UserToDoListItemStatus status = UserToDoListItemStatus.INPROGRESS;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd-HH-mm-ss.zzz")
     private LocalDateTime dateCompleted;
@@ -56,12 +59,12 @@ public class UserToDoListItem {
         }
         UserToDoListItem that = (UserToDoListItem) o;
         return Objects.equals(id, that.id) && Objects.equals(habitAssign, that.habitAssign)
-            && Objects.equals(toDoListItem, that.toDoListItem) && status == that.status
-            && Objects.equals(dateCompleted, that.dateCompleted);
+            && Objects.equals(targetId, that.targetId) && Objects.equals(isCustomItem, that.isCustomItem)
+            && status == that.status && Objects.equals(dateCompleted, that.dateCompleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, habitAssign, toDoListItem, status, dateCompleted);
+        return Objects.hash(id, habitAssign, targetId, isCustomItem, status, dateCompleted);
     }
 }
