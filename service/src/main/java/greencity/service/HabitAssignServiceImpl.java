@@ -1452,9 +1452,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void processHabitInvite(UserVO userVO, User friend, Long habitId, Locale locale) {
         Habit habit = getHabitById(habitId);
         HabitAssign habitAssign = assignHabitToUser(habit, friend);
-        HabitAssign inviterHabitAssign = assignHabitToUser(habit, getUserById(userVO.getId()));
-
         assignToDoListToUser(habitId, habitAssign);
+
+        HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
         assignToDoListToUser(habitId, inviterHabitAssign);
 
         habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
@@ -1468,6 +1468,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private HabitAssign assignHabitToUser(Habit habit, User user) {
         HabitAssign habitAssign = updateOrCreateHabitAssignWithStatus(habit, user, HabitAssignStatus.REQUESTED);
         return habitAssignRepo.save(habitAssign);
+    }
+
+    private HabitAssign getOrAssignHabitToUser(UserVO userVO, Habit habit) {
+        return habitAssignRepo.findByHabitIdAndUserId(habit.getId(), userVO.getId())
+            .orElseGet(() -> {
+                HabitAssign habitAssign = assignHabitToUser(habit, getUserById(userVO.getId()));
+                assignToDoListToUser(habit.getId(), habitAssign);
+                return habitAssign;
+            });
     }
 
     private void checkIfUserIsAFriend(Long userId, Long friendId) {
