@@ -2819,7 +2819,7 @@ class HabitAssignServiceImplTest {
 
         verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
         verify(habitInvitationRepo, times(1)).save(any(HabitInvitation.class));
-        verify(toDoListItemRepo, times(2)).getAllToDoListItemIdByHabitIdISContained(habit.getId());
+        verify(toDoListItemRepo, times(3)).getAllToDoListItemIdByHabitIdISContained(habit.getId());
         verify(userNotificationService).createOrUpdateHabitInviteNotification(new UserVO(), userVO,
             habit.getId(), "");
 
