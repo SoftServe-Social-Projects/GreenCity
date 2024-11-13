@@ -61,7 +61,6 @@ class HabitInvitationServiceImplTest {
         when(habitInvitationRepo.findByInviteeHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation1));
         when(habitInvitationRepo.findByInviterHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation2));
 
-
         List<Long> result = habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId);
 
         assertEquals(2, result.size());
