@@ -195,10 +195,9 @@ public class CommentServiceImpl implements CommentService {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-                createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
-                    modelMapper.map(commentVO, Comment.class),
-                    modelMapper.map(user, UserVO.class),
-                    locale);
+                createNotification(articleType, commentVO.getArticleId(), modelMapper.map(commentVO, Comment.class),
+                    modelMapper.map(user, UserVO.class), commentVO.getUser(),
+                    getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
             }
         }
     }
@@ -281,14 +280,15 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver,
         UserVO sender, NotificationType notificationType, Locale locale) {
+        boolean hasParentComment = comment.getParentComment() != null;
         userNotificationService.createNotification(
             receiver,
             sender,
             notificationType,
             articleId,
-            getArticleTitle(articleType, articleId, locale),
-            comment.getId(),
-            comment.getText());
+            hasParentComment ? comment.getParentComment().getText() : comment.getText(),
+            hasParentComment ? comment.getParentComment().getId() : comment.getId(),
+            getArticleTitle(articleType, articleId, locale));
     }
 
     /**
@@ -399,23 +399,6 @@ public class CommentServiceImpl implements CommentService {
         UserVO sender, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
             sender, getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
-    }
-
-    /**
-     * Creates a notification for tagging a user in a comment.
-     *
-     * @param articleType the type of the article, {@link ArticleType}.
-     * @param articleId   the ID of the article, {@link Long}.
-     * @param comment     the comment where the user is tagged, {@link Comment}.
-     * @param receiver    the user who is tagged in the comment, {@link UserVO}.
-     * @param locale      the locale used for localization of the notification,
-     *                    {@link Locale}.
-     */
-    private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment,
-        UserVO receiver, Locale locale) {
-        createNotification(articleType, articleId, comment, receiver,
-            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-            getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
     }
 
     /**
