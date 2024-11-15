@@ -37,6 +37,7 @@ import greencity.entity.UserToDoListItem;
 import greencity.entity.RatingPoints;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.NotificationType;
 import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
@@ -2815,7 +2816,7 @@ class HabitAssignServiceImplTest {
 
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
         verify(toDoListItemRepo).getAllToDoListItemIdByHabitIdISContained(habit.getId());
-        verify(userNotificationService).createOrUpdateHabitInviteNotification(new UserVO(), userVO,
+        verify(userNotificationService).createNotification(new UserVO(), userVO, NotificationType.HABIT_INVITE,
             habit.getId(), "");
 
     }

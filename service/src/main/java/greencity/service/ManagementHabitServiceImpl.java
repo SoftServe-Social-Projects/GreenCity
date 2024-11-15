@@ -161,6 +161,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setComplexity(habitManagementDto.getComplexity());
+        habit.setDefaultDuration(habitManagementDto.getDefaultDuration());
         habitRepo.save(habit);
     }
 

@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -361,41 +360,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private void sendNotification(Long userId) {
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
-    }
-
-    @Override
-    public void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
-        String habitName) {
-        Optional<Notification> existingNotification = notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                NotificationType.HABIT_INVITE, habitId);
-
-        if (existingNotification.isPresent()) {
-            Notification notification = existingNotification.get();
-            notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
-
-            notification
-                .setCustomMessage(createInvitationNotificationMessage(notification.getActionUsers(), habitName));
-            notification.setTime(LocalDateTime.now());
-            notificationRepo.save(notification);
-        } else {
-            String customMessage = String.format("%s invites you to add new habit %s.",
-                actionUserVO.getName(), habitName);
-            createNotification(targetUserVO, actionUserVO, NotificationType.HABIT_INVITE, habitId, customMessage);
-        }
-    }
-
-    private String createInvitationNotificationMessage(List<User> actionUsers, String habitName) {
-        int userCount = actionUsers.size();
-
-        return switch (userCount) {
-            case 1 -> String.format("%s invites you to add new habit %s.",
-                actionUsers.get(0).getName(), habitName);
-            case 2 -> String.format("%s and %s invite you to add new habit %s.",
-                actionUsers.get(0).getName(), actionUsers.get(1).getName(), habitName);
-            default -> String.format("%s, %s and other users invite you to add new habit %s.",
-                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(), habitName);
-        };
     }
 
     @Override
