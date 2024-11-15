@@ -171,21 +171,6 @@ public interface UserNotificationService {
     void viewNotification(Long notificationId);
 
     /**
-     * Method to create a new or update an existing habit invite notification. If a
-     * notification for the specified habit and user already exists, this method
-     * updates the notification by adding the new user to the list of action users
-     * and adjusting the notification message accordingly. If no such notification
-     * exists, a new notification is created.
-     *
-     * @param targetUserVO the user who is invited to the habit
-     * @param actionUserVO the user who sends the invitation
-     * @param habitId      the ID of the habit for which the invitation is sent
-     * @param habitName    the name of the habit being invited to
-     */
-    void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
-        String habitName);
-
-    /**
      * Creates a new like notification or updates an existing one. If a notification
      * for the specified news article and target user already exists and is not yet
      * viewed, this method will update the existing notification by adding the
