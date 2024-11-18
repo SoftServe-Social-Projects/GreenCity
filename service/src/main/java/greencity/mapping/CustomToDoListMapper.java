@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.entity.CustomToDoListItem;
 import org.modelmapper.AbstractConverter;
@@ -9,13 +10,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class CustomToDoListMapper
-    extends AbstractConverter<CustomToDoListItemResponseDto, CustomToDoListItem> {
+    extends AbstractConverter<CustomToDoListItemRequestDto, CustomToDoListItem> {
     @Override
-    public CustomToDoListItem convert(CustomToDoListItemResponseDto customToDoListItemResponseDto) {
+    public CustomToDoListItem convert(CustomToDoListItemRequestDto customToDoListItemRequestDto) {
         return CustomToDoListItem.builder()
-            .id(customToDoListItemResponseDto.getId())
-            .text(customToDoListItemResponseDto.getText())
-            .status(customToDoListItemResponseDto.getStatus())
+            .id(customToDoListItemRequestDto.getId())
+            .text(customToDoListItemRequestDto.getText())
+            .status(customToDoListItemRequestDto.getStatus())
             .build();
     }
 
@@ -28,7 +29,7 @@ public class CustomToDoListMapper
      * @author Lilia Mokhnatska
      */
     public List<CustomToDoListItem> mapAllToList(
-        List<CustomToDoListItemResponseDto> dtoList) {
+        List<CustomToDoListItemRequestDto> dtoList) {
         return dtoList.stream().map(this::convert).collect(Collectors.toList());
     }
 }

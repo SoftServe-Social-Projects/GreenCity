@@ -56,6 +56,14 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
     List<CustomToDoListItem> findAllByUserIdAndHabitId(Long userId, Long habitId);
 
     /**
+     * Method find all default custom to-do list items by habit.
+     *
+     * @param habitId {@link CustomToDoListItem} id
+     * @return list of {@link CustomToDoListItem}
+     */
+    List<CustomToDoListItem> findAllByHabitIdAndIsDefaultTrue(Long habitId);
+
+    /**
      * Method returns particular selected custom to-do list items for user.
      *
      * @param userId id of the {@link User} current user

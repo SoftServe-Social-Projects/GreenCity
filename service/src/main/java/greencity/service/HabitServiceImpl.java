@@ -365,22 +365,21 @@ public class HabitServiceImpl implements HabitService {
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomToDoListItemToHabit(addCustomHabitDtoRequest, habit, user);
-        return buildAddCustomHabitDtoResponse(habit, user.getId());
+        return buildAddCustomHabitDtoResponse(habit);
     }
 
     /**
      * Method that build {@link CustomHabitDtoResponse} from {@link Habit}.
      *
      * @param habit  {@link Habit}
-     * @param userId {@link Long}
      * @return {@link CustomHabitDtoResponse}
      * @author Lilia Mokhnatska
      */
-    private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
+    private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit) {
         CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
 
         response.setCustomToDoListItemDto(customToDoListResponseDtoMapper
-            .mapAllToList(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, habit.getId())));
+            .mapAllToList(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId())));
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
@@ -414,7 +413,7 @@ public class HabitServiceImpl implements HabitService {
         checkAccessForAdminAndModeratorAndByUserId(user, toUpdate);
         enhanceHabitWithNewData(toUpdate, habitDto, user, image);
         Habit updatedHabit = habitRepo.save(toUpdate);
-        return buildAddCustomHabitDtoResponse(updatedHabit, user.getId());
+        return buildAddCustomHabitDtoResponse(updatedHabit);
     }
 
     private void enhanceHabitWithNewData(Habit toUpdate, CustomHabitDtoRequest habitDto,
@@ -452,6 +451,7 @@ public class HabitServiceImpl implements HabitService {
             .forEach(customToDoListItem -> {
                 customToDoListItem.setHabit(habit);
                 customToDoListItem.setUser(user);
+                customToDoListItem.setIsDefault(true);
                 customToDoListItemRepo.save(customToDoListItem);
             });
     }
@@ -514,6 +514,7 @@ public class HabitServiceImpl implements HabitService {
             customToDoListMapper.mapAllToList(habitDto.getCustomToDoListItemDto());
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setHabit(habit));
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setUser(user));
+        customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setIsDefault(true));
         customToDoListItemRepo.saveAll(customToDoListItems);
         habit.setCustomToDoListItems(customToDoListItems);
     }
