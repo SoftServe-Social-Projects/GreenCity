@@ -5,6 +5,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
@@ -29,7 +30,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -336,15 +336,19 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
-        dto.setBodyText(bundle.getString(dto.getNotificationType()));
-        int size = new HashSet<>(notification.getActionUsers()).size();
-        if (size == 1) {
-            User actionUser = notification.getActionUsers().getFirst();
-            dto.setActionUserId(actionUser.getId());
-            dto.setActionUserText(actionUser.getName());
-        } else {
-            dto.setActionUserText(size + " " + bundle.getString("USERS"));
+        final List<User> uniqueActionUsers =
+            new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
+        int size = new HashSet<>(uniqueActionUsers).size();
+        dto.setActionUserText(uniqueActionUsers.stream().map(User::getName).toList());
+        dto.setActionUserId(uniqueActionUsers.stream().map(User::getId).toList());
+        String bodyTextTemplate = bundle.getString(dto.getNotificationType());
+        String bodyText;
+        switch (size) {
+            case 1 -> bodyText = bodyTextTemplate;
+            case 2 -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("TWO_USERS"));
+            default -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
         }
+        dto.setBodyText(bodyText);
         return dto;
     }
 
@@ -359,62 +363,30 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     @Override
-    public void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
-        String habitName) {
-        Optional<Notification> existingNotification = notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                NotificationType.HABIT_INVITE, habitId);
-
-        if (existingNotification.isPresent()) {
-            Notification notification = existingNotification.get();
-            notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
-
-            notification
-                .setCustomMessage(createInvitationNotificationMessage(notification.getActionUsers(), habitName));
-            notification.setTime(LocalDateTime.now());
-            notificationRepo.save(notification);
-        } else {
-            String customMessage = String.format("%s invites you to add new habit %s.",
-                actionUserVO.getName(), habitName);
-            createNotification(targetUserVO, actionUserVO, NotificationType.HABIT_INVITE, habitId, customMessage);
-        }
-    }
-
-    private String createInvitationNotificationMessage(List<User> actionUsers, String habitName) {
-        int userCount = actionUsers.size();
-
-        return switch (userCount) {
-            case 1 -> String.format("%s invites you to add new habit %s.",
-                actionUsers.get(0).getName(), habitName);
-            case 2 -> String.format("%s and %s invite you to add new habit %s.",
-                actionUsers.get(0).getName(), actionUsers.get(1).getName(), habitName);
-            default -> String.format("%s, %s and other users invite you to add new habit %s.",
-                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(), habitName);
-        };
-    }
-
-    @Override
-    public void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        NotificationType notificationType, boolean isLike) {
+    public void createOrUpdateLikeNotification(final LikeNotificationDto likeNotificationDto) {
         notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
-            targetUserVO.getId(), notificationType, newsId)
+            likeNotificationDto.getTargetUserVO().getId(), likeNotificationDto.getNotificationType(),
+            likeNotificationDto.getNewsId())
             .ifPresentOrElse(notification -> {
                 List<User> actionUsers = notification.getActionUsers();
-                actionUsers.removeIf(user -> user.getId().equals(actionUserVO.getId()));
-                if (isLike) {
-                    actionUsers.add(modelMapper.map(actionUserVO, User.class));
+                actionUsers.removeIf(user -> user.getId().equals(likeNotificationDto.getActionUserVO().getId()));
+                if (likeNotificationDto.isLike()) {
+                    actionUsers.add(modelMapper.map(likeNotificationDto.getActionUserVO(), User.class));
                 }
 
                 if (actionUsers.isEmpty()) {
                     notificationRepo.delete(notification);
                 } else {
-                    notification.setCustomMessage(newsTitle);
+                    notification.setCustomMessage(likeNotificationDto.getNewsTitle());
                     notification.setTime(LocalDateTime.now());
                     notificationRepo.save(notification);
                 }
             }, () -> {
-                if (isLike) {
-                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, newsTitle);
+                if (likeNotificationDto.isLike()) {
+                    createNotification(likeNotificationDto.getTargetUserVO(), likeNotificationDto.getActionUserVO(),
+                        likeNotificationDto.getNotificationType(), likeNotificationDto.getNewsId(),
+                        likeNotificationDto.getNewsTitle(), likeNotificationDto.getSecondMessageId(),
+                        likeNotificationDto.getSecondMessageText());
                 }
             });
     }

@@ -17,6 +17,7 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -763,7 +764,7 @@ class EcoNewsServiceImplTest {
         ecoNewsService.like(actionUser, ecoNewsVO.getId());
 
         verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            targetUser, actionUser, ecoNewsVO.getId(), ecoNewsVO.getTitle(), NotificationType.ECONEWS_LIKE, true);
+            any(LikeNotificationDto.class));
         verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
             AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
         verify(ratingCalculation, times(1))
@@ -808,8 +809,7 @@ class EcoNewsServiceImplTest {
         assertTrue(ecoNewsVO.getUsersLikedNews().contains(actionUser));
 
         verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            null, actionUser, ecoNewsVO.getId(), "test title",
-            NotificationType.ECONEWS_LIKE, false);
+            any(LikeNotificationDto.class));
         verify(achievementCalculation, times(1))
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_NEWS, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))

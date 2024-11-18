@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
@@ -170,21 +171,6 @@ public interface UserNotificationService {
     void viewNotification(Long notificationId);
 
     /**
-     * Method to create a new or update an existing habit invite notification. If a
-     * notification for the specified habit and user already exists, this method
-     * updates the notification by adding the new user to the list of action users
-     * and adjusting the notification message accordingly. If no such notification
-     * exists, a new notification is created.
-     *
-     * @param targetUserVO the user who is invited to the habit
-     * @param actionUserVO the user who sends the invitation
-     * @param habitId      the ID of the habit for which the invitation is sent
-     * @param habitName    the name of the habit being invited to
-     */
-    void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
-        String habitName);
-
-    /**
      * Creates a new like notification or updates an existing one. If a notification
      * for the specified news article and target user already exists and is not yet
      * viewed, this method will update the existing notification by adding the
@@ -195,17 +181,10 @@ public interface UserNotificationService {
      * users who liked the article. If the list becomes empty as a result, the
      * notification will be deleted.
      *
-     * @param targetUserVO the user who owns the news article and will receive the
-     *                     notification.
-     * @param actionUserVO the user who liked or unliked the news article.
-     * @param newsId       the ID of the news article that was liked or unliked.
-     * @param newsTitle    the title of the news article, which may be shortened for
-     *                     the notification.
-     * @param isLike       a boolean flag indicating whether the action is a like
-     *                     (true) or an unlike (false).
+     * @param likeNotificationDto the DTO containing information about the like
+     *                            notification
      */
-    void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        NotificationType notificationType, boolean isLike);
+    void createOrUpdateLikeNotification(LikeNotificationDto likeNotificationDto);
 
     /**
      * Method to send notification on last day of primary duration habit has 20%-79%

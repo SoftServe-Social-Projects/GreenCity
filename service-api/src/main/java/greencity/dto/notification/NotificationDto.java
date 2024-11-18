@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +24,8 @@ public class NotificationDto {
 
     private String titleText;
     private String bodyText;
-    private Long actionUserId;
-    private String actionUserText;
+    private List<Long> actionUserId;
+    private List<String> actionUserText;
     private Long targetId;
     private String message;
     private String secondMessage;

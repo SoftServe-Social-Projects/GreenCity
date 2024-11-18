@@ -43,6 +43,7 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -1460,9 +1461,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
 
         String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
-
         UserVO friendVO = mapToUserVO(friend);
-        userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+
+        userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitId, habitName);
     }
 
     private HabitAssign assignHabitToUser(Habit habit, User user) {

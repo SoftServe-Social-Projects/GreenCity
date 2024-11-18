@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
@@ -27,7 +28,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import java.lang.reflect.Method;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -314,54 +314,6 @@ class UserNotificationServiceImplTest {
     }
 
     @Test
-    @DisplayName("createOrUpdateHabitInviteNotification method updates existing notification")
-    void testCreateOrUpdateHabitInviteNotification_UpdateExistingNotification() {
-        UserVO targetUserVO = mock(UserVO.class);
-        UserVO actionUserVO = mock(UserVO.class);
-        User actionUser = mock(User.class);
-        Long habitId = 1L;
-        String habitName = "Test Habit";
-
-        Notification existingNotification = mock(Notification.class);
-        List<User> actionUsers = new ArrayList<>();
-        when(existingNotification.getActionUsers()).thenReturn(actionUsers);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
-            .thenReturn(Optional.of(existingNotification));
-        when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
-
-        userNotificationService.createOrUpdateHabitInviteNotification(targetUserVO, actionUserVO, habitId, habitName);
-
-        assertEquals(1, actionUsers.size());
-        assertEquals(actionUser, actionUsers.getFirst());
-
-        verify(existingNotification).setCustomMessage(anyString());
-        verify(existingNotification).setTime(any(LocalDateTime.class));
-        verify(notificationRepo).save(existingNotification);
-    }
-
-    @Test
-    @DisplayName("createOrUpdateHabitInviteNotification method creates new notification")
-    void testCreateOrUpdateHabitInviteNotification_CreateNewNotification() {
-        UserVO targetUserVO = mock(UserVO.class);
-        UserVO actionUserVO = mock(UserVO.class);
-        Long habitId = 1L;
-        String habitName = "Test Habit";
-
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
-            .thenReturn(Optional.empty());
-
-        User targetUser = mock(User.class);
-        when(modelMapper.map(targetUserVO, User.class)).thenReturn(targetUser);
-        when(targetUser.getId()).thenReturn(1L);
-
-        userNotificationService.createOrUpdateHabitInviteNotification(targetUserVO, actionUserVO, habitId, habitName);
-
-        verify(notificationRepo, times(1)).save(any(Notification.class));
-    }
-
-    @Test
     @DisplayName("createOrUpdateLikeNotification updates existing notification when liking")
     void testCreateOrUpdateLikeNotification_UpdateExistingNotification_AddLike() {
         UserVO targetUserVO = mock(UserVO.class);
@@ -378,8 +330,14 @@ class UserNotificationServiceImplTest {
             .thenReturn(Optional.of(existingNotification));
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, true);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUserVO)
+            .actionUserVO(actionUserVO)
+            .newsId(newsId)
+            .newsTitle(newsTitle)
+            .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .isLike(true)
+            .build());
 
         assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
 
@@ -408,8 +366,14 @@ class UserNotificationServiceImplTest {
         when(actionUserVO.getId()).thenReturn(1L);
         when(actionUser.getId()).thenReturn(1L);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, false);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUserVO)
+            .actionUserVO(actionUserVO)
+            .newsId(newsId)
+            .newsTitle(newsTitle)
+            .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .isLike(false)
+            .build());
 
         assertTrue(actionUsers.isEmpty(), "Action users should be empty after unliking.");
 
@@ -431,45 +395,16 @@ class UserNotificationServiceImplTest {
             .thenReturn(Optional.empty());
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
-            NotificationType.ECONEWS_COMMENT_LIKE, true);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUserVO)
+            .actionUserVO(actionUserVO)
+            .newsId(newsId)
+            .newsTitle(newsTitle)
+            .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .isLike(true)
+            .build());
 
         verify(notificationRepo, times(1)).save(any(Notification.class));
-    }
-
-    @Test
-    @DisplayName("createInvitationNotificationMessage with two users")
-    void testCreateInvitationNotificationMessage_TwoUsers() throws Exception {
-        User user1 = User.builder().name("Taras").build();
-        User user2 = User.builder().name("Petro").build();
-
-        List<User> actionUsers = List.of(user1, user2);
-        String habitName = "Test Habit";
-
-        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createInvitationNotificationMessage",
-            List.class, String.class);
-        method.setAccessible(true);
-        String result = (String) method.invoke(userNotificationService, actionUsers, habitName);
-
-        assertEquals("Taras and Petro invite you to add new habit Test Habit.", result);
-    }
-
-    @Test
-    @DisplayName("createInvitationNotificationMessage with more than two users")
-    void testCreateInvitationNotificationMessage_MoreThanTwoUsers() throws Exception {
-        User user1 = User.builder().name("Taras").build();
-        User user2 = User.builder().name("Petro").build();
-        User user3 = User.builder().name("Vasyl").build();
-
-        List<User> actionUsers = List.of(user1, user2, user3);
-        String habitName = "Test Habit";
-
-        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createInvitationNotificationMessage",
-            List.class, String.class);
-        method.setAccessible(true);
-        String result = (String) method.invoke(userNotificationService, actionUsers, habitName);
-
-        assertEquals("Petro, Vasyl and other users invite you to add new habit Test Habit.", result);
     }
 
     @Test
