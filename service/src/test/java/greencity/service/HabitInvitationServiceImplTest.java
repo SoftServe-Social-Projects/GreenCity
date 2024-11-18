@@ -4,6 +4,8 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import greencity.entity.User;
+import greencity.enums.HabitInvitationStatus;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitInvitationRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,23 +25,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HabitInvitationServiceImplTest {
-
     @Mock
     private HabitInvitationRepo habitInvitationRepo;
-
     @Mock
     private ModelMapper modelMapper;
-
+    @Mock
+    HabitAssignRepo habitAssignRepo;
     @InjectMocks
     private HabitInvitationServiceImpl habitInvitationService;
 
     private final Long userId = 1L;
     private final Long habitAssignId = 2L;
-
-    @BeforeEach
-    void setUp() {
-        habitInvitationService = new HabitInvitationServiceImpl(habitInvitationRepo, modelMapper);
-    }
 
     @Test
     void testGetInvitedFriendsIdsTrackingHabitList() {
@@ -84,9 +80,9 @@ class HabitInvitationServiceImplTest {
         habitAssign2.setUser(user2);
 
         HabitInvitation habitInvitation1 = new HabitInvitation();
-        habitInvitation1.setInviterHabitAssign(habitAssign1);
+        habitInvitation1.setInviterHabitAssign(habitAssign1).setStatus(HabitInvitationStatus.ACCEPTED);
         HabitInvitation habitInvitation2 = new HabitInvitation();
-        habitInvitation2.setInviteeHabitAssign(habitAssign2);
+        habitInvitation2.setInviteeHabitAssign(habitAssign2).setStatus(HabitInvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findByInviteeHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation1));
         when(habitInvitationRepo.findByInviterHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation2));

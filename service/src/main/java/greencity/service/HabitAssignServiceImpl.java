@@ -1459,12 +1459,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
         assignToDoListToUser(habitId, inviterHabitAssign);
 
-        HabitInvitation habitInvitation = habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
+        HabitInvitation habitInvitation =
+            habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
 
         String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
         UserVO friendVO = mapToUserVO(friend);
 
-        userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitId, habitName, habitInvitation.getId(), habitName );
+        userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitId, habitName,
+            habitInvitation.getId(), habitName);
     }
 
     private HabitAssign assignHabitToUser(Habit habit, User user) {

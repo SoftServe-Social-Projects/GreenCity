@@ -30,46 +30,47 @@ public class HabitInvitationController {
      * Method for accepting a habit invitation.
      *
      * @param invitationId ID of the invitation.
-     * @param userVO        {@link UserVO} representing the authenticated user.
+     * @param userVO       {@link UserVO} representing the authenticated user.
      */
     @Operation(summary = "Accept habit invitation")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PatchMapping("/{invitationId}/accept")
     public ResponseEntity<ResponseEntity.BodyBuilder> acceptHabitInvitation(
-            @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
-            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitInvitationService.acceptHabitInvitation(invitationId, userVO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
-     * Method for rejecting a habit invitation. Changes status from REQUEST to REJECTED.
+     * Method for rejecting a habit invitation. Changes status from REQUEST to
+     * REJECTED.
      *
      * @param invitationId ID of the invitation.
-     * @param userVO        {@link UserVO} representing the authenticated user.
+     * @param userVO       {@link UserVO} representing the authenticated user.
      */
     @Operation(summary = "Reject habit invitation")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PatchMapping("/{invitationId}/reject")
     public ResponseEntity<Object> declineHabitInvitation(
-            @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
-            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitInvitationService.rejectHabitInvitation(invitationId, userVO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

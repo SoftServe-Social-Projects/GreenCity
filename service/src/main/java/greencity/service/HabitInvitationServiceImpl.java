@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,9 +55,9 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
     @Transactional
     public void acceptHabitInvitation(Long invitationId, UserVO invitedUser) {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
-                .orElseThrow(() -> new NotFoundException("Invitation not found"));
+            .orElseThrow(() -> new NotFoundException("Invitation not found"));
 
-        if(!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())){
+        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())) {
             throw new IllegalArgumentException("You could not accept this invitation");
         }
 
@@ -66,9 +65,10 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
         habitInvitationRepo.save(invitation);
 
         HabitAssign habitAssign = habitAssignRepo.findById(invitation.getInviteeHabitAssign().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + invitation.getInviteeHabitAssign().getId()));
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + invitation.getInviteeHabitAssign().getId()));
 
-        if(habitAssign.getStatus().equals(HabitAssignStatus.REQUESTED)){
+        if (habitAssign.getStatus().equals(HabitAssignStatus.REQUESTED)) {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssignRepo.save(habitAssign);
         }
@@ -78,10 +78,9 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
     @Transactional
     public void rejectHabitInvitation(Long invitationId, UserVO invitedUser) {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
-                .orElseThrow(() -> new NotFoundException("Invitation not found"));
+            .orElseThrow(() -> new NotFoundException("Invitation not found"));
 
-
-        if(!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())){
+        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())) {
             throw new IllegalArgumentException("You could not reject this invitation");
         }
 
@@ -116,7 +115,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
 
     private List<HabitAssign> getHabitAssignsWhoIHaveInvited(Long currentUserId, Long habitAssignId) {
         return habitInvitationRepo.findByInviterHabitAssignId(habitAssignId).stream()
-            .filter(hi-> hi.getStatus().equals(HabitInvitationStatus.ACCEPTED))
+            .filter(hi -> hi.getStatus().equals(HabitInvitationStatus.ACCEPTED))
             .map(HabitInvitation::getInviteeHabitAssign)
             .filter(habitAssign -> !habitAssign.getUser().getId().equals(currentUserId))
             .collect(Collectors.toList());

@@ -355,8 +355,8 @@ public class SecurityConfig {
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend",
-                        HABIT_INVITE+INVITATION_ID+"/accept",
-                        HABIT_INVITE+INVITATION_ID+"/reject")
+                    HABIT_INVITE + INVITATION_ID + "/accept",
+                    HABIT_INVITE + INVITATION_ID + "/reject")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
