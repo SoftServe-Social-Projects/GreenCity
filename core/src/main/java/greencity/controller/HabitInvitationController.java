@@ -43,7 +43,7 @@ public class HabitInvitationController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PatchMapping("/{invitationId}/accept")
-    public ResponseEntity<ResponseEntity.BodyBuilder> acceptHabitInvitation(
+    public ResponseEntity<Void> acceptHabitInvitation(
         @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitInvitationService.acceptHabitInvitation(invitationId, userVO);
@@ -68,7 +68,7 @@ public class HabitInvitationController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PatchMapping("/{invitationId}/reject")
-    public ResponseEntity<Object> declineHabitInvitation(
+    public ResponseEntity<Void> declineHabitInvitation(
         @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitInvitationService.rejectHabitInvitation(invitationId, userVO);
