@@ -49,7 +49,7 @@ class HabitInvitationControllerTest {
     @Test
     @WithMockUser
     @SneakyThrows
-    public void acceptHabitInvitationShouldReturn200() {
+    void acceptHabitInvitationShouldReturn200() {
         Long invitationId = 1L;
         UserVO userVO = new UserVO();
         doNothing().when(habitInvitationService).acceptHabitInvitation(invitationId, userVO);
@@ -61,7 +61,8 @@ class HabitInvitationControllerTest {
 
     @Test
     @WithMockUser
-    public void rejectHabitInvitationShouldReturn200() throws Exception {
+    @SneakyThrows
+    void rejectHabitInvitationShouldReturn200() {
         Long invitationId = 2L;
         UserVO userVO = new UserVO();
         doNothing().when(habitInvitationService).rejectHabitInvitation(invitationId, userVO);
