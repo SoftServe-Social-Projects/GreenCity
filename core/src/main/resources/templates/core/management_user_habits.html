@@ -295,13 +295,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.complexity}]]</label>
-                                    <input type="text" class="form-control" name="complexity" id="addComplexity"
+                                    <input type="number" class="form-control" min="1" max="3" name="complexity" id="addComplexity"
                                            required>
                                     <span th:id="'errorModalSavecomplexity'" class="errorSpan"></span>
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.default.duration}]]</label>
-                                    <input type="text" class="form-control" name="defaultDuration"
+                                    <input type="number" class="form-control" min="7" max="56" name="defaultDuration"
                                            id="addDefaultDuration" required>
                                     <span th:id="'errorModalSavedefaultDuration'" class="errorSpan"></span>
                                 </div>
@@ -323,7 +323,7 @@
                                                     <label>[[#{greenCity.pages.table.name}]]</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'addHabitName'+${iterInfo.index}"
-                                                           th:id="'addHabitName'+${iterInfo.index}">
+                                                           th:id="'addHabitName'+${iterInfo.index}" required>
                                                     <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].name'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -335,7 +335,7 @@
                                                     <label>[[#{greenCity.pages.table.habit.item}]]</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'addHabitItem'+${iterInfo.index}"
-                                                           th:id="'addHabitItem'+${iterInfo.index}">
+                                                           th:id="'addHabitItem'+${iterInfo.index}" required>
                                                     <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].habitItem'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -345,7 +345,7 @@
                                                     <label>[[#{greenCity.pages.table.description}]]</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'addHabitDescription'+${iterInfo.index}"
-                                                           th:id="'addHabitDescription'+${iterInfo.index}">
+                                                           th:id="'addHabitDescription'+${iterInfo.index}" required>
                                                     <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].description'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -643,35 +643,45 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     $(document).ready(function () {
-        $('#addHabitForm').on('submit', function (event) {
+        $('#addHabitForm').one('submit', function (event) {
             event.preventDefault();
-            var formData = new FormData();
-            var habitManagementDto = {
+            const formData = new FormData();
+            const habitManagementDto = {
                 complexity: $("#addComplexity").val(),
                 defaultDuration: $("#addDefaultDuration").val(),
                 habitTranslations: []
             };
-            var habitTranslations = [];
 
             $('.habit-translation-row').each(function () {
-                var $container = $(this);
-                var index = $container.data('index');
-                var name = $container.find('input[id="addHabitName' + index + '"]').val();
-                var habitItem = $container.find('input[id="addHabitItem' + index + '"]').val();
-                var description = $container.find('input[id="addHabitDescription' + index + '"]').val();
-                var languageCode = $container.find('input[id="addHabitLanguageCode' + index + '"]').val();
+                const $container = $(this);
+                const index = $container.data('index');
+                console.log(`Processing translation row at index ${index}`);
 
-                habitTranslations.push({
-                    languageCode: languageCode,
-                    name: name,
-                    habitItem: habitItem,
-                    description: description
-                });
+                const name = $container.find(`#addHabitName${index}`).val();
+                const habitItem = $container.find(`#addHabitItem${index}`).val();
+                const description = $container.find(`#addHabitDescription${index}`).val();
+                const languageCode = $container.find(`#addHabitLanguageCode${index}`).val();
 
+                console.log(`Values retrieved - Language Code: ${languageCode}, Name: ${name}, Item: ${habitItem}, Description: ${description}`);
+
+                if (languageCode && name && habitItem && description) {
+                    habitManagementDto.habitTranslations.push({
+                        languageCode: languageCode,
+                        name: name,
+                        habitItem: habitItem,
+                        description: description
+                    });
+                } else {
+                    console.warn(`Translation fields missing or incorrect for index ${index}`, {
+                        languageCode,
+                        name,
+                        habitItem,
+                        description
+                    });
+                }
             });
 
-            habitTranslations.forEach(t => console.log(t));
-            habitManagementDto.habitTranslations = habitTranslations;
+            console.log("Translations gathered:", habitManagementDto.habitTranslations);
             formData.append('habitManagementDto', new Blob([JSON.stringify(habitManagementDto)], {type: 'application/json'}));
 
             let fileInput = $("#fileCreate")[0];
@@ -681,16 +691,17 @@
 
             $.ajax({
                 type: 'POST',
-                url: "/management/habits/save",
+                url: '/management/habits/save',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    console.log("Success response received", response);
                     alert('Habit added successfully!');
                     window.location.href = 'habits';
                 },
                 error: function (xhr, status, error) {
-                    console.log("Error: " + error);
+                    console.error("Error while saving habit:", error);
                     alert('Error: Unable to save the habit. Please try again.');
                 }
             });
