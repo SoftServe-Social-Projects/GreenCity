@@ -42,6 +42,7 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitInvitationStatus;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
@@ -1458,12 +1459,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
         assignToDoListToUser(habitId, inviterHabitAssign);
 
-        habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
+        HabitInvitation habitInvitation = habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
 
         String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
         UserVO friendVO = mapToUserVO(friend);
 
-        userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitId, habitName);
+        userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitInvitation.getId(), habitName);
     }
 
     private HabitAssign assignHabitToUser(Habit habit, User user) {
@@ -1634,6 +1635,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return HabitInvitation.builder()
             .inviteeHabitAssign(inviteeHabitAssign)
             .inviterHabitAssign(inviterHabitAssign)
+            .status(HabitInvitationStatus.PENDING)
             .build();
     }
 }

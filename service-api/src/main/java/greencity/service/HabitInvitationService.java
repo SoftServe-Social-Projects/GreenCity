@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.user.UserVO;
+
 import java.util.List;
 
 public interface HabitInvitationService {
@@ -31,4 +33,11 @@ public interface HabitInvitationService {
      *         associated habit assignments.
      */
     List<HabitAssignDto> getHabitAssignsTrackingHabitList(Long userId, Long habitAssignId);
+
+
+    //todo: add javadoc
+    void acceptHabitInvitation(Long invitationId, UserVO invitedUser);
+
+    //todo: add javadoc
+    void rejectHabitInvitation(Long invitationId, UserVO invitedUser);
 }
