@@ -47,7 +47,6 @@ class HabitInvitationControllerTest {
     }
 
     @Test
-    @WithMockUser
     @SneakyThrows
     void acceptHabitInvitationShouldReturn200() {
         Long invitationId = 1L;
@@ -60,7 +59,6 @@ class HabitInvitationControllerTest {
     }
 
     @Test
-    @WithMockUser
     @SneakyThrows
     void rejectHabitInvitationShouldReturn200() {
         Long invitationId = 2L;
