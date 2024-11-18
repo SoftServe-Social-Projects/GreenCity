@@ -88,6 +88,7 @@ public class HabitServiceImpl implements HabitService {
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final RatingPointsRepo ratingPointsRepo;
+    private final HabitInvitationService habitInvitationService;
 
     /**
      * Method returns Habit by its id.
@@ -391,14 +392,15 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId) {
+    public List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitAssignId, Long userId) {
         if (!userRepo.existsById(userId)) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
-        if (!habitRepo.existsById(habitId)) {
-            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+        if (!habitAssignRepo.existsById(habitAssignId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId);
         }
-        List<User> users = userRepo.getFriendsAssignedToHabit(userId, habitId);
+        List<Long> ids = habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId);
+        List<User> users = userRepo.findAllById(ids);
         return users.stream().map(user -> modelMapper.map(user, UserProfilePictureDto.class))
             .collect(Collectors.toList());
     }
