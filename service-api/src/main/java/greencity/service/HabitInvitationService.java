@@ -33,9 +33,19 @@ public interface HabitInvitationService {
      */
     List<HabitAssignDto> getHabitAssignsTrackingHabitList(Long userId, Long habitAssignId);
 
-    // todo: add javadoc
+    /**
+     * Accepts a habit invitation for a user.
+     *
+     * @param invitationId the ID of the habit invitation to be accepted
+     * @param invitedUser  the user who is accepting the invitation
+     */
     void acceptHabitInvitation(Long invitationId, UserVO invitedUser);
 
-    // todo: add javadoc
+    /**
+     * Rejects a habit invitation for a user.
+     *
+     * @param invitationId the ID of the habit invitation to be rejected
+     * @param invitedUser  the user who is rejecting the invitation
+     */
     void rejectHabitInvitation(Long invitationId, UserVO invitedUser);
 }

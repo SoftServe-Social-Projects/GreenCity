@@ -203,4 +203,7 @@ public class ErrorMessage {
         "isFavorite param require authenticated user";
     public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT_ASSIGN =
         "No friends are assigned on current habit assign with id: ";
+    public static final String CANNOT_ACCEPT_HABIT_INVITATION = "You can't accept this habit invitation";
+    public static final String CANNOT_REJECT_HABIT_INVITATION = "You can't reject this habit invitation";
+    public static final String INVITATION_NOT_FOUND = "Invitation not found";
 }

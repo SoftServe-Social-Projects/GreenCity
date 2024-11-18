@@ -8,6 +8,7 @@ import greencity.entity.HabitInvitation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitInvitationStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitInvitationRepo;
@@ -51,14 +52,16 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             .collect(Collectors.toList());
     }
 
-    // todo: move exception message to constants
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     public void acceptHabitInvitation(Long invitationId, UserVO invitedUser) {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
 
         if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())) {
-            throw new IllegalArgumentException("You could not accept this invitation");
+            throw new BadRequestException(ErrorMessage.CANNOT_ACCEPT_HABIT_INVITATION);
         }
 
         invitation.setStatus(HabitInvitationStatus.ACCEPTED);
@@ -74,14 +77,16 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
         }
     }
 
-    // todo: move exception message to constants
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     public void rejectHabitInvitation(Long invitationId, UserVO invitedUser) {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
 
         if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())) {
-            throw new IllegalArgumentException("You could not reject this invitation");
+            throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }
 
         invitation.setStatus(HabitInvitationStatus.REJECTED);
