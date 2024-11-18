@@ -24,5 +24,6 @@ public class ToDoListItemDto {
     @NotEmpty
     private String text;
 
+    @NotEmpty
     private String status;
 }

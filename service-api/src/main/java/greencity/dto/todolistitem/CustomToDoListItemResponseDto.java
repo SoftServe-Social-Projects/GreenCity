@@ -2,8 +2,6 @@ package greencity.dto.todolistitem;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import greencity.enums.ToDoListItemStatus;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -22,7 +20,7 @@ public class CustomToDoListItemResponseDto {
     private Long id;
     @NotEmpty
     private String text;
-    @NotNull
-    private ToDoListItemStatus status;
+    @NotEmpty
+    private String status;
     private boolean isDefault;
 }

@@ -63,14 +63,24 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<Long> getAllAssignedToDoListItems(Long id);
 
     /**
-     * Method returns UserToDoListItem list by habit assign id.
+     * Method returns default UserToDoListItem list by habit assign id.
      *
      * @param id id of needed habit assign
      * @return List of {@link Long}
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id")
+        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = false")
     List<UserToDoListItem> getAllAssignedToDoListItemsFull(Long id);
+
+    /**
+     * Method returns custom UserToDoListItem list by habit assign id.
+     *
+     * @param id id of needed habit assign
+     * @return List of {@link Long}
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = true")
+    List<UserToDoListItem> getAllAssignedCustomToDoListItemsFull(Long id);
 
     /**
      * Method returns user to-do list items by habitAssignId and INPROGRESS status.
@@ -94,8 +104,8 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
      * @return List of {@link Long}
      */
     @Query(nativeQuery = true,
-        value = "SELECT to_do_list_item_id FROM user_to_do_list WHERE habit_assign_id = :habitAssignId"
-            + " AND status = :status")
+        value = "SELECT target_id FROM user_to_do_list WHERE habit_assign_id = :habitAssignId"
+            + " AND is_custom_item = false AND status = :status")
     List<Long> getToDoListItemsByHabitAssignIdAndStatus(Long habitAssignId, String status);
 
     /**

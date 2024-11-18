@@ -10,7 +10,8 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
+import greencity.dto.habit.ToDoAndCustomToDoListsDto;
+import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.enums.HabitAssignStatus;
@@ -164,9 +165,9 @@ public interface HabitAssignService {
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssignId} id.
      * @param language      {@link String} of language code value.
-     * @return {@link UserToDoAndCustomToDoListsDto} instance.
+     * @return list of {@link UserToDoListItemResponseDto}.
      */
-    UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoLists(
+    List<UserToDoListItemResponseDto> getToDoAndCustomToDoLists(
         Long userId, Long habitAssignId, String language);
 
     /**
@@ -175,11 +176,11 @@ public interface HabitAssignService {
      *
      * @param userId   {@link Long} id.
      * @param language {@link String} of language code value.
-     * @return {@link UserToDoAndCustomToDoListsDto}.
+     * @return list of {@link UserToDoListItemResponseDto}.
      * @author Lilia Mokhnatska
      */
-    List<UserToDoAndCustomToDoListsDto> getListOfUserAndCustomToDoListsWithStatusInprogress(Long userId,
-        String language);
+    List<UserToDoListItemResponseDto> getListOfUserToDoListsWithStatusInprogress(Long userId,
+                                                                               String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
@@ -322,12 +323,10 @@ public interface HabitAssignService {
      *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
-     * @param listDto  {@link UserToDoAndCustomToDoListsDto} User and Custom To-Do
+     * @param listDto  {@link ToDoAndCustomToDoListsDto} User and Custom To-Do
      *                 lists.
-     * @param language {@link String} of language code value.
      */
-    void fullUpdateUserAndCustomToDoLists(Long userId, Long habitId, UserToDoAndCustomToDoListsDto listDto,
-        String language);
+    void fullUpdateUserToDoLists(Long userId, Long habitId, ToDoAndCustomToDoListsDto listDto);
 
     /**
      * Method updates value progressNotificationHasDisplayed to true.

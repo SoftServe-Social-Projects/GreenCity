@@ -28,7 +28,7 @@ import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
+import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -231,8 +231,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return UserToDoAndCustomToDoListsDto.builder()
+    public static ToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return ToDoAndCustomToDoListsDto.builder()
             .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
             .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();

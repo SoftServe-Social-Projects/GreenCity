@@ -209,7 +209,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserToDoListItemResponseDto> getUserToDoListByHabitAssignId(Long userId, Long habitAssignId,
+    public List<ToDoListItemDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
         String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
@@ -219,8 +219,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        List<UserToDoListItemResponseDto> itemsDtos = getAllUserToDoListItems(habitAssign);
-        itemsDtos.forEach(el -> setTextForUserToDoListItem(el, language));
+        List<ToDoListItemDto> itemsDtos = getAllToDoListItemsForUser(habitAssign);
+        itemsDtos.forEach(el -> setTextForToDoListItem(el, language));
         return itemsDtos;
     }
 
@@ -314,7 +314,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     @Override
     public List<ToDoListItemManagementDto> getToDoListByHabitId(Long habitId) {
         List<Long> idList =
-            toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId);
+            toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId);
         List<ToDoListItem> toDoListItems;
         if (!idList.isEmpty()) {
             toDoListItems = toDoListItemRepo.getToDoListByListOfId(idList);
@@ -476,14 +476,22 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
             .collect(Collectors.toList());
     }
 
+    private List<ToDoListItemDto> getAllToDoListItemsForUser(HabitAssign habitAssign) {
+        return toDoListItemRepo
+                .findAllByHabitAssignId(habitAssign.getId())
+                .stream()
+                .map(toDoListItem -> modelMapper.map(toDoListItem, ToDoListItemDto.class))
+                .collect(Collectors.toList());
+    }
+
     /**
      * Method for setting text either for UserToDoListItem with localization.
      *
      * @param dto {@link ToDoListItemDto}
      */
-    private void setTextForUserToDoListItem(UserToDoListItemResponseDto dto, String language) {
+    private void setTextForToDoListItem(ToDoListItemDto dto, String language) {
         String text =
-            toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(language, dto.getId()).getContent();
+                toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(language, dto.getId()).getContent();
         dto.setText(text);
     }
 

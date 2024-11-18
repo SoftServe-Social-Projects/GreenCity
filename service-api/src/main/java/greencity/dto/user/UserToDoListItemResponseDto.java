@@ -24,4 +24,6 @@ public class UserToDoListItemResponseDto {
     private String text;
     @NotNull
     private ToDoListItemStatus status;
+    @NotNull
+    private Boolean isCustomItem;
 }

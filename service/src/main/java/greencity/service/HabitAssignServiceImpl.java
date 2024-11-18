@@ -17,15 +17,12 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
+import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
-import greencity.dto.todolistitem.ToDoListItemRequestDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -42,6 +39,7 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -173,13 +171,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignManagementDtoList;
     }
 
-    private void saveCustomToDoListItems(List<CustomToDoListItemSaveRequestDto> saveList,
-        User user, Habit habit) {
+    private void saveCustomToDoListItemsForCurrentUser(List<CustomToDoListItemSaveRequestDto> saveList,
+                                                       User user, Habit habit, HabitAssign habitAssign) {
         if (!CollectionUtils.isEmpty(saveList)) {
             saveList.forEach(item -> {
                 CustomToDoListItem customToDoListItem = modelMapper.map(item, CustomToDoListItem.class);
                 List<CustomToDoListItem> duplicates = user.getCustomToDoListItems().stream()
-                    .filter(userItem -> userItem.getText().equals(customToDoListItem.getText()))
+                    .filter(userItem -> userItem.getText().equals(customToDoListItem.getText())  && userItem.getHabit().getId().equals(habit.getId()))
                     .toList();
                 if (duplicates.isEmpty()) {
                     customToDoListItem.setUser(user);
@@ -191,6 +189,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_EXISTS, customToDoListItem.getText()));
                 }
             });
+            List<Long> customToDoListByUser = customToDoListItemRepo.getAllCustomToDoListItemIdByUserIdAndByHabitIdAndNotDefault(habit.getId(), user.getId());
+            saveUserToDoListItems(customToDoListByUser, habitAssign, true);
         }
     }
 
@@ -209,15 +209,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             HabitAssign habitAssign =
                 createHabitAssign(friendOfUser, habit, habitAssignCustomPropertiesDto, HabitAssignStatus.REQUESTED);
             habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
-        }
-    }
-
-    private void saveDefaultToDoListItems(HabitAssign habitAssign,
-        List<Long> defaultToDoListItems) {
-        if (!defaultToDoListItems.isEmpty()) {
-            List<ToDoListItem> toDoList =
-                toDoListItemRepo.getToDoListByListOfId(defaultToDoListItems);
-            saveUserToDoListItems(toDoList, habitAssign);
         }
     }
 
@@ -241,7 +232,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignRepo.findAllByUserId(userId)
             .stream()
             .filter(this::isHabitCustom)
-            .map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            .map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).toList();
     }
 
     /**
@@ -298,16 +289,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserDurationDto.class);
     }
 
-    private void saveUserToDoListItems(List<ToDoListItem> toDoList, HabitAssign habitAssign) {
-        List<UserToDoListItem> userToDoList = new ArrayList<>();
-        for (ToDoListItem toDoItem : toDoList) {
-            userToDoList.add(UserToDoListItem.builder()
-                .habitAssign(habitAssign)
-                .toDoListItem(toDoItem)
-                .status(ToDoListItemStatus.ACTIVE)
-                .build());
+    private void saveUserToDoListItems(List<Long> toDoListIds, HabitAssign habitAssign, boolean isCustomItems) {
+        if(!toDoListIds.isEmpty()){
+            List<UserToDoListItem> userToDoList = new ArrayList<>();
+            for (Long itemId : toDoListIds) {
+                userToDoList.add(UserToDoListItem.builder()
+                        .habitAssign(habitAssign)
+                        .targetId(itemId)
+                        .status(UserToDoListItemStatus.INPROGRESS)
+                        .isCustomItem(isCustomItems)
+                        .build());
+            }
+            userToDoListItemRepo.saveAll(userToDoList);
         }
-        userToDoListItemRepo.saveAll(userToDoList);
     }
 
     /**
@@ -358,6 +352,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
         habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
         setToDoListItems(habitAssignDto, habitAssign, language);
+        setCustomToDoListItems(habitAssignDto, habitAssign);
         return habitAssignDto;
     }
 
@@ -369,17 +364,34 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void setToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
         habitAssignDto.getHabit().setToDoListItems(userToDoListItemRepo
             .getAllAssignedToDoListItemsFull(habitAssign.getId()).stream()
-            .map(toDoListItem -> ToDoListItemDto.builder()
-                .id(toDoListItem.getId())
-                .status(toDoListItem.getStatus().toString())
-                .text(toDoListItem.getToDoListItem().getTranslations().stream()
-                    .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
-                    .orElseThrow(
-                        () -> new NotFoundException(
-                            ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
-                    .getContent())
-                .build())
+            .map(userToDoListItem -> {
+                ToDoListItem toDoListItem = toDoListItemRepo.findById(userToDoListItem.getTargetId()).orElseThrow(() -> new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userToDoListItem.getTargetId()));
+                return ToDoListItemDto.builder()
+                        .id(toDoListItem.getId())
+                        .status(userToDoListItem.getStatus().toString())
+                        .text(toDoListItem.getTranslations().stream()
+                                .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
+                                .orElseThrow(
+                                        () -> new NotFoundException(
+                                                ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
+                                .getContent())
+                        .build();
+            })
             .collect(Collectors.toList()));
+    }
+
+    private void setCustomToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
+        habitAssignDto.getHabit().setCustomToDoListItems(userToDoListItemRepo
+                .getAllAssignedCustomToDoListItemsFull(habitAssign.getId()).stream()
+                .map(userToDoListItem -> {
+                    CustomToDoListItem customToDoListItem= customToDoListItemRepo.findById(userToDoListItem.getTargetId()).orElseThrow(() -> new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userToDoListItem.getTargetId()));
+                    return CustomToDoListItemResponseDto.builder()
+                            .id(customToDoListItem.getId())
+                            .status(userToDoListItem.getStatus().toString())
+                            .text(customToDoListItem.getText())
+                            .build();
+                })
+                .collect(Collectors.toList()));
     }
 
     private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, String language) {
@@ -391,33 +403,76 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private List<UserToDoListItemAdvanceDto> buildUserToDoListItemAdvanceDto(HabitAssign habitAssign,
         String language) {
         List<UserToDoListItemAdvanceDto> userItemsDTO = new ArrayList<>();
-        boolean isContains;
+        userItemsDTO.addAll(buildUserToDoListItemAdvanceDtoForToDoList(habitAssign, language));
+        userItemsDTO.addAll(buildUserToDoListItemAdvanceDtoForCustomToDoList(habitAssign));
+        return userItemsDTO;
+    }
+
+    private List<UserToDoListItemAdvanceDto> buildUserToDoListItemAdvanceDtoForToDoList (HabitAssign habitAssign,
+                                                                             String language) {
+        List<UserToDoListItemAdvanceDto> userItemList = new ArrayList<>();
         List<ToDoListItemTranslation> listItemTranslations = toDoListItemTranslationRepo
-            .findToDoListByHabitIdAndByLanguageCode(language, habitAssign.getHabit().getId());
+                .findToDoListByHabitIdAndByLanguageCode(language, habitAssign.getHabit().getId());
         for (ToDoListItemTranslation translationItem : listItemTranslations) {
-            isContains = false;
+            boolean isContains = false;
             for (UserToDoListItem userItem : habitAssign.getUserToDoListItems()) {
-                if (translationItem.getToDoListItem().getId().equals(userItem.getToDoListItem().getId())) {
-                    userItemsDTO.add(UserToDoListItemAdvanceDto.builder()
-                        .id(userItem.getId())
-                        .toDoListItemId(translationItem.getId())
-                        .status(userItem.getStatus())
-                        .dateCompleted(userItem.getDateCompleted())
-                        .content(translationItem.getContent())
-                        .build());
+                if (translationItem.getToDoListItem().getId().equals(userItem.getTargetId()) && !userItem.getIsCustomItem()) {
+                    userItemList.add(UserToDoListItemAdvanceDto.builder()
+                            .id(userItem.getId())
+                            .targetId(userItem.getTargetId())
+                            .isCustomItem(false)
+                            .status(userItem.getStatus())
+                            .dateCompleted(userItem.getDateCompleted())
+                            .content(translationItem.getContent())
+                            .build());
                     isContains = true;
                     break;
                 }
             }
             if (!isContains) {
-                userItemsDTO.add(UserToDoListItemAdvanceDto.builder()
-                    .toDoListItemId(translationItem.getId())
-                    .status(ToDoListItemStatus.ACTIVE)
-                    .content(translationItem.getContent())
-                    .build());
+                userItemList.add(UserToDoListItemAdvanceDto.builder()
+                        .targetId(translationItem.getToDoListItem().getId())
+                        .isCustomItem(false)
+                        .status(UserToDoListItemStatus.DISABLED)
+                        .content(translationItem.getContent())
+                        .build());
             }
         }
-        return userItemsDTO;
+        return userItemList;
+    }
+
+    private List<UserToDoListItemAdvanceDto> buildUserToDoListItemAdvanceDtoForCustomToDoList(HabitAssign habitAssign) {
+        List<UserToDoListItemAdvanceDto> userItemList = new ArrayList<>();
+        List<Long> allAvailableForCurrentAssign = customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId());
+        for (Long customItemId : allAvailableForCurrentAssign) {
+            boolean isContains = false;
+            CustomToDoListItem customItem = customToDoListItemRepo.findById(customItemId)
+                    .orElseThrow(
+                            () -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + customItemId));
+            for (UserToDoListItem userItem : habitAssign.getUserToDoListItems()) {
+                if (customItemId.equals(userItem.getTargetId()) && userItem.getIsCustomItem()) {
+                    userItemList.add(UserToDoListItemAdvanceDto.builder()
+                            .id(userItem.getId())
+                            .targetId(userItem.getTargetId())
+                            .isCustomItem(true)
+                            .status(userItem.getStatus())
+                            .dateCompleted(userItem.getDateCompleted())
+                            .content(customItem.getText())
+                            .build());
+                    isContains = true;
+                    break;
+                }
+            }
+            if (!isContains) {
+                userItemList.add(UserToDoListItemAdvanceDto.builder()
+                        .targetId(customItem.getId())
+                        .isCustomItem(true)
+                        .status(UserToDoListItemStatus.DISABLED)
+                        .content(customItem.getText())
+                        .build());
+            }
+        }
+        return userItemList;
     }
 
     /**
@@ -479,15 +534,20 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
-        List<ToDoListItemDto> toDoListItems = new ArrayList<>();
-        toDoListItemTranslationRepo
-            .findToDoListByHabitIdAndByLanguageCode(language, habit.getId())
-            .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemDto.class)));
-        changeStatuses(ToDoListItemStatus.INPROGRESS.toString(),
+        List<ToDoListItemDto> toDoListItems = toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habit.getId())
+                .stream()
+                .map(toDoListItem -> modelMapper.map(toDoListItem, ToDoListItemDto.class))
+                .map(toDoListItem -> toDoListItem.setStatus(ToDoListItemStatus.DISABLED.toString())).toList();
+        changeStatuses(UserToDoListItemStatus.INPROGRESS.toString(),
             habitAssign.getId(), toDoListItems);
-        changeStatuses(ToDoListItemStatus.DONE.toString(),
+        changeStatuses(UserToDoListItemStatus.DONE.toString(),
             habitAssign.getId(), toDoListItems);
+        List<CustomToDoListItemResponseDto> customToDoListItems = customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId())
+                .stream()
+                .map(customToDoListItem -> modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class))
+                .toList();
         habit.setToDoListItems(toDoListItems);
+        habit.setCustomToDoListItems(customToDoListItems);
         habit.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habit.getId()));
         habit.setHabitAssignStatus(habitAssign.getStatus());
         return habit;
@@ -508,7 +568,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             for (Long otherStatusItemId : otherStatusItems) {
                 for (ToDoListItemDto slid : toDoListItems) {
                     if (slid.getId().equals(otherStatusItemId)) {
-                        slid.setStatus(status);
+                        slid.setStatus(ToDoListItemStatus.ACTIVE.toString());
                     }
                 }
             }
@@ -521,7 +581,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language) {
         return habitAssignRepo.findAllByUserId(userId)
-            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).toList();
     }
 
     /**
@@ -551,7 +611,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId,
         String language) {
         return habitAssignRepo.findAllByHabitId(habitId)
-            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).toList();
     }
 
     /**
@@ -581,27 +641,33 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
             .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoLists(
+    public List<UserToDoListItemResponseDto> getToDoAndCustomToDoLists(
         Long userId, Long habitAssignId, String language) {
-        return UserToDoAndCustomToDoListsDto
-            .builder()
-            .userToDoListItemDto(
-                toDoListItemService.getUserToDoListByHabitAssignId(userId, habitAssignId, language))
-            .customToDoListItemDto(customToDoListItemService
-                .findAllAvailableCustomToDoListItemsByHabitAssignId(userId, habitAssignId))
-            .build();
+        List<ToDoListItemDto> toDoListItems = toDoListItemService.getToDoListByHabitAssignId(userId, habitAssignId, language);
+        List<CustomToDoListItemResponseDto> customToDoListItems = customToDoListItemService
+                .findAllAvailableCustomToDoListItemsByHabitAssignId(userId, habitAssignId);
+        List<UserToDoListItemResponseDto> userToDoItems = new ArrayList<>();
+        userToDoItems.addAll(toDoListItems.stream()
+                .map(toDoListItem -> modelMapper.map(toDoListItem, UserToDoListItemResponseDto.class))
+                .map(userToDoItem -> userToDoItem.setIsCustomItem(false))
+                .toList());
+        userToDoItems.addAll(customToDoListItems.stream()
+                .map(customToDoListItem -> modelMapper.map(customToDoListItem, UserToDoListItemResponseDto.class))
+                .map(userToDoItem -> userToDoItem.setIsCustomItem(false))
+                .toList());
+        return userToDoItems;
     }
 
     @Transactional
     @Override
-    public List<UserToDoAndCustomToDoListsDto> getListOfUserAndCustomToDoListsWithStatusInprogress(
+    public List<UserToDoListItemResponseDto> getListOfUserToDoListsWithStatusInprogress(
         Long userId, String language) {
         List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusIsInProgress(userId);
         if (habitAssignList.isEmpty()) {
@@ -609,14 +675,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS + userId);
         }
         return habitAssignList.stream()
-            .map(habitAssign -> UserToDoAndCustomToDoListsDto
-                .builder()
-                .userToDoListItemDto(toDoListItemService
-                    .getUserToDoListItemsByHabitAssignIdAndStatusInProgress(habitAssign.getId(), language))
-                .customToDoListItemDto(customToDoListItemService
-                    .findAllCustomToDoListItemsWithStatusInProgress(userId, habitAssign.getHabit().getId()))
-                .build())
-            .collect(Collectors.toList());
+            .map(HabitAssign::getUserToDoListItems)
+            .map(userToDoListItem -> modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
+            .toList();
     }
 
     /**
@@ -627,7 +688,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         String language) {
         return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
             .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**
@@ -839,7 +900,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language) {
         List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(
-            habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            habitAssign -> buildHabitAssignDto(habitAssign, language)).toList();
     }
 
     /**
@@ -849,7 +910,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language) {
         List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(
-            habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).toList();
     }
 
     /**
@@ -876,7 +937,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .map(date -> HabitsDateEnrollmentDto.builder().enrollDate(date)
                 .habitAssigns(new ArrayList<>())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
         return dtos;
@@ -974,7 +1035,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
         }
         userToDoListItemRepo.deleteToDoListItemsByHabitAssignId(habitAssign.getId());
-        customToDoListItemRepo.deleteCustomToDoListItemsByHabitId(habitAssign.getHabit().getId());
+        customToDoListItemRepo.deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(habitAssign.getHabit().getId(), userId);
         habitAssignRepo.delete(habitAssign);
     }
 
@@ -991,10 +1052,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .filter(f -> f.getId().equals(toDoListItemId)).findAny();
         if (optionalUserToDoListItem.isPresent()) {
             UserToDoListItem utdli = optionalUserToDoListItem.get();
-            if (utdli.getStatus().equals(ToDoListItemStatus.INPROGRESS)) {
-                utdli.setStatus(ToDoListItemStatus.ACTIVE);
-            } else if (utdli.getStatus().equals(ToDoListItemStatus.ACTIVE)) {
-                utdli.setStatus(ToDoListItemStatus.INPROGRESS);
+            if (utdli.getStatus().equals(UserToDoListItemStatus.INPROGRESS)) {
+                utdli.setStatus(UserToDoListItemStatus.DONE);
+            } else if (utdli.getStatus().equals(UserToDoListItemStatus.DONE)) {
+                utdli.setStatus(UserToDoListItemStatus.INPROGRESS);
             }
             userToDoListItemRepo.save(utdli);
         }
@@ -1005,12 +1066,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional
-    public void fullUpdateUserAndCustomToDoLists(
+    public void fullUpdateUserToDoLists(
         Long userId,
         Long habitAssignId,
-        UserToDoAndCustomToDoListsDto listsDto,
-        String language) {
-        fullUpdateUserToDoList(userId, habitAssignId, listsDto.getUserToDoListItemDto(), language);
+        ToDoAndCustomToDoListsDto listsDto) {
+        fullUpdateToDoList(userId, habitAssignId, listsDto.getToDoListItemDto());
         fullUpdateCustomToDoList(userId, habitAssignId, listsDto.getCustomToDoListItemDto());
     }
 
@@ -1028,123 +1088,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
      * @param list          {@link UserToDoListItemResponseDto} User To-Do lists.
-     * @param language      {@link String} of language code value.
      */
-    private void fullUpdateUserToDoList(
+    private void fullUpdateToDoList(
         Long userId,
         Long habitAssignId,
-        List<UserToDoListItemResponseDto> list,
-        String language) {
-        updateAndDeleteUserToDoListWithStatuses(userId, habitAssignId, list);
-        saveUserToDoListWithStatuses(userId, habitAssignId, list, language);
-    }
-
-    /**
-     * Method that save {@link UserToDoListItemResponseDto} for item with id = null.
-     *
-     * @param userId        {@code User} id.
-     * @param habitAssignId {@code HabitAssign} id.
-     * @param userToDoList  {@link UserToDoListItemResponseDto} User to-do lists.
-     * @param language      {@link String} of language code value.
-     */
-    private void saveUserToDoListWithStatuses(
-        Long userId,
-        Long habitAssignId,
-        List<UserToDoListItemResponseDto> userToDoList,
-        String language) {
-        List<UserToDoListItemResponseDto> listToSave = userToDoList.stream()
-            .filter(toDoItem -> toDoItem.getId() == null)
-            .collect(Collectors.toList());
-        checkDuplicationForUserToDoListByName(listToSave);
-
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        if (!habitAssign.getUser().getId().equals(userId)) {
-            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        Long habitId = habitAssign.getHabit().getId();
-
-        List<ToDoListItem> toDoListItems = findRelatedToDoListItem(habitId, language, listToSave);
-
-        Map<Long, ToDoListItemStatus> toDoItemIdToStatusMap =
-            getToDoItemIdToStatusMap(toDoListItems, listToSave, language);
-
-        List<ToDoListItemRequestDto> listToSaveParam = toDoListItems.stream()
-            .map(toDoItem -> ToDoListItemWithStatusRequestDto.builder()
-                .id(toDoItem.getId())
-                .status(toDoItemIdToStatusMap.get(toDoItem.getId()))
-                .build())
-            .collect(Collectors.toList());
-
-        toDoListItemService.saveUserToDoListItems(userId, habitId, listToSaveParam, language);
-    }
-
-    private void checkDuplicationForUserToDoListByName(List<UserToDoListItemResponseDto> listToSave) {
-        long countOfUnique = listToSave.stream()
-            .map(UserToDoListItemResponseDto::getText)
-            .distinct()
-            .count();
-        if (listToSave.size() != countOfUnique) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_TO_DO_LIST_ITEM);
-        }
-    }
-
-    private List<ToDoListItem> findRelatedToDoListItem(
-        Long habitId,
-        String language,
-        List<UserToDoListItemResponseDto> listToSave) {
-        if (listToSave.isEmpty()) {
-            return List.of();
-        }
-
-        List<String> listToSaveNames = listToSave.stream()
-            .map(UserToDoListItemResponseDto::getText)
-            .collect(Collectors.toList());
-
-        List<ToDoListItem> relatedToDoListItems =
-            toDoListItemRepo.findByNames(habitId, listToSaveNames, language);
-
-        if (listToSaveNames.size() != relatedToDoListItems.size()) {
-            List<String> relatedToDoListItemNames = relatedToDoListItems.stream()
-                .map(x -> getToDoItemNameByLanguageCode(x, language))
-                .toList();
-
-            listToSaveNames.removeAll(relatedToDoListItemNames);
-
-            String notFoundItems = String.join(", ", listToSaveNames);
-
-            throw new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_NAMES + notFoundItems);
-        }
-        return relatedToDoListItems;
-    }
-
-    private Map<Long, ToDoListItemStatus> getToDoItemIdToStatusMap(
-        List<ToDoListItem> toDoListItems,
-        List<UserToDoListItemResponseDto> listToSave,
-        String language) {
-        Map<String, ToDoListItemStatus> toDoItemNameToStatusMap =
-            listToSave.stream()
-                .collect(Collectors.toMap(
-                    UserToDoListItemResponseDto::getText,
-                    UserToDoListItemResponseDto::getStatus));
-
-        return toDoListItems.stream()
-            .collect(Collectors.toMap(
-                ToDoListItem::getId,
-                toDoListItem -> toDoItemNameToStatusMap
-                    .get(getToDoItemNameByLanguageCode(toDoListItem, language))));
-    }
-
-    private String getToDoItemNameByLanguageCode(ToDoListItem toDoItem, String language) {
-        return toDoItem.getTranslations()
-            .stream()
-            .filter(x -> x.getLanguage().getCode().equals(language))
-            .findFirst()
-            .orElseThrow()
-            .getContent();
+        List<ToDoListItemDto> list) {
+        updateAndDisableToDoListWithStatuses(userId, habitAssignId, list);
     }
 
     /**
@@ -1153,53 +1102,50 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
-     * @param userToDoList  {@link UserToDoListItemResponseDto} User to-do lists.
+     * @param toDoList  {@link ToDoListItemDto} User to-do lists.
      */
-    private void updateAndDeleteUserToDoListWithStatuses(
+    private void updateAndDisableToDoListWithStatuses(
         Long userId,
         Long habitAssignId,
-        List<UserToDoListItemResponseDto> userToDoList) {
-        List<UserToDoListItemResponseDto> listToUpdate = userToDoList.stream()
+        List<ToDoListItemDto> toDoList) {
+        List<ToDoListItemDto> listToUpdate = toDoList.stream()
             .filter(item -> item.getId() != null)
             .collect(Collectors.toList());
 
-        checkDuplicationForUserToDoListById(listToUpdate);
+        checkDuplicationForToDoListById(listToUpdate);
 
         HabitAssign habitAssign = habitAssignRepo
             .findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
-        List<UserToDoListItem> currentList = habitAssign.getUserToDoListItems();
+        List<UserToDoListItem> currentList = habitAssign.getUserToDoListItems().stream()
+                .filter(userToDoListItem -> !userToDoListItem.getIsCustomItem()).toList();
 
-        checkIfUserToDoItemsExist(listToUpdate, currentList);
+        checkIfToDoItemsExist(listToUpdate, currentList);
 
-        Map<Long, ToDoListItemStatus> mapIdToStatus =
+        Map<Long, String> mapIdToStatus =
             listToUpdate.stream()
                 .collect(Collectors.toMap(
-                    UserToDoListItemResponseDto::getId,
-                    UserToDoListItemResponseDto::getStatus));
+                    ToDoListItemDto::getId,
+                    ToDoListItemDto::getStatus));
 
         List<UserToDoListItem> listToSave = new ArrayList<>();
-        List<UserToDoListItem> listToDelete = new ArrayList<>();
         for (var currentItem : currentList) {
-            ToDoListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
+            String newStatus = mapIdToStatus.get(currentItem.getId());
             if (newStatus != null) {
-                currentItem.setStatus(newStatus);
-                listToSave.add(currentItem);
+                currentItem.setStatus(UserToDoListItemStatus.valueOf(newStatus.toUpperCase()));
             } else {
-                if (!currentItem.getStatus().equals(ToDoListItemStatus.DISABLED)) {
-                    listToDelete.add(currentItem);
-                }
+                currentItem.setStatus(UserToDoListItemStatus.DISABLED);
             }
+            listToSave.add(currentItem);
         }
         userToDoListItemRepo.saveAll(listToSave);
-        userToDoListItemRepo.deleteAll(listToDelete);
     }
 
-    private void checkDuplicationForUserToDoListById(List<UserToDoListItemResponseDto> listToUpdate) {
+    private void checkDuplicationForToDoListById(List<ToDoListItemDto> listToUpdate) {
         long countOfUnique = listToUpdate.stream()
-            .map(UserToDoListItemResponseDto::getId)
+            .map(ToDoListItemDto::getId)
             .distinct()
             .count();
         if (listToUpdate.size() != countOfUnique) {
@@ -1207,12 +1153,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
     }
 
-    private void checkIfUserToDoItemsExist(
-        List<UserToDoListItemResponseDto> listToUpdate,
+    private void checkIfToDoItemsExist(
+        List<ToDoListItemDto> listToUpdate,
         List<UserToDoListItem> currentList) {
         List<Long> updateIds =
-            listToUpdate.stream().map(UserToDoListItemResponseDto::getId).collect(Collectors.toList());
-        List<Long> currentIds = currentList.stream().map(UserToDoListItem::getId).toList();
+            listToUpdate.stream().map(ToDoListItemDto::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().filter(userToDoListItem -> !userToDoListItem.getIsCustomItem()).map(UserToDoListItem::getTargetId).toList();
 
         updateIds.removeAll(currentIds);
 
@@ -1243,7 +1189,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void fullUpdateCustomToDoList(
         Long userId,
         Long habitAssignId,
-        List<CustomToDoListItemResponseDto> list) {
+        List<CustomToDoListItemRequestDto> list) {
         updateAndDeleteCustomToDoListWithStatuses(userId, habitAssignId, list);
         saveCustomToDoListWithStatuses(userId, habitAssignId, list);
     }
@@ -1260,35 +1206,37 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void saveCustomToDoListWithStatuses(
         Long userId,
         Long habitAssignId,
-        List<CustomToDoListItemResponseDto> customToDoList) {
-        List<CustomToDoListItemResponseDto> listToSave = customToDoList.stream()
-            .filter(toDoItem -> toDoItem.getId() == null)
-            .collect(Collectors.toList());
-
-        checkDuplicationForCustomToDoListByName(listToSave);
-
+        List<CustomToDoListItemRequestDto> customToDoList) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        List<CustomToDoListItemSaveRequestDto> listToSaveParam = listToSave.stream()
-            .map(item -> CustomToDoListItemWithStatusSaveRequestDto.builder()
+        List<CustomToDoListItemRequestDto> listToSave = customToDoList.stream()
+            .filter(toDoItem -> toDoItem.getId() == null)
+            .toList();
+
+        checkDuplicationForCustomToDoListByName(listToSave);
+
+        List<CustomToDoListItem> listToSaveItems = listToSave.stream()
+            .map(item -> CustomToDoListItem.builder()
                 .text(item.getText())
-                .status(item.getStatus())
+                .user(habitAssign.getUser())
+                .habit(habitAssign.getHabit())
+                .status(ToDoListItemStatus.ACTIVE)
+                .isDefault(false)
                 .build())
             .collect(Collectors.toList());
 
-        customToDoListItemService.save(new BulkSaveCustomToDoListItemDto(listToSaveParam), userId,
-            habitAssignId);
+        customToDoListItemRepo.saveAll(listToSaveItems);
     }
 
-    private void checkDuplicationForCustomToDoListByName(List<CustomToDoListItemResponseDto> listToSave) {
+    private void checkDuplicationForCustomToDoListByName(List<CustomToDoListItemRequestDto> listToSave) {
         long countOfUnique = listToSave.stream()
-            .map(CustomToDoListItemResponseDto::getText)
+            .map(CustomToDoListItemRequestDto::getText)
             .distinct()
             .count();
         if (listToSave.size() != countOfUnique) {
@@ -1308,54 +1256,61 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void updateAndDeleteCustomToDoListWithStatuses(
         Long userId,
         Long habitAssignId,
-        List<CustomToDoListItemResponseDto> customToDoList) {
-        List<CustomToDoListItemResponseDto> listToUpdate = customToDoList.stream()
-            .filter(toDoItem -> toDoItem.getId() != null)
-            .collect(Collectors.toList());
-
-        checkDuplicationForCustomToDoListById(listToUpdate);
-
+        List<CustomToDoListItemRequestDto> customToDoList) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        Long habitId = habitAssign.getHabit().getId();
+        List<CustomToDoListItemRequestDto> listToUpdate = customToDoList.stream()
+            .filter(toDoItem -> toDoItem.getId() != null)
+            .toList();
 
-        List<CustomToDoListItem> currentList =
-            customToDoListItemRepo.findAllByUserIdAndHabitId(userId, habitId);
+        checkDuplicationForCustomToDoListById(listToUpdate);
+
+        List<UserToDoListItem> currentList = userToDoListItemRepo.findAllByHabitAssingId(habitAssignId).stream()
+                        .filter(UserToDoListItem::getIsCustomItem).toList();
 
         checkIfCustomToDoItemsExist(listToUpdate, currentList);
 
-        Map<Long, ToDoListItemStatus> mapIdToStatus =
+        Map<Long, String> mapIdToStatus =
             listToUpdate.stream()
                 .collect(Collectors.toMap(
-                    CustomToDoListItemResponseDto::getId,
-                    CustomToDoListItemResponseDto::getStatus));
+                    CustomToDoListItemRequestDto::getId,
+                    CustomToDoListItemRequestDto::getStatus));
 
-        List<CustomToDoListItem> listToSave = new ArrayList<>();
-        List<CustomToDoListItem> listToDelete = new ArrayList<>();
+        List<UserToDoListItem> listToSave = new ArrayList<>();
+        List<UserToDoListItem> listToDelete = new ArrayList<>();
+        List<CustomToDoListItem> customItemsToUpdate = new ArrayList<>();
         for (var currentItem : currentList) {
-            ToDoListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
+            String newStatus = mapIdToStatus.get(currentItem.getTargetId());
             if (newStatus != null) {
-                currentItem.setStatus(newStatus);
+                currentItem.setStatus(UserToDoListItemStatus.valueOf(newStatus.toUpperCase()));
                 listToSave.add(currentItem);
             } else {
-                if (!currentItem.getStatus().equals(ToDoListItemStatus.DISABLED)) {
+                CustomToDoListItem customToDoListItem = customToDoListItemRepo.findById(currentItem.getTargetId())
+                        .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + currentItem.getTargetId()));
+                if (!customToDoListItem.getIsDefault() && customToDoListItem.getUser().getId().equals(userId)) {
                     listToDelete.add(currentItem);
+                    customToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
+                    customItemsToUpdate.add(customToDoListItem);
+                } else {
+                    currentItem.setStatus(UserToDoListItemStatus.DISABLED);
+                    listToSave.add(currentItem);
                 }
             }
         }
-        customToDoListItemRepo.saveAll(listToSave);
-        customToDoListItemRepo.deleteAll(listToDelete);
+        userToDoListItemRepo.saveAll(listToSave);
+        userToDoListItemRepo.deleteAll(listToDelete);
+        customToDoListItemRepo.saveAll(customItemsToUpdate);
     }
 
-    private void checkDuplicationForCustomToDoListById(List<CustomToDoListItemResponseDto> listToUpdate) {
+    private void checkDuplicationForCustomToDoListById(List<CustomToDoListItemRequestDto> listToUpdate) {
         long countOfUnique = listToUpdate.stream()
-            .map(CustomToDoListItemResponseDto::getId)
+            .map(CustomToDoListItemRequestDto::getId)
             .distinct()
             .count();
         if (listToUpdate.size() != countOfUnique) {
@@ -1364,12 +1319,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void checkIfCustomToDoItemsExist(
-        List<CustomToDoListItemResponseDto> listToUpdate,
-        List<CustomToDoListItem> currentList) {
-        List<Long> updateIds =
-            listToUpdate.stream().map(CustomToDoListItemResponseDto::getId).collect(Collectors.toList());
-        List<Long> currentIds = currentList.stream().map(CustomToDoListItem::getId).toList();
-
+        List<CustomToDoListItemRequestDto> listToUpdate,
+        List<UserToDoListItem> currentList) {
+        List<Long> currentIds = currentList.stream().map(UserToDoListItem::getTargetId).toList();
+        List<Long> updateIds = new ArrayList<>();
+        updateIds.addAll(listToUpdate.stream().map(CustomToDoListItemRequestDto::getId).toList());
         updateIds.removeAll(currentIds);
 
         if (!updateIds.isEmpty()) {
@@ -1431,8 +1385,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO friendVO = mapToUserVO(friend);
         Habit habit = getHabitById(habitId);
         HabitAssign habitAssign = assignHabitToFriend(habit, friend);
+        List<Long> toDoListItemIds = toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId);
+        List<Long> customToDoListItemIds = customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId);
+        saveUserToDoListItems(toDoListItemIds, habitAssign, false);
+        saveUserToDoListItems(customToDoListItemIds, habitAssign, true);
 
-        assignToDoListToUser(habitId, habitAssign);
         String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
         userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
     }
@@ -1465,14 +1422,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private HabitAssign getHabitAssignById(Long habitId, Long userId) {
         return habitAssignRepo
             .findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, userId);
-    }
-
-    private void assignToDoListToUser(Long habitId, HabitAssign habitAssign) {
-        List<Long> allToDoListItemId = toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId);
-        if (!allToDoListItemId.isEmpty()) {
-            List<ToDoListItem> toDoList = toDoListItemRepo.getToDoListByListOfId(allToDoListItemId);
-            saveUserToDoListItems(toDoList, habitAssign);
-        }
     }
 
     /**
@@ -1534,13 +1483,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         HabitAssignPropertiesDto customAssignProperties = habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto();
         List<Long> defaultToDoList = customAssignProperties.getDefaultToDoListItems();
+        List<Long> customDefaultToDoList = customAssignProperties.getDefaultCustomToDoListItems();
 
         enhanceAssignWithCustomProperties(habitAssign, customAssignProperties);
         habitAssign = habitAssignRepo.save(habitAssign);
 
-        saveDefaultToDoListItems(habitAssign,
-            defaultToDoList);
-        saveCustomToDoListItems(habitAssignCustomPropertiesDto.getCustomToDoListItemList(), user, habit);
+        saveUserToDoListItems(defaultToDoList, habitAssign, false);
+        saveUserToDoListItems(customDefaultToDoList, habitAssign, true);
+        saveCustomToDoListItemsForCurrentUser(habitAssignCustomPropertiesDto.getCustomToDoListItemList(), user, habit, habitAssign);
 
         return habitAssign;
     }
@@ -1572,7 +1522,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     private HabitAssignCustomPropertiesDto buildDefaultHabitAssignPropertiesDto(Habit habit) {
         HabitAssignPropertiesDto habitAssignPropertiesDto = HabitAssignPropertiesDto.builder()
-            .defaultToDoListItems(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habit.getId()))
+            .defaultToDoListItems(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId()))
+            .defaultCustomToDoListItems(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habit.getId()))
             .duration(habit.getDefaultDuration())
             .isPrivate(false)
             .build();

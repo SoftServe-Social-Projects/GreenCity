@@ -552,7 +552,7 @@ class ToDoListItemServiceImplTest {
         List<ToDoListItemManagementDto> toDoListItemManagementDtos =
             Collections.singletonList(toDoListItemManagementDto);
 
-        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(1L)).thenReturn(listID);
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(1L)).thenReturn(listID);
         when(toDoListItemRepo.getToDoListByListOfId(listID)).thenReturn(toDoListItemList);
         when(modelMapper.map(toDoListItem, ToDoListItemManagementDto.class)).thenReturn(
             toDoListItemManagementDto);
@@ -592,7 +592,7 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void getUserToDoListByHabitAssignIdTest() {
+    void getToDoListByHabitAssignIdTest() {
         Long habitAssignId = 2L;
         Long userId3 = 3L;
         Long userToDoListItemId = 4L;
@@ -629,8 +629,8 @@ class ToDoListItemServiceImplTest {
             userToDoListItemId))
             .thenReturn(toDoListItemTranslation);
 
-        List<UserToDoListItemResponseDto> actualDtoList = toDoListItemService
-            .getUserToDoListByHabitAssignId(userId3, habitAssignId, languageDefault);
+        List<ToDoListItemDto> actualDtoList = toDoListItemService
+            .getToDoListByHabitAssignId(userId3, habitAssignId, languageDefault);
 
         assertNotNull(actualDtoList);
         assertEquals(1, actualDtoList.size());
@@ -644,7 +644,7 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void getUserToDoListByHabitAssignIdReturnEmptyListTest() {
+    void getToDoListByHabitAssignIdReturnEmptyListTest() {
         Long habitAssignId = 2L;
         Long userId3 = 3L;
         String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
@@ -657,7 +657,7 @@ class ToDoListItemServiceImplTest {
         when(userToDoListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.emptyList());
 
         assertEquals(Collections.emptyList(),
-            toDoListItemService.getUserToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
+            toDoListItemService.getToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userToDoListItemRepo).findAllByHabitAssingId(habitAssignId);
@@ -666,7 +666,7 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void getUserToDoListByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
+    void getToDoListByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
         Long habitAssignId = 2L;
         Long userId3 = 3L;
         String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
@@ -675,7 +675,7 @@ class ToDoListItemServiceImplTest {
             .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> toDoListItemService
-            .getUserToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
+            .getToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
@@ -686,7 +686,7 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void getUserToDoListByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsToUser() {
+    void getUserToDoListByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsTo() {
         long habitAssignId = 2L;
         long userId3 = 3L;
         String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
@@ -699,7 +699,7 @@ class ToDoListItemServiceImplTest {
 
         UserHasNoPermissionToAccessException exception =
             assertThrows(UserHasNoPermissionToAccessException.class, () -> toDoListItemService
-                .getUserToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
+                .getToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 

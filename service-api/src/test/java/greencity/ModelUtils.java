@@ -7,7 +7,7 @@ import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
+import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
@@ -157,8 +157,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return UserToDoAndCustomToDoListsDto.builder()
+    public static ToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return ToDoAndCustomToDoListsDto.builder()
             .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
             .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();

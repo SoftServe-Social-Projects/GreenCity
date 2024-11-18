@@ -13,23 +13,23 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UserToDoAndCustomToDoListsDtoTest {
+class ToDoAndCustomToDoListsDtoTest {
 
-    void testValid(UserToDoAndCustomToDoListsDto dto) {
+    void testValid(ToDoAndCustomToDoListsDto dto) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<UserToDoAndCustomToDoListsDto>> constraintViolations =
+        Set<ConstraintViolation<ToDoAndCustomToDoListsDto>> constraintViolations =
             validator.validate(dto);
 
         assertTrue(constraintViolations.isEmpty());
     }
 
-    void testInvalid(UserToDoAndCustomToDoListsDto dto) {
+    void testInvalid(ToDoAndCustomToDoListsDto dto) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<UserToDoAndCustomToDoListsDto>> constraintViolations =
+        Set<ConstraintViolation<ToDoAndCustomToDoListsDto>> constraintViolations =
             validator.validate(dto);
 
         assertFalse(constraintViolations.isEmpty());

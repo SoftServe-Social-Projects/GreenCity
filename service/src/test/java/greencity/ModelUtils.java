@@ -69,7 +69,7 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
+import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -2483,8 +2483,8 @@ public class ModelUtils {
         return new AddCommentDtoRequest("text", 10L);
     }
 
-    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return UserToDoAndCustomToDoListsDto.builder()
+    public static ToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return ToDoAndCustomToDoListsDto.builder()
             .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
             .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();

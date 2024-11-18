@@ -257,10 +257,8 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        Long habitId = habitAssign.getHabit().getId();
-
         List<CustomToDoListItem> customToDoListItemList =
-            customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId);
+            customToDoListItemRepo.findAllByHabitAssignId(habitAssignId);
 
         return customToDoListItemList
             .stream().map(item -> modelMapper.map(item, CustomToDoListItemResponseDto.class))

@@ -28,4 +28,6 @@ public class HabitAssignPropertiesDto {
     private Boolean isPrivate;
 
     private List<Long> defaultToDoListItems;
+
+    private List<Long> defaultCustomToDoListItems;
 }

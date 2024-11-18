@@ -47,8 +47,8 @@ public interface ToDoListItemRepo
      */
     @Query(nativeQuery = true,
         value = "select to_do_list_item_id from habit_to_do_list_items  where habit_id = :habitId and "
-            + " habit_to_do_list_items.status like 'ACTUAL';")
-    List<Long> getAllToDoListItemIdByHabitIdISContained(@Param("habitId") Long habitId);
+            + " habit_to_do_list_items.status like 'ACTIVE';")
+    List<Long> getAllToDoListItemIdByHabitIdIsContained(@Param("habitId") Long habitId);
 
     /**
      * Method returns {@link ToDoListItem} by list item id and pageable.
@@ -103,4 +103,11 @@ public interface ToDoListItemRepo
         + " WHERE slt.language.code = :languageCode AND slt.content in :listOfName")
     List<ToDoListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
         String languageCode);
+
+    @Query(nativeQuery = true,
+    value = "SELECT tdli.* FROM to_do_list_items tdli "
+            + "JOIN user_to_do_list ustdl ON ustdl.target_id = tdli.id "
+            + "WHERE ustdl.is_custom_item = false "
+            + "AND ustdl.habit_assign_id = :habitAssignId")
+    List<ToDoListItem> findAllByHabitAssignId(Long habitAssignId);
 }
