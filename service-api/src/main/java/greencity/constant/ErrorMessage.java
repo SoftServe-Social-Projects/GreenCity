@@ -201,4 +201,6 @@ public class ErrorMessage {
         "Deleting this RatingPoints is not possible because an Achievement with such name still exists.";
     public static final String IS_FAVORITE_PARAM_REQUIRE_AUTHENTICATED_USER =
         "isFavorite param require authenticated user";
+    public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT_ASSIGN =
+        "No friends are assigned on current habit assign with id: ";
 }

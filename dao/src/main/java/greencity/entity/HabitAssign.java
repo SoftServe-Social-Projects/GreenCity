@@ -87,4 +87,10 @@ public class HabitAssign {
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
     private List<HabitStatusCalendar> habitStatusCalendars;
+
+    @OneToMany(mappedBy = "inviterHabitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HabitInvitation> invitationsSent;
+
+    @OneToMany(mappedBy = "inviteeHabitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HabitInvitation> invitationsReceived;
 }

@@ -28,6 +28,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
@@ -52,6 +53,7 @@ import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.ToDoListItemRepo;
@@ -69,7 +71,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -79,7 +80,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-
+import static greencity.ModelUtils.getHabitAssignDto;
 import static greencity.ModelUtils.habitAssignInProgress;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
@@ -142,10 +143,12 @@ class HabitAssignServiceImplTest {
     private UserService userService;
     @Mock
     UserNotificationService userNotificationService;
-
+    @Mock
+    HabitInvitationService habitInvitationService;
+    @Mock
+    HabitInvitationRepo habitInvitationRepo;
     @Mock
     private RatingCalculation ratingCalculation;
-
     @Mock
     private AchievementCalculation achievementCalculation;
 
@@ -872,7 +875,9 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDtoCustom);
         when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(any()))
             .thenReturn(List.of(userToDoListItemCustom));
-        when(habitAssignRepo.findFriendsIdsTrackingHabit(anyLong(), anyLong())).thenReturn(List.of(1L, 2L));
+
+        when(habitInvitationService.getInvitedFriendsIdsTrackingHabitList(anyLong(), anyLong()))
+            .thenReturn(List.of(1L, 2L));
 
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class))
@@ -1441,7 +1446,6 @@ class HabitAssignServiceImplTest {
 
     @Test
     void findInprogressHabitAssignsOnDateContent() {
-
         Long id = 3L;
         LocalDate date = LocalDate.now();
         Language languageEn = ModelUtils.getLanguage();
@@ -2758,7 +2762,6 @@ class HabitAssignServiceImplTest {
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.of(getUser()));
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
-        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(getUserVO());
 
         assertThrows(NotFoundException.class,
             () -> habitAssignService
@@ -2792,8 +2795,7 @@ class HabitAssignServiceImplTest {
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
             locale);
 
-        verify(habitAssignRepo).save(any(HabitAssign.class));
-        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
     }
 
     @Test
@@ -2808,14 +2810,17 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friendId)).thenReturn(null);
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
+        when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
 
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
             locale);
 
-        verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
-        verify(toDoListItemRepo).getAllToDoListItemIdByHabitIdISContained(habit.getId());
+        verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
+        verify(habitInvitationRepo, times(1)).save(any(HabitInvitation.class));
+        verify(toDoListItemRepo, times(3)).getAllToDoListItemIdByHabitIdISContained(habit.getId());
         verify(userNotificationService).createNotification(new UserVO(), userVO, NotificationType.HABIT_INVITE,
             habit.getId(), "");
 
@@ -2857,22 +2862,22 @@ class HabitAssignServiceImplTest {
     @Test
     void getAllHabitsWorkingDaysInfoForCurrentUserFriendsTest() {
         Long userId = 2L;
-        Long habitId = 1L;
+        Long habitAssignId = 1L;
         List<Long> friendsIds = List.of(1L);
-        List<HabitAssign> assignList = List.of(getHabitAssign());
+        List<HabitAssignDto> assignList = List.of(getHabitAssignDto().setWorkingDays(0).setDuration(0));
         HabitWorkingDaysDto expected = HabitWorkingDaysDto.builder()
             .userId(1L)
             .duration(0)
             .workingDays(0)
             .build();
 
-        when(habitAssignRepo.findFriendsIdsTrackingHabit(habitId, userId))
+        when(habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId))
             .thenReturn(friendsIds);
-        when(habitAssignRepo.findByUserIdsAndHabitId(friendsIds, habitId))
+        when(habitInvitationService.getHabitAssignsTrackingHabitList(userId, habitAssignId))
             .thenReturn(assignList);
 
         List<HabitWorkingDaysDto> allHabitsWorkingDaysInfoForCurrentUserFriends =
-            habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitId);
+            habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitAssignId);
 
         assertEquals(expected.getUserId(), allHabitsWorkingDaysInfoForCurrentUserFriends.getFirst().getUserId());
         assertEquals(expected.getWorkingDays(),
@@ -2883,12 +2888,12 @@ class HabitAssignServiceImplTest {
     @Test
     void getAllHabitsWorkingDaysInfoForCurrentUserFriendsTestWithNoFriendAssigned() {
         Long userId = 2L;
-        Long habitId = 1L;
+        Long habitAssignId = 1L;
 
-        when(habitAssignRepo.findFriendsIdsTrackingHabit(habitId, userId))
+        when(habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId))
             .thenReturn(Collections.emptyList());
 
         assertThrows(NotFoundException.class,
-            () -> habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitId));
+            () -> habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitAssignId));
     }
 }

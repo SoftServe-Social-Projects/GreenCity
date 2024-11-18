@@ -365,15 +365,17 @@ public interface HabitAssignService {
     void confirmHabitInvitation(Long habitAssignId);
 
     /**
-     * Retrieves a list of HabitWorkingDaysDto objects that contain information
-     * about the working days of habits for the current user's friends, based on the
-     * given user ID and habit ID.
+     * Retrieves a list of {@link HabitWorkingDaysDto} objects containing
+     * information about the working days of habits tracked by the specified user's
+     * friends for a given habit assignment.
      *
-     * @param userId  the ID of the current user
-     * @param habitId the ID of the habit for which to retrieve working days
-     *                information
-     * @return a list of HabitWorkingDaysDto objects containing the working days
-     *         information for the specified habit and the user's friends
+     * @param userId        The ID of the user for whom friends' habit information
+     *                      is retrieved.
+     * @param habitAssignId The ID of the habit assignment for which to retrieve
+     *                      working days information.
+     * @return A list of {@link HabitWorkingDaysDto} objects containing the working
+     *         days information of the specified habit assignment for the user's
+     *         friends.
      */
-    List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitId);
+    List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitAssignId);
 }

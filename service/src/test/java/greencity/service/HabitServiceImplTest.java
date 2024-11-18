@@ -124,6 +124,8 @@ class HabitServiceImplTest {
     private HabitAssignService habitAssignService;
 
     @Mock
+    private HabitInvitationService habitInvitationService;
+    @Mock
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
@@ -853,7 +855,7 @@ class HabitServiceImplTest {
 
     @Test
     void getFriendsAssignedToHabitProfilePicturesTest() {
-        Long habitId = 1L;
+        Long habitAssignId = 1L;
         Long userId = 2L;
         Long friendId = 3L;
         User friend = ModelUtils.getUser();
@@ -866,17 +868,20 @@ class HabitServiceImplTest {
             .build();
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(habitRepo.existsById(habitId)).thenReturn(true);
-        when(userRepo.getFriendsAssignedToHabit(userId, habitId)).thenReturn(List.of(friend));
+        when(habitAssignRepo.existsById(habitAssignId)).thenReturn(true);
+        when(habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId))
+            .thenReturn(List.of(friendId));
+        when(userRepo.findAllById(List.of(friendId))).thenReturn(List.of(friend));
         when(modelMapper.map(friend, UserProfilePictureDto.class)).thenReturn(friendProfilePicture);
 
-        List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId);
+        List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userId);
         assertFalse(list.isEmpty());
         assertEquals(friendProfilePicture, list.getFirst());
 
         verify(userRepo).existsById(userId);
-        verify(habitRepo).existsById(habitId);
-        verify(userRepo).getFriendsAssignedToHabit(userId, habitId);
+        verify(habitAssignRepo).existsById(habitAssignId);
+        verify(habitInvitationService).getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId);
+        verify(userRepo).findAllById(List.of(friendId));
         verify(modelMapper).map(friend, UserProfilePictureDto.class);
     }
 
@@ -900,19 +905,19 @@ class HabitServiceImplTest {
 
     @Test
     void getFriendsAssignedToHabitProfilePicturesWhenHabitNotFoundTest() {
-        Long habitId = 1L;
+        Long habitAssignId = 1L;
         Long userId = 2L;
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(habitRepo.existsById(userId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userId));
 
-        assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
         verify(userRepo).existsById(userId);
-        verify(habitRepo).existsById(habitId);
+        verify(habitAssignRepo).existsById(habitAssignId);
         verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
         verify(modelMapper, never()).map(any(), any());
     }
