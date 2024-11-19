@@ -247,8 +247,7 @@ class HabitInvitationServiceImplTest {
 
         habitInvitationService.rejectHabitInvitation(invitationId, invitedUser);
 
-        assertEquals(HabitInvitationStatus.REJECTED, habitInvitation.getStatus());
-        verify(habitInvitationRepo).save(habitInvitation);
+        verify(habitInvitationRepo).delete(habitInvitation);
     }
 
     @Test
