@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +68,7 @@ public class HabitInvitationController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @PatchMapping("/{invitationId}/reject")
+    @DeleteMapping("/{invitationId}/reject")
     public ResponseEntity<Void> rejectHabitInvitation(
         @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {

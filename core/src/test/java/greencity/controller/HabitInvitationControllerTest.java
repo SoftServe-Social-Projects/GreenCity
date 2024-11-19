@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +64,7 @@ class HabitInvitationControllerTest {
         Long invitationId = 2L;
         UserVO userVO = new UserVO();
         doNothing().when(habitInvitationService).rejectHabitInvitation(invitationId, userVO);
-        mockMvc.perform(patch("/habit/invite/{invitationId}/reject", invitationId)
+        mockMvc.perform(delete("/habit/invite/{invitationId}/reject", invitationId)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitInvitationService, times(1)).rejectHabitInvitation(invitationId, userVO);

@@ -93,11 +93,9 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             || !HabitInvitationStatus.PENDING.equals(invitation.getStatus())) {
             throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }
-        checkAndDeleteHabitAssignIfUnused(invitation.getInviteeHabitAssign());
-
-        checkAndDeleteHabitAssignIfUnused(invitation.getInviterHabitAssign());
-
         habitInvitationRepo.delete(invitation);
+        checkAndDeleteHabitAssignIfUnused(invitation.getInviteeHabitAssign());
+        checkAndDeleteHabitAssignIfUnused(invitation.getInviterHabitAssign());
     }
 
     private List<Long> getUsersIdWhoInvitedMe(Long currentUserId, Long habitAssignId) {
