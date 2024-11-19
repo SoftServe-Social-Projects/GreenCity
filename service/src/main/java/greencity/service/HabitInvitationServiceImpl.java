@@ -89,7 +89,8 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
 
-        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())) {
+        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())
+            || !HabitInvitationStatus.PENDING.equals(invitation.getStatus())) {
             throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }
 

@@ -310,4 +310,29 @@ class HabitInvitationServiceImplTest {
 
         assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
     }
+
+    @Test
+    void testRejectHabitInvitation_NotPendingStatusInvitation() {
+        Long invitationId = 1L;
+        UserVO invitedUser = new UserVO();
+        invitedUser.setId(3L);
+
+        User user1 = new User();
+        user1.setId(3L);
+        HabitAssign habitAssign1 = new HabitAssign();
+        habitAssign1.setUser(user1);
+
+        HabitInvitation habitInvitation = new HabitInvitation();
+        habitInvitation.setId(invitationId);
+        habitInvitation.setInviteeHabitAssign(habitAssign1);
+        habitInvitation.setStatus(HabitInvitationStatus.ACCEPTED);
+
+        when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser);
+        });
+
+        assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
+    }
 }
