@@ -93,6 +93,9 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             || !HabitInvitationStatus.PENDING.equals(invitation.getStatus())) {
             throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }
+        checkAndDeleteHabitAssignIfUnused(invitation.getInviteeHabitAssign());
+
+        checkAndDeleteHabitAssignIfUnused(invitation.getInviterHabitAssign());
 
         habitInvitationRepo.delete(invitation);
     }
@@ -128,5 +131,14 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             .map(HabitInvitation::getInviteeHabitAssign)
             .filter(habitAssign -> !habitAssign.getUser().getId().equals(currentUserId))
             .collect(Collectors.toList());
+    }
+
+    private void checkAndDeleteHabitAssignIfUnused(HabitAssign habitAssign) {
+        boolean isHabitAssignStillUsedAsInvitee = habitInvitationRepo.existsByInviteeHabitAssign((habitAssign));
+        boolean isHabitAssignStillUsedAsInviter = habitInvitationRepo.existsByInviterHabitAssign((habitAssign));
+
+        if (!isHabitAssignStillUsedAsInvitee && !isHabitAssignStillUsedAsInviter) {
+            habitAssignRepo.delete(habitAssign);
+        }
     }
 }

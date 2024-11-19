@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -28,4 +29,8 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
      *         invitee's habit assignment.
      */
     List<HabitInvitation> findByInviteeHabitAssignId(Long inviteeHabitAssignId);
+
+    boolean existsByInviterHabitAssign(HabitAssign inviterHabitAssign);
+
+    boolean existsByInviteeHabitAssign(HabitAssign inviteeHabitAssign);
 }
