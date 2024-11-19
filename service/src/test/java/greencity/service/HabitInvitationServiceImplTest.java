@@ -228,6 +228,27 @@ class HabitInvitationServiceImplTest {
     }
 
     @Test
+    void testAcceptHabitInvitation_AlreadyAcceptedHabitInvitation() {
+        Long invitationId = 1L;
+        UserVO invitedUser = new UserVO();
+        invitedUser.setId(4L);
+        HabitAssign habitAssign1 = new HabitAssign().setUser(new User().setId(4L));
+
+        HabitInvitation habitInvitation = new HabitInvitation();
+        habitInvitation.setId(invitationId);
+        habitInvitation.setInviteeHabitAssign(habitAssign1);
+        habitInvitation.setStatus(HabitInvitationStatus.ACCEPTED);
+
+        when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
+        });
+
+        assertEquals(ErrorMessage.YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION, exception.getMessage());
+    }
+
+    @Test
     void testRejectHabitInvitation() {
         Long invitationId = 1L;
         UserVO invitedUser = new UserVO();
