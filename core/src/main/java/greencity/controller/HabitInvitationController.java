@@ -68,7 +68,7 @@ public class HabitInvitationController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PatchMapping("/{invitationId}/reject")
-    public ResponseEntity<Void> declineHabitInvitation(
+    public ResponseEntity<Void> rejectHabitInvitation(
         @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitInvitationService.rejectHabitInvitation(invitationId, userVO);

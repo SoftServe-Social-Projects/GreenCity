@@ -89,8 +89,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }
 
-        invitation.setStatus(HabitInvitationStatus.REJECTED);
-        habitInvitationRepo.save(invitation);
+        habitInvitationRepo.delete(invitation);
     }
 
     private List<Long> getUsersIdWhoInvitedMe(Long currentUserId, Long habitAssignId) {
