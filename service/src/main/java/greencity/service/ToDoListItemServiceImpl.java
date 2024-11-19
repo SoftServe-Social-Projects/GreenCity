@@ -10,11 +10,13 @@ import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemViewDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
+import greencity.entity.CustomToDoListItem;
 import greencity.entity.ToDoListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -25,6 +27,7 @@ import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.filters.ToDoListItemSpecification;
 import greencity.filters.SearchCriteria;
+import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.ToDoListItemRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
@@ -54,18 +57,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     private final ModelMapper modelMapper;
     private final UserToDoListItemRepo userToDoListItemRepo;
     private final HabitAssignRepo habitAssignRepo;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<ToDoListItemDto> findAll(String language) {
-        return toDoListItemTranslationRepo
-            .findAllByLanguageCode(language)
-            .stream()
-            .map(g -> modelMapper.map(g, ToDoListItemDto.class))
-            .collect(Collectors.toList());
-    }
+    private final CustomToDoListItemRepo customToDoListItemRepo;
 
     /**
      * {@inheritDoc}
@@ -197,9 +189,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     public List<UserToDoListItemResponseDto> getUserToDoList(Long userId, Long habitId, String language) {
         Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
         if (habitAssign.isPresent()) {
-            List<UserToDoListItemResponseDto> itemsDtos = getAllUserToDoListItems(habitAssign.get());
-            itemsDtos.forEach(el -> setTextForUserToDoListItem(el, language));
-            return itemsDtos;
+            return getAllUserToDoListItems(habitAssign.get(), language);
         } else {
             return Collections.emptyList();
         }
@@ -224,17 +214,6 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         return itemsDtos;
     }
 
-    @Transactional
-    @Override
-    public List<UserToDoListItemResponseDto> getUserToDoListItemsByHabitAssignIdAndStatusInProgress(
-        Long habitAssignId, String language) {
-        return userToDoListItemRepo
-            .findUserToDoListItemsByHabitAssignIdAndStatusInProgress(habitAssignId)
-            .stream()
-            .map(userToDoListItem -> converterUserToDoListItemResponseDto(userToDoListItem, language))
-            .collect(Collectors.toList());
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -250,8 +229,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     @Transactional
     @Override
     public UserToDoListItemResponseDto updateUserToDoListItemStatus(Long userId, Long itemId, String language) {
-        UserToDoListItem userToDoListItem;
-        userToDoListItem = userToDoListItemRepo.getReferenceById(itemId);
+        UserToDoListItem userToDoListItem = userToDoListItemRepo.getReferenceById(itemId);
         if (isActive(userToDoListItem)) {
             changeStatusToDone(userToDoListItem);
         } else {
@@ -260,7 +238,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         }
         UserToDoListItemResponseDto updatedUserToDoListItem =
             modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
-        setTextForUserToDoListItem(updatedUserToDoListItem, language);
+        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userToDoListItem.getTargetId());
+        updatedUserToDoListItem.setText(itemTranslation.getContent());
         return updatedUserToDoListItem;
     }
 
@@ -279,17 +258,28 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         if (userToDoListItems == null || userToDoListItems.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID);
         }
-        if (Arrays.stream(ToDoListItemStatus.values()).noneMatch(s -> s.name().equalsIgnoreCase(statusUpperCase))) {
+        if (Arrays.stream(UserToDoListItemStatus.values()).noneMatch(s -> s.name().equalsIgnoreCase(statusUpperCase))) {
             throw new BadRequestException(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
         }
-        userToDoListItems.forEach(u -> u.setStatus(ToDoListItemStatus.valueOf(statusUpperCase)));
+        userToDoListItems.forEach(u -> u.setStatus(UserToDoListItemStatus.valueOf(statusUpperCase)));
         userToDoListItemRepo.saveAll(userToDoListItems);
-        List<UserToDoListItemResponseDto> userToDoListItemResponseDtoList =
-            userToDoListItems.stream()
-                .map(u -> modelMapper.map(u, UserToDoListItemResponseDto.class))
-                .collect(Collectors.toList());
-        userToDoListItemResponseDtoList.forEach(u -> setTextForUserToDoListItem(u, language));
-        return userToDoListItemResponseDtoList;
+        return userToDoListItems.stream()
+                .map(u -> {
+                    UserToDoListItemResponseDto userItemResponseDto = UserToDoListItemResponseDto.builder()
+                            .id(u.getId())
+                            .status(u.getStatus())
+                            .isCustomItem(u.getIsCustomItem())
+                            .build();
+                    if (u.getIsCustomItem()) {
+                        CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(u.getId());
+                        userItemResponseDto.setText(customItem.getText());
+                    } else {
+                        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, u.getTargetId());
+                        userItemResponseDto.setText(itemTranslation.getContent());
+                    }
+                    return userItemResponseDto;
+                })
+                .toList();
     }
 
     /**
@@ -344,14 +334,24 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     }
 
     @Override
-    public List<ToDoListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
-        List<ToDoListItemDto> toDoListItemDtos = toDoListItemRepo
-            .findInProgressByUserIdAndLanguageCode(userId, code)
-            .stream()
-            .map(toDoListItemTranslation -> modelMapper.map(toDoListItemTranslation, ToDoListItemDto.class))
-            .collect(Collectors.toList());
-        toDoListItemDtos.forEach(x -> x.setStatus(ToDoListItemStatus.INPROGRESS.toString()));
-        return toDoListItemDtos;
+    public List<UserToDoListItemResponseDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
+        List<UserToDoListItem> userToDoListItems = userToDoListItemRepo.findUserToDoListItemsByUserIdAndStatusInProgress(userId);
+        return userToDoListItems.stream().map(userToDoListItem -> {
+            UserToDoListItemResponseDto userItemResponseDto = UserToDoListItemResponseDto.builder()
+                    .id(userToDoListItem.getId())
+                    .status(userToDoListItem.getStatus())
+                    .isCustomItem(userToDoListItem.getIsCustomItem())
+                    .build();
+            if (userToDoListItem.getIsCustomItem()) {
+                CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
+                userItemResponseDto.setText(customItem.getText());
+            } else {
+                ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(code, userToDoListItem.getTargetId());
+                userItemResponseDto.setText(itemTranslation.getContent());
+            }
+            return userItemResponseDto;
+        })
+                .toList();
     }
 
     private void updateTranslations(List<ToDoListItemTranslation> oldTranslations,
@@ -464,16 +464,30 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     private void saveUserToDoListItem(ToDoListItemRequestDto dto, HabitAssign habitAssign) {
         UserToDoListItem userToDoListItem = modelMapper.map(dto, UserToDoListItem.class);
         userToDoListItem.setHabitAssign(habitAssign);
+        userToDoListItem.setIsCustomItem(false);
+        userToDoListItem.setStatus(UserToDoListItemStatus.INPROGRESS);
         habitAssign.getUserToDoListItems().add(userToDoListItem);
         userToDoListItemRepo.saveAll(habitAssign.getUserToDoListItems());
     }
 
-    private List<UserToDoListItemResponseDto> getAllUserToDoListItems(HabitAssign habitAssign) {
+    private List<UserToDoListItemResponseDto> getAllUserToDoListItems(HabitAssign habitAssign, String language) {
         return userToDoListItemRepo
-            .findAllByHabitAssingId(habitAssign.getId())
-            .stream()
-            .map(userToDoListItem -> modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
-            .collect(Collectors.toList());
+                .findAllByHabitAssingId(habitAssign.getId()).stream().map(userItem -> {
+                    UserToDoListItemResponseDto userItemResponseDto = UserToDoListItemResponseDto.builder()
+                            .id(userItem.getId())
+                            .status(userItem.getStatus())
+                            .isCustomItem(userItem.getIsCustomItem())
+                            .build();
+                    if (userItem.getIsCustomItem()) {
+                        CustomToDoListItem customItem = customToDoListItemRepo.findById(userItem.getTargetId())
+                                .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userItem.getTargetId()));
+                        userItemResponseDto.setText(customItem.getText());
+                    } else {
+                        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userItem.getTargetId());
+                        userItemResponseDto.setText(itemTranslation.getContent());
+                    }
+                    return userItemResponseDto;
+                }).toList();
     }
 
     private List<ToDoListItemDto> getAllToDoListItemsForUser(HabitAssign habitAssign) {
@@ -491,23 +505,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
      */
     private void setTextForToDoListItem(ToDoListItemDto dto, String language) {
         String text =
-                toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(language, dto.getId()).getContent();
+                toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, dto.getId()).getContent();
         dto.setText(text);
-    }
-
-    /**
-     * Method converts UserToDoListItem to UserToDoListItemResponseDto and sets text
-     * for UserToDoListItemResponseDto with localization.
-     *
-     * @param userToDoListItem {@link UserToDoListItem}
-     * @param language         {@link String}
-     */
-    private UserToDoListItemResponseDto converterUserToDoListItemResponseDto(
-        UserToDoListItem userToDoListItem, String language) {
-        UserToDoListItemResponseDto dto =
-            modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
-        setTextForUserToDoListItem(dto, language);
-        return dto;
     }
 
     private HabitAssign getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(Long userId, Long habitId) {
@@ -520,7 +519,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
 
     private boolean isActive(UserToDoListItem userToDoListItem) {
         try {
-            if (ToDoListItemStatus.ACTIVE.equals(userToDoListItem.getStatus())) {
+            if (UserToDoListItemStatus.INPROGRESS.equals(userToDoListItem.getStatus())) {
                 return true;
             }
         } catch (Exception e) {
@@ -531,7 +530,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     }
 
     private void changeStatusToDone(UserToDoListItem userToDoListItem) {
-        userToDoListItem.setStatus(ToDoListItemStatus.DONE);
+        userToDoListItem.setStatus(UserToDoListItemStatus.DONE);
         userToDoListItem.setDateCompleted(LocalDateTime.now());
         userToDoListItemRepo.save(userToDoListItem);
     }

@@ -233,7 +233,7 @@ public class ToDoListItemController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/{userId}/get-all-inprogress")
-    public ResponseEntity<List<ToDoListItemDto>> findInProgressByUserId(
+    public ResponseEntity<List<UserToDoListItemResponseDto>> findInProgressByUserId(
         @PathVariable @CurrentUserId Long userId, @RequestParam(name = "lang") String code) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(toDoListItemService.findInProgressByUserIdAndLanguageCode(userId, code));

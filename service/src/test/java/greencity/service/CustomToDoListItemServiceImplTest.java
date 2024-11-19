@@ -344,7 +344,7 @@ class CustomToDoListItemServiceImplTest {
         UserToDoListItem userToDoListItem =
             new UserToDoListItem(1L, ModelUtils.getHabitAssignWithUserToDoListItem(), toDoListItem,
                 ToDoListItemStatus.ACTIVE, LocalDateTime.now());
-        when(userToDoListItemRepo.getByUserAndItemId(1L, 1L)).thenReturn(Optional.of(userToDoListItemId));
+        when(userToDoListItemRepo.getCustomToDoItemIdByUserAndItemId(1L, 1L)).thenReturn(Optional.of(userToDoListItemId));
         when(userToDoListItemRepo.getReferenceById(userToDoListItemId)).thenReturn(userToDoListItem);
         customToDoListItemService.updateItemStatusToDone(1L, 1L);
         userToDoListItem.setStatus(ToDoListItemStatus.DONE);

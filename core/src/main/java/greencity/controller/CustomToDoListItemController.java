@@ -2,8 +2,8 @@ package greencity.controller;
 
 import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.user.UserVO;
 import greencity.service.CustomToDoListItemService;
@@ -58,7 +58,7 @@ public class CustomToDoListItemController {
     /**
      * Method saves custom to-do list items for user.
      *
-     * @param dto    {@link BulkSaveCustomToDoListItemDto} with list objects to save
+     * @param dto   list of {@link CustomToDoListItemSaveRequestDto} with list objects to save
      * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
@@ -73,7 +73,7 @@ public class CustomToDoListItemController {
     })
     @PostMapping("/{userId}/{habitAssignId}/custom-to-do-list-items")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> saveUserCustomToDoListItems(
-        @Valid @RequestBody BulkSaveCustomToDoListItemDto dto,
+        @RequestBody List<@Valid CustomToDoListItemSaveRequestDto> dto,
         @Parameter(description = "Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
         @PathVariable Long habitAssignId) {
         return ResponseEntity
@@ -82,7 +82,7 @@ public class CustomToDoListItemController {
     }
 
     /**
-     * Method updated user custom to-do list items to status DONE.
+     * Method updated user custom to-do list item status.
      *
      * @param userId     {@link UserVO} id
      * @param itemId     {@link Long} with needed item id.
@@ -153,7 +153,7 @@ public class CustomToDoListItemController {
     @DeleteMapping("/{userId}/custom-to-do-list-items")
     public ResponseEntity<List<Long>> bulkDeleteCustomToDoListItems(
         @Parameter(description = "Ids of custom to-do-list-items separated by a comma \n e.g. 1,2",
-            required = true) @RequestParam String ids,
+            required = true) @RequestParam List<Long> ids,
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customToDoListItemService.bulkDelete(ids));
     }

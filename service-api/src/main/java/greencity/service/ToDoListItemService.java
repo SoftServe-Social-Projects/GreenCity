@@ -12,14 +12,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface ToDoListItemService {
     /**
-     * Method returns to-do list, available for tracking for specific language.
-     *
-     * @param language needed language code
-     * @return List of {@link ToDoListItemDto}.
-     */
-    List<ToDoListItemDto> findAll(String language);
-
-    /**
      * Method for saving to-do list item from {@link ToDoListItemPostDto}.
      *
      * @param toDoListItemPostDto needed text
@@ -108,17 +100,6 @@ public interface ToDoListItemService {
     List<UserToDoListItemResponseDto> getUserToDoList(Long userId, Long habitId, String language);
 
     /**
-     * Method returns list of user to-do list items by habitAssignId, specific
-     * language and INPROGRESS status.
-     *
-     * @param habitAssignId id of the {@link Long} current user.
-     * @param language      needed language code.
-     * @return List of {@link UserToDoListItemResponseDto}.
-     */
-    List<UserToDoListItemResponseDto> getUserToDoListItemsByHabitAssignIdAndStatusInProgress(
-        Long habitAssignId, String language);
-
-    /**
      * Method returns user to-do list by habitAssignId for specific language.
      *
      * @param userId        id of the {@link UserVO} current user.
@@ -199,5 +180,5 @@ public interface ToDoListItemService {
      * @param code   language code {@link String}
      * @return {@link ToDoListItemDto}
      */
-    List<ToDoListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
+    List<UserToDoListItemResponseDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
 }

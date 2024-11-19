@@ -28,7 +28,7 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     @Modifying
     @Transactional
     @Query(nativeQuery = true, value = "DELETE FROM user_to_do_list utdl "
-        + "WHERE utdl.to_do_list_item_id =:toDoListItemId AND utdl.habit_assign_id =:habitAssignId ")
+        + "WHERE utdl.target_id =:toDoListItemId AND utdl.habit_assign_id =:habitAssignId AND utdl.is_custom_item = false")
     void deleteByToDoListItemIdAndHabitAssignId(Long toDoListItemId, Long habitAssignId);
 
     /**
@@ -59,7 +59,7 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
      * @return List of {@link Long}
      */
     @Query(nativeQuery = true,
-        value = "SELECT to_do_list_item_id FROM user_to_do_list WHERE habit_assign_id = :id")
+        value = "SELECT target_id FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = false")
     List<Long> getAllAssignedToDoListItems(Long id);
 
     /**
@@ -97,6 +97,20 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
         @Param("habitAssignId") Long habitAssignId);
 
     /**
+     * Method returns user to-do list items by userId and INPROGRESS status.
+     *
+     * @param habitAssignId id of needed habit assign
+     * @return List of {@link UserToDoListItem}
+     */
+
+    @Query("SELECT utdli FROM UserToDoListItem utdli WHERE "
+            + "utdli.status='INPROGRESS' "
+            + "AND utdli.habitAssign.user.id=:userId "
+            + "ORDER BY utdli.id")
+    List<UserToDoListItem> findUserToDoListItemsByUserIdAndStatusInProgress(
+            @Param("habitAssignId") Long userId);
+
+    /**
      * Method returns to-do list with statuses DONE.
      *
      * @param habitAssignId id of needed habit assign
@@ -117,8 +131,8 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     @Query(nativeQuery = true, value = """
         select utdl.id from user_to_do_list as utdl
         join habit_assign as ha on ha.id = habit_assign_id
-        where ha.user_id = :userId and to_do_list_item_id = :itemId""")
-    Optional<Long> getByUserAndItemId(Long userId, Long itemId);
+        where ha.user_id = :userId and target_id = :itemId and is_custom_item = true""")
+    Optional<Long> getCustomToDoItemIdByUserAndItemId(Long userId, Long itemId);
 
     /**
      * Method returns {@link UserToDoListItem} by user to-do list item id and user
@@ -134,11 +148,4 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<UserToDoListItem> getAllByUserToDoListIdAndUserId(
         @Param(value = "userToDoListItemId") Long userToDoListItemId,
         @Param(value = "userId") Long userId);
-
-    /*
-     * @Query(nativeQuery = true, value =
-     * "SELECT utdl.duration, utdl.working_days, utdl.status FROM user_to_do_list utdl "
-     * + "JOIN habit_assign ha ON ha.id = utdl.habit_assign_id " +
-     * "JOIN to_do_list_item tdli ON tdli.id = utdl.to_do_list_item " + "JOIN  "
-     */
 }

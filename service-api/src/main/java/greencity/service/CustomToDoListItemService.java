@@ -1,9 +1,10 @@
 package greencity.service;
 
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.user.UserVO;
+
 import java.util.List;
 
 /**
@@ -15,36 +16,13 @@ public interface CustomToDoListItemService {
     /**
      * Method saves list of custom to-do list items for user.
      *
-     * @param bulkSaveCustomToDoListItemDto {@link BulkSaveCustomToDoListItemDto}
+     * @param dtoList list of {@link CustomToDoListItemSaveRequestDto}
      *                                      with objects list for saving.
      * @param userId                        {@link UserVO} current user id
      * @return list of saved {@link CustomToDoListItemResponseDto}
      */
-    List<CustomToDoListItemResponseDto> save(BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto,
+    List<CustomToDoListItemResponseDto> save(List<CustomToDoListItemSaveRequestDto> dtoList,
         Long userId, Long habitAssignId);
-
-    /**
-     * Method for finding all custom to-do list items.
-     *
-     * @return list of {@link CustomToDoListItemResponseDto}
-     */
-    List<CustomToDoListItemResponseDto> findAll();
-
-    /**
-     * Method for finding all custom to-do list item for one user.
-     *
-     * @param userId user id.
-     * @return list of {@link CustomToDoListItemResponseDto}
-     */
-    List<CustomToDoListItemResponseDto> findAllByUserAndHabit(Long userId, Long habitId);
-
-    /**
-     * Method for finding one custom to-do list item by id.
-     *
-     * @param id - custom to-do list item id.
-     * @return {@link CustomToDoListItemResponseDto}
-     */
-    CustomToDoListItemResponseDto findById(Long id);
 
     /**
      * Method update custom to-do items status.
@@ -67,10 +45,10 @@ public interface CustomToDoListItemService {
     /**
      * Method for deleted list of custom to-do list items.
      *
-     * @param ids string with objects id for deleting.
+     * @param ids list of id for deleting.
      * @return list ids of deleted custom to-do list items
      */
-    List<Long> bulkDelete(String ids);
+    List<Long> bulkDelete(List<Long> ids);
 
     /**
      * Method for finding all custom to-do list items.
@@ -90,17 +68,6 @@ public interface CustomToDoListItemService {
      */
     List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItemsByHabitAssignId(Long userId,
         Long habitAssignId);
-
-    /**
-     * Method for finding custom to-do list items by userId and habitId and
-     * INPROGRESS status.
-     *
-     * @param userId  user id.
-     * @param habitId habit id.
-     * @return list of {@link CustomToDoListItemResponseDto}
-     */
-    List<CustomToDoListItemResponseDto> findAllCustomToDoListItemsWithStatusInProgress(Long userId,
-        Long habitId);
 
     /**
      * Method returns all user's custom to-do items by status(if is defined).

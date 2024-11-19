@@ -209,7 +209,7 @@ class ToDoListItemServiceImplTest {
         when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
             userToDoListItem));
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class)).thenReturn(expected.get(0));
-        when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(languageEn, 1L))
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageEn, 1L))
             .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
 
         List<UserToDoListItemResponseDto> actual = toDoListItemService
@@ -275,7 +275,7 @@ class ToDoListItemServiceImplTest {
         when(userToDoListItemRepo.getReferenceById(userToDoListItem.getId())).thenReturn(userToDoListItem);
         when(modelMapper.map(any(), eq(UserToDoListItemResponseDto.class)))
             .thenReturn(new UserToDoListItemResponseDto(2L, null, ToDoListItemStatus.DONE));
-        when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(language,
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(language,
             userToDoListItem.getId())).thenReturn(toDoListItemTranslations.getFirst());
         UserToDoListItemResponseDto userToDoListItemResponseDto =
             toDoListItemService.updateUserToDoListItemStatus(userId, userToDoListItem.getId(), "uk");
@@ -308,7 +308,7 @@ class ToDoListItemServiceImplTest {
                 .id(1L)
                 .status(ToDoListItemStatus.DONE)
                 .build());
-        when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId("en", 1L))
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
             .thenReturn(ModelUtils.getToDoListItemTranslation());
 
         List<UserToDoListItemResponseDto> result = toDoListItemService
@@ -318,7 +318,7 @@ class ToDoListItemServiceImplTest {
 
         verify(userToDoListItemRepo).getAllByUserToDoListIdAndUserId(1L, 2L);
         verify(modelMapper).map(userToDoListItem, UserToDoListItemResponseDto.class);
-        verify(toDoListItemTranslationRepo).findByLangAndUserToDoListItemId("en", 1L);
+        verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId("en", 1L);
     }
 
     @Test
@@ -466,7 +466,7 @@ class ToDoListItemServiceImplTest {
             userToDoListItem));
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
             .thenReturn(UserToDoListItemResponseDto.builder().id(1L).build());
-        when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId("en", 1L))
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
             .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
         assertEquals(1L, toDoListItemService.getUserToDoList(userId, 1L, "en").get(0).getId());
     }
@@ -507,14 +507,14 @@ class ToDoListItemServiceImplTest {
                 item));
         when(modelMapper.map(item, UserToDoListItemResponseDto.class))
             .thenReturn(itemResponseDto);
-        when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId("en", 1L))
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
             .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
 
         assertEquals(List.of(itemResponseDto), toDoListItemService
             .getUserToDoListItemsByHabitAssignIdAndStatusInProgress(1L, "en"));
 
         verify(userToDoListItemRepo).findUserToDoListItemsByHabitAssignIdAndStatusInProgress(anyLong());
-        verify(toDoListItemTranslationRepo).findByLangAndUserToDoListItemId(any(), anyLong());
+        verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId(any(), anyLong());
         verify(modelMapper).map(any(), any());
     }
 
@@ -625,7 +625,7 @@ class ToDoListItemServiceImplTest {
             userToDoListItem));
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
             .thenReturn(userToDoListItemResponseDto);
-        when(toDoListItemTranslationRepo.findByLangAndUserToDoListItemId(languageDefault,
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault,
             userToDoListItemId))
             .thenReturn(toDoListItemTranslation);
 
@@ -639,7 +639,7 @@ class ToDoListItemServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userToDoListItemRepo).findAllByHabitAssingId(habitAssignId);
         verify(modelMapper).map(userToDoListItem, UserToDoListItemResponseDto.class);
-        verify(toDoListItemTranslationRepo).findByLangAndUserToDoListItemId(languageDefault,
+        verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId(languageDefault,
             userToDoListItemId);
     }
 
@@ -662,7 +662,7 @@ class ToDoListItemServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userToDoListItemRepo).findAllByHabitAssingId(habitAssignId);
         verify(modelMapper, times(0)).map(any(), any());
-        verify(toDoListItemTranslationRepo, times(0)).findByLangAndUserToDoListItemId(any(), anyLong());
+        verify(toDoListItemTranslationRepo, times(0)).findByLangAndToDoListItemId(any(), anyLong());
     }
 
     @Test
@@ -682,7 +682,7 @@ class ToDoListItemServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userToDoListItemRepo, times(0)).findAllByHabitAssingId(anyLong());
         verify(modelMapper, times(0)).map(any(), any());
-        verify(toDoListItemTranslationRepo, times(0)).findByLangAndUserToDoListItemId(any(), anyLong());
+        verify(toDoListItemTranslationRepo, times(0)).findByLangAndToDoListItemId(any(), anyLong());
     }
 
     @Test
@@ -706,6 +706,6 @@ class ToDoListItemServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userToDoListItemRepo, times(0)).findAllByHabitAssingId(anyLong());
         verify(modelMapper, times(0)).map(any(), any());
-        verify(toDoListItemTranslationRepo, times(0)).findByLangAndUserToDoListItemId(any(), anyLong());
+        verify(toDoListItemTranslationRepo, times(0)).findByLangAndToDoListItemId(any(), anyLong());
     }
 }

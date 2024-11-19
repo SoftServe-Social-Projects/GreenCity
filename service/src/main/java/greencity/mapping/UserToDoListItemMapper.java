@@ -22,9 +22,8 @@ public class UserToDoListItemMapper extends AbstractConverter<UserToDoListItemVO
                 .lastEnrollmentDate(userToDoListItemVO.getHabitAssign().getLastEnrollmentDate())
                 .workingDays(userToDoListItemVO.getHabitAssign().getWorkingDays())
                 .build())
-            .toDoListItem(ToDoListItem.builder()
-                .id(userToDoListItemVO.getToDoListItemVO().getId())
-                .build())
+            .targetId(userToDoListItemVO.getTargetId())
+            .isCustomItem(userToDoListItemVO.getIsCustomItem())
             .dateCompleted(userToDoListItemVO.getDateCompleted())
             .build();
     }
