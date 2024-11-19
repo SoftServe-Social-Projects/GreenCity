@@ -64,6 +64,10 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             throw new BadRequestException(ErrorMessage.CANNOT_ACCEPT_HABIT_INVITATION);
         }
 
+        if(HabitInvitationStatus.ACCEPTED.equals(invitation.getStatus())) {
+            throw new BadRequestException(ErrorMessage.YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION);
+        }
+
         invitation.setStatus(HabitInvitationStatus.ACCEPTED);
         habitInvitationRepo.save(invitation);
 

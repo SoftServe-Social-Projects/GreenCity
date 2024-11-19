@@ -206,4 +206,5 @@ public class ErrorMessage {
     public static final String CANNOT_ACCEPT_HABIT_INVITATION = "You can't accept this habit invitation";
     public static final String CANNOT_REJECT_HABIT_INVITATION = "You can't reject this habit invitation";
     public static final String INVITATION_NOT_FOUND = "Invitation not found";
+    public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
 }
