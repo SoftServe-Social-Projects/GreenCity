@@ -29,7 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -184,8 +184,8 @@ class UserNotificationServiceImplTest {
     @Test
     void createNotificationWithSecondMessageTest() {
         when(notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
-                NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
+            .findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(1L,
+                NotificationType.EVENT_CREATED, 1L, 1L)).thenReturn(Optional.empty());
         when(notificationRepo.countByTargetUserIdAndViewedIsFalse(testUserVo.getId())).thenReturn(1L);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
         userNotificationService.createNotification(testUserVo, testUserVo,
@@ -193,8 +193,8 @@ class UserNotificationServiceImplTest {
             "Second Message");
 
         verify(notificationRepo)
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
-                NotificationType.EVENT_CREATED, 1L);
+            .findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(1L,
+                NotificationType.EVENT_CREATED, 1L, 1L);
         verify(modelMapper, times(2)).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
             .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, 1L);
@@ -215,38 +215,38 @@ class UserNotificationServiceImplTest {
     void removeActionUserFromNotificationTest() {
         var notification = getNotification();
         when(notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
+            .findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(testUser.getId(),
                 NotificationType.EVENT_CREATED, 1L))
             .thenReturn(notification);
         userNotificationService
             .removeActionUserFromNotification(testUserVo, testUserVo, 1L, NotificationType.EVENT_CREATED);
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L);
     }
 
     @Test
     void removeActionUserFromNotificationWithSeveralActionUsersTest() {
         var notification = getNotificationWithSeveralActionUsers(3);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L))
             .thenReturn(notification);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
         userNotificationService
             .removeActionUserFromNotification(testUserVo, testUserVo, 1L, NotificationType.EVENT_CREATED);
 
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper).map(testUserVo, User.class);
     }
 
     @Test
     void removeActionUserFromNotificationIfNotificationIsNullTest() {
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L)).thenReturn(null);
         userNotificationService.removeActionUserFromNotification(testUserVo, testUserVo, 1L,
             NotificationType.EVENT_CREATED);
 
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
+        verify(notificationRepo, times(0)).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L);
     }
 
@@ -321,12 +321,13 @@ class UserNotificationServiceImplTest {
         User actionUser = mock(User.class);
         Long newsId = 1L;
         String newsTitle = "Test News";
+        long secondMessageId = 1L;
 
         Notification existingNotification = mock(Notification.class);
         List<User> actionUsers = new ArrayList<>();
         when(existingNotification.getActionUsers()).thenReturn(actionUsers);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
+        when(notificationRepo.findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+            anyLong(), any(), anyLong(), anyLong()))
             .thenReturn(Optional.of(existingNotification));
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
 
@@ -336,13 +337,14 @@ class UserNotificationServiceImplTest {
             .newsId(newsId)
             .newsTitle(newsTitle)
             .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .secondMessageId(secondMessageId)
             .isLike(true)
             .build());
 
         assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
 
         verify(existingNotification).setCustomMessage(anyString());
-        verify(existingNotification).setTime(any(LocalDateTime.class));
+        verify(existingNotification).setTime(any(ZonedDateTime.class));
         verify(notificationRepo).save(existingNotification);
         verify(notificationRepo, never()).delete(existingNotification);
     }
@@ -355,13 +357,15 @@ class UserNotificationServiceImplTest {
         User actionUser = mock(User.class);
         Long newsId = 1L;
         String newsTitle = "Test News";
+        long secondMessageId = 1L;
 
         Notification existingNotification = mock(Notification.class);
         List<User> actionUsers = new ArrayList<>();
         actionUsers.add(actionUser);
         when(existingNotification.getActionUsers()).thenReturn(actionUsers);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
+        when(notificationRepo.findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+            anyLong(),
+            any(), anyLong(), anyLong()))
             .thenReturn(Optional.of(existingNotification));
         when(actionUserVO.getId()).thenReturn(1L);
         when(actionUser.getId()).thenReturn(1L);
@@ -372,6 +376,7 @@ class UserNotificationServiceImplTest {
             .newsId(newsId)
             .newsTitle(newsTitle)
             .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .secondMessageId(secondMessageId)
             .isLike(false)
             .build());
 
@@ -389,9 +394,10 @@ class UserNotificationServiceImplTest {
         User actionUser = mock(User.class);
         Long newsId = 1L;
         String newsTitle = "Test News";
+        long secondMessageId = 1L;
 
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
+        when(notificationRepo.findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+            anyLong(), any(), anyLong(), anyLong()))
             .thenReturn(Optional.empty());
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
 
@@ -401,6 +407,7 @@ class UserNotificationServiceImplTest {
             .newsId(newsId)
             .newsTitle(newsTitle)
             .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .secondMessageId(secondMessageId)
             .isLike(true)
             .build());
 

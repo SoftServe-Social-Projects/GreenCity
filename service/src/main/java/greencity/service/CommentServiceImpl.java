@@ -122,8 +122,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setParentComment(parentComment);
             if (checkUserIsNotAuthor(userVO, parentComment.getUser())) {
                 createCommentReplyNotification(articleType, articleId, comment,
-                    userVO,
-                    modelMapper.map(parentComment.getUser(), UserVO.class), locale);
+                    userVO, modelMapper.map(parentComment.getUser(), UserVO.class), locale);
             }
         }
 
@@ -136,9 +135,9 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
         if (checkUserIsNotAuthor(userVO, articleAuthor) && !isCommentReply) {
-            createCommentNotification(articleType, articleId, comment, userVO, locale);
+            createCommentNotification(articleType, articleId, userVO, locale);
         }
-        sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, locale);
+        sendNotificationToTaggedUser(comment, articleType, locale);
 
         return addCommentDtoResponse;
     }
@@ -181,23 +180,28 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Sends a notification to users tagged in a comment on a specific article.
      *
-     * @param commentVO   the comment containing the tag, {@link CommentVO}.
      * @param articleType the type of the article where the comment is made,
      *                    {@link ArticleType}.
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      * @throws NotFoundException if a tagged user is not found by ID.
      */
-    private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, Locale locale) {
-        String commentText = commentVO.getText();
+    private void sendNotificationToTaggedUser(Comment comment, ArticleType articleType, Locale locale) {
+        String commentText = comment.getText();
         Set<Long> usersId = getUserIdFromComment(commentText);
+        NotificationType notificationType = getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG);
+        CommentVO commentVO = modelMapper.map(comment, CommentVO.class);
         if (!usersId.isEmpty()) {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-                createNotification(articleType, commentVO.getArticleId(), modelMapper.map(commentVO, Comment.class),
-                    modelMapper.map(user, UserVO.class), commentVO.getUser(),
-                    getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
+                userNotificationService.createNotification(
+                    modelMapper.map(user, UserVO.class),
+                    commentVO.getUser(),
+                    notificationType,
+                    commentVO.getArticleId(),
+                    null,
+                    getArticleTitle(articleType, commentVO.getArticleId(), locale));
             }
         }
     }
@@ -266,32 +270,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Generic method for creating a notification for various comment-related
-     * actions on an article.
-     *
-     * @param articleType      the type of the article, {@link ArticleType}.
-     * @param articleId        the ID of the article, {@link Long}.
-     * @param comment          the comment that triggered the notification,
-     *                         {@link Comment}.
-     * @param receiver         the user receiving the notification, {@link UserVO}.
-     * @param sender           the user sending the notification, {@link UserVO}.
-     * @param notificationType the type of notification, {@link NotificationType}.
-     * @throws BadRequestException if the article type is not supported.
-     */
-    private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver,
-        UserVO sender, NotificationType notificationType, Locale locale) {
-        boolean hasParentComment = comment.getParentComment() != null;
-        userNotificationService.createNotification(
-            receiver,
-            sender,
-            notificationType,
-            articleId,
-            hasParentComment ? comment.getParentComment().getText() : comment.getText(),
-            hasParentComment ? comment.getParentComment().getId() : comment.getId(),
-            getArticleTitle(articleType, articleId, locale));
-    }
-
-    /**
      * Determines the appropriate notification type based on article and action
      * type.
      *
@@ -331,16 +309,15 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param articleType the type of the article, {@link ArticleType}.
      * @param articleId   the ID of the article, {@link Long}.
-     * @param comment     the comment that was made, {@link Comment}.
      * @param userVO      the user who made the comment, {@link UserVO}.
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      */
-    private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO,
-        Locale locale) {
+    private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
         String message = null;
-        ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(locale.getLanguage()),
+        ResourceBundle bundle = ResourceBundle.getBundle("notification",
+            Locale.forLanguageTag(locale.getLanguage()),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
@@ -356,7 +333,6 @@ public class CommentServiceImpl implements CommentService {
             getNotificationType(articleType, CommentActionType.COMMENT),
             articleId,
             message,
-            comment.getId(),
             getArticleTitle(articleType, articleId, locale));
     }
 
@@ -397,8 +373,14 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
         UserVO sender, UserVO receiver, Locale locale) {
-        createNotification(articleType, articleId, comment, receiver,
-            sender, getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
+        userNotificationService.createNotification(
+            receiver,
+            sender,
+            getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
+            articleId,
+            comment.getParentComment().getText(),
+            comment.getParentComment().getId(),
+            getArticleTitle(articleType, articleId, locale));
     }
 
     /**
