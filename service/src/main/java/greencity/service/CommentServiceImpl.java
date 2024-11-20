@@ -122,7 +122,8 @@ public class CommentServiceImpl implements CommentService {
             comment.setParentComment(parentComment);
             if (checkUserIsNotAuthor(userVO, parentComment.getUser())) {
                 createCommentReplyNotification(articleType, articleId, comment,
-                    userVO, modelMapper.map(parentComment.getUser(), UserVO.class), locale);
+                    userVO,
+                    modelMapper.map(parentComment.getUser(), UserVO.class), locale);
             }
         }
 
