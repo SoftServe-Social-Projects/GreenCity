@@ -31,9 +31,8 @@ class UserToDoListItemMapperTest {
                 .lastEnrollmentDate(expected.getHabitAssign().getLastEnrollmentDate())
                 .workingDays(expected.getHabitAssign().getWorkingDays())
                 .build())
-            .toDoListItemVO(ToDoListItemVO.builder()
-                .id(expected.getToDoListItem().getId())
-                .build())
+            .targetId(expected.getTargetId())
+            .isCustomItem(expected.getIsCustomItem())
             .dateCompleted(expected.getDateCompleted())
             .build();
 

@@ -8,6 +8,8 @@ import greencity.entity.UserToDoListItem;
 import greencity.enums.ToDoListItemStatus;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import greencity.enums.UserToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,11 +25,13 @@ class UserToDoListItemVOMapperTest {
         UserToDoListItem userToDoListItem = ModelUtils.getPredefinedUserToDoListItem();
         userToDoListItem.setDateCompleted(LocalDateTime.now());
         userToDoListItem.setId(1L);
-        userToDoListItem.setToDoListItem(ToDoListItem.builder().id(13L).build());
+        userToDoListItem.setTargetId(13L);
+        userToDoListItem.setIsCustomItem(false);
 
         UserToDoListItemVO expected = ModelUtils.getUserToDoListItemVO();
-        expected.setStatus(ToDoListItemStatus.ACTIVE);
-        expected.setToDoListItemVO(ToDoListItemVO.builder().id(13L).build());
+        expected.setStatus(UserToDoListItemStatus.INPROGRESS);
+        expected.setTargetId(13L);
+        expected.setIsCustomItem(false);
         expected.setDateCompleted(userToDoListItem.getDateCompleted());
 
         assertEquals(expected, mapper.convert(userToDoListItem));

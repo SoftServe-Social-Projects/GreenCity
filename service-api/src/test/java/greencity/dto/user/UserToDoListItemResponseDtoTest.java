@@ -2,6 +2,7 @@ package greencity.dto.user;
 
 import greencity.ModelUtils;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -77,8 +78,8 @@ class UserToDoListItemResponseDtoTest {
     }
 
     @ParameterizedTest
-    @EnumSource(ToDoListItemStatus.class)
-    void validStatusTest(ToDoListItemStatus status) {
+    @EnumSource(UserToDoListItemStatus.class)
+    void validStatusTest(UserToDoListItemStatus status) {
         var dto = ModelUtils.getUserToDoListItemResponseDto();
         dto.setStatus(status);
 
@@ -87,7 +88,7 @@ class UserToDoListItemResponseDtoTest {
 
     @ParameterizedTest
     @NullSource
-    void invalidStatusTest(ToDoListItemStatus status) {
+    void invalidStatusTest(UserToDoListItemStatus status) {
         var dto = ModelUtils.getUserToDoListItemResponseDto();
         dto.setStatus(status);
 

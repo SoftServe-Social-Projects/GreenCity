@@ -3,6 +3,7 @@ package greencity.mapping;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.entity.CustomToDoListItem;
+import greencity.enums.ToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -16,7 +17,7 @@ public class CustomToDoListMapper
         return CustomToDoListItem.builder()
             .id(customToDoListItemRequestDto.getId())
             .text(customToDoListItemRequestDto.getText())
-            .status(customToDoListItemRequestDto.getStatus())
+            .status(ToDoListItemStatus.valueOf(customToDoListItemRequestDto.getStatus()))
             .build();
     }
 

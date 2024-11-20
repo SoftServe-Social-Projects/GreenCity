@@ -4,6 +4,7 @@ import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.entity.ToDoListItem;
 import greencity.entity.UserToDoListItem;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,13 +21,14 @@ class ToDoListItemWithStatusRequestDtoMapperTest {
     void convert() {
         ToDoListItemWithStatusRequestDto itemDto = new ToDoListItemWithStatusRequestDto();
         Long id = 1L;
-        ToDoListItemStatus status = ToDoListItemStatus.DONE;
+        ToDoListItemStatus status = ToDoListItemStatus.ACTIVE;
         itemDto.setId(id);
         itemDto.setStatus(status);
 
         UserToDoListItem expected = UserToDoListItem.builder()
-            .toDoListItem(ToDoListItem.builder().id(id).build())
-            .status(status)
+            .targetId(id)
+            .isCustomItem(false)
+            .status(UserToDoListItemStatus.INPROGRESS)
             .build();
 
         UserToDoListItem actual = toDoListItemWithStatusRequestDtoMapper.convert(itemDto);

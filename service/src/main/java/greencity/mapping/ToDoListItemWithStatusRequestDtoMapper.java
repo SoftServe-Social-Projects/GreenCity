@@ -1,8 +1,8 @@
 package greencity.mapping;
 
 import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
-import greencity.entity.ToDoListItem;
 import greencity.entity.UserToDoListItem;
+import greencity.enums.UserToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +19,9 @@ public class ToDoListItemWithStatusRequestDtoMapper
     @Override
     protected UserToDoListItem convert(ToDoListItemWithStatusRequestDto itemDto) {
         return UserToDoListItem.builder()
-            .toDoListItem(ToDoListItem.builder().id(itemDto.getId()).build())
-            .status(itemDto.getStatus())
+            .targetId(itemDto.getId())
+            .isCustomItem(false)
+            .status(UserToDoListItemStatus.INPROGRESS)
             .build();
     }
 }

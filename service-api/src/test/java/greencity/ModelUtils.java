@@ -9,8 +9,10 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
@@ -20,6 +22,7 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -145,7 +148,8 @@ public class ModelUtils {
         return UserToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ToDoListItemStatus.ACTIVE)
+            .status(UserToDoListItemStatus.INPROGRESS)
+            .isCustomItem(true)
             .build();
     }
 
@@ -153,14 +157,30 @@ public class ModelUtils {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ToDoListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE.toString())
             .build();
     }
 
-    public static ToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+    public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
+        return CustomToDoListItemRequestDto.builder()
+                .id(1L)
+                .text("text")
+                .status(ToDoListItemStatus.ACTIVE.toString())
+                .build();
+    }
+
+    public static ToDoListItemDto getToDoListItemDto() {
+        return ToDoListItemDto.builder()
+                .id(1L)
+                .text("to-do item")
+                .status(ToDoListItemStatus.ACTIVE.toString())
+                .build();
+    }
+
+    public static ToDoAndCustomToDoListsDto getToDoAndCustomToDoListsDto() {
         return ToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
-            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
+            .toDoListItemDto(List.of(getToDoListItemDto()))
+            .customToDoListItemDto(List.of(getCustomToDoListItemRequestDto()))
             .build();
     }
 

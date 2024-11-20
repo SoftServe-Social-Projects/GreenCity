@@ -80,7 +80,7 @@ class CustomToDoListItemResponseDtoTest {
     @EnumSource(ToDoListItemStatus.class)
     void validStatusTest(ToDoListItemStatus status) {
         var dto = ModelUtils.getCustomToDoListItemResponseDto();
-        dto.setStatus(status);
+        dto.setStatus(status.toString());
 
         testValid(dto);
     }
@@ -89,7 +89,7 @@ class CustomToDoListItemResponseDtoTest {
     @NullSource
     void invalidStatusTest(ToDoListItemStatus status) {
         var dto = ModelUtils.getCustomToDoListItemResponseDto();
-        dto.setStatus(status);
+        dto.setStatus(status.toString());
 
         testInvalid(dto);
     }

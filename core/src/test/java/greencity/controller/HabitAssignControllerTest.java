@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getToDoAndCustomToDoListsDto;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -274,7 +275,7 @@ class HabitAssignControllerTest {
         Long habitAssignId = 1L;
 
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
+        mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserToDoList", habitAssignId)
             .principal(principal))
             .andExpect(status().isOk());
         verify(habitAssignService).getToDoAndCustomToDoLists(userVO.getId(), habitAssignId, "en");
@@ -285,7 +286,7 @@ class HabitAssignControllerTest {
         Long habitAssignId = 1L;
 
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
+        mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserToDoList", habitAssignId)
             .principal(principal)
             .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
@@ -295,7 +296,7 @@ class HabitAssignControllerTest {
     @Test
     void getListOfUserAndCustomToDoListsInprogress() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        mockMvc.perform(get(habitLink + "/allUserAndCustomToDoListsInprogress")
+        mockMvc.perform(get(habitLink + "/allUserToDoListsInprogress")
                 .principal(principal)
                 .locale(Locale.forLanguageTag("en")))
             .andExpect(status().isOk());
@@ -305,16 +306,16 @@ class HabitAssignControllerTest {
     @Test
     void updateUserToDoList() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        ToDoAndCustomToDoListsDto dto = ModelUtils.getUserToDoAndCustomToDoListsDto();
+        ToDoAndCustomToDoListsDto dto = getToDoAndCustomToDoListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/userToDoList", 1L)
                 .principal(principal)
                 .locale(Locale.forLanguageTag("ua"))
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).fullUpdateUserToDoLists(userVO.getId(), 1L, dto, "ua");
+        verify(habitAssignService).fullUpdateUserToDoLists(userVO.getId(), 1L, dto);
     }
 
     @Test

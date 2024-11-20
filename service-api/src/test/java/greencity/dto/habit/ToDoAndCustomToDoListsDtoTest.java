@@ -37,26 +37,26 @@ class ToDoAndCustomToDoListsDtoTest {
 
     @Test
     void validTest() {
-        var dto = ModelUtils.getUserToDoAndCustomToDoListsDto();
+        var dto = ModelUtils.getToDoAndCustomToDoListsDto();
 
         testValid(dto);
     }
 
     @Test
     void invalidTestWithInvalidUserToDoList() {
-        var userDto = ModelUtils.getUserToDoListItemResponseDto();
-        userDto.setId(-1L);
-        var dto = ModelUtils.getUserToDoAndCustomToDoListsDto();
-        dto.setUserToDoListItemDto(List.of(userDto));
+        var toDoDto = ModelUtils.getToDoListItemDto();
+        toDoDto.setId(-1L);
+        var dto = ModelUtils.getToDoAndCustomToDoListsDto();
+        dto.setToDoListItemDto(List.of(toDoDto));
 
         testInvalid(dto);
     }
 
     @Test
     void invalidTestWithInvalidCustomToDoList() {
-        var customDto = ModelUtils.getCustomToDoListItemResponseDto();
+        var customDto = ModelUtils.getCustomToDoListItemRequestDto();
         customDto.setId(-1L);
-        var dto = ModelUtils.getUserToDoAndCustomToDoListsDto();
+        var dto = ModelUtils.getToDoAndCustomToDoListsDto();
         dto.setCustomToDoListItemDto(List.of(customDto));
 
         testInvalid(dto);

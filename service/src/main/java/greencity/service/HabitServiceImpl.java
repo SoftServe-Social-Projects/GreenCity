@@ -24,6 +24,7 @@ import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.NotificationType;
+import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -464,7 +465,7 @@ public class HabitServiceImpl implements HabitService {
             .forEach(item -> habitDto.getCustomToDoListItemDto().stream()
                 .filter(itemToUpdate -> item.getId().equals(itemToUpdate.getId()))
                 .forEach(itemToUpdate -> {
-                    item.setStatus(itemToUpdate.getStatus());
+                    item.setStatus(ToDoListItemStatus.valueOf(itemToUpdate.getStatus()));
                     item.setText(itemToUpdate.getText());
                 }));
 

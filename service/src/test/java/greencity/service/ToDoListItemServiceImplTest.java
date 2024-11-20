@@ -21,6 +21,7 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -46,15 +47,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static greencity.enums.UserStatus.ACTIVATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -114,7 +112,7 @@ class ToDoListItemServiceImplTest {
                 Collections.emptyList()))
             .content("TEST")
             .toDoListItem(
-                new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                new ToDoListItem(1L, Collections.emptySet(), Collections.emptyList()))
             .build(),
         ToDoListItemTranslation.builder()
             .id(2L)
@@ -122,7 +120,7 @@ class ToDoListItemServiceImplTest {
                 Collections.emptyList()))
             .content("TEST")
             .toDoListItem(
-                new ToDoListItem(2L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                new ToDoListItem(2L, Collections.emptySet(), Collections.emptyList()))
             .build());
 
     List<ToDoListItemRequestDto> toDoListItemRequestDtos =
@@ -199,7 +197,7 @@ class ToDoListItemServiceImplTest {
         Long habitId = 1L;
         String languageEn = "en";
         UserToDoListItem userToDoListItem =
-            UserToDoListItem.builder().id(1L).status(ToDoListItemStatus.ACTIVE).build();
+            UserToDoListItem.builder().id(1L).status(UserToDoListItemStatus.INPROGRESS).build();
 
         List<UserToDoListItemResponseDto> expected =
             List.of(ModelUtils.getUserToDoListItemResponseDto());
@@ -216,24 +214,6 @@ class ToDoListItemServiceImplTest {
             .saveUserToDoListItems(userId, habitId, dtoList, languageEn);
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void findAllTest() {
-        List<ToDoListItemDto> toDoListItemDto = toDoListItemTranslations
-            .stream()
-            .map(translation -> new ToDoListItemDto(translation.getToDoListItem().getId(),
-                translation.getContent(), ToDoListItemStatus.ACTIVE.toString()))
-            .collect(Collectors.toList());
-
-        when(modelMapper.map(toDoListItemTranslations.getFirst(), ToDoListItemDto.class))
-            .thenReturn(toDoListItemDto.get(0));
-        when(modelMapper.map(toDoListItemTranslations.get(1), ToDoListItemDto.class))
-            .thenReturn(toDoListItemDto.get(1));
-        when(toDoListItemTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE))
-            .thenReturn(toDoListItemTranslations);
-
-        assertEquals(toDoListItemService.findAll(AppConstant.DEFAULT_LANGUAGE_CODE), toDoListItemDto);
     }
 
     @Test
@@ -274,23 +254,23 @@ class ToDoListItemServiceImplTest {
         UserToDoListItem userToDoListItem = ModelUtils.getPredefinedUserToDoListItem();
         when(userToDoListItemRepo.getReferenceById(userToDoListItem.getId())).thenReturn(userToDoListItem);
         when(modelMapper.map(any(), eq(UserToDoListItemResponseDto.class)))
-            .thenReturn(new UserToDoListItemResponseDto(2L, null, ToDoListItemStatus.DONE));
+            .thenReturn(new UserToDoListItemResponseDto(2L, null, UserToDoListItemStatus.DONE, false));
         when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(language,
             userToDoListItem.getId())).thenReturn(toDoListItemTranslations.getFirst());
         UserToDoListItemResponseDto userToDoListItemResponseDto =
             toDoListItemService.updateUserToDoListItemStatus(userId, userToDoListItem.getId(), "uk");
 
-        assertEquals(ToDoListItemStatus.DONE, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.DONE, userToDoListItem.getStatus());
         assertEquals(userToDoListItemResponseDto.getId(),
             new UserToDoListItemResponseDto(2L, toDoListItemTranslations.getFirst().getContent(),
-                ToDoListItemStatus.DONE).getId());
+                UserToDoListItemStatus.DONE, false).getId());
         verify(userToDoListItemRepo).save(userToDoListItem);
     }
 
     @Test
     void updateUserToDoListItemStatusWithDoneItemStateTest() {
         UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, null, null, ToDoListItemStatus.DONE, null);
+            new UserToDoListItem(1L, null, 1L, true, UserToDoListItemStatus.DONE, null);
         when(userToDoListItemRepo.getReferenceById(userToDoListItem.getId())).thenReturn(userToDoListItem);
         Long userToDoListItemId = userToDoListItem.getId();
         assertThrows(UserToDoListItemStatusNotUpdatedException.class,
@@ -306,7 +286,7 @@ class ToDoListItemServiceImplTest {
         when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
             .thenReturn(UserToDoListItemResponseDto.builder()
                 .id(1L)
-                .status(ToDoListItemStatus.DONE)
+                .status(UserToDoListItemStatus.DONE)
                 .build());
         when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
             .thenReturn(ModelUtils.getToDoListItemTranslation());
@@ -314,7 +294,7 @@ class ToDoListItemServiceImplTest {
         List<UserToDoListItemResponseDto> result = toDoListItemService
             .updateUserToDoListItemStatus(2L, 1L, "en", "DONE");
 
-        assertEquals(ToDoListItemStatus.DONE, result.getFirst().getStatus());
+        assertEquals(UserToDoListItemStatus.DONE, result.getFirst().getStatus());
 
         verify(userToDoListItemRepo).getAllByUserToDoListIdAndUserId(1L, 2L);
         verify(modelMapper).map(userToDoListItem, UserToDoListItemResponseDto.class);
@@ -436,7 +416,7 @@ class ToDoListItemServiceImplTest {
         String ids = "1,2,3,4,5,6";
         List<Long> expected = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L);
         UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, null, toDoListItem, ToDoListItemStatus.ACTIVE, null);
+            new UserToDoListItem(1L, null, 1L, true, UserToDoListItemStatus.INPROGRESS, null);
 
         when(userToDoListItemRepo.findById(anyLong())).thenReturn(Optional.of(userToDoListItem));
 
@@ -448,7 +428,7 @@ class ToDoListItemServiceImplTest {
     void deleteUserToDoListItemsFailed() {
         String ids = "1,2,3,4,5,6";
         UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, null, toDoListItem, ToDoListItemStatus.ACTIVE, null);
+            new UserToDoListItem(1L, null, 1L, false, UserToDoListItemStatus.INPROGRESS, null);
 
         when(userToDoListItemRepo.findById(anyLong())).thenReturn(Optional.of(userToDoListItem));
         when(userToDoListItemRepo.findById(3L)).thenThrow(NotFoundException.class);
@@ -459,7 +439,7 @@ class ToDoListItemServiceImplTest {
     @Test
     void getUserToDoListItemTest() {
         UserToDoListItem userToDoListItem =
-            UserToDoListItem.builder().id(1L).status(ToDoListItemStatus.ACTIVE).build();
+            UserToDoListItem.builder().id(1L).status(UserToDoListItemStatus.INPROGRESS).build();
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
@@ -492,30 +472,6 @@ class ToDoListItemServiceImplTest {
         List<UserToDoListItemResponseDto> actual = toDoListItemService
             .getUserToDoList(userId, habitId, languageEn);
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void getUserToDoListItemWithStatusInProgressTest() {
-        UserToDoListItem item = UserToDoListItem
-            .builder().id(1L).status(ToDoListItemStatus.INPROGRESS).build();
-
-        UserToDoListItemResponseDto itemResponseDto = UserToDoListItemResponseDto
-            .builder().id(1L).status(ToDoListItemStatus.INPROGRESS).build();
-
-        when(userToDoListItemRepo.findUserToDoListItemsByHabitAssignIdAndStatusInProgress(1L))
-            .thenReturn(List.of(
-                item));
-        when(modelMapper.map(item, UserToDoListItemResponseDto.class))
-            .thenReturn(itemResponseDto);
-        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
-            .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
-
-        assertEquals(List.of(itemResponseDto), toDoListItemService
-            .getUserToDoListItemsByHabitAssignIdAndStatusInProgress(1L, "en"));
-
-        verify(userToDoListItemRepo).findUserToDoListItemsByHabitAssignIdAndStatusInProgress(anyLong());
-        verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId(any(), anyLong());
-        verify(modelMapper).map(any(), any());
     }
 
     @Test
@@ -605,7 +561,7 @@ class ToDoListItemServiceImplTest {
 
         UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
         userToDoListItem.setId(userToDoListItemId);
-        userToDoListItem.setStatus(ToDoListItemStatus.ACTIVE);
+        userToDoListItem.setStatus(UserToDoListItemStatus.INPROGRESS);
 
         UserToDoListItemResponseDto userToDoListItemResponseDto =
             ModelUtils.getUserToDoListItemResponseDto();

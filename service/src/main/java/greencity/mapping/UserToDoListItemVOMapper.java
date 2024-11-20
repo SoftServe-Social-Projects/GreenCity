@@ -13,9 +13,8 @@ public class UserToDoListItemVOMapper extends AbstractConverter<UserToDoListItem
     protected UserToDoListItemVO convert(UserToDoListItem userToDoListItem) {
         return UserToDoListItemVO.builder()
             .id(userToDoListItem.getId())
-            .toDoListItemVO(ToDoListItemVO.builder()
-                .id(userToDoListItem.getToDoListItem().getId())
-                .build())
+            .targetId(userToDoListItem.getTargetId())
+            .isCustomItem(userToDoListItem.getIsCustomItem())
             .status(userToDoListItem.getStatus())
             .habitAssign(HabitAssignVO.builder()
                 .id(userToDoListItem.getHabitAssign().getId()).build())

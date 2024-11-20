@@ -3,20 +3,19 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
-import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -33,13 +32,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,7 +45,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,39 +95,6 @@ class CustomToDoListItemServiceImplTest {
             .build();
 
     @Test
-    void findAll() {
-        CustomToDoListItemResponseDto dtoExpected = new CustomToDoListItemResponseDto(3L, "text",
-            ToDoListItemStatus.ACTIVE);
-        when(customToDoListItemRepo.findAll()).thenReturn(Collections.singletonList(item));
-        when(modelMapper.map(any(), any())).thenReturn(dtoExpected);
-
-        assertEquals(dtoExpected.getText(), customToDoListItemService.findAll().get(0).getText());
-    }
-
-    @Test
-    void findById() {
-        CustomToDoListItemResponseDto expected = new CustomToDoListItemResponseDto(3L,
-            "text", ToDoListItemStatus.ACTIVE);
-        when(customToDoListItemRepo.findById(1L)).thenReturn(Optional.of(item));
-        when(modelMapper.map(any(), eq(CustomToDoListItemResponseDto.class)))
-            .thenReturn(expected);
-
-        assertEquals(expected.getText(), customToDoListItemService.findById(1L).getText());
-    }
-
-    @Test
-    void FindAllByUserAndHabit() {
-        CustomToDoListItemResponseDto dtoExpected = new CustomToDoListItemResponseDto(3L, "text",
-            ToDoListItemStatus.ACTIVE);
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L))
-            .thenReturn(Collections.singletonList(item));
-        when(modelMapper.map(any(CustomToDoListItem.class), eq(CustomToDoListItemResponseDto.class)))
-            .thenReturn(dtoExpected);
-        assertEquals(dtoExpected.getText(), customToDoListItemService
-            .findAllByUserAndHabit(1L, 1L).get(0).getText());
-    }
-
-    @Test
     void findAllAvailableCustomToDoListItems() {
         List<CustomToDoListItem> items = new ArrayList<>();
         items.add(item);
@@ -144,25 +107,6 @@ class CustomToDoListItemServiceImplTest {
     }
 
     @Test
-    void findAllCustomToDoListItemsWithStatusInProgressTest() {
-        CustomToDoListItem itemInProgress = ModelUtils.getCustomToDoListItemWithStatusInProgress();
-        CustomToDoListItemResponseDto itemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDtoWithStatusInProgress();
-
-        when(customToDoListItemRepo.findAllCustomToDoListItemsForUserIdAndHabitIdInProgress(anyLong(),
-            anyLong()))
-            .thenReturn(List.of(itemInProgress));
-        when(modelMapper.map(itemInProgress, CustomToDoListItemResponseDto.class)).thenReturn(itemResponseDto);
-
-        assertEquals(List.of(itemResponseDto), customToDoListItemService
-            .findAllCustomToDoListItemsWithStatusInProgress(1L, 3L));
-
-        verify(customToDoListItemRepo).findAllCustomToDoListItemsForUserIdAndHabitIdInProgress(anyLong(),
-            anyLong());
-        verify(modelMapper).map(any(), any());
-    }
-
-    @Test
     void saveEmptyBulkSaveCustomToDoListItemDtoTest() {
         UserVO userVO = ModelUtils.getUserVO();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
@@ -172,8 +116,7 @@ class CustomToDoListItemServiceImplTest {
         List<CustomToDoListItem> items = user.getCustomToDoListItems();
         when(customToDoListItemRepo.saveAll(any())).thenReturn(items);
         List<CustomToDoListItemResponseDto> saveResult = customToDoListItemService.save(
-            new BulkSaveCustomToDoListItemDto(Collections.emptyList()),
-            1L, 1L);
+                Collections.emptyList(), 1L, 1L);
         assertTrue(saveResult.isEmpty());
         assertTrue(user.getCustomToDoListItems().isEmpty());
     }
@@ -190,10 +133,9 @@ class CustomToDoListItemServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(dtoToSave, CustomToDoListItem.class)).thenReturn(customToDoListItem);
         when(modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class))
-            .thenReturn(new CustomToDoListItemResponseDto(1L, "bar", ToDoListItemStatus.DONE));
+            .thenReturn(new CustomToDoListItemResponseDto(1L, "bar", ToDoListItemStatus.ACTIVE.toString(), true));
         List<CustomToDoListItemResponseDto> saveResult = customToDoListItemService.save(
-            new BulkSaveCustomToDoListItemDto(Collections.singletonList(dtoToSave)),
-            1L, 1L);
+            Collections.singletonList(dtoToSave), 1L, 1L);
         assertEquals(user.getCustomToDoListItems().get(0), customToDoListItem);
         assertEquals("bar", saveResult.getFirst().getText());
     }
@@ -210,8 +152,7 @@ class CustomToDoListItemServiceImplTest {
         when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(dtoToSave, CustomToDoListItem.class)).thenReturn(customToDoListItem);
-        BulkSaveCustomToDoListItemDto bulkSave =
-            new BulkSaveCustomToDoListItemDto(Collections.singletonList(dtoToSave));
+        List<CustomToDoListItemSaveRequestDto> bulkSave = Collections.singletonList(dtoToSave);
         Assertions.assertThrows(CustomToDoListItemNotSavedException.class,
             () -> customToDoListItemService.save(bulkSave, 1L, 1L));
     }
@@ -220,58 +161,24 @@ class CustomToDoListItemServiceImplTest {
     void saveFailedOnHabitFindBy() {
         when(habitAssignRepo.findById(anyLong())).thenThrow(NotFoundException.class);
         CustomToDoListItemSaveRequestDto dtoToSave = new CustomToDoListItemSaveRequestDto("foo");
-        BulkSaveCustomToDoListItemDto bulkSave =
-            new BulkSaveCustomToDoListItemDto(Collections.singletonList(dtoToSave));
+        List<CustomToDoListItemSaveRequestDto> bulkSave = Collections.singletonList(dtoToSave);
         assertThrows(NotFoundException.class, () -> customToDoListItemService.save(bulkSave, 1L, 1L));
-    }
-
-    @Test
-    void findAllTest() {
-        CustomToDoListItem customToDoListItem =
-            new CustomToDoListItem(1L, "foo", null, null, ToDoListItemStatus.DONE, null);
-        when(customToDoListItemRepo.findAll()).thenReturn(Collections.singletonList(customToDoListItem));
-        when(modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class))
-            .thenReturn(new CustomToDoListItemResponseDto(customToDoListItem.getId(),
-                customToDoListItem.getText(), customToDoListItem.getStatus()));
-        List<CustomToDoListItemResponseDto> findAllResult = customToDoListItemService.findAll();
-        assertEquals("foo", findAllResult.getFirst().getText());
-        assertEquals(1L, (long) findAllResult.getFirst().getId());
-    }
-
-    @Test
-    void findByNullIdTest() {
-        Assertions
-            .assertThrows(NotFoundException.class,
-                () -> customToDoListItemService.findById(null));
-    }
-
-    @Test
-    void findByIdTest() {
-        CustomToDoListItem customToDoListItem =
-            new CustomToDoListItem(1L, "foo", null, null, ToDoListItemStatus.DONE, null);
-        when(customToDoListItemRepo.findById(anyLong())).thenReturn(java.util.Optional.of(customToDoListItem));
-        when(modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class))
-            .thenReturn(new CustomToDoListItemResponseDto(customToDoListItem.getId(),
-                customToDoListItem.getText(), customToDoListItem.getStatus()));
-        CustomToDoListItemResponseDto findByIdResult = customToDoListItemService.findById(1L);
-        assertEquals("foo", findByIdResult.getText());
-        assertEquals(1L, (long) findByIdResult.getId());
     }
 
     @Test
     void updateItemStatus() {
         CustomToDoListItem customToDoListItem =
-            new CustomToDoListItem(1L, "test", null, null, ToDoListItemStatus.DONE, null);
+            new CustomToDoListItem(1L, "test", null, null, ToDoListItemStatus.ACTIVE, true);
         CustomToDoListItemResponseDto test =
-            new CustomToDoListItemResponseDto(1L, "test", ToDoListItemStatus.DONE);
+            new CustomToDoListItemResponseDto(1L, "test", ToDoListItemStatus.ACTIVE.toString(), true);
         when(customToDoListItemRepo.findByUserIdAndItemId(64L, 1L)).thenReturn(customToDoListItem);
         when(customToDoListItemRepo.save(customToDoListItem)).thenReturn(customToDoListItem);
         when(modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class)).thenReturn(test);
         assertEquals(test, customToDoListItemService.updateItemStatus(64L, 1L, "DONE"));
         CustomToDoListItem customToDoListItem1 =
-            new CustomToDoListItem(2L, "test", null, null, ToDoListItemStatus.ACTIVE, null);
+            new CustomToDoListItem(2L, "test", null, null, ToDoListItemStatus.ACTIVE, true);
         CustomToDoListItemResponseDto test1 =
-            new CustomToDoListItemResponseDto(2L, "test", ToDoListItemStatus.ACTIVE);
+            new CustomToDoListItemResponseDto(2L, "test", ToDoListItemStatus.ACTIVE.toString(), true);
         when(customToDoListItemRepo.findByUserIdAndItemId(12L, 2L)).thenReturn(customToDoListItem1);
         when(customToDoListItemRepo.save(customToDoListItem1)).thenReturn(customToDoListItem1);
         when(modelMapper.map(customToDoListItem1, CustomToDoListItemResponseDto.class)).thenReturn(test1);
@@ -287,43 +194,11 @@ class CustomToDoListItemServiceImplTest {
     }
 
     @Test
-    void findAllByUserWithNullIdTest() {
-        Assertions
-            .assertThrows(NotFoundException.class,
-                () -> customToDoListItemService.findAllByUserAndHabit(null, null));
-    }
-
-    @Test
-    void findAllByUserWithNonExistentIdTest() {
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(Collections.emptyList());
-        Assertions
-            .assertThrows(NotFoundException.class,
-                () -> customToDoListItemService.findAllByUserAndHabit(1L, 1L));
-    }
-
-    @Test
-    void findAllByUserWithExistentIdTest() {
-        CustomToDoListItem customToDoListItem =
-            new CustomToDoListItem(1L, "foo", user, habit, ToDoListItemStatus.DONE, null);
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            new CustomToDoListItemResponseDto(customToDoListItem.getId(), customToDoListItem.getText(),
-                customToDoListItem.getStatus());
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(user.getId(), habit.getId()))
-            .thenReturn(Collections.singletonList(customToDoListItem));
-        when(modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class))
-            .thenReturn(customToDoListItemResponseDto);
-        List<CustomToDoListItemResponseDto> findAllByUserResult =
-            customToDoListItemService.findAllByUserAndHabit(user.getId(), habit.getId());
-        assertEquals(findAllByUserResult.getFirst().getId(), customToDoListItemResponseDto.getId());
-        assertEquals(findAllByUserResult.getFirst().getText(), customToDoListItemResponseDto.getText());
-    }
-
-    @Test
     void bulkDeleteWithNonExistentIdTest() {
         doThrow(new EmptyResultDataAccessException(1)).when(customToDoListItemRepo).deleteById(1L);
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> customToDoListItemService.bulkDelete("1"));
+                () -> customToDoListItemService.bulkDelete(List.of(1L)));
     }
 
     @Test
@@ -333,22 +208,21 @@ class CustomToDoListItemServiceImplTest {
         expectedResult.add(1L);
         expectedResult.add(2L);
         expectedResult.add(3L);
-        List<Long> bulkDeleteResult = customToDoListItemService.bulkDelete("1,2,3");
+        List<Long> bulkDeleteResult = customToDoListItemService.bulkDelete(List.of(1L, 2L, 3L));
         assertEquals(expectedResult, bulkDeleteResult);
     }
 
     @Test
     void updateItemStatusToDone() {
-        ToDoListItem toDoListItem = ModelUtils.getToDoListItem();
         Long userToDoListItemId = 1L;
         UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, ModelUtils.getHabitAssignWithUserToDoListItem(), toDoListItem,
-                ToDoListItemStatus.ACTIVE, LocalDateTime.now());
+            new UserToDoListItem(1L, ModelUtils.getHabitAssignWithUserToDoListItem(), 1L, false,
+                    UserToDoListItemStatus.INPROGRESS, LocalDateTime.now());
         when(userToDoListItemRepo.getCustomToDoItemIdByUserAndItemId(1L, 1L))
             .thenReturn(Optional.of(userToDoListItemId));
         when(userToDoListItemRepo.getReferenceById(userToDoListItemId)).thenReturn(userToDoListItem);
         customToDoListItemService.updateItemStatusToDone(1L, 1L);
-        userToDoListItem.setStatus(ToDoListItemStatus.DONE);
+        userToDoListItem.setStatus(UserToDoListItemStatus.DONE);
         verify(userToDoListItemRepo).save(userToDoListItem);
     }
 
@@ -389,7 +263,7 @@ class CustomToDoListItemServiceImplTest {
 
         CustomToDoListItemResponseDto expectedDto = ModelUtils.getCustomToDoListItemResponseDto();
         expectedDto.setText("item");
-        expectedDto.setStatus(ToDoListItemStatus.ACTIVE);
+        expectedDto.setStatus(ToDoListItemStatus.ACTIVE.toString());
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));

@@ -4,6 +4,7 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.entity.*;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
@@ -15,14 +16,13 @@ public class HabitAssignMapper extends AbstractConverter<HabitAssignDto, HabitAs
     protected HabitAssign convert(HabitAssignDto dto) {
         List<UserToDoListItem> listOfShoppingListItem = new ArrayList<>();
         for (UserToDoListItemAdvanceDto item : dto.getUserToDoListItems()) {
-            if (item.getStatus().equals(ToDoListItemStatus.INPROGRESS)) {
+            if (item.getStatus().equals(UserToDoListItemStatus.INPROGRESS)) {
                 listOfShoppingListItem.add(UserToDoListItem.builder()
                     .id(item.getId())
                     .dateCompleted(item.getDateCompleted())
                     .status(item.getStatus())
-                    .toDoListItem(ToDoListItem.builder()
-                        .id(item.getToDoListItemId())
-                        .build())
+                    .targetId(item.getTargetId())
+                    .isCustomItem(item.getIsCustomItem())
                     .build());
             }
         }

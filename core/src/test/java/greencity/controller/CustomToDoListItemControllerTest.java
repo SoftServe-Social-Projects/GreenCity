@@ -1,8 +1,8 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.enums.ToDoListItemStatus;
 import greencity.service.CustomToDoListItemService;
 import java.util.*;
@@ -16,9 +16,8 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
-
+import static greencity.ModelUtils.getCustomToDoListItemSaveRequestDto;
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -39,7 +38,7 @@ class CustomToDoListItemControllerTest {
     CustomToDoListItemController customController;
     ObjectMapper objectMapper;
 
-    private Principal principal = getPrincipal();
+    private final Principal principal = getPrincipal();
 
     private static final String customLink = "/custom/to-do-list-items";
 
@@ -53,7 +52,7 @@ class CustomToDoListItemControllerTest {
         objectMapper = new ObjectMapper();
 
         dto = new CustomToDoListItemResponseDto(3L, "text",
-            ToDoListItemStatus.ACTIVE);
+            ToDoListItemStatus.ACTIVE.toString(), true);
     }
 
     @Test
@@ -71,16 +70,16 @@ class CustomToDoListItemControllerTest {
     @Test
     void save() throws Exception {
         Long id = 1L;
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto = new BulkSaveCustomToDoListItemDto();
-        String content = objectMapper.writeValueAsString(bulkSaveCustomToDoListItemDto);
+        List<CustomToDoListItemSaveRequestDto> dtoList = List.of(getCustomToDoListItemSaveRequestDto());
+        String content = objectMapper.writeValueAsString(dtoList);
         this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-to-do-list-items")
             .content(content)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
-        when(customToDoListItemService.save(bulkSaveCustomToDoListItemDto, id, id))
+        when(customToDoListItemService.save(dtoList, id, id))
             .thenReturn(Collections.singletonList(dto));
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, id, id);
+        verify(customToDoListItemService).save(dtoList, id, id);
         assertEquals(dto, customController
-            .saveUserCustomToDoListItems(bulkSaveCustomToDoListItemDto, id, id).getBody().get(0));
+            .saveUserCustomToDoListItems(dtoList, id, id).getBody().get(0));
     }
 
     @Test
@@ -93,10 +92,11 @@ class CustomToDoListItemControllerTest {
 
     @Test
     void delete() throws Exception {
-        String ids = "1,2";
+        List<Long> ids = List.of(1L, 2L);
+        String content = objectMapper.writeValueAsString(ids);
         this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
             .delete(customLink + "/{userId}/custom-to-do-list-items", 1)
-            .param("ids", ids)).andExpect(status().isOk());
+            .param("ids", content)).andExpect(status().isOk());
         verify(customToDoListItemService).bulkDelete(ids);
     }
 
