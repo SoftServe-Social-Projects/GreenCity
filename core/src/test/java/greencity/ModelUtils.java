@@ -230,16 +230,16 @@ public class ModelUtils {
 
     public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
         return CustomToDoListItemRequestDto.builder()
-                .id(1L)
-                .status(ToDoListItemStatus.ACTIVE.toString())
-                .text("text")
-                .build();
+            .id(1L)
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .text("text")
+            .build();
     }
 
     public static CustomToDoListItemSaveRequestDto getCustomToDoListItemSaveRequestDto() {
         return CustomToDoListItemSaveRequestDto.builder()
-                .text("Custom item")
-                .build();
+            .text("Custom item")
+            .build();
     }
 
     public static UserToDoListItemResponseDto getUserToDoListItemResponseDto() {
@@ -259,10 +259,10 @@ public class ModelUtils {
 
     public static ToDoListItemDto getToDoListItemDto() {
         return ToDoListItemDto.builder()
-                .id(1L)
-                .text("To-do item")
-                .status(ToDoListItemStatus.ACTIVE.toString())
-                .build();
+            .id(1L)
+            .text("To-do item")
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .build();
     }
 
     public static AddEventDtoRequest getEventDtoWithoutDates() {

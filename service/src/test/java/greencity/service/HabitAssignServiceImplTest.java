@@ -771,7 +771,8 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
         verify(userToDoListItemRepo, times(0)).deleteToDoListItemsByHabitAssignId(anyLong());
-        verify(customToDoListItemRepo, times(0)).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(customToDoListItemRepo, times(0)).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(anyLong(),
+            anyLong());
         verify(habitAssignRepo, times(0)).delete(any(HabitAssign.class));
     }
 
@@ -791,7 +792,8 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(userToDoListItemRepo, times(0)).deleteToDoListItemsByHabitAssignId(anyLong());
-        verify(customToDoListItemRepo, times(0)).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(customToDoListItemRepo, times(0)).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(anyLong(),
+            anyLong());
         verify(habitAssignRepo, times(0)).delete(any(HabitAssign.class));
     }
 

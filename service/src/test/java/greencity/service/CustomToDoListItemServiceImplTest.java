@@ -116,7 +116,7 @@ class CustomToDoListItemServiceImplTest {
         List<CustomToDoListItem> items = user.getCustomToDoListItems();
         when(customToDoListItemRepo.saveAll(any())).thenReturn(items);
         List<CustomToDoListItemResponseDto> saveResult = customToDoListItemService.save(
-                Collections.emptyList(), 1L, 1L);
+            Collections.emptyList(), 1L, 1L);
         assertTrue(saveResult.isEmpty());
         assertTrue(user.getCustomToDoListItems().isEmpty());
     }
@@ -217,7 +217,7 @@ class CustomToDoListItemServiceImplTest {
         Long userToDoListItemId = 1L;
         UserToDoListItem userToDoListItem =
             new UserToDoListItem(1L, ModelUtils.getHabitAssignWithUserToDoListItem(), 1L, false,
-                    UserToDoListItemStatus.INPROGRESS, LocalDateTime.now());
+                UserToDoListItemStatus.INPROGRESS, LocalDateTime.now());
         when(userToDoListItemRepo.getCustomToDoItemIdByUserAndItemId(1L, 1L))
             .thenReturn(Optional.of(userToDoListItemId));
         when(userToDoListItemRepo.getReferenceById(userToDoListItemId)).thenReturn(userToDoListItem);

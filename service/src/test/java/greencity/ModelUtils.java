@@ -723,10 +723,10 @@ public class ModelUtils {
 
     public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
         return CustomToDoListItemRequestDto.builder()
-                .id(1L)
-                .text("TEXT")
-                .status(ToDoListItemStatus.ACTIVE.toString())
-                .build();
+            .id(1L)
+            .text("TEXT")
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .build();
     }
 
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
@@ -1604,17 +1604,17 @@ public class ModelUtils {
 
     public static ToDoListItemDto getToDoListItemDto() {
         return ToDoListItemDto.builder()
-                .id(1L)
-                .text("to-do item")
-                .status(ToDoListItemStatus.ACTIVE.toString())
-                .build();
+            .id(1L)
+            .text("to-do item")
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .build();
     }
 
     public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
         return ToDoListItemWithStatusRequestDto.builder()
-                .id(1L)
-                .status(ToDoListItemStatus.ACTIVE)
-                .build();
+            .id(1L)
+            .status(ToDoListItemStatus.ACTIVE)
+            .build();
     }
 
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {

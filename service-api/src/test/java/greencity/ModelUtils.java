@@ -163,18 +163,18 @@ public class ModelUtils {
 
     public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
         return CustomToDoListItemRequestDto.builder()
-                .id(1L)
-                .text("text")
-                .status(ToDoListItemStatus.ACTIVE.toString())
-                .build();
+            .id(1L)
+            .text("text")
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .build();
     }
 
     public static ToDoListItemDto getToDoListItemDto() {
         return ToDoListItemDto.builder()
-                .id(1L)
-                .text("to-do item")
-                .status(ToDoListItemStatus.ACTIVE.toString())
-                .build();
+            .id(1L)
+            .text("to-do item")
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .build();
     }
 
     public static ToDoAndCustomToDoListsDto getToDoAndCustomToDoListsDto() {

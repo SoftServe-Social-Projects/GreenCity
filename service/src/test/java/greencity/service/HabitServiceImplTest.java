@@ -576,7 +576,7 @@ class HabitServiceImplTest {
         CustomToDoListItemRequestDto customToDoListItemRequestDto =
             ModelUtils.getCustomToDoListItemRequestDto();
         CustomToDoListItemResponseDto customToDoListItemResponseDto =
-                ModelUtils.getCustomToDoListItemResponseDto();
+            ModelUtils.getCustomToDoListItemResponseDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
@@ -647,7 +647,7 @@ class HabitServiceImplTest {
         CustomToDoListItemResponseDto customToDoListItemResponseDto =
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItemRequestDto customToDoListItemRequestDto =
-                ModelUtils.getCustomToDoListItemRequestDto();
+            ModelUtils.getCustomToDoListItemRequestDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
@@ -717,7 +717,7 @@ class HabitServiceImplTest {
         CustomToDoListItemResponseDto customToDoListItemResponseDto =
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItemRequestDto customToDoListItemRequestDto =
-                ModelUtils.getCustomToDoListItemRequestDto();
+            ModelUtils.getCustomToDoListItemRequestDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
@@ -940,7 +940,7 @@ class HabitServiceImplTest {
         CustomToDoListItemResponseDto customToDoListItemResponseDto =
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItemRequestDto customToDoListItemRequestDto =
-                ModelUtils.getCustomToDoListItemRequestDto();
+            ModelUtils.getCustomToDoListItemRequestDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest customHabitDtoRequest =
