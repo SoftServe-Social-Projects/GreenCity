@@ -29,7 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -321,12 +321,13 @@ class UserNotificationServiceImplTest {
         User actionUser = mock(User.class);
         Long newsId = 1L;
         String newsTitle = "Test News";
+        long secondMessageId = 1L;
 
         Notification existingNotification = mock(Notification.class);
         List<User> actionUsers = new ArrayList<>();
         when(existingNotification.getActionUsers()).thenReturn(actionUsers);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
+        when(notificationRepo.findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+                anyLong(), any(), anyLong(), anyLong()))
             .thenReturn(Optional.of(existingNotification));
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
 
@@ -336,13 +337,14 @@ class UserNotificationServiceImplTest {
             .newsId(newsId)
             .newsTitle(newsTitle)
             .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .secondMessageId(secondMessageId)
             .isLike(true)
             .build());
 
         assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
 
         verify(existingNotification).setCustomMessage(anyString());
-        verify(existingNotification).setTime(any(LocalDateTime.class));
+        verify(existingNotification).setTime(any(ZonedDateTime.class));
         verify(notificationRepo).save(existingNotification);
         verify(notificationRepo, never()).delete(existingNotification);
     }
@@ -355,6 +357,7 @@ class UserNotificationServiceImplTest {
         User actionUser = mock(User.class);
         Long newsId = 1L;
         String newsTitle = "Test News";
+        long secondMessageId = 1L;
 
         Notification existingNotification = mock(Notification.class);
         List<User> actionUsers = new ArrayList<>();
@@ -372,6 +375,7 @@ class UserNotificationServiceImplTest {
             .newsId(newsId)
             .newsTitle(newsTitle)
             .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .secondMessageId(secondMessageId)
             .isLike(false)
             .build());
 
@@ -389,9 +393,10 @@ class UserNotificationServiceImplTest {
         User actionUser = mock(User.class);
         Long newsId = 1L;
         String newsTitle = "Test News";
+        long secondMessageId = 1L;
 
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
-            any(), anyLong()))
+        when(notificationRepo.findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+                anyLong(), any(), anyLong(), anyLong()))
             .thenReturn(Optional.empty());
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
 
@@ -401,6 +406,7 @@ class UserNotificationServiceImplTest {
             .newsId(newsId)
             .newsTitle(newsTitle)
             .notificationType(NotificationType.ECONEWS_COMMENT_LIKE)
+            .secondMessageId(secondMessageId)
             .isLike(true)
             .build());
 

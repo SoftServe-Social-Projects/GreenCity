@@ -2927,7 +2927,7 @@ public class ModelUtils {
             .notificationId(1L)
             .projectName(String.valueOf(GREENCITY))
             .notificationType(String.valueOf(EVENT_CREATED))
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .viewed(true)
             .titleText("You have created event")
             .bodyText("You successfully created event {message}.")
@@ -2950,7 +2950,7 @@ public class ModelUtils {
             .notificationType(EVENT_CREATED)
             .projectName(GREENCITY)
             .viewed(true)
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .actionUsers(List.of(getUser()))
             .emailSent(true)
             .build();
@@ -2974,7 +2974,7 @@ public class ModelUtils {
             .notificationType(EVENT_CREATED)
             .projectName(GREENCITY)
             .viewed(true)
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .actionUsers(actionUsers)
             .emailSent(true)
             .build();

@@ -356,7 +356,7 @@ public class CommentServiceImpl implements CommentService {
             getNotificationType(articleType, CommentActionType.COMMENT),
             articleId,
             message,
-            comment.getId(),
+            null,
             getArticleTitle(articleType, articleId, locale));
     }
 

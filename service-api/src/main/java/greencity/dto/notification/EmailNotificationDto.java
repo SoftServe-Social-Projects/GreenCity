@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class EmailNotificationDto {
 
     private boolean viewed;
 
-    private LocalDateTime time;
+    private ZonedDateTime time;
 
     private boolean emailSent;
 }
