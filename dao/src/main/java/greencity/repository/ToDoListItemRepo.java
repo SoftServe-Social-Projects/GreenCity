@@ -105,7 +105,7 @@ public interface ToDoListItemRepo
         String languageCode);
 
     @Query(nativeQuery = true,
-    value = "SELECT tdli.* FROM to_do_list_items tdli "
+        value = "SELECT tdli.* FROM to_do_list_items tdli "
             + "JOIN user_to_do_list ustdl ON ustdl.target_id = tdli.id "
             + "WHERE ustdl.is_custom_item = false "
             + "AND ustdl.habit_assign_id = :habitAssignId")

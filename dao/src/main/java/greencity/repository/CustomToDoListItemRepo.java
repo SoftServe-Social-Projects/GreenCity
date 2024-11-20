@@ -31,10 +31,10 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
         @Param("habitId") Long habitId);
 
     @Query(nativeQuery = true,
-            value = "SELECT ctdl.* FROM custom_to_do_list_items ctdl "
-                    + "JOIN user_to_do_list ustdl ON ustdl.target_id = ctdl.id "
-                    + "WHERE ustdl.is_custom_item = true "
-                    + "AND ustdl.habit_assign_id = :habitAssignId")
+        value = "SELECT ctdl.* FROM custom_to_do_list_items ctdl "
+            + "JOIN user_to_do_list ustdl ON ustdl.target_id = ctdl.id "
+            + "WHERE ustdl.is_custom_item = true "
+            + "AND ustdl.habit_assign_id = :habitAssignId")
     List<CustomToDoListItem> findAllByHabitAssignId(Long habitAssignId);
 
     /**
@@ -77,23 +77,24 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
      * @return list of id.
      */
     @Query(nativeQuery = true,
-            value = "select ctd.id from custom_to_do_list_items ctd where habit_id = :habitId and "
-                    + " ctd.is_default = true and "
-                    + " ctd.status like 'ACTIVE';")
+        value = "select ctd.id from custom_to_do_list_items ctd where habit_id = :habitId and "
+            + " ctd.is_default = true and "
+            + " ctd.status like 'ACTIVE';")
     List<Long> getAllCustomToDoListItemIdByHabitIdIsContained(Long habitId);
 
     /**
-     * Method returns custom to-do list items ids created by user which are in the habit and not default.
+     * Method returns custom to-do list items ids created by user which are in the
+     * habit and not default.
      *
      * @param habitId habit id
-     * @param userId user id
+     * @param userId  user id
      * @return list of id.
      */
     @Query(nativeQuery = true,
-            value = "select ctd.id from custom_to_do_list_items ctd where habit_id = :habitId and "
-                    + " ctd.is_default = false and "
-                    + " ctd.user_id = :userId and "
-                    + " ctd.status like 'ACTIVE';")
+        value = "select ctd.id from custom_to_do_list_items ctd where habit_id = :habitId and "
+            + " ctd.is_default = false and "
+            + " ctd.user_id = :userId and "
+            + " ctd.status like 'ACTIVE';")
     List<Long> getAllCustomToDoListItemIdByUserIdAndByHabitIdAndNotDefault(Long habitId, Long userId);
 
     /**
@@ -146,7 +147,7 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM custom_to_do_list_items WHERE habit_id =:habitId "
-            + "AND custom_to_do_list_items.user_id = :userId "
-            + "AND is_default = false", nativeQuery = true)
+        + "AND custom_to_do_list_items.user_id = :userId "
+        + "AND is_default = false", nativeQuery = true)
     void deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(Long habitId, Long userId);
 }

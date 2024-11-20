@@ -371,7 +371,7 @@ public class HabitServiceImpl implements HabitService {
     /**
      * Method that build {@link CustomHabitDtoResponse} from {@link Habit}.
      *
-     * @param habit  {@link Habit}
+     * @param habit {@link Habit}
      * @return {@link CustomHabitDtoResponse}
      * @author Lilia Mokhnatska
      */

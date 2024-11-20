@@ -79,7 +79,7 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
      * @return List of {@link Long}
      */
     @Query(nativeQuery = true,
-            value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = true")
+        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = true")
     List<UserToDoListItem> getAllAssignedCustomToDoListItemsFull(Long id);
 
     /**
@@ -104,11 +104,11 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
      */
 
     @Query("SELECT utdli FROM UserToDoListItem utdli WHERE "
-            + "utdli.status='INPROGRESS' "
-            + "AND utdli.habitAssign.user.id=:userId "
-            + "ORDER BY utdli.id")
+        + "utdli.status='INPROGRESS' "
+        + "AND utdli.habitAssign.user.id=:userId "
+        + "ORDER BY utdli.id")
     List<UserToDoListItem> findUserToDoListItemsByUserIdAndStatusInProgress(
-            @Param("habitAssignId") Long userId);
+        @Param("habitAssignId") Long userId);
 
     /**
      * Method returns to-do list with statuses DONE.

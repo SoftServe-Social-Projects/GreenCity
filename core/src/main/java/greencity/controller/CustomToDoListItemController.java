@@ -58,7 +58,8 @@ public class CustomToDoListItemController {
     /**
      * Method saves custom to-do list items for user.
      *
-     * @param dto   list of {@link CustomToDoListItemSaveRequestDto} with list objects to save
+     * @param dto    list of {@link CustomToDoListItemSaveRequestDto} with list
+     *               objects to save
      * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko

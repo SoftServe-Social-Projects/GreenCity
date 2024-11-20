@@ -180,7 +180,7 @@ public interface HabitAssignService {
      * @author Lilia Mokhnatska
      */
     List<UserToDoListItemResponseDto> getListOfUserToDoListsWithStatusInprogress(Long userId,
-                                                                               String language);
+        String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
@@ -321,10 +321,9 @@ public interface HabitAssignService {
      * them(Except items with DISABLED status).</li>
      * </ul>
      *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param listDto  {@link ToDoAndCustomToDoListsDto} User and Custom To-Do
-     *                 lists.
+     * @param userId  {@code User} id.
+     * @param habitId {@code Habit} id.
+     * @param listDto {@link ToDoAndCustomToDoListsDto} User and Custom To-Do lists.
      */
     void fullUpdateUserToDoLists(Long userId, Long habitId, ToDoAndCustomToDoListsDto listDto);
 

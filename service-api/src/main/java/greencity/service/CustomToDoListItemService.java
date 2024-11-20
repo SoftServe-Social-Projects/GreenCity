@@ -16,9 +16,9 @@ public interface CustomToDoListItemService {
     /**
      * Method saves list of custom to-do list items for user.
      *
-     * @param dtoList list of {@link CustomToDoListItemSaveRequestDto}
-     *                                      with objects list for saving.
-     * @param userId                        {@link UserVO} current user id
+     * @param dtoList list of {@link CustomToDoListItemSaveRequestDto} with objects
+     *                list for saving.
+     * @param userId  {@link UserVO} current user id
      * @return list of saved {@link CustomToDoListItemResponseDto}
      */
     List<CustomToDoListItemResponseDto> save(List<CustomToDoListItemSaveRequestDto> dtoList,

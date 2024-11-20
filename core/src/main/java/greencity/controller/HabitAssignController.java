@@ -334,7 +334,7 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(array = @ArraySchema(
-                    schema = @Schema(implementation = UserToDoListItemResponseDto.class)))),
+                schema = @Schema(implementation = UserToDoListItemResponseDto.class)))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -386,8 +386,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method that return list of UserToDoLists for current
-     * user, specific language and INPROGRESS status.
+     * Method that return list of UserToDoLists for current user, specific language
+     * and INPROGRESS status.
      *
      * @param userVO {@link UserVO} instance.
      * @param locale needed language code.

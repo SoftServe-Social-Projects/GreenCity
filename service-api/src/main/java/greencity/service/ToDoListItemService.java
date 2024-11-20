@@ -108,7 +108,7 @@ public interface ToDoListItemService {
      * @return List of {@link UserToDoListItemResponseDto}.
      */
     List<ToDoListItemDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
-                                                                 String language);
+        String language);
 
     /**
      * Method for deleting to-do list item from user`s to-do list.

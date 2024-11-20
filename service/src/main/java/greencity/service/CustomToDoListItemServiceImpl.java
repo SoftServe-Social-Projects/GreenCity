@@ -55,7 +55,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
     @Transactional
     @Override
     public List<CustomToDoListItemResponseDto> save(List<CustomToDoListItemSaveRequestDto> dtoList, Long userId,
-                                                    Long habitAssignId) {
+        Long habitAssignId) {
         UserVO userVO = restClient.findById(userId);
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitAssignId));
@@ -92,7 +92,9 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
         for (CustomToDoListItemSaveRequestDto el : dto) {
             CustomToDoListItem customToDoListItem = modelMapper.map(el, CustomToDoListItem.class);
             List<CustomToDoListItem> duplicate = user.getCustomToDoListItems().stream()
-                .filter(o -> o.getText().equals(customToDoListItem.getText()) && o.getHabit().getId().equals(habit.getId())).toList();
+                .filter(
+                    o -> o.getText().equals(customToDoListItem.getText()) && o.getHabit().getId().equals(habit.getId()))
+                .toList();
             if (duplicate.isEmpty()) {
                 customToDoListItem.setUser(user);
                 customToDoListItem.setHabit(habit);
@@ -157,17 +159,19 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      */
     @Override
     public List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItems(Long userId, Long habitId) {
-        List<CustomToDoListItem> defaultCustomItems = customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)
+        List<CustomToDoListItem> defaultCustomItems =
+            customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)
                 .stream()
                 .map(id -> customToDoListItemRepo.getReferenceById(id))
                 .toList();
-        List<CustomToDoListItem> customItemsByUser = customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId);
+        List<CustomToDoListItem> customItemsByUser =
+            customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId);
         List<CustomToDoListItem> customItemsToReturn = new ArrayList<>();
         customItemsToReturn.addAll(defaultCustomItems);
         customItemsToReturn.addAll(customItemsByUser);
         return customItemsToReturn.stream()
-                .map(customItem -> modelMapper.map(customItem, CustomToDoListItemResponseDto.class))
-                .toList();
+            .map(customItem -> modelMapper.map(customItem, CustomToDoListItemResponseDto.class))
+            .toList();
     }
 
     /**
