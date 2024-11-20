@@ -1,6 +1,5 @@
 package greencity.dto.user;
 
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserToDoListItemStatus;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;

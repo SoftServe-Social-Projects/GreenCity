@@ -1,9 +1,7 @@
 package greencity.dto.user;
 
-import greencity.dto.todolistitem.ToDoListItemVO;
 import greencity.dto.habit.HabitAssignVO;
 import java.time.LocalDateTime;
-
 import greencity.enums.UserToDoListItemStatus;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;

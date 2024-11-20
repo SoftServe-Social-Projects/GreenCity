@@ -4,7 +4,6 @@ import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.user.UserVO;
-
 import java.util.List;
 
 /**

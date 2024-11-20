@@ -1,6 +1,5 @@
 package greencity.dto.todolistitem;
 
-import greencity.enums.ToDoListItemStatus;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
