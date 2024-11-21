@@ -394,11 +394,11 @@ class EventControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes", EVENT_ID)
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/dislikes", EVENT_ID)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService).isEventLikedByUser(EVENT_ID, userVO);
+        verify(eventService).isEventDislikedByUser(EVENT_ID, userVO);
     }
 
     @Test
