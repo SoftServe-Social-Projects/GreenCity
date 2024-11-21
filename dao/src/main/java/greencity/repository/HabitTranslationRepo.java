@@ -505,4 +505,11 @@ public interface HabitTranslationRepo
         + "AND ht.habit.id = :id "
         + "AND ht.habit.isDeleted = false")
     HabitTranslation getHabitTranslationByEnLanguage(Long id);
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation ht "
+        + "JOIN ht.habit h "
+        + "WHERE ht.language = (SELECT l FROM Language l WHERE l.code = :languageCode) "
+        + "AND :userId IN (SELECT f.id FROM h.followers f)"
+        + "AND h.isDeleted = false")
+    Page<HabitTranslation> findMyFavoriteHabits(Pageable pageable, Long userId, String languageCode);
 }
