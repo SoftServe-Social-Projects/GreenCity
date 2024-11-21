@@ -3,6 +3,7 @@ package greencity.dto.filter;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
 import greencity.enums.EventType;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +21,6 @@ public class FilterEventDto {
     private List<String> tags;
     private String title;
     private EventType type;
+    private ZonedDateTime from;
+    private ZonedDateTime to;
 }

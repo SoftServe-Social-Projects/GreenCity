@@ -35,9 +35,9 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/management/shopping-list-items}">
+                    <a th:href="@{/management/to-do-list-items}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
-                        <span>[[#{greenCity.sidebar.habits.shoppingList}]]</span>
+                        <span>[[#{greenCity.sidebar.habits.toDoList}]]</span>
                     </a>
                 </li>
             </ul>
@@ -128,7 +128,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#2-1">
+                    <a th:href="@{/management/achievement/statistics}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.statistics.achievements}]]</span>
                     </a>

@@ -44,7 +44,7 @@ import java.util.List;
 public class ManagementHabitController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
-    private final ShoppingListItemService shoppingListItemService;
+    private final ToDoListItemService toDoListItemService;
     private final HabitAssignService habitAssignService;
 
     /**
@@ -107,7 +107,7 @@ public class ManagementHabitController {
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
         @Parameter(hidden = true) Model model) {
-        model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
+        model.addAttribute("htodos", toDoListItemService.getToDoListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("acquired",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));
@@ -162,7 +162,7 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PutMapping("/update")
+    @PutMapping(path = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public GenericResponseDto update(@Valid @RequestPart HabitManagementDto habitManagementDto,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {

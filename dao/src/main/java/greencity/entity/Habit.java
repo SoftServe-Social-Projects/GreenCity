@@ -32,9 +32,9 @@ import lombok.ToString;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "shoppingListItems"})
+    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "toDoListItems"})
 @ToString(
-    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "shoppingListItems"})
+    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "toDoListItems"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +57,7 @@ public class Habit {
     private Long userId;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CustomShoppingListItem> customShoppingListItems;
+    private List<CustomToDoListItem> customToDoListItems;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
@@ -67,10 +67,10 @@ public class Habit {
 
     @ManyToMany
     @JoinTable(
-        name = "habit_shopping_list_items",
+        name = "habit_to_do_list_items",
         joinColumns = @JoinColumn(name = "habit_id"),
-        inverseJoinColumns = @JoinColumn(name = "shopping_list_item_id"))
-    private Set<ShoppingListItem> shoppingListItems;
+        inverseJoinColumns = @JoinColumn(name = "to_do_list_item_id"))
+    private Set<ToDoListItem> toDoListItems;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "habits_tags",

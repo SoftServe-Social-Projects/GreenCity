@@ -10,7 +10,7 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.*;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -169,25 +169,25 @@ public class HabitController {
     }
 
     /**
-     * Method finds shoppingList for habit in specific language.
+     * Method finds toDoList for habit in specific language.
      *
      * @param locale {@link Locale} with needed language code.
      * @param id     {@link Long} with needed habit id.
-     * @return List of {@link ShoppingListItemDto}.
+     * @return List of {@link ToDoListItemDto}.
      */
-    @Operation(summary = "Get shopping list.")
+    @Operation(summary = "Get to-do list.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
     })
-    @GetMapping("{id}/shopping-list")
+    @GetMapping("{id}/to-do-list")
     @ApiLocale
-    public ResponseEntity<List<ShoppingListItemDto>> getShoppingListItems(
+    public ResponseEntity<List<ToDoListItemDto>> getToDoListItems(
         @PathVariable Long id,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getShoppingListForHabit(id, locale.getLanguage()));
+            habitService.getToDoListForHabit(id, locale.getLanguage()));
     }
 
     /**
@@ -320,15 +320,19 @@ public class HabitController {
     }
 
     /**
-     * Retrieves the list of profile pictures of the user's friends (which have
-     * INPROGRESS assign to the habit).
+     * Retrieves the list of profile pictures of the user's friends who are
+     * associated with a specified habit assignment and have an invitation
+     * relationship with the user. This includes friends who either invited the user
+     * or were invited by the user for the specific habit assignment.
      *
-     * @param habitId {@link HabitVO} id.
-     * @param userVO  {@link UserVO}.
-     * @return List of friends profile picture.
+     * @param habitAssignId The ID of the habit assignment.
+     * @param userVO        The current user, represented as a {@link UserVO}.
+     * @return A {@link ResponseEntity} containing a list of
+     *         {@link UserProfilePictureDto} objects representing the profile
+     *         pictures of the friends associated with the habit.
      */
     @Operation(summary = "Retrieves the list of profile pictures of the user's friends "
-        + "(which have INPROGRESS assign to the habit).")
+        + "who are associated with a specified habit assignment through invitations.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -338,12 +342,12 @@ public class HabitController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @GetMapping("/{habitId}/friends/profile-pictures")
+    @GetMapping("/{habitAssignId}/friends/profile-pictures")
     public ResponseEntity<List<UserProfilePictureDto>> getFriendsAssignedToHabitProfilePictures(
-        @PathVariable Long habitId,
+        @PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitId, userVO.getId()));
+            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userVO.getId()));
     }
 
     /**

@@ -22,29 +22,29 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
      * query.
      *
      * @param habitID Id of Habit
-     * @param itemID  Id of ShoppingListItem
+     * @param itemID  Id of ToDoListItem
      * @author Marian Diakiv
      */
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "insert into habit_shopping_list_items(habit_id,shopping_list_item_id)"
+    @Query(nativeQuery = true, value = "insert into habit_to_do_list_items(habit_id,to_do_list_item_id)"
         + "values (:habitID,:itemID);")
-    void addShopingListItemToHabit(@Param("habitID") Long habitID, @Param("itemID") Long itemID);
+    void addToDoListItemToHabit(@Param("habitID") Long habitID, @Param("itemID") Long itemID);
 
     /**
      * Method to change status. This method use native SQL query.
      *
      * @param habitID Id of Habit
-     * @param itemID  Id of Shopping list item
+     * @param itemID  Id of To-do list item
      * @author Marian Diakiv
      */
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "update habit_shopping_list_items set status = 'DELETED'"
-        + " where habit_shopping_list_items.habit_id = :habitID and "
-        + "habit_shopping_list_items.shopping_list_item_id = :itemID"
-        + " and habit_shopping_list_items.status like 'ACTUAL'")
-    void upadateShopingListItemInHabit(@Param("habitID") Long habitID, @Param("itemID") Long itemID);
+    @Query(nativeQuery = true, value = "update habit_to_do_list_items set status = 'DELETED'"
+        + " where habit_to_do_list_items.habit_id = :habitID and "
+        + "habit_to_do_list_items.to_do_list_item_id = :itemID"
+        + " and habit_to_do_list_items.status like 'ACTUAL'")
+    void upadateToDoListItemInHabit(@Param("habitID") Long habitID, @Param("itemID") Long itemID);
 
     /**
      * Method to find customHabit by id and isCustomHabit true.

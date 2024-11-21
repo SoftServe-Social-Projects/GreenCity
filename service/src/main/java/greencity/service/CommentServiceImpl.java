@@ -9,6 +9,7 @@ import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
@@ -194,10 +195,9 @@ public class CommentServiceImpl implements CommentService {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-                createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
-                    modelMapper.map(commentVO, Comment.class),
-                    modelMapper.map(user, UserVO.class),
-                    locale);
+                createNotification(articleType, commentVO.getArticleId(), modelMapper.map(commentVO, Comment.class),
+                    modelMapper.map(user, UserVO.class), commentVO.getUser(),
+                    getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
             }
         }
     }
@@ -280,14 +280,15 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver,
         UserVO sender, NotificationType notificationType, Locale locale) {
+        boolean hasParentComment = comment.getParentComment() != null;
         userNotificationService.createNotification(
             receiver,
             sender,
             notificationType,
             articleId,
-            getArticleTitle(articleType, articleId, locale),
-            comment.getId(),
-            comment.getText());
+            hasParentComment ? comment.getParentComment().getText() : comment.getText(),
+            hasParentComment ? comment.getParentComment().getId() : comment.getId(),
+            getArticleTitle(articleType, articleId, locale));
     }
 
     /**
@@ -363,14 +364,25 @@ public class CommentServiceImpl implements CommentService {
      * Creates a notification for a comment like on an article.
      *
      * @param articleType the type of the article, {@link ArticleType}.
+     * @param articleId   the ID of the article, {@link Long}.
      * @param comment     the comment that was made, {@link Comment}.
      * @param actionUser  the user who made the comment, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
      */
-    private void createCommentLikeNotification(ArticleType articleType, Comment comment, UserVO actionUser) {
+    private void createCommentLikeNotification(ArticleType articleType, Long articleId, Comment comment,
+        UserVO actionUser, Locale locale) {
         UserVO targetUser = modelMapper.map(comment.getUser(), UserVO.class);
-        userNotificationService.createOrUpdateLikeNotification(
-            targetUser, actionUser, comment.getId(), comment.getText(),
-            getNotificationType(articleType, CommentActionType.COMMENT_LIKE), true);
+        userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
+            .targetUserVO(targetUser)
+            .actionUserVO(actionUser)
+            .newsId(articleId)
+            .newsTitle(comment.getText())
+            .notificationType(getNotificationType(articleType, CommentActionType.COMMENT_LIKE))
+            .isLike(true)
+            .secondMessageId(comment.getId())
+            .secondMessageText(getArticleTitle(articleType, comment.getArticleId(), locale))
+            .build());
     }
 
     /**
@@ -387,23 +399,6 @@ public class CommentServiceImpl implements CommentService {
         UserVO sender, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
             sender, getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
-    }
-
-    /**
-     * Creates a notification for tagging a user in a comment.
-     *
-     * @param articleType the type of the article, {@link ArticleType}.
-     * @param articleId   the ID of the article, {@link Long}.
-     * @param comment     the comment where the user is tagged, {@link Comment}.
-     * @param receiver    the user who is tagged in the comment, {@link UserVO}.
-     * @param locale      the locale used for localization of the notification,
-     *                    {@link Locale}.
-     */
-    private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment,
-        UserVO receiver, Locale locale) {
-        createNotification(articleType, articleId, comment, receiver,
-            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-            getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
     }
 
     /**
@@ -585,7 +580,7 @@ public class CommentServiceImpl implements CommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-            createCommentLikeNotification(comment.getArticleType(), comment, userVO);
+            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
         }
         commentRepo.save(comment);
     }

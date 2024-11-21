@@ -5,7 +5,7 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
+import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -39,10 +39,10 @@ public class UserVO {
     private UserStatus userStatus;
 
     @Builder.Default
-    private List<UserShoppingListItemVO> userShoppingListItemVOS = new ArrayList<>();
+    private List<UserToDoListItemVO> userToDoListItemVOS = new ArrayList<>();
 
     @Builder.Default
-    private List<CustomShoppingListItemVO> customShoppingListItemVOS = new ArrayList<>();
+    private List<CustomToDoListItemVO> customToDoListItemVOS = new ArrayList<>();
 
     private VerifyEmailVO verifyEmail;
 
@@ -74,7 +74,7 @@ public class UserVO {
 
     private Boolean showEcoPlace;
 
-    private Boolean showShoppingList;
+    private Boolean showToDoList;
 
     private LocalDateTime lastActivityTime;
 

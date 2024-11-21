@@ -241,6 +241,11 @@
                                     <td>
                                         <div class="pr" style="width: 27em">[[${translation.description}]]</div>
                                     </td>
+                                    <td>
+                                        <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
+                                            <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
+                                        </a>
+                                    </td>
 
                                 </tr>
                                 </tbody>
@@ -290,13 +295,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.complexity}]]</label>
-                                    <input type="text" class="form-control" name="complexity" id="addComplexity"
+                                    <input type="number" class="form-control" min="1" max="3" name="complexity" id="addComplexity"
                                            required>
                                     <span th:id="'errorModalSavecomplexity'" class="errorSpan"></span>
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.default.duration}]]</label>
-                                    <input type="text" class="form-control" name="defaultDuration"
+                                    <input type="number" class="form-control" min="7" max="56" name="defaultDuration"
                                            id="addDefaultDuration" required>
                                     <span th:id="'errorModalSavedefaultDuration'" class="errorSpan"></span>
                                 </div>
@@ -318,7 +323,7 @@
                                                     <label>[[#{greenCity.pages.table.name}]]</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'addHabitName'+${iterInfo.index}"
-                                                           th:id="'addHabitName'+${iterInfo.index}">
+                                                           th:id="'addHabitName'+${iterInfo.index}" required>
                                                     <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].name'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -330,7 +335,7 @@
                                                     <label>[[#{greenCity.pages.table.habit.item}]]</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'addHabitItem'+${iterInfo.index}"
-                                                           th:id="'addHabitItem'+${iterInfo.index}">
+                                                           th:id="'addHabitItem'+${iterInfo.index}" required>
                                                     <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].habitItem'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -340,7 +345,7 @@
                                                     <label>[[#{greenCity.pages.table.description}]]</label>
                                                     <input type="text" class="form-control"
                                                            th:name="'addHabitDescription'+${iterInfo.index}"
-                                                           th:id="'addHabitDescription'+${iterInfo.index}">
+                                                           th:id="'addHabitDescription'+${iterInfo.index}" required>
                                                     <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].description'"
                                                           class="errorSpan"></span>
                                                 </div>
@@ -363,34 +368,96 @@
             <div id="editHabitModal" class="modal fade">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form id="editHabitForm">
-                            <div class="modal-header" style="height: 50px">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <!-- Form for updating habit -->
+                        <form th:action="@{management/habits/update}" method="post" enctype="multipart/form-data" id="editHabitForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Edit Habit</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             </div>
                             <div class="modal-body">
-                                <th:block th:each="language, iterInfo : ${languages}">
+                                <!-- Habit ID (Hidden) -->
+                                <input type="hidden" class="form-control" id="editId" name="id" required>
 
-                                    <div>
-                                        <label>[[#{greenCity.pages.table.users.language}]]
-                                            [[${language.getCode()}]]</label>
-                                        <input type="text" class="input_translation"
-                                               th:id="contentName+${language.getCode()}"
-                                               th:name="contentName+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].name'"
-                                              class="errorSpan"></span>
+                                <!-- File upload field -->
+                                <div class="form-group">
+                                    <label for="fileEdit">Upload New Image</label>
+                                    <input type="file" class="form-control" id="fileEdit" name="file">
+                                    <span th:id="errorModalEditfile" class="errorSpan"></span>
+                                </div>
+
+                                <!-- Complexity -->
+                                <div class="form-group">
+                                    <label>Complexity</label>
+                                    <input type="number" class="form-control" id="editComplexity" min="1" max="3" name="complexity" required>
+                                </div>
+
+                                <!-- Default Duration -->
+                                <div class="form-group">
+                                    <label>Default Duration</label>
+                                    <input type="number" class="form-control" id="editDefaultDuration" min="7" max="56" name="defaultDuration" required>
+                                    <span th:id="errorModalEditDefaultDuration" class="errorSpan"></span>
+                                </div>
+
+                                <!-- Language fields for translations -->
+                                <th:block th:each="translation, iterInfo : ${languages}">
+                                    <div class="habit-translation-row" th:data-index="${iterInfo.index}">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label>Language Code</label>
+                                                    <input type="text" class="form-control"
+                                                           th:name="'editHabitLanguageCode' + ${iterInfo.index}"
+                                                           th:id="'editHabitLanguageCode' + ${iterInfo.index}"
+                                                           th:value="${translation.getCode()}" readonly required>
+                                                </div>
+                                            </div>
+                                            <div class="col-9">
+                                                <div class="form-group">
+                                                    <label>Name</label>
+                                                    <input type="text" class="form-control"
+                                                           th:name="'editHabitName' + ${iterInfo.index}"
+                                                           th:id="'editHabitName' + ${iterInfo.index}" required>
+                                                    <span th:id="'errorModalEdithabitTranslations['+${iterInfo.index}+'].name'"
+                                                          class="errorSpan"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label>Habit Item</label>
+                                                    <input type="text" class="form-control"
+                                                           th:name="'editHabitItem' + ${iterInfo.index}"
+                                                           th:id="'editHabitItem' + ${iterInfo.index}" required>
+                                                    <span th:id="'errorModalEdithabitTranslations['+${iterInfo.index}+'].habitItem'"
+                                                          class="errorSpan"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label>Description</label>
+                                                    <input type="text" class="form-control"
+                                                           th:name="'editHabitDescription' + ${iterInfo.index}"
+                                                           th:id="'editHabitDescription' + ${iterInfo.index}" required>
+                                                    <span th:id="'errorModalEdithabitTranslations['+${iterInfo.index}+'].description'"
+                                                          class="errorSpan"></span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </th:block>
                             </div>
                             <div class="modal-footer">
-                                <input type="button" class="btn_modal cancel_btn" data-dismiss="modal"
+                                <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
                                        th:value="#{greenCity.pages.popup.cancel.}">
-                                <input type="submit" class="btn_modal save_changes_btn"
-                                       th:value="#{greenCity.pages.popup.save.changes}" id="submitEditBtn">
+                                <input type="submit" class="btn btn-success btn-primary"
+                                       th:value="#{greenCity.pages.popup.update.}" id="submitEditBtn">
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+
             <!--Edit Image Modal-->
             <div id="editHabitImgModal" class="modal fade" type="modal">
                 <div class="modal-dialog">
@@ -576,35 +643,45 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     $(document).ready(function () {
-        $('#addHabitForm').on('submit', function (event) {
+        $('#addHabitForm').one('submit', function (event) {
             event.preventDefault();
-            var formData = new FormData();
-            var habitManagementDto = {
+            const formData = new FormData();
+            const habitManagementDto = {
                 complexity: $("#addComplexity").val(),
                 defaultDuration: $("#addDefaultDuration").val(),
                 habitTranslations: []
             };
-            var habitTranslations = [];
 
             $('.habit-translation-row').each(function () {
-                var $container = $(this);
-                var index = $container.data('index');
-                var name = $container.find('input[id="addHabitName' + index + '"]').val();
-                var habitItem = $container.find('input[id="addHabitItem' + index + '"]').val();
-                var description = $container.find('input[id="addHabitDescription' + index + '"]').val();
-                var languageCode = $container.find('input[id="addHabitLanguageCode' + index + '"]').val();
+                const $container = $(this);
+                const index = $container.data('index');
+                console.log(`Processing translation row at index ${index}`);
 
-                habitTranslations.push({
-                    languageCode: languageCode,
-                    name: name,
-                    habitItem: habitItem,
-                    description: description
-                });
+                const name = $container.find(`#addHabitName${index}`).val();
+                const habitItem = $container.find(`#addHabitItem${index}`).val();
+                const description = $container.find(`#addHabitDescription${index}`).val();
+                const languageCode = $container.find(`#addHabitLanguageCode${index}`).val();
 
+                console.log(`Values retrieved - Language Code: ${languageCode}, Name: ${name}, Item: ${habitItem}, Description: ${description}`);
+
+                if (languageCode && name && habitItem && description) {
+                    habitManagementDto.habitTranslations.push({
+                        languageCode: languageCode,
+                        name: name,
+                        habitItem: habitItem,
+                        description: description
+                    });
+                } else {
+                    console.warn(`Translation fields missing or incorrect for index ${index}`, {
+                        languageCode,
+                        name,
+                        habitItem,
+                        description
+                    });
+                }
             });
 
-            habitTranslations.forEach(t => console.log(t));
-            habitManagementDto.habitTranslations = habitTranslations;
+            console.log("Translations gathered:", habitManagementDto.habitTranslations);
             formData.append('habitManagementDto', new Blob([JSON.stringify(habitManagementDto)], {type: 'application/json'}));
 
             let fileInput = $("#fileCreate")[0];
@@ -614,22 +691,166 @@
 
             $.ajax({
                 type: 'POST',
-                url: "/management/habits/save",
+                url: '/management/habits/save',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    console.log("Success response received", response);
                     alert('Habit added successfully!');
                     window.location.href = 'habits';
                 },
                 error: function (xhr, status, error) {
-                    console.log("Error: " + error);
+                    console.error("Error while saving habit:", error);
                     alert('Error: Unable to save the habit. Please try again.');
                 }
             });
         });
     });
     /*]]>*/
+</script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.edit.eBtn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault();
+                // Get habit ID from data-id attribute
+                const habitId = button.getAttribute('data-id');
+                const url = `/management/habits/${habitId}/find`;
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Error fetching data');
+
+                    const habitData = await response.json();
+                    console.log('Fetched habit data:', habitData);
+                    console.log('Habit Translations:', habitData.habitTranslations);
+
+                    // Populate main habit fields
+                    document.getElementById('editId').value = habitData.id;
+                    document.getElementById('editComplexity').value = habitData.complexity;
+                    document.getElementById('editDefaultDuration').value = habitData.defaultDuration;
+                    // Populate translation fields
+                    habitData.habitTranslations.forEach((translation, index) => {
+                        const languageCodeField = document.getElementById(`editHabitLanguageCode${index}`);
+                        const nameField = document.getElementById(`editHabitName${index}`);
+                        const habitItemField = document.getElementById(`editHabitItem${index}`);
+                        const descriptionField = document.getElementById(`editHabitDescription${index}`);
+
+                        if (languageCodeField && nameField && habitItemField && descriptionField) {
+                            languageCodeField.value = translation.languageCode;
+                            nameField.value = translation.name;
+                            habitItemField.value = translation.habitItem;
+                            descriptionField.value = translation.description;
+                            console.log(`Populated translation ${index}:`, translation);
+                        } else {
+                            console.warn(`Fields for translation ${index} not found in the form.`);
+                        }
+                    });
+                    // Show the modal
+                    $('#editHabitModal').modal('show');
+                } catch (error) {
+                    console.error('Failed to load habit data:', error);
+                }
+            });
+        });
+    });
+</script>
+<script th:inline="javascript">
+    $(document).ready(function() {
+        $('#editHabitForm').on('submit', function(event) {
+            event.preventDefault();
+            console.log("Submit event triggered");
+            const formData = new FormData();
+
+            const habitManagementDto = {
+                id: document.getElementById("editId")?.value,
+                complexity: document.getElementById("editComplexity")?.value,
+                defaultDuration: document.getElementById("editDefaultDuration")?.value,
+                habitTranslations: []
+            };
+            const habitTranslations = [];
+
+            if (!habitManagementDto.complexity || !habitManagementDto.defaultDuration) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+            console.log("Collected basic habitManagementDto data", habitManagementDto);
+
+            let isValid = true;
+
+            $('.habit-translation-row').each(function () {
+                const $container = $(this);
+                const index = $container.data('index');
+                const name = $container.find('input[id="editHabitName' + index + '"]').val();
+                const habitItem = $container.find('input[id="editHabitItem' + index + '"]').val();
+                const description = $container.find('input[id="editHabitDescription' + index + '"]').val();
+                const languageCode = $container.find('input[id="editHabitLanguageCode' + index + '"]').val();
+
+                // Log values before adding to habitTranslations
+                console.log(`Checking translation data for index ${index}:`, {
+                    languageCode: languageCode,
+                    name: name,
+                    habitItem: habitItem,
+                    description: description
+                });
+
+                if (languageCode && name && habitItem && description) {
+                    habitTranslations.push({
+                        languageCode: languageCode,
+                        name: name,
+                        habitItem: habitItem,
+                        description: description
+                    });
+                } else {
+                    console.error(`Translation data missing for index ${index}:`, {
+                        languageCode: languageCode,
+                        name: name,
+                        habitItem: habitItem,
+                        description: description
+                    });
+                }
+            });
+            if (!isValid) {
+                console.error("Form validation failed, some translation fields are missing.");
+                return;
+            }
+            habitManagementDto.habitTranslations = habitTranslations;
+
+            console.log("Final habitManagementDto with translations", habitManagementDto);
+
+            try {
+                formData.append("habitManagementDto", new Blob([JSON.stringify(habitManagementDto)], { type: "application/json" }));
+            } catch (error) {
+                console.error("Failed to serialize habitManagementDto", error);
+                alert("Error: Unable to serialize habit data.");
+                return;
+            }
+
+            const fileInput = document.getElementById('fileEdit');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append("file", fileInput.files[0]);
+                console.log("File added to formData");
+            }
+
+            $.ajax({
+                url: '/management/habits/update',
+                type: 'PUT',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log("Success response received", response);
+                    alert('Habit updated successfully!');
+                    window.location.href = 'habits';
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to send multipart request', xhr, status, error);
+                    alert('Error: Unable to update the habit. Try again.');
+                }
+            });
+        });
+    });
 </script>
 </body>
 
