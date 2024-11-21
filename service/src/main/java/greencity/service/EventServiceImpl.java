@@ -766,44 +766,6 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-     * Removes a like from the event if the user has already liked it. Returns true
-     * if a like was removed, false otherwise.
-     */
-    private boolean removeLikeIfExists(Event event, UserVO userVO, User eventAuthor) {
-        boolean userLiked = event.getUsersLikedEvents().stream()
-            .anyMatch(user -> user.getId().equals(userVO.getId()));
-
-        if (userLiked) {
-            event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
-                AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
-
-            if (eventAuthor != null) {
-                userNotificationService.removeActionUserFromNotification(
-                    modelMapper.map(eventAuthor, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Removes a dislike from the event if the user has already disliked it. Returns
-     * true if a dislike was removed, false otherwise.
-     */
-    private boolean removeDislikeIfExists(Event event, UserVO userVO) {
-        boolean userDisliked = event.getUsersDislikedEvents().stream()
-            .anyMatch(user -> user.getId().equals(userVO.getId()));
-
-        if (userDisliked) {
-            event.getUsersDislikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -984,5 +946,43 @@ public class EventServiceImpl implements EventService {
                 () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
         }
         return null;
+    }
+
+    /**
+     * Removes a like from the event if the user has already liked it. Returns true
+     * if a like was removed, false otherwise.
+     */
+    private boolean removeLikeIfExists(Event event, UserVO userVO, User eventAuthor) {
+        boolean userLiked = event.getUsersLikedEvents().stream()
+                .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userLiked) {
+            event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
+                    AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
+
+            if (eventAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(
+                        modelMapper.map(eventAuthor, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a dislike from the event if the user has already disliked it. Returns
+     * true if a dislike was removed, false otherwise.
+     */
+    private boolean removeDislikeIfExists(Event event, UserVO userVO) {
+        boolean userDisliked = event.getUsersDislikedEvents().stream()
+                .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userDisliked) {
+            event.getUsersDislikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
+            return true;
+        }
+        return false;
     }
 }
