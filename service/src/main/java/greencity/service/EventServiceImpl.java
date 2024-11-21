@@ -77,6 +77,7 @@ import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
 import static greencity.constant.EventTupleConstant.description;
+import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
@@ -723,38 +724,83 @@ public class EventServiceImpl implements EventService {
         return eventRepo.countDistinctByOrganizerId(userId);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void like(Long eventId, UserVO userVO) {
-        Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        User eventAuthor = null;
-        if (event.getOrganizer() != null) {
-            eventAuthor = userRepo.findById(event.getOrganizer().getId()).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+        Event event = findEventId(eventId);
+        User eventAuthor = getEventAuthor(event);
+
+        if (removeLikeIfExists(event, userVO, eventAuthor)) {
+            return;
         }
-        if (event.getUsersLikedEvents().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_EVENT, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"),
-                userVO);
-            if (eventAuthor != null) {
-                userNotificationService.removeActionUserFromNotification(modelMapper.map(eventAuthor, UserVO.class),
-                    userVO, eventId, NotificationType.EVENT_LIKE);
-            }
-        } else {
-            event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_EVENT, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), userVO);
-            if (eventAuthor != null) {
-                sendEventLikeNotification(eventAuthor, userVO, eventId, event);
-            }
+
+        removeDislikeIfExists(event, userVO);
+
+        event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
+            AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), userVO);
+
+        if (eventAuthor != null) {
+            sendEventLikeNotification(eventAuthor, userVO, eventId, event);
         }
+
         eventRepo.save(event);
+    }
+
+    @Override
+    public void dislike(UserVO userVO, Long eventId) {
+        Event event = findEventId(eventId);
+
+        removeLikeIfExists(event, userVO, getEventAuthor(event));
+
+        if (removeDislikeIfExists(event, userVO)) {
+            return;
+        }
+
+        event.getUsersDislikedEvents().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
+            AchievementAction.DELETE);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
+
+        eventRepo.save(event);
+    }
+
+    /**
+     * Removes a like from the event if the user has already liked it. Returns true
+     * if a like was removed, false otherwise.
+     */
+    private boolean removeLikeIfExists(Event event, UserVO userVO, User eventAuthor) {
+        boolean userLiked = event.getUsersLikedEvents().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userLiked) {
+            event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
+
+            if (eventAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(
+                    modelMapper.map(eventAuthor, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a dislike from the event if the user has already disliked it. Returns
+     * true if a dislike was removed, false otherwise.
+     */
+    private boolean removeDislikeIfExists(Event event, UserVO userVO) {
+        boolean userDisliked = event.getUsersDislikedEvents().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userDisliked) {
+            event.getUsersDislikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -771,10 +817,30 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
+    public int countDislikes(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersDislikedEvents().size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isEventLikedByUser(Long eventId, UserVO userVO) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEventDislikedByUser(Long eventId, UserVO userVO) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
@@ -811,6 +877,7 @@ public class EventServiceImpl implements EventService {
                     .type(EventType.valueOf(tuple.get(type, String.class)))
                     .isRelevant(tuple.get(isRelevant, Boolean.class))
                     .likes(Math.toIntExact(tuple.get(likes, Long.class)))
+                    .dislikes(Math.toIntExact(tuple.get(dislikes, Long.class)))
                     .countComments(Math.toIntExact(tuple.get(countComments, Long.class)))
                     .isOrganizedByFriend(tuple.get(isOrganizedByFriend, Boolean.class))
                     .isFavorite(tuple.get(isFavorite, Boolean.class))
@@ -904,5 +971,18 @@ public class EventServiceImpl implements EventService {
                     throw new IllegalArgumentException(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE);
                 });
         }
+    }
+
+    private Event findEventId(Long id) {
+        return eventRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + id));
+    }
+
+    private User getEventAuthor(Event event) {
+        if (event.getOrganizer() != null) {
+            return userRepo.findById(event.getOrganizer().getId()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+        }
+        return null;
     }
 }

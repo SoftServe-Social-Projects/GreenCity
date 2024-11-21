@@ -276,11 +276,11 @@ public class EventController {
     }
 
     /**
-     * Method to like/dislike Event.
+     * Method to like/unlike Event.
      *
      * @author Roman Kasarab
      */
-    @Operation(summary = "Like/dislike Event")
+    @Operation(summary = "Like/unlike Event")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -293,6 +293,22 @@ public class EventController {
     @PostMapping("/{eventId}/like")
     public void like(@PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventService.like(eventId, user);
+    }
+
+    /**
+     * Method to dislike Event.
+     */
+    @Operation(description = "Dislike event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PostMapping("/{eventId}/dislike")
+    public void dislike(@PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO user) {
+        eventService.dislike(user, eventId);
     }
 
     /**
@@ -314,6 +330,24 @@ public class EventController {
     }
 
     /**
+     * Method to get amount of dislikes by event id.
+     *
+     * @return count of dislikes for event;
+     */
+    @Operation(summary = "Count dislikes by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/{eventId}/dislikes/count")
+    public ResponseEntity<Integer> countDislikes(@PathVariable Long eventId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.countDislikes(eventId));
+    }
+
+    /**
      * Check if user liked event.
      *
      * @return user liked event or not.
@@ -332,6 +366,27 @@ public class EventController {
     public ResponseEntity<Boolean> isEventLikedByUser(
         @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userVO));
+    }
+
+    /**
+     * Check if user disliked event.
+     *
+     * @return user disliked event or not.
+     */
+    @Operation(summary = "Check if user disliked event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/{eventId}/dislikes")
+    public ResponseEntity<Boolean> isEventDislikedByUser(
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userVO));
     }
 
     /**

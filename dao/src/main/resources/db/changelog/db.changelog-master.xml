@@ -247,4 +247,5 @@
     <include file="db/changelog/logs/ch-drop-column-expiry-date-Rozhko.xml"/>
     <include file="db/changelog/logs/ch-rename-tables-shopping_list-to-to_do_list-Herchanivska-10.xml"/>
     <include file="db/changelog/logs/ch-add-habit-invite-table-Holotsvan.xml"/>
+    <include file="db/changelog/logs/ch-events-users-dislike-table.xml"/>
 </databaseChangeLog>

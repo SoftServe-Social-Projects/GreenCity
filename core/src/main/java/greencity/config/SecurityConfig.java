@@ -5,8 +5,10 @@ import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
+
 import java.util.Arrays;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
+
 import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
 import static greencity.constant.AppConstant.MODERATOR;
@@ -50,6 +53,7 @@ public class SecurityConfig {
     private static final String ECO_NEWS_COMMENTS = ECO_NEWS + COMMENTS;
     private static final String REPLIES = "/replies";
     private static final String LIKE = "/like";
+    private static final String DISLIKE = "/dislike";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -259,6 +263,7 @@ public class SecurityConfig {
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,
                     EVENTS + EVENT_ID + LIKES + COUNT,
+                    EVENTS + EVENT_ID + DISLIKES + COUNT,
                     "/user/to-do-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomToDoListsInprogress",
@@ -284,6 +289,7 @@ public class SecurityConfig {
                     ECO_NEWS,
                     ECO_NEWS + ECO_NEWS_ID + LIKES,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES,
+                    EVENTS + EVENT_ID + DISLIKES,
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS_ID_COMMENTS,
                     ECO_NEWS_ID_COMMENTS + COMMENT_ID + LIKES,
@@ -294,6 +300,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
+                    EVENTS + EVENT_ID + DISLIKE,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,

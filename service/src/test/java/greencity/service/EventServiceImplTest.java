@@ -8,11 +8,13 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
@@ -20,6 +22,7 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
+import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.RatingPoints;
@@ -69,6 +72,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import static greencity.ModelUtils.getAuthorVO;
 import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getEventVO;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
@@ -1246,6 +1250,56 @@ class EventServiceImplTest {
     }
 
     @Test
+    void givenEventDislikedByUser_whenLikedByUser_shouldRemoveDislikeAndAddLike() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        event.setUsersLikedEvents(new HashSet<>());
+        event.setUsersDislikedEvents(new HashSet<>(Set.of(user)));
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        eventService.like(1L, userVO);
+
+        assertEquals(0, event.getUsersDislikedEvents().size());
+        assertEquals(1, event.getUsersLikedEvents().size());
+    }
+
+    @Test
+    void dislikeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        event.setUsersDislikedEvents(new HashSet<>());
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        eventService.dislike(userVO, event.getId());
+
+        verify(eventRepo).save(event);
+        assertEquals(1L, event.getUsersDislikedEvents().size());
+    }
+
+    @Test
+    void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        event.setUsersLikedEvents(new HashSet<>(Set.of(user)));
+        event.setUsersDislikedEvents(new HashSet<>());
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        eventService.dislike(userVO, 1L);
+
+        assertEquals(0, event.getUsersLikedEvents().size());
+        assertEquals(1, event.getUsersDislikedEvents().size());
+    }
+
+    @Test
     void countLikesForEventTest() {
         Event event = getEvent();
         event.setUsersLikedEvents(getUsersHashSet());
@@ -1260,6 +1314,32 @@ class EventServiceImplTest {
 
     @Test
     void countLikesForEvent_ThrowNotFoundException_Test() {
+        Event event = getEvent();
+        Long eventId = event.getId();
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.countLikes(eventId));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void countDislikesForEventTest() {
+        Event event = getEvent();
+        event.setUsersDislikedEvents(getUsersHashSet());
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+
+        int actualAmountOfLikes = eventService.countDislikes(event.getId());
+
+        assertEquals(2, actualAmountOfLikes);
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void countDislikesForEvent_ThrowNotFoundException_Test() {
         Event event = getEvent();
         Long eventId = event.getId();
 
@@ -1295,6 +1375,36 @@ class EventServiceImplTest {
 
         NotFoundException exception =
             assertThrows(NotFoundException.class, () -> eventService.isEventLikedByUser(eventId, userVO));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
+        verify(eventRepo, times(1)).findById(event.getId());
+    }
+
+    @Test
+    void checkIsEventDislikedByUserTest() {
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        Event event = getEvent();
+        Set<User> usersDisliked = new HashSet<>();
+        usersDisliked.add(user);
+        event.setUsersDislikedEvents(usersDisliked);
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+
+        boolean isDislikedByUser = eventService.isEventDislikedByUser(event.getId(), userVO);
+
+        assertTrue(isDislikedByUser);
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void checkIsEventDislikedByUserTest_ThrowNotFoundException_Test() {
+        Event event = getEvent();
+        UserVO userVO = getUserVO();
+        Long eventId = event.getId();
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.isEventDislikedByUser(eventId, userVO));
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
