@@ -229,7 +229,8 @@
                                     </td>
                                     <td style="min-width: 98px">
                                         <div class="habit_img">
-                                            <img th:src="${habit.image}" style="height:inherit; max-width: 51px">
+                                            <img th:src="${#strings.startsWith(habit.image, 'http') ? habit.image : '/' + habit.image}"
+                                                 style="height:inherit; max-width: 51px">
                                         </div>
                                     </td>
 
