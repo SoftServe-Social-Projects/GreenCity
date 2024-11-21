@@ -954,17 +954,17 @@ public class EventServiceImpl implements EventService {
      */
     private boolean removeLikeIfExists(Event event, UserVO userVO, User eventAuthor) {
         boolean userLiked = event.getUsersLikedEvents().stream()
-                .anyMatch(user -> user.getId().equals(userVO.getId()));
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
 
         if (userLiked) {
             event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
             achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
-                    AchievementAction.DELETE);
+                AchievementAction.DELETE);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
 
             if (eventAuthor != null) {
                 userNotificationService.removeActionUserFromNotification(
-                        modelMapper.map(eventAuthor, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
+                    modelMapper.map(eventAuthor, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
             }
             return true;
         }
@@ -977,7 +977,7 @@ public class EventServiceImpl implements EventService {
      */
     private boolean removeDislikeIfExists(Event event, UserVO userVO) {
         boolean userDisliked = event.getUsersDislikedEvents().stream()
-                .anyMatch(user -> user.getId().equals(userVO.getId()));
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
 
         if (userDisliked) {
             event.getUsersDislikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
