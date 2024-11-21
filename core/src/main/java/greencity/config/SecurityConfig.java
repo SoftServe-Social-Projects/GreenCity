@@ -5,10 +5,8 @@ import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
-
 import java.util.Arrays;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +26,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-
 import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
 import static greencity.constant.AppConstant.MODERATOR;
