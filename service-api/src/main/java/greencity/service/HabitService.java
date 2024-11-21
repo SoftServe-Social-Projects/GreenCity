@@ -196,4 +196,28 @@ public interface HabitService {
      * @param userVO  current {@link UserVO} that wants to like/dislike.
      */
     void like(Long habitId, UserVO userVO);
+
+    /**
+     * Method for adding a habit to favorites by habitId.
+     *
+     * @param habitId - habit id
+     * @param email   - email of user
+     */
+    void addToFavorites(Long habitId, String email);
+
+    /**
+     * Method for removing a habit from favorites by habitId.
+     *
+     * @param habitId - habit id.
+     * @param email   - user email.
+     */
+    void removeFromFavorites(Long habitId, String email);
+
+    /**
+     * Method returns all favorite habits.
+     *
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link HabitDto}.
+     */
+    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
 }
