@@ -349,11 +349,10 @@ class EventControllerTest {
     void dislikeTest() throws Exception {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
-        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislikes", 1)
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike", 1)
             .principal(principal))
             .andExpect(status().isOk());
         verify(eventService).dislike(userVO, 1L);
-
     }
 
     @Test
@@ -373,7 +372,7 @@ class EventControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService).countLikes(EVENT_ID);
+        verify(eventService).countDislikes(EVENT_ID);
     }
 
     @Test
