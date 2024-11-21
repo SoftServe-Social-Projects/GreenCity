@@ -250,6 +250,9 @@ public class User {
     private Set<EcoNews> favoriteEcoNews;
 
     @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    private Set<Habit> favoriteHabits;
+
+    @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
     private Set<Event> favoriteEvents;
 
     @ManyToMany(mappedBy = "attenders", fetch = FetchType.LAZY)
