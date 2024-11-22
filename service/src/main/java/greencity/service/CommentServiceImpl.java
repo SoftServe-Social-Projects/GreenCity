@@ -563,7 +563,8 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public void dislike(Long commentId, UserVO userVO, Locale locale) {
-        Comment comment = findCommentById(commentId);
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         if (removeDislikeIfExists(comment, userVO)) {
             return;
@@ -703,11 +704,6 @@ public class CommentServiceImpl implements CommentService {
             userIds.add(Long.valueOf(matcher.group(1)));
         }
         return userIds;
-    }
-
-    private Comment findCommentById(Long id) {
-        return commentRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
     }
 
     /**
