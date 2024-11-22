@@ -39,4 +39,5 @@ public class EventTupleConstant {
     public static final String tagId = "tagId";
     public static final String tagName = "tagName";
     public static final String languageCode = "languageCode";
+    public static final String dislikes = "dislikes";
 }

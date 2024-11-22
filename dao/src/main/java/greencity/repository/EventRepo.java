@@ -111,6 +111,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                formatted_address_ua, e.type,
                (CURRENT_DATE <= edl_max.latest_finish_date) AS isRelevant,
                COUNT(DISTINCT eul) AS likes,
+               COUNT(DISTINCT eud) AS dislikes,
                COUNT(DISTINCT ec)  AS countComments,
                AVG(eg.grade)       AS grade,
                (false)             AS isOrganizedByFriend,
@@ -121,6 +122,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
                  LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
                  LEFT JOIN events_users_likes eul ON e.id = eul.event_id
+                 LEFT JOIN events_users_dislikes eud ON e.id = eud.event_id
                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
                  LEFT JOIN (
                     SELECT event_id, MAX(finish_date) AS latest_finish_date
@@ -156,6 +158,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                    formatted_address_ua, e.type,
                    (CURRENT_DATE <= edl_max.latest_finish_date) AS isRelevant,
                    COUNT(DISTINCT eul)                               AS likes,
+                   COUNT(DISTINCT eud)                               AS dislikes,
                    COUNT(DISTINCT ec)                                AS countComments,
                    AVG(eg.grade)                                     AS grade,
                    (uf.friend_id IS NOT NULL)                        AS isOrganizedByFriend,
@@ -166,6 +169,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                 LEFT JOIN events_grades eg ON e.id = eg.event_id
                 LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
                 LEFT JOIN events_users_likes eul ON e.id = eul.event_id
+                LEFT JOIN events_users_dislikes eud ON e.id = eud.event_id
                 LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
                 LEFT JOIN (
                    SELECT event_id, MAX(finish_date) AS latest_finish_date
