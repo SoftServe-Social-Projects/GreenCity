@@ -895,11 +895,14 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
 
+        Comment parentComment = getComment();
         Comment childComment = getComment();
-        childComment.setParentComment(getComment());
+        childComment.setId(2L);
+        childComment.setParentComment(parentComment);
 
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(ModelUtils.getCommentDto());
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
@@ -912,6 +915,7 @@ class CommentServiceImplTest {
         assertEquals(1, commentDtos.getCurrentPage());
         assertEquals(1, commentDtos.getPage().size());
 
+        verify(commentRepo).findById(parentCommentId);
         verify(modelMapper).map(childComment, CommentDto.class);
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);
@@ -926,12 +930,15 @@ class CommentServiceImplTest {
         User user = getUser();
         Long parentCommentId = 1L;
 
+        Comment parentComment = getComment();
         Comment childComment = getComment();
-        childComment.setParentComment(getComment());
+        childComment.setId(2L);
+        childComment.setParentComment(parentComment);
         childComment.setUsersLiked(new HashSet<>(Collections.singletonList(user)));
 
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
             .thenReturn(page);
@@ -941,9 +948,24 @@ class CommentServiceImplTest {
 
         assertTrue(childComment.isCurrentUserLiked());
 
+        verify(commentRepo).findById(parentCommentId);
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);
         verify(modelMapper).map(childComment, CommentDto.class);
+    }
+
+    @Test
+    void findAllActiveRepliesNotFoundParentCommentTest() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long parentCommentId = 1L;
+
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,
+            () -> commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
+        verify(commentRepo).findById(parentCommentId);
     }
 
     @Test
