@@ -925,8 +925,8 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Long parentCommentId = 1L;
-
         Comment childComment = getComment();
+
         childComment.setParentComment(getComment());
         childComment.setUsersLiked(new HashSet<>(Collections.singletonList(user)));
 
@@ -937,9 +937,10 @@ class CommentServiceImplTest {
             .thenReturn(page);
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(getCommentDto());
 
-        commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
+        PageableDto<CommentDto> result = commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
 
-        assertTrue(childComment.isCurrentUserLiked());
+        assertTrue(result.getPage().getFirst().isCurrentUserLiked());
+        assertFalse(result.getPage().getFirst().isCurrentUserDisliked());
 
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);

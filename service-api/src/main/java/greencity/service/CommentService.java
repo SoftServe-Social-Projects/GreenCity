@@ -90,7 +90,7 @@ public interface CommentService {
     PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId, ArticleType type);
 
     /**
-     * Method to like or dislike {@link CommentVO} specified by id.
+     * Method to like or unlike {@link CommentVO} specified by id.
      *
      * @param commentId id of {@link CommentVO} to like/dislike.
      * @param userVO    current {@link UserVO} that wants to like/dislike.
@@ -103,6 +103,14 @@ public interface CommentService {
      * @param amountCommentLikesDto dto with id and count likes for comments.
      */
     void countLikes(AmountCommentLikesDto amountCommentLikesDto);
+
+    /**
+     * Method to like or dislike {@link CommentVO} specified by id.
+     *
+     * @param commentId id of {@link CommentVO} to dislike.
+     * @param userVO    current {@link UserVO} that wants to dislike.
+     */
+    void dislike(Long commentId, UserVO userVO, Locale locale);
 
     /**
      * Method to change the existing {@link CommentVO}.
