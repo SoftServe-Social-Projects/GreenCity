@@ -56,6 +56,8 @@ public class EventDto {
 
     private int likes;
 
+    private int dislikes;
+
     private int countComments;
 
     @JsonProperty("isOrganizedByFriend")

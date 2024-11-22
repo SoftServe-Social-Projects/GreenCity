@@ -161,12 +161,20 @@ public interface EventService {
     Long getCountOfOrganizedEventsByUserId(Long userId);
 
     /**
-     * Method to like or dislike {@link EventVO} specified by id.
+     * Method to like or unlike {@link EventVO} specified by id.
      *
      * @param eventId id of {@link EventVO} to like/dislike.
      * @param userVO  current {@link UserVO} who wants to like/dislike.
      */
     void like(Long eventId, UserVO userVO);
+
+    /**
+     * Method to mark event as disliked by User.
+     *
+     * @param user - instance of {@link UserVO}
+     * @param id   - {@link Long} event id.
+     */
+    void dislike(UserVO user, Long id);
 
     /**
      * Method to get amount of likes by event id.
@@ -177,6 +185,14 @@ public interface EventService {
     int countLikes(Long eventId);
 
     /**
+     * Method to get amount of dislikes by event id.
+     *
+     * @param eventId - {@link Integer} event id.
+     * @return amount of dislikes by event id.
+     */
+    int countDislikes(Long eventId);
+
+    /**
      * Method to check if user liked an event.
      *
      * @param eventId - id of {@link EventDto} to check liked or not.
@@ -184,4 +200,13 @@ public interface EventService {
      * @return user liked event or not.
      */
     boolean isEventLikedByUser(Long eventId, UserVO userVO);
+
+    /**
+     * Method to check if user disliked an event.
+     *
+     * @param eventId - id of {@link EventDto} to check disliked or not.
+     * @param userVO  - instance of {@link UserVO}.
+     * @return user liked event or not.
+     */
+    boolean isEventDislikedByUser(Long eventId, UserVO userVO);
 }

@@ -346,6 +346,16 @@ class EventControllerTest {
     }
 
     @Test
+    void dislikeTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike", 1)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).dislike(userVO, 1L);
+    }
+
+    @Test
     @SneakyThrows
     void countLikesTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes/count", EVENT_ID)
@@ -353,6 +363,16 @@ class EventControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).countLikes(EVENT_ID);
+    }
+
+    @Test
+    @SneakyThrows
+    void countDislikesTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/dislikes/count", EVENT_ID)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventService).countDislikes(EVENT_ID);
     }
 
     @Test
@@ -366,6 +386,19 @@ class EventControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).isEventLikedByUser(EVENT_ID, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void checkIsEventDislikedByUserTest() {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/dislikes", EVENT_ID)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventService).isEventDislikedByUser(EVENT_ID, userVO);
     }
 
     @Test
