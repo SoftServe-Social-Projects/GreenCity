@@ -155,14 +155,17 @@ public interface HabitService {
         String userEmail);
 
     /**
-     * Retrieves the list of profile pictures of the user's friends (which have
-     * INPROGRESS assign to the habit).
+     * Retrieves a list of profile pictures of the user's friends who are associated
+     * with a specified habit assignment through invitations. This includes both
+     * friends who invited the user and friends whom the user has invited for this
+     * habit assignment.
      *
-     * @param habitId {@link HabitVO} id.
-     * @param userId  {@link UserVO} id.
-     * @return List of friends' profile pictures.
+     * @param habitAssignId The ID of the habit assignment.
+     * @param userId        The ID of the user.
+     * @return A list of {@link UserProfilePictureDto} representing the friends'
+     *         profile pictures.
      */
-    List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
+    List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitAssignId, Long userId);
 
     /**
      * Method to update {@link CustomHabitDtoResponse}.
@@ -193,4 +196,28 @@ public interface HabitService {
      * @param userVO  current {@link UserVO} that wants to like/dislike.
      */
     void like(Long habitId, UserVO userVO);
+
+    /**
+     * Method for adding a habit to favorites by habitId.
+     *
+     * @param habitId - habit id
+     * @param email   - email of user
+     */
+    void addToFavorites(Long habitId, String email);
+
+    /**
+     * Method for removing a habit from favorites by habitId.
+     *
+     * @param habitId - habit id.
+     * @param email   - user email.
+     */
+    void removeFromFavorites(Long habitId, String email);
+
+    /**
+     * Method returns all favorite habits.
+     *
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link HabitDto}.
+     */
+    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
 }
