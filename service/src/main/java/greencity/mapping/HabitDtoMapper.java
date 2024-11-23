@@ -42,18 +42,18 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
             .tags(habit.getTags().stream()
                 .flatMap(tag -> tag.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .map(TagTranslation::getName).toList())
             .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
                 .map(shoppingListItem -> ToDoListItemResponseWithStatusDto.builder()
                     .id(shoppingListItem.getId())
-                    .status(ToDoListItemStatus.ACTIVE.toString())
+                    .status(ToDoListItemStatus.ACTIVE)
                     .text(shoppingListItem.getTranslations().stream()
                         .filter(shoppingListItemTranslation -> shoppingListItemTranslation
                             .getLanguage().equals(language))
                         .map(ToDoListItemTranslation::getContent)
                         .findFirst().orElse(null))
                     .build())
-                .collect(Collectors.toList()) : new ArrayList<>())
+                .toList() : new ArrayList<>())
             .build();
     }
 }

@@ -5,11 +5,11 @@
     <changeSet id="Herchanivska-11" author="Viktoriia Herchanivska">
         <renameColumn tableName="user_to_do_list" oldColumnName="to_do_list_item_id" newColumnName="target_id"/>
         <dropForeignKeyConstraint baseTableName="user_to_do_list" constraintName="FK_user_shopping_list_item"/>
-        <addUniqueConstraint tableName="user_to_do_list" columnNames="target_id"/>
         <addColumn tableName="user_to_do_list">
-            <column name="is_custom_item" defaultValue="false">
+            <column name="is_custom_item" defaultValue="false" type="boolean">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+        <addUniqueConstraint tableName="user_to_do_list" columnNames="target_id, is_custom_item"/>
     </changeSet>
 </databaseChangeLog>

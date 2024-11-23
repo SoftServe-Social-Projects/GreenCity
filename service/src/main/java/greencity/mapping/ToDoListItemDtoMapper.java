@@ -24,6 +24,6 @@ public class ToDoListItemDtoMapper
     @Override
     protected ToDoListItemResponseWithStatusDto convert(ToDoListItemTranslation toDoListItemTranslation) {
         return new ToDoListItemResponseWithStatusDto(toDoListItemTranslation.getToDoListItem().getId(),
-            toDoListItemTranslation.getContent(), ToDoListItemStatus.ACTIVE.toString());
+            toDoListItemTranslation.getContent(), ToDoListItemStatus.ACTIVE);
     }
 }

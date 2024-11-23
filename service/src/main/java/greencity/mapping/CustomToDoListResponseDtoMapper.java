@@ -15,8 +15,7 @@ public class CustomToDoListResponseDtoMapper
         return CustomToDoListItemResponseDto.builder()
             .id(customToDoListItem.getId())
             .text(customToDoListItem.getText())
-            .status(customToDoListItem.getStatus().toString())
-            .isDefault(customToDoListItem.getIsDefault())
+            .status(customToDoListItem.getStatus())
             .build();
     }
 
@@ -30,6 +29,6 @@ public class CustomToDoListResponseDtoMapper
      */
     public List<CustomToDoListItemResponseDto> mapAllToList(
         List<CustomToDoListItem> itemList) {
-        return itemList.stream().map(this::convert).collect(Collectors.toList());
+        return itemList.stream().map(this::convert).toList();
     }
 }
