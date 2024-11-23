@@ -95,7 +95,7 @@ class CustomToDoListItemServiceImplTest {
             .build();
 
     @Test
-    void findAllAvailableCustomToDoListItems() {
+    void findAllCustomToDoListItemsForHabit() {
         List<CustomToDoListItem> items = new ArrayList<>();
         items.add(item);
         when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(anyLong(), anyLong()))
@@ -103,7 +103,7 @@ class CustomToDoListItemServiceImplTest {
         when(modelMapper.map(items, new TypeToken<List<CustomToDoListItemResponseDto>>() {
         }.getType())).thenReturn(items);
 
-        assertEquals(items, customToDoListItemService.findAllAvailableCustomToDoListItems(1L, 1L));
+        assertEquals(items, customToDoListItemService.findAllCustomToDoListItemsForHabit(1L, 1L));
     }
 
     @Test
@@ -249,7 +249,7 @@ class CustomToDoListItemServiceImplTest {
     }
 
     @Test
-    void findAllAvailableCustomToDoListItemsByHabitAssignId() {
+    void findAllCustomToDoListItemsForHabitByHabitAssignId() {
         Long habitId = 1L;
         Long habitAssignId = 2L;
         Long userId = 3L;
@@ -284,7 +284,7 @@ class CustomToDoListItemServiceImplTest {
     }
 
     @Test
-    void findAllAvailableCustomToDoListItemsByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
+    void findAllCustomToDoListItemsForHabitByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
         Long habitAssignId = 2L;
         Long userId = 3L;
 
@@ -303,7 +303,7 @@ class CustomToDoListItemServiceImplTest {
     }
 
     @Test
-    void findAllAvailableCustomToDoListItemsByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsToUser() {
+    void findAllCustomToDoListItemsByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsToUserForHabit() {
         long habitAssignId = 2L;
         long userId = 3L;
 

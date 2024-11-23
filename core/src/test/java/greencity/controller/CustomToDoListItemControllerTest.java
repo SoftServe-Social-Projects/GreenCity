@@ -2,7 +2,7 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.ToDoListItemStatus;
 import greencity.service.CustomToDoListItemService;
 import java.util.*;
@@ -13,15 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
-import static greencity.ModelUtils.getCustomToDoListItemSaveRequestDto;
 import static greencity.ModelUtils.getPrincipal;
-import static org.junit.jupiter.api.Assertions.*;
+import static greencity.ModelUtils.getUserVO;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,7 +38,7 @@ class CustomToDoListItemControllerTest {
 
     private final Principal principal = getPrincipal();
 
-    private static final String customLink = "/custom/to-do-list-items";
+    private static final String customLink = "/habits/custom-to-do-list-items";
 
     private CustomToDoListItemResponseDto dto;
 
@@ -57,66 +55,14 @@ class CustomToDoListItemControllerTest {
 
     @Test
     void getAllAvailableCustomToDoListItems() throws Exception {
-        Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/" + id)
+        Long habitId = 1L;
+        UserVO userVO = getUserVO();
+        this.mockMvc.perform(get(customLink + "/" + habitId)
             .principal(principal)).andExpect(status().isOk());
-        when(customToDoListItemService.findAllAvailableCustomToDoListItems(1L, 1L))
+        when(customToDoListItemService.findAllCustomToDoListItemsForHabit(anyLong(), habitId))
             .thenReturn(Collections.singletonList(dto));
-        verify(customToDoListItemService).findAllAvailableCustomToDoListItems(id, id);
+        verify(customToDoListItemService).findAllCustomToDoListItemsForHabit(anyLong(), habitId);
         assertEquals(dto,
-            customController.getAllAvailableCustomToDoListItems(id, id).getBody().get(0));
-    }
-
-    @Test
-    void save() throws Exception {
-        Long id = 1L;
-        List<CustomToDoListItemSaveRequestDto> dtoList = List.of(getCustomToDoListItemSaveRequestDto());
-        String content = objectMapper.writeValueAsString(dtoList);
-        this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-to-do-list-items")
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
-        when(customToDoListItemService.save(dtoList, id, id))
-            .thenReturn(Collections.singletonList(dto));
-        verify(customToDoListItemService).save(dtoList, id, id);
-        assertEquals(dto, customController
-            .saveUserCustomToDoListItems(dtoList, id, id).getBody().get(0));
-    }
-
-    @Test
-    void updateItemStatus() throws Exception {
-        this.mockMvc.perform(patch(customLink + "/{userId}/custom-to-do-list-items/?itemId=1&status=DONE", 1)
-            .principal(principal))
-            .andExpect(status().isOk());
-        verify(customToDoListItemService).updateItemStatus(1L, 1L, "DONE");
-    }
-
-    @Test
-    void delete() throws Exception {
-        List<Long> ids = List.of(1L, 2L);
-        String content = objectMapper.writeValueAsString(ids);
-        this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-            .delete(customLink + "/{userId}/custom-to-do-list-items", 1)
-            .param("ids", content)).andExpect(status().isOk());
-        verify(customToDoListItemService).bulkDelete(ids);
-    }
-
-    @Test
-    void updateItemStatusToDoneTest() throws Exception {
-        this.mockMvc.perform(patch(customLink + "/{userId}/done", 1)
-            .param("userId", "1")
-            .param("itemId", "1"))
-            .andExpect(status().isOk());
-        verify(customToDoListItemService).updateItemStatusToDone(1L, 1L);
-    }
-
-    @Test
-    void getAllCustomToDoItemsByStatus() throws Exception {
-        Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/custom-to-do-list-items")).andExpect(status().isOk());
-        when(customToDoListItemService.findAllUsersCustomToDoListItemsByStatus(anyLong(), anyString()))
-            .thenReturn(Collections.singletonList(dto));
-
-        assertEquals(dto,
-            customController.getAllCustomToDoItemsByStatus(id, "ACTIVE").getBody().get(0));
+            customController.getAllCustomToDoListItemsForHabit(userVO, habitId).getBody().get(0));
     }
 }
