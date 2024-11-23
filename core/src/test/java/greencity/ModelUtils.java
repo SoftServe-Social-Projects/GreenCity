@@ -45,6 +45,7 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
+import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
@@ -223,7 +224,7 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE.toString())
+            .status(ToDoListItemStatus.ACTIVE)
             .text("text")
             .build();
     }
@@ -252,15 +253,14 @@ public class ModelUtils {
 
     public static ToDoAndCustomToDoListsDto getToDoAndCustomToDoListsDto() {
         return ToDoAndCustomToDoListsDto.builder()
-            .toDoListItemDto(List.of(getToDoListItemDto()))
+            .toDoListItemDto(List.of(getToDoListItemWithStatusRequestDto()))
             .customToDoListItemDto(List.of(getCustomToDoListItemRequestDto()))
             .build();
     }
 
-    public static ToDoListItemResponseWithStatusDto getToDoListItemDto() {
-        return ToDoListItemResponseWithStatusDto.builder()
+    public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
+        return ToDoListItemWithStatusRequestDto.builder()
             .id(1L)
-            .text("To-do item")
             .status(ToDoListItemStatus.ACTIVE.toString())
             .build();
     }

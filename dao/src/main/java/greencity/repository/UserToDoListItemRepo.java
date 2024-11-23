@@ -20,18 +20,6 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<UserToDoListItem> findAllByHabitAssingId(Long habitAssignId);
 
     /**
-     * Method delete selected item from users to-do list.
-     *
-     * @param toDoListItemId id of needed goal
-     * @param habitAssignId  id of needed habit assign
-     */
-    @Modifying
-    @Transactional
-    @Query(nativeQuery = true, value = "DELETE FROM user_to_do_list utdl "
-        + "WHERE utdl.target_id =:toDoListItemId AND utdl.habit_assign_id =:habitAssignId AND utdl.is_custom_item = false")
-    void deleteByToDoListItemIdAndHabitAssignId(Long toDoListItemId, Long habitAssignId);
-
-    /**
      * Method delete selected items from users to-do list.
      *
      * @param habitAssignId id of needed habit assign
@@ -41,26 +29,6 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     @Query(nativeQuery = true, value = "DELETE FROM user_to_do_list utdl "
         + "WHERE utdl.habit_assign_id =:habitAssignId ")
     void deleteToDoListItemsByHabitAssignId(Long habitAssignId);
-
-    /**
-     * Method returns to-do list ids for habit.
-     *
-     * @param id id of needed habit
-     * @return List of {@link Long}
-     */
-    @Query(nativeQuery = true, value = "SELECT to_do_list_item_id FROM habit_to_do_list_items "
-        + "WHERE habit_id = :id")
-    List<Long> getToDoListItemsIdForHabit(Long id);
-
-    /**
-     * Method returns to-do list ids selected by user.
-     *
-     * @param id id of needed habit assign
-     * @return List of {@link Long}
-     */
-    @Query(nativeQuery = true,
-        value = "SELECT target_id FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = false")
-    List<Long> getAllAssignedToDoListItems(Long id);
 
     /**
      * Method returns default UserToDoListItem list by habit assign id.
@@ -83,34 +51,6 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<UserToDoListItem> getAllAssignedCustomToDoListItemsFull(Long id);
 
     /**
-     * Method returns user to-do list items by habitAssignId and INPROGRESS status.
-     *
-     * @param habitAssignId id of needed habit assign
-     * @return List of {@link UserToDoListItem}
-     */
-
-    @Query("SELECT utdli FROM UserToDoListItem utdli WHERE "
-        + "utdli.status='INPROGRESS' "
-        + "AND utdli.habitAssign.id=:habitAssignId "
-        + "ORDER BY utdli.id")
-    List<UserToDoListItem> findUserToDoListItemsByHabitAssignIdAndStatusInProgress(
-        @Param("habitAssignId") Long habitAssignId);
-
-    /**
-     * Method returns user to-do list items by userId and INPROGRESS status.
-     *
-     * @param habitAssignId id of needed habit assign
-     * @return List of {@link UserToDoListItem}
-     */
-
-    @Query("SELECT utdli FROM UserToDoListItem utdli WHERE "
-        + "utdli.status='INPROGRESS' "
-        + "AND utdli.habitAssign.user.id=:userId "
-        + "ORDER BY utdli.id")
-    List<UserToDoListItem> findUserToDoListItemsByUserIdAndStatusInProgress(
-        @Param("habitAssignId") Long userId);
-
-    /**
      * Method returns to-do list with statuses DONE.
      *
      * @param habitAssignId id of needed habit assign
@@ -123,29 +63,28 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<Long> getToDoListItemsByHabitAssignIdAndStatus(Long habitAssignId, String status);
 
     /**
-     * Method returns to-do list with statuses DONE.
+     * Method returns user to-do list item by habit assign and custom to-do list item id.
      *
-     * @param userId {@link Long} user id.
+     * @param habitAssignId {@link Long} habit assign id.
      * @param itemId {@link Long} custom to-do list item id.
      */
     @Query(nativeQuery = true, value = """
-        select utdl.id from user_to_do_list as utdl
-        join habit_assign as ha on ha.id = habit_assign_id
-        where ha.user_id = :userId and target_id = :itemId and is_custom_item = true""")
-    Optional<Long> getCustomToDoItemIdByUserAndItemId(Long userId, Long itemId);
+        select utdl.* from user_to_do_list as utdl
+        where utdl.habit_assign_id = :habitAssignId
+        and target_id = :itemId
+        and is_custom_item = true""")
+    Optional<UserToDoListItem> getCustomToDoItemIdByHabitAssignIdAndItemId(Long habitAssignId, Long itemId);
 
     /**
-     * Method returns {@link UserToDoListItem} by user to-do list item id and user
-     * id.
+     * Method returns user to-do list item by habit assign and to-do list item id.
      *
-     * @param userToDoListItemId {@link Long}
-     * @param userId             {@link Long}
-     * @return {@link UserToDoListItem}
-     * @author Anton Bondar
+     * @param habitAssignId {@link Long} habit assign id.
+     * @param itemId {@link Long} to-do list item id.
      */
-    @Query(value = "SELECT u FROM UserToDoListItem u JOIN HabitAssign ha ON ha.id = u.habitAssign.id "
-        + "WHERE ha.user.id =:userId AND u.id =:userToDoListItemId")
-    List<UserToDoListItem> getAllByUserToDoListIdAndUserId(
-        @Param(value = "userToDoListItemId") Long userToDoListItemId,
-        @Param(value = "userId") Long userId);
+    @Query(nativeQuery = true, value = """
+        select utdl.* from user_to_do_list as utdl
+        where utdl.habit_assign_id = :habitAssignId
+        and target_id = :itemId
+        and is_custom_item = false""")
+    Optional<UserToDoListItem> getToDoItemIdByHabitAssignIdAndItemId(Long habitAssignId, Long itemId);
 }

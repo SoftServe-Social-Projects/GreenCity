@@ -25,5 +25,7 @@ public class UserToDoListItemResponseDto {
     @NotNull
     private UserToDoListItemStatus status;
     @NotNull
+    private Long targetId;
+    @NotNull
     private Boolean isCustomItem;
 }

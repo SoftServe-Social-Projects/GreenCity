@@ -1601,18 +1601,18 @@ public class ModelUtils {
             .build();
     }
 
-    public static ToDoListItemResponseWithStatusDto getToDoListItemDto() {
+    public static ToDoListItemResponseWithStatusDto getToDoListItemResponseWithStatusDto() {
         return ToDoListItemResponseWithStatusDto.builder()
             .id(1L)
             .text("to-do item")
-            .status(ToDoListItemStatus.ACTIVE.toString())
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
     public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
         return ToDoListItemWithStatusRequestDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE.toString())
             .build();
     }
 
@@ -1747,7 +1747,7 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE.toString())
+            .status(ToDoListItemStatus.ACTIVE)
             .text("TEXT")
             .build();
     }
@@ -2501,7 +2501,7 @@ public class ModelUtils {
 
     public static ToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
         return ToDoAndCustomToDoListsDto.builder()
-            .toDoListItemDto(List.of(getToDoListItemDto()))
+            .toDoListItemDto(List.of(getToDoListItemWithStatusRequestDto()))
             .customToDoListItemDto(List.of(getCustomToDoListItemRequestDto()))
             .build();
     }
@@ -2609,7 +2609,7 @@ public class ModelUtils {
             .customToDoListItemDto(List.of(
                 CustomToDoListItemResponseDto.builder()
                     .id(1L)
-                    .status(ToDoListItemStatus.ACTIVE.toString())
+                    .status(ToDoListItemStatus.ACTIVE)
                     .text(toDoListText)
                     .build()))
             .defaultDuration(7)
@@ -2634,7 +2634,7 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoForServiceTest() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE.toString())
+            .status(ToDoListItemStatus.ACTIVE)
             .text(toDoListText)
             .build();
     }
@@ -2727,7 +2727,7 @@ public class ModelUtils {
         return CustomToDoListItemResponseDto.builder()
             .id(2L)
             .text("item")
-            .status(ToDoListItemStatus.ACTIVE.toString())
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
