@@ -614,7 +614,7 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(comment.getUser().getId())) {
-            throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 
         comment.setText(commentText);
