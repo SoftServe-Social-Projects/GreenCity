@@ -825,10 +825,10 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.of(comment));
 
-        BadRequestException badRequestException =
-            assertThrows(BadRequestException.class,
+        UserHasNoPermissionToAccessException noAccessException =
+            assertThrows(UserHasNoPermissionToAccessException.class,
                 () -> commentService.update(editedText, commentId, userVO));
-        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
+        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
