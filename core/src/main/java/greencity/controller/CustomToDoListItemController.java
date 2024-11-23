@@ -40,8 +40,6 @@ public class CustomToDoListItemController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
@@ -81,6 +79,6 @@ public class CustomToDoListItemController {
             description = "Id of the Habit Assign that belongs to current user. Cannot be empty.")
         @PathVariable @Min(1) Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user.getId(), habitAssignId));
+            .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user, habitAssignId));
     }
 }

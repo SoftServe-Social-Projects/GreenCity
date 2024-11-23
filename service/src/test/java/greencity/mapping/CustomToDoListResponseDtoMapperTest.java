@@ -25,7 +25,7 @@ class CustomToDoListResponseDtoMapperTest {
 
         CustomToDoListItemResponseDto expected = CustomToDoListItemResponseDto.builder()
             .id(customToDoListItem.getId())
-            .status(customToDoListItem.getStatus().toString())
+            .status(customToDoListItem.getStatus())
             .text(customToDoListItem.getText())
             .build();
         assertEquals(expected, customToDoListResponseDtoMapper.convert(customToDoListItem));
@@ -41,7 +41,7 @@ class CustomToDoListResponseDtoMapperTest {
 
         CustomToDoListItemResponseDto expected = CustomToDoListItemResponseDto.builder()
             .id(customToDoListItem.getId())
-            .status(customToDoListItem.getStatus().toString())
+            .status(customToDoListItem.getStatus())
             .text(customToDoListItem.getText())
             .build();
         List<CustomToDoListItemResponseDto> expectedList = List.of(expected);

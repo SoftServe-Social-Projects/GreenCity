@@ -23,7 +23,7 @@ class ToDoListItemWithStatusRequestDtoMapperTest {
         Long id = 1L;
         ToDoListItemStatus status = ToDoListItemStatus.ACTIVE;
         itemDto.setId(id);
-        itemDto.setStatus(status);
+        itemDto.setStatus(status.name());
 
         UserToDoListItem expected = UserToDoListItem.builder()
             .targetId(id)

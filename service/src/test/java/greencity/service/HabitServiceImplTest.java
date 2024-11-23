@@ -24,6 +24,7 @@ import greencity.entity.RatingPoints;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
+import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -516,22 +517,6 @@ class HabitServiceImplTest {
         verify(habitRepo).findById(anyLong());
         verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
-    }
-
-    @Test
-    void getToDoListForHabit() {
-        ToDoListItemTranslation toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
-        List<ToDoListItemTranslation> toDoListItemTranslations =
-            Collections.singletonList(toDoListItemTranslation);
-        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto =
-            new ToDoListItemResponseWithStatusDto(1L, "test", "ACTIVE");
-        List<ToDoListItemResponseWithStatusDto> toDoListItemResponseWithStatusDtos =
-            Collections.singletonList(toDoListItemResponseWithStatusDto);
-        when(modelMapper.map(toDoListItemTranslation, ToDoListItemResponseWithStatusDto.class))
-            .thenReturn(toDoListItemResponseWithStatusDto);
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode("en", 1L))
-            .thenReturn(toDoListItemTranslations);
-        assertEquals(toDoListItemResponseWithStatusDtos, habitService.getToDoListForHabit(1L, "en"));
     }
 
     @Test

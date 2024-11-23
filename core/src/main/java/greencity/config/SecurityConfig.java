@@ -72,9 +72,7 @@ public class SecurityConfig {
     private static final String SUBSCRIPTIONS = "/subscriptions";
     private static final String ACTIVE = "/active";
     private static final String USER_CUSTOM_TO_DO_LIST_ITEMS = "/user/{userId}/custom-to-do-list-items";
-    private static final String CUSTOM_TO_DO_LIST = "/custom/to-do-list-items/{userId}";
-    private static final String CUSTOM_TO_DO_LIST_URL = CUSTOM_TO_DO_LIST + "/custom-to-do-list-items";
-    private static final String CUSTOM_TO_DO_LIST_ITEMS = "/{userId}/custom-to-do-list-items";
+    private static final String CUSTOM_TO_DO_LIST = "/habits/custom-to-do-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_TO_DO_LIST = "/user/to-do-list-items";
     private static final String ACHIEVEMENTS = "/achievements";
@@ -216,10 +214,8 @@ public class SecurityConfig {
                     ACHIEVEMENTS,
                     ACHIEVEMENTS + COUNT,
                     ACHIEVEMENTS + CATEGORIES,
-                    CUSTOM_TO_DO_LIST_ITEMS,
-                    CUSTOM_TO_DO_LIST,
-                    CUSTOM_TO_DO_LIST_URL,
-                    "/custom/to-do-list-items/{userId}/{habitId}",
+                    CUSTOM_TO_DO_LIST + "/{habitId}",
+                    CUSTOM_TO_DO_LIST + "/assign/{habitAssignId}",
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
@@ -296,7 +292,6 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + LIKE,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
-                    CUSTOM_TO_DO_LIST_ITEMS,
                     "/files",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
@@ -316,7 +311,6 @@ public class SecurityConfig {
                     "/user/{userId}/declineFriend/{friendId}",
                     "/user/{userId}/acceptFriend/{friendId}",
                     "/habit/custom",
-                    "/custom/to-do-list-items/{userId}/{habitId}/custom-to-do-list-items",
                     FRIENDS + "/{friendId}",
                     ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
@@ -341,8 +335,6 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS,
                     EVENTS_COMMENTS + COMMENT_ID,
                     ECO_NEWS + COMMENTS,
-                    CUSTOM_TO_DO_LIST_ITEMS,
-                    CUSTOM_TO_DO_LIST_URL,
                     HABIT_ASSIGN_ID,
                     "/to-do-list-items/toDoList/{userId}",
                     HABIT_ASSIGN_ID,
@@ -359,8 +351,6 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + ECO_NEWS_ID,
                     ECO_NEWS_ID_COMMENTS + COMMENT_ID,
                     HABITS + "/comments/{id}",
-                    CUSTOM_TO_DO_LIST_ITEMS,
-                    CUSTOM_TO_DO_LIST_URL,
                     "/favorite_place/{placeId}",
                     "/social-networks",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,

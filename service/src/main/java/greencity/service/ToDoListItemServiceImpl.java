@@ -8,10 +8,12 @@ import greencity.dto.todolistitem.ToDoListItemManagementDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemViewDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.ToDoListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.localization.ToDoListItemTranslation;
+import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -40,9 +42,10 @@ import java.util.Optional;
 public class ToDoListItemServiceImpl implements ToDoListItemService {
     private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
     private final ToDoListItemRepo toDoListItemRepo;
-    private final ModelMapper modelMapper;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
@@ -195,8 +198,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        if (!habitAssign.getUser().getId().equals(userId)) {
+        UserVO user = userService.findById(userId);
+        if (!habitAssign.getUser().getId().equals(userId) && !user.getRole().equals(Role.ROLE_ADMIN)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 

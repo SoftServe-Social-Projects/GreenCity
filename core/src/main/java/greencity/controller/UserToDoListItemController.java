@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +60,7 @@ public class UserToDoListItemController {
     @GetMapping("/{habitAssignId}")
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> getUserToDoListItemsForHabitAssign(
-        @PathVariable Long habitAssignId,
+        @PathVariable @Min(1) Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -90,8 +92,8 @@ public class UserToDoListItemController {
     @PostMapping("/{habitAssignId}")
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> saveUserToDoListItemsForHabitAssign(
-        @PathVariable Long habitAssignId,
-        @RequestBody List<UserToDoListItemRequestDto> userToDoListItems,
+        @PathVariable @Min(1) Long habitAssignId,
+        @RequestBody List<@Valid UserToDoListItemRequestDto> userToDoListItems,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -123,8 +125,8 @@ public class UserToDoListItemController {
     @DeleteMapping("/{habitAssignId}")
     @ApiLocale
     public ResponseEntity<Object> deleteUserToDoListItemsForHabitAssign(
-        @PathVariable Long habitAssignId,
-        @RequestBody List<Long> userToDoListItemsIds,
+        @PathVariable @Min(1) Long habitAssignId,
+        @RequestBody List<@Min(1) Long> userToDoListItemsIds,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         userToDoListItemService.deleteUserToDoListItems(habitAssignId, userToDoListItemsIds, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -155,8 +157,8 @@ public class UserToDoListItemController {
     @PatchMapping("/{habitAssignId}")
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> changeStatusUserToDoListItems(
-        @PathVariable Long habitAssignId,
-        @RequestBody List<UserToDoListItemRequestWithStatusDto> userToDoListItems,
+        @PathVariable @Min(1) Long habitAssignId,
+        @RequestBody List<@Valid UserToDoListItemRequestWithStatusDto> userToDoListItems,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(userToDoListItemService

@@ -7,7 +7,6 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import greencity.enums.ToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;

@@ -2,14 +2,18 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
+import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import java.util.ArrayList;
 import java.util.List;
+import greencity.repository.HabitRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,21 +28,26 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      * Autowired repository.
      */
     private CustomToDoListItemRepo customToDoListItemRepo;
-    private ModelMapper modelMapper;
     private HabitAssignRepo habitAssignRepo;
+    private HabitRepo habitRepo;
+    private UserService userService;
+    private ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public List<CustomToDoListItemResponseDto> findAllHabitCustomToDoList(Long userId, Long habitId) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
         List<CustomToDoListItem> defaultCustomItems =
-            customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)
+            customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habit.getId())
                 .stream()
                 .map(id -> customToDoListItemRepo.getReferenceById(id))
                 .toList();
         List<CustomToDoListItem> customItemsByUser =
-            customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId);
+            customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habit.getId());
         List<CustomToDoListItem> customItemsToReturn = new ArrayList<>();
         customItemsToReturn.addAll(defaultCustomItems);
         customItemsToReturn.addAll(customItemsByUser);
@@ -52,10 +61,11 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      * {@inheritDoc}
      */
     @Override
-    public List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(Long userId,
+    public List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(UserVO user,
         Long habitAssignId) {
-        List<CustomToDoListItemResponseDto> allHabitCustomItems = findAllHabitCustomToDoList(userId, habitAssignId);
-        List<CustomToDoListItemResponseDto> addedItems = getCustomToDoListByHabitAssignId(userId, habitAssignId);
+        List<CustomToDoListItemResponseDto> addedItems = getCustomToDoListByHabitAssignId(user.getId(), habitAssignId);
+        List<CustomToDoListItemResponseDto> allHabitCustomItems =
+            findAllHabitCustomToDoList(user.getId(), habitAssignId);
         allHabitCustomItems.removeAll(addedItems);
         return allHabitCustomItems;
     }
@@ -69,14 +79,13 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        if (!habitAssign.getUser().getId().equals(userId)) {
+        UserVO user = userService.findById(userId);
+        if (!habitAssign.getUser().getId().equals(userId) && !user.getRole().equals(Role.ROLE_ADMIN)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
         List<CustomToDoListItem> customToDoListItemList =
             customToDoListItemRepo.findAllByHabitAssignId(habitAssignId);
-
         return customToDoListItemList
             .stream().map(item -> modelMapper.map(item, CustomToDoListItemResponseDto.class))
             .toList();

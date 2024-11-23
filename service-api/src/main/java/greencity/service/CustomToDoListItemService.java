@@ -23,12 +23,12 @@ public interface CustomToDoListItemService {
      * Method for finding all custom to-do list items user not added for habit
      * assign.
      *
-     * @param userId        id of the {@link UserVO} current user.
+     * @param user          {@link UserVO} current user.
      * @param habitAssignId id of the {@link greencity.dto.habit.HabitAssignVO}
      *                      habit assign.
      * @return list of {@link CustomToDoListItemResponseDto}
      */
-    List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(Long userId, Long habitAssignId);
+    List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(UserVO user, Long habitAssignId);
 
     /**
      * Method for finding all custom to-do list items with not DISABLED status by

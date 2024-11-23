@@ -44,7 +44,7 @@ class ToDoAndCustomToDoListsDtoTest {
 
     @Test
     void invalidTestWithInvalidUserToDoList() {
-        var toDoDto = ModelUtils.getToDoListItemDto();
+        var toDoDto = ModelUtils.getToDoListItemWithStatusRequestDto();
         toDoDto.setId(-1L);
         var dto = ModelUtils.getToDoAndCustomToDoListsDto();
         dto.setToDoListItemDto(List.of(toDoDto));
