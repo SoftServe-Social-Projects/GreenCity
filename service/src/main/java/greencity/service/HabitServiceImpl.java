@@ -10,7 +10,7 @@ import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.notification.LikeNotificationDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -104,10 +104,10 @@ public class HabitServiceImpl implements HabitService {
         HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
         var habitDto = modelMapper.map(habitTranslation, HabitDto.class);
-        List<ToDoListItemDto> toDoListItems = new ArrayList<>();
+        List<ToDoListItemResponseWithStatusDto> toDoListItems = new ArrayList<>();
         toDoListItemTranslationRepo
             .findToDoListByHabitIdAndByLanguageCode(languageCode, id)
-            .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemDto.class)));
+            .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemResponseWithStatusDto.class)));
         habitDto.setToDoListItems(toDoListItems);
         habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
         boolean isCustomHabit = habit.getIsCustomHabit();
@@ -310,17 +310,6 @@ public class HabitServiceImpl implements HabitService {
             habitTranslationsPage.getTotalElements(),
             habitTranslationsPage.getPageable().getPageNumber(),
             habitTranslationsPage.getTotalPages());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<ToDoListItemDto> getToDoListForHabit(Long habitId, String lang) {
-        return toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(lang, habitId)
-            .stream()
-            .map(g -> modelMapper.map(g, ToDoListItemDto.class))
-            .collect(Collectors.toList());
     }
 
     @Override

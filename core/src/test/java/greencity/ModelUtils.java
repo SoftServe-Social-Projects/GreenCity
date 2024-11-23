@@ -36,7 +36,7 @@ import greencity.dto.location.MapBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
@@ -257,8 +257,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static ToDoListItemDto getToDoListItemDto() {
-        return ToDoListItemDto.builder()
+    public static ToDoListItemResponseWithStatusDto getToDoListItemDto() {
+        return ToDoListItemResponseWithStatusDto.builder()
             .id(1L)
             .text("To-do item")
             .status(ToDoListItemStatus.ACTIVE.toString())

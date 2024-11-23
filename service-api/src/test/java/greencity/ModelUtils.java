@@ -12,7 +12,7 @@ import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
@@ -169,8 +169,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static ToDoListItemDto getToDoListItemDto() {
-        return ToDoListItemDto.builder()
+    public static ToDoListItemResponseWithStatusDto getToDoListItemDto() {
+        return ToDoListItemResponseWithStatusDto.builder()
             .id(1L)
             .text("to-do item")
             .status(ToDoListItemStatus.ACTIVE.toString())

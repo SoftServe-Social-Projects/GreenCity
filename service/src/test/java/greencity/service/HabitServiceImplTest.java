@@ -10,7 +10,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -523,12 +523,12 @@ class HabitServiceImplTest {
         ToDoListItemTranslation toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
         List<ToDoListItemTranslation> toDoListItemTranslations =
             Collections.singletonList(toDoListItemTranslation);
-        ToDoListItemDto toDoListItemDto = new ToDoListItemDto(1L, "test", "ACTIVE");
-        List<ToDoListItemDto> toDoListItemDtos = Collections.singletonList(toDoListItemDto);
-        when(modelMapper.map(toDoListItemTranslation, ToDoListItemDto.class)).thenReturn(toDoListItemDto);
+        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto = new ToDoListItemResponseWithStatusDto(1L, "test", "ACTIVE");
+        List<ToDoListItemResponseWithStatusDto> toDoListItemResponseWithStatusDtos = Collections.singletonList(toDoListItemResponseWithStatusDto);
+        when(modelMapper.map(toDoListItemTranslation, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto);
         when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode("en", 1L))
             .thenReturn(toDoListItemTranslations);
-        assertEquals(toDoListItemDtos, habitService.getToDoListForHabit(1L, "en"));
+        assertEquals(toDoListItemResponseWithStatusDtos, habitService.getToDoListForHabit(1L, "en"));
     }
 
     @Test

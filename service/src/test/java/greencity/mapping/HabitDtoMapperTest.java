@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
@@ -49,7 +49,7 @@ class HabitDtoMapperTest {
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
-                .map(shoppingListItem -> ToDoListItemDto.builder()
+                .map(shoppingListItem -> ToDoListItemResponseWithStatusDto.builder()
                     .id(shoppingListItem.getId())
                     .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(shoppingListItem.getTranslations().stream()

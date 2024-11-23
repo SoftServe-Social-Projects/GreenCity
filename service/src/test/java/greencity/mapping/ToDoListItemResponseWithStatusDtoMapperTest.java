@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.entity.localization.ToDoListItemTranslation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-class ToDoListItemDtoMapperTest {
+class ToDoListItemResponseWithStatusDtoMapperTest {
     @InjectMocks
     private ToDoListItemDtoMapper toDoListItemDtoMapper;
 
@@ -19,7 +19,7 @@ class ToDoListItemDtoMapperTest {
     void convertTest() {
         ToDoListItemTranslation toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
 
-        ToDoListItemDto expected = new ToDoListItemDto(
+        ToDoListItemResponseWithStatusDto expected = new ToDoListItemResponseWithStatusDto(
             toDoListItemTranslation.getToDoListItem().getId(), toDoListItemTranslation
                 .getContent(),
             "ACTIVE");

@@ -5,7 +5,6 @@ import greencity.dto.todolistitem.*;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserToDoListItemResponseDto;
-import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -81,12 +80,11 @@ public interface ToDoListItemService {
     /**
      * Method returns list of to-do list for habit in specific language.
      *
-     * @param userId id of the {@link UserVO} current user.
      * @param habitId id of the {@link HabitVO} habit.
      * @param language needed language code.
-     * @return List of {@link ToDoListItemDto}.
+     * @return List of {@link ToDoListItemResponseWithStatusDto}.
      */
-    List<ToDoListItemDto> getHabitToDoList(Long userId, Long habitId, String language);
+    List<ToDoListItemResponseWithStatusDto> findAllHabitToDoList(Long habitId, String language);
 
     /**
      * Method returns list of to-do list items user not added to habit assign in specific language.
@@ -94,9 +92,9 @@ public interface ToDoListItemService {
      * @param userId id of the {@link UserVO} current user.
      * @param habitAssignId id of the {@link greencity.dto.habit.HabitAssignVO} habit assign.
      * @param language needed language code.
-     * @return List of {@link ToDoListItemDto}.
+     * @return List of {@link ToDoListItemResponseWithStatusDto}.
      */
-    List<ToDoListItemDto> getAvailableToDoListForHabitAssign(Long userId, Long habitAssignId, String language);
+    List<ToDoListItemResponseWithStatusDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId, String language);
 
     /**
      * Method returns user to-do list by habitAssignId for specific language.
@@ -106,8 +104,8 @@ public interface ToDoListItemService {
      * @param language      needed language code.
      * @return List of {@link UserToDoListItemResponseDto}.
      */
-    List<ToDoListItemDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
-        String language);
+    List<ToDoListItemResponseWithStatusDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
+                                                                       String language);
 
     /**
      * Method returns list of hopping list items for habit.

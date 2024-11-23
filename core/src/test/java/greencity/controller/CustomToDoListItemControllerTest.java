@@ -59,9 +59,9 @@ class CustomToDoListItemControllerTest {
         UserVO userVO = getUserVO();
         this.mockMvc.perform(get(customLink + "/" + habitId)
             .principal(principal)).andExpect(status().isOk());
-        when(customToDoListItemService.findAllCustomToDoListItemsForHabit(anyLong(), habitId))
+        when(customToDoListItemService.findAllHabitCustomToDoList(anyLong(), habitId))
             .thenReturn(Collections.singletonList(dto));
-        verify(customToDoListItemService).findAllCustomToDoListItemsForHabit(anyLong(), habitId);
+        verify(customToDoListItemService).findAllHabitCustomToDoList(anyLong(), habitId);
         assertEquals(dto,
             customController.getAllCustomToDoListItemsForHabit(userVO, habitId).getBody().get(0));
     }

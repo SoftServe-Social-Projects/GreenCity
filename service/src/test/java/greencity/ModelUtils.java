@@ -102,7 +102,7 @@ import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -113,7 +113,6 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
@@ -1602,8 +1601,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static ToDoListItemDto getToDoListItemDto() {
-        return ToDoListItemDto.builder()
+    public static ToDoListItemResponseWithStatusDto getToDoListItemDto() {
+        return ToDoListItemResponseWithStatusDto.builder()
             .id(1L)
             .text("to-do item")
             .status(ToDoListItemStatus.ACTIVE.toString())

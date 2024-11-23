@@ -1,5 +1,6 @@
 package greencity.dto.todolistitem;
 
+import greencity.enums.ToDoListItemStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import lombok.Builder;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class ToDoListItemDto {
+public class ToDoListItemResponseWithStatusDto {
     @NotNull
     @Min(value = 1)
     private Long id;
@@ -24,6 +25,5 @@ public class ToDoListItemDto {
     @NotEmpty
     private String text;
 
-    @NotEmpty
-    private String status;
+    private ToDoListItemStatus status;
 }

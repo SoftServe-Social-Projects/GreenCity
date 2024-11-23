@@ -68,42 +68,6 @@ public interface ToDoListItemRepo
     @Query("select g from ToDoListItem g where g.id in( :listId )")
     List<ToDoListItem> getToDoListByListOfId(List<Long> listId);
 
-    /**
-     * Method returns user's to-do list for active items and habits in progress.
-     *
-     * @param userId id of the {@link Long} current user
-     * @param code   language code {@link String}
-     * @return {@link ToDoListItemTranslation}
-     */
-    @Query("""
-        select translations from UserToDoListItem as usli\s
-        join HabitAssign as ha on ha.id = usli.habitAssign.id
-        join ToDoListItemTranslation as translations on
-        translations.toDoListItem.id = usli.toDoListItem.id
-        join Language as lang on translations.language.id = lang.id
-        where usli.status = 'INPROGRESS'
-        and ha.status = 'INPROGRESS'
-        and ha.user.id = :userId
-        and lang.code = :code""")
-    List<ToDoListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
-        @Param("code") String code);
-
-    /**
-     * Method returns {@link ToDoListItem} by habitId, list of name and language
-     * code.
-     *
-     * @param habitId      habit id
-     * @param itemNames    list of to-do items name
-     * @param languageCode language code
-     * @return list of {@link ToDoListItem}
-     */
-    @Query("SELECT sli FROM ToDoListItem sli "
-        + "JOIN ToDoListItemTranslation slt ON sli.id = slt.toDoListItem.id "
-        + "JOIN sli.habits h ON h.id = :habitId"
-        + " WHERE slt.language.code = :languageCode AND slt.content in :listOfName")
-    List<ToDoListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
-        String languageCode);
-
     @Query(nativeQuery = true,
         value = "SELECT tdli.* FROM to_do_list_items tdli "
             + "JOIN user_to_do_list ustdl ON ustdl.target_id = tdli.id "

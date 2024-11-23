@@ -21,8 +21,7 @@ import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
-import greencity.dto.todolistitem.ToDoListItemRequestDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -883,7 +882,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(ModelUtils.getHabitAssignDtoWithFriendsIds().getHabit());
 
         expected.getFirst().getHabit().setToDoListItems(
-            List.of(ToDoListItemDto.builder()
+            List.of(ToDoListItemResponseWithStatusDto.builder()
                 .id(userToDoListItemCustom.getId())
                 .status(userToDoListItemCustom.getStatus().toString())
                 .build()));
@@ -1031,20 +1030,20 @@ class HabitAssignServiceImplTest {
 
         List<CustomToDoListItemRequestDto> customToDoListItemRequestDtos =
             List.of(ModelUtils.getCustomToDoListItemRequestDto());
-        List<ToDoListItemDto> toDoListItemDtos =
+        List<ToDoListItemResponseWithStatusDto> toDoListItemResponseWithStatusDtos =
             List.of(ModelUtils.getToDoListItemDto());
         ToDoAndCustomToDoListsDto expected =
             ToDoAndCustomToDoListsDto
                 .builder()
                 .customToDoListItemDto(customToDoListItemRequestDtos)
-                .toDoListItemDto(toDoListItemDtos)
+                .toDoListItemDto(toDoListItemResponseWithStatusDtos)
                 .build();
         CustomToDoListItemResponseDto customToDoListItemResponseDto = getCustomToDoListItemResponseDto();
 
         when(toDoListItemService.getToDoListByHabitAssignId(userId, habitAssignId, language))
-            .thenReturn(toDoListItemDtos);
+            .thenReturn(toDoListItemResponseWithStatusDtos);
         when(
-            customToDoListItemService.findAllAvailableCustomToDoListItemsByHabitAssignId(userId, habitAssignId))
+            customToDoListItemService.getCustomToDoListByHabitAssignId(userId, habitAssignId))
             .thenReturn(List.of(customToDoListItemResponseDto));
 
         List<UserToDoListItemResponseDto> actual =
@@ -1053,7 +1052,7 @@ class HabitAssignServiceImplTest {
         assertEquals(expected, actual);
 
         verify(toDoListItemService).getToDoListByHabitAssignId(userId, habitAssignId, language);
-        verify(customToDoListItemService).findAllAvailableCustomToDoListItemsByHabitAssignId(userId,
+        verify(customToDoListItemService).getCustomToDoListByHabitAssignId(userId,
             habitAssignId);
     }
 
@@ -1068,15 +1067,15 @@ class HabitAssignServiceImplTest {
         List<CustomToDoListItemRequestDto> customToDoListItemRequestDtos =
             List.of(ModelUtils.getCustomToDoListItemRequestDto());
 
-        List<ToDoListItemDto> toDoListItemDtos =
-            List.of(ToDoListItemDto
+        List<ToDoListItemResponseWithStatusDto> toDoListItemResponseWithStatusDtos =
+            List.of(ToDoListItemResponseWithStatusDto
                 .builder().id(1L).status(ToDoListItemStatus.ACTIVE.toString()).build());
 
         List<ToDoAndCustomToDoListsDto> expected = List.of(
             ToDoAndCustomToDoListsDto
                 .builder()
                 .customToDoListItemDto(customToDoListItemRequestDtos)
-                .toDoListItemDto(toDoListItemDtos)
+                .toDoListItemDto(toDoListItemResponseWithStatusDtos)
                 .build());
 
         when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(habitAssignList);
@@ -1737,7 +1736,7 @@ class HabitAssignServiceImplTest {
         Long userId = 1L;
         Long habitAssignId = 1L;
         String name = "Buy a bamboo toothbrush";
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
         responseDto.setId(null);
         responseDto.setText(name);
 
@@ -1787,7 +1786,7 @@ class HabitAssignServiceImplTest {
         Long userId = 1L;
         Long habitAssignId = 1L;
         String name = "Buy a bamboo toothbrush";
-        ToDoListItemDto toDoDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto toDoDto = ModelUtils.getToDoListItemDto();
         toDoDto.setId(null);
         toDoDto.setText(name);
 
@@ -1835,9 +1834,9 @@ class HabitAssignServiceImplTest {
     void saveToDoListWithStatusesWithDuplicateThrowsBadRequestException() {
         Long userId = 1L;
         Long habitAssignId = 1L;
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
         responseDto.setId(null);
-        ToDoListItemDto sameResponse = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto sameResponse = ModelUtils.getToDoListItemDto();
         sameResponse.setId(null);
 
         ToDoAndCustomToDoListsDto dto = ToDoAndCustomToDoListsDto.builder()
@@ -1875,7 +1874,7 @@ class HabitAssignServiceImplTest {
         Long userId = 1L;
         Long habitAssignId = 1L;
         ToDoListItemStatus newStatus = ToDoListItemStatus.ACTIVE;
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
         responseDto.setStatus(newStatus.toString());
 
         ToDoAndCustomToDoListsDto dto = ToDoAndCustomToDoListsDto.builder()
@@ -1930,7 +1929,7 @@ class HabitAssignServiceImplTest {
         Long userId = 1L;
         Long habitAssignId = 1L;
         ToDoListItemStatus newStatus = ToDoListItemStatus.ACTIVE;
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
         responseDto.setStatus(newStatus.toString());
 
         ToDoAndCustomToDoListsDto dto = ToDoAndCustomToDoListsDto.builder()
@@ -1981,7 +1980,7 @@ class HabitAssignServiceImplTest {
     void updateAndDisableToDoListWithStatusesWithNonExistentItemThrowsNotFoundException() {
         Long userId = 1L;
         Long habitAssignId = 1L;
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
 
         ToDoAndCustomToDoListsDto dto = ToDoAndCustomToDoListsDto.builder()
             .toDoListItemDto(List.of(responseDto))
@@ -2116,7 +2115,7 @@ class HabitAssignServiceImplTest {
         Long habitAssignId = 1L;
         UserToDoListItemStatus oldStatus = UserToDoListItemStatus.INPROGRESS;
         UserToDoListItemStatus newStatus = UserToDoListItemStatus.DISABLED;
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
         responseDto.setStatus(newStatus.toString());
 
         ToDoAndCustomToDoListsDto dto = ToDoAndCustomToDoListsDto.builder()
@@ -2174,8 +2173,8 @@ class HabitAssignServiceImplTest {
     void updateAndDisableToDoListWithStatusesWithDuplicateThrowsBadRequestException() {
         Long userId = 1L;
         Long habitAssignId = 1L;
-        ToDoListItemDto responseDto = ModelUtils.getToDoListItemDto();
-        ToDoListItemDto sameResponseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto responseDto = ModelUtils.getToDoListItemDto();
+        ToDoListItemResponseWithStatusDto sameResponseDto = ModelUtils.getToDoListItemDto();
 
         ToDoAndCustomToDoListsDto dto = ToDoAndCustomToDoListsDto.builder()
             .toDoListItemDto(List.of(responseDto, sameResponseDto))

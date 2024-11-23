@@ -28,7 +28,7 @@ public class CustomToDoListItemController {
     private final CustomToDoListItemService customToDoListItemService;
 
     /**
-     * Method for finding all available custom to-do list items for habit.
+     * Method finds all available custom to-do list items for habit.
      *
      * @param habitId {@link Long} with needed habit id.
      * @return list of {@link CustomToDoListItemResponseDto}
@@ -51,11 +51,11 @@ public class CustomToDoListItemController {
             @Parameter(description = "Id of the Habit that belongs to current user. Cannot be empty.")
             @PathVariable @Min(1) Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customToDoListItemService.findAllCustomToDoListItemsForHabit(user.getId(), habitId));
+            .body(customToDoListItemService.findAllHabitCustomToDoList(user.getId(), habitId));
     }
 
     /**
-     * Method for finding all available for adding custom to-do list items for habit assign.
+     * Method finds all available custom to-do list items for adding to habit assign.
      *
      * @param habitAssignId {@link Long} with needed habit assign id.
      * @return list of {@link CustomToDoListItemResponseDto}
@@ -78,8 +78,6 @@ public class CustomToDoListItemController {
             @Parameter(description = "Id of the Habit Assign that belongs to current user. Cannot be empty.")
             @PathVariable @Min(1) Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(customToDoListItemService.findAvailableCustomToDoListItemsForHabitAssign(user.getId(), habitAssignId));
+                .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user.getId(), habitAssignId));
     }
-    //get all available for habit
-    //get all available(not added) for habit and user
 }

@@ -6,7 +6,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.todolistitem.ToDoListItemManagementDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
@@ -135,88 +135,6 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void saveUserToDoListItemTest() {
-        ObjectMapper mapper = new ObjectMapper();
-        UserToDoListItem userToDoListItem =
-            mapper.convertValue(toDoListItemRequestDtos.getFirst(), UserToDoListItem.class);
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.getToDoListItemsIdForHabit(habitAssign.getHabit().getId()))
-            .thenReturn(Collections.singletonList(1L));
-        when(userToDoListItemRepo.getAllAssignedToDoListItems(habitAssign.getId()))
-            .thenReturn(Collections.singletonList(2L));
-        when(modelMapper.map(toDoListItemRequestDtos.getFirst(), UserToDoListItem.class))
-            .thenReturn(userToDoListItem);
-        getUserToDoListItemTest();
-        userToDoListItem.setHabitAssign(habitAssign);
-        toDoListItemService
-            .saveUserToDoListItems(userId, 1L, Collections.singletonList(toDoListItemRequestDtos.getFirst()),
-                "en");
-        verify(userToDoListItemRepo).saveAll(Collections.singletonList(userToDoListItem));
-    }
-
-    @Test
-    void saveUserToDoListItemThorowsNotFoundException() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.getToDoListItemsIdForHabit(habitAssign.getHabit().getId()))
-            .thenReturn(Collections.singletonList(1L));
-        List<ToDoListItemRequestDto> toDoListItemRequestDto =
-            Collections.singletonList(toDoListItemRequestDtos.get(2));
-        assertThrows(NotFoundException.class, () -> toDoListItemService
-            .saveUserToDoListItems(userId, 1L, toDoListItemRequestDto, "en"));
-    }
-
-    @Test
-    void saveUserToDoListItemThorowsWrongIdException() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.getToDoListItemsIdForHabit(habitAssign.getHabit().getId()))
-            .thenReturn(Collections.singletonList(1L));
-        when(userToDoListItemRepo.getAllAssignedToDoListItems(habitAssign.getId()))
-            .thenReturn(Collections.singletonList(1L));
-        List<ToDoListItemRequestDto> toDoListItemRequestDto =
-            Collections.singletonList(toDoListItemRequestDtos.getFirst());
-        assertThrows(WrongIdException.class, () -> toDoListItemService
-            .saveUserToDoListItems(userId, 1L, toDoListItemRequestDto, "en"));
-    }
-
-    @Test
-    void saveUserToDoListItemThrowException() {
-
-        List<ToDoListItemRequestDto> toDoListItemRequestDto =
-            Collections.singletonList(toDoListItemRequestDtos.getFirst());
-
-        assertThrows(UserHasNoToDoListItemsException.class, () -> toDoListItemService
-            .saveUserToDoListItems(userId, 1L, toDoListItemRequestDto, "en"));
-    }
-
-    @Test
-    void saveUserToDoListItemWithEmptyList() {
-        List<ToDoListItemRequestDto> dtoList = null;
-        Long habitId = 1L;
-        String languageEn = "en";
-        UserToDoListItem userToDoListItem =
-            UserToDoListItem.builder().id(1L).status(UserToDoListItemStatus.INPROGRESS).build();
-
-        List<UserToDoListItemResponseDto> expected =
-            List.of(ModelUtils.getUserToDoListItemResponseDto());
-
-        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
-            userToDoListItem));
-        when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class)).thenReturn(expected.get(0));
-        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageEn, 1L))
-            .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
-
-        List<UserToDoListItemResponseDto> actual = toDoListItemService
-            .saveUserToDoListItems(userId, habitId, dtoList, languageEn);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     void saveToDoListItemTest() {
         when((modelMapper.map(toDoListItemPostDto, ToDoListItem.class))).thenReturn(toDoListItem);
         when(modelMapper.map(toDoListItem.getTranslations(),
@@ -241,88 +159,6 @@ class ToDoListItemServiceImplTest {
     void updateThrowsTest() {
         assertThrows(ToDoListItemNotFoundException.class,
             () -> toDoListItemService.update(toDoListItemPostDto));
-    }
-
-    @Test
-    void updateUserToDoListItemStatusWithNonExistentItemIdTest() {
-        assertThrows(NullPointerException.class, () -> toDoListItemService
-            .updateUserToDoListItemStatus(userId, 2L, "en"));
-    }
-
-    @Test
-    void updateUserToDoListItemStatusWithActiveItemStateTest() {
-        UserToDoListItem userToDoListItem = ModelUtils.getPredefinedUserToDoListItem();
-        when(userToDoListItemRepo.getReferenceById(userToDoListItem.getId())).thenReturn(userToDoListItem);
-        when(modelMapper.map(any(), eq(UserToDoListItemResponseDto.class)))
-            .thenReturn(new UserToDoListItemResponseDto(2L, null, UserToDoListItemStatus.DONE, false));
-        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(language,
-            userToDoListItem.getId())).thenReturn(toDoListItemTranslations.getFirst());
-        UserToDoListItemResponseDto userToDoListItemResponseDto =
-            toDoListItemService.updateUserToDoListItemStatus(userId, userToDoListItem.getId(), "uk");
-
-        assertEquals(UserToDoListItemStatus.DONE, userToDoListItem.getStatus());
-        assertEquals(userToDoListItemResponseDto.getId(),
-            new UserToDoListItemResponseDto(2L, toDoListItemTranslations.getFirst().getContent(),
-                UserToDoListItemStatus.DONE, false).getId());
-        verify(userToDoListItemRepo).save(userToDoListItem);
-    }
-
-    @Test
-    void updateUserToDoListItemStatusWithDoneItemStateTest() {
-        UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, null, 1L, true, UserToDoListItemStatus.DONE, null);
-        when(userToDoListItemRepo.getReferenceById(userToDoListItem.getId())).thenReturn(userToDoListItem);
-        Long userToDoListItemId = userToDoListItem.getId();
-        assertThrows(UserToDoListItemStatusNotUpdatedException.class,
-            () -> toDoListItemService.updateUserToDoListItemStatus(userId, userToDoListItemId, "en"));
-        assertNotEquals(ToDoListItemStatus.ACTIVE, userToDoListItem.getStatus());
-    }
-
-    @Test
-    void updateUserToDoListItemStatusTest() {
-        UserToDoListItem userToDoListItem = ModelUtils.getPredefinedUserToDoListItem();
-        when(userToDoListItemRepo.getAllByUserToDoListIdAndUserId(1L, 2L))
-            .thenReturn(List.of(userToDoListItem));
-        when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
-            .thenReturn(UserToDoListItemResponseDto.builder()
-                .id(1L)
-                .status(UserToDoListItemStatus.DONE)
-                .build());
-        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
-            .thenReturn(ModelUtils.getToDoListItemTranslation());
-
-        List<UserToDoListItemResponseDto> result = toDoListItemService
-            .updateUserToDoListItemStatus(2L, 1L, "en", "DONE");
-
-        assertEquals(UserToDoListItemStatus.DONE, result.getFirst().getStatus());
-
-        verify(userToDoListItemRepo).getAllByUserToDoListIdAndUserId(1L, 2L);
-        verify(modelMapper).map(userToDoListItem, UserToDoListItemResponseDto.class);
-        verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId("en", 1L);
-    }
-
-    @Test
-    void updateUserToDoListItemStatusShouldThrowNotFoundExceptionTest() {
-        when(userToDoListItemRepo.getAllByUserToDoListIdAndUserId(1L, 2L))
-            .thenReturn(null);
-
-        Exception thrown = assertThrows(NotFoundException.class, () -> toDoListItemService
-            .updateUserToDoListItemStatus(2L, 1L, "en", "DONE"));
-
-        assertEquals(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID, thrown.getMessage());
-        verify(userToDoListItemRepo).getAllByUserToDoListIdAndUserId(1L, 2L);
-    }
-
-    @Test
-    void updateUserToDoListItemStatusShouldThrowBadRequestExceptionTest() {
-        when(userToDoListItemRepo.getAllByUserToDoListIdAndUserId(1L, 2L))
-            .thenReturn(List.of(ModelUtils.getPredefinedUserToDoListItem()));
-
-        Exception thrown = assertThrows(BadRequestException.class, () -> toDoListItemService
-            .updateUserToDoListItemStatus(2L, 1L, "en", "Wrong Status"));
-
-        assertEquals(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS, thrown.getMessage());
-        verify(userToDoListItemRepo).getAllByUserToDoListIdAndUserId(1L, 2L);
     }
 
     @Test
@@ -412,93 +248,6 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void deleteUserToDoListItems() {
-        String ids = "1,2,3,4,5,6";
-        List<Long> expected = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L);
-        UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, null, 1L, true, UserToDoListItemStatus.INPROGRESS, null);
-
-        when(userToDoListItemRepo.findById(anyLong())).thenReturn(Optional.of(userToDoListItem));
-
-        assertEquals(expected, toDoListItemService.deleteUserToDoListItems(ids));
-        verify(userToDoListItemRepo, times(6)).delete(userToDoListItem);
-    }
-
-    @Test
-    void deleteUserToDoListItemsFailed() {
-        String ids = "1,2,3,4,5,6";
-        UserToDoListItem userToDoListItem =
-            new UserToDoListItem(1L, null, 1L, false, UserToDoListItemStatus.INPROGRESS, null);
-
-        when(userToDoListItemRepo.findById(anyLong())).thenReturn(Optional.of(userToDoListItem));
-        when(userToDoListItemRepo.findById(3L)).thenThrow(NotFoundException.class);
-
-        assertThrows(NotFoundException.class, () -> toDoListItemService.deleteUserToDoListItems(ids));
-    }
-
-    @Test
-    void getUserToDoListItemTest() {
-        UserToDoListItem userToDoListItem =
-            UserToDoListItem.builder().id(1L).status(UserToDoListItemStatus.INPROGRESS).build();
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
-            userToDoListItem));
-        when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
-            .thenReturn(UserToDoListItemResponseDto.builder().id(1L).build());
-        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId("en", 1L))
-            .thenReturn(ToDoListItemTranslation.builder().id(1L).build());
-        assertEquals(1L, toDoListItemService.getUserToDoList(userId, 1L, "en").get(0).getId());
-    }
-
-    @Test
-    void getEmptyUserToDoListItemsTest() {
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
-
-        assertTrue(toDoListItemService.getUserToDoList(userId, 1L, "en").isEmpty());
-    }
-
-    @Test
-    void getUserToDoListItemWithNullTest() {
-        Long habitId = 1L;
-        String languageEn = "en";
-        List<UserToDoListItemResponseDto> expected = Collections.emptyList();
-
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
-            .thenReturn(Optional.empty());
-
-        List<UserToDoListItemResponseDto> actual = toDoListItemService
-            .getUserToDoList(userId, habitId, languageEn);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void deleteUserToDoListItemByItemIdAndUserIdAndHabitIdTest() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        toDoListItemService.deleteUserToDoListItemByItemIdAndUserIdAndHabitId(1L, userId, 1L);
-        verify(userToDoListItemRepo).deleteByToDoListItemIdAndHabitAssignId(1L, 1L);
-    }
-
-    @Test
-    void deleteUserShollingListItemByItemIdAndUserIdAndHabitIdTestThorows() {
-        assertThrows(NotFoundException.class,
-            () -> toDoListItemService.deleteUserToDoListItemByItemIdAndUserIdAndHabitId(1L, userId, 1L));
-    }
-
-    @Test
-    void getUserToDoListItemIfThereAreNoItems() {
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
-
-        assertEquals(Collections.emptyList(),
-            toDoListItemService.getUserToDoList(userId, 1L, "en"));
-    }
-
-    @Test
     void getToDoListItemByHabitIdTest() {
         List<Long> listID = Collections.singletonList(1L);
         List<ToDoListItem> toDoListItemList = Collections.singletonList(toDoListItem);
@@ -541,13 +290,6 @@ class ToDoListItemServiceImplTest {
     }
 
     @Test
-    void findInProgressByUserIdAndLanguageCodeTest() {
-        when(toDoListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua"))
-            .thenReturn(new ArrayList<>());
-        assertEquals(0, toDoListItemRepo.findInProgressByUserIdAndLanguageCode(1L, "ua").size());
-    }
-
-    @Test
     void getToDoListByHabitAssignIdTest() {
         Long habitAssignId = 2L;
         Long userId3 = 3L;
@@ -585,7 +327,7 @@ class ToDoListItemServiceImplTest {
             userToDoListItemId))
             .thenReturn(toDoListItemTranslation);
 
-        List<ToDoListItemDto> actualDtoList = toDoListItemService
+        List<ToDoListItemResponseWithStatusDto> actualDtoList = toDoListItemService
             .getToDoListByHabitAssignId(userId3, habitAssignId, languageDefault);
 
         assertNotNull(actualDtoList);

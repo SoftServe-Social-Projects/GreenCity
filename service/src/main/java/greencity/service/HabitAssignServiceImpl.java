@@ -22,7 +22,8 @@ import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
+import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -370,9 +371,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 ToDoListItem toDoListItem =
                     toDoListItemRepo.findById(userToDoListItem.getTargetId()).orElseThrow(() -> new NotFoundException(
                         ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userToDoListItem.getTargetId()));
-                return ToDoListItemDto.builder()
+                return ToDoListItemResponseWithStatusDto.builder()
                     .id(toDoListItem.getId())
-                    .status(userToDoListItem.getStatus().toString())
+                    .status(ToDoListItemStatus.ACTIVE)
                     .text(toDoListItem.getTranslations().stream()
                         .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
                         .orElseThrow(
@@ -393,7 +394,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userToDoListItem.getTargetId()));
                 return CustomToDoListItemResponseDto.builder()
                     .id(customToDoListItem.getId())
-                    .status(userToDoListItem.getStatus().toString())
+                    .status(ToDoListItemStatus.ACTIVE)
                     .text(customToDoListItem.getText())
                     .build();
             })
@@ -542,11 +543,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
-        List<ToDoListItemDto> toDoListItems =
+        List<ToDoListItemResponseWithStatusDto> toDoListItems =
             toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habit.getId())
                 .stream()
-                .map(toDoListItem -> modelMapper.map(toDoListItem, ToDoListItemDto.class))
-                .map(toDoListItem -> toDoListItem.setStatus(ToDoListItemStatus.DISABLED.toString())).toList();
+                .map(toDoListItem -> modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class))
+                .map(toDoListItem -> toDoListItem.setStatus(ToDoListItemStatus.DISABLED)).toList();
         changeStatuses(UserToDoListItemStatus.INPROGRESS.toString(),
             habitAssign.getId(), toDoListItems);
         changeStatuses(UserToDoListItemStatus.DONE.toString(),
@@ -571,14 +572,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param toDoListItems list with habit's items.
      */
     private void changeStatuses(String status, Long habitAssignId,
-        List<ToDoListItemDto> toDoListItems) {
+        List<ToDoListItemResponseWithStatusDto> toDoListItems) {
         List<Long> otherStatusItems = userToDoListItemRepo
             .getToDoListItemsByHabitAssignIdAndStatus(habitAssignId, status);
         if (!otherStatusItems.isEmpty()) {
             for (Long otherStatusItemId : otherStatusItems) {
-                for (ToDoListItemDto slid : toDoListItems) {
+                for (ToDoListItemResponseWithStatusDto slid : toDoListItems) {
                     if (slid.getId().equals(otherStatusItemId)) {
-                        slid.setStatus(ToDoListItemStatus.ACTIVE.toString());
+                        slid.setStatus(ToDoListItemStatus.ACTIVE);
                     }
                 }
             }
@@ -660,10 +661,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<UserToDoListItemResponseDto> getToDoAndCustomToDoLists(
         Long userId, Long habitAssignId, String language) {
-        List<ToDoListItemDto> toDoListItems =
+        List<ToDoListItemResponseWithStatusDto> toDoListItems =
             toDoListItemService.getToDoListByHabitAssignId(userId, habitAssignId, language);
         List<CustomToDoListItemResponseDto> customToDoListItems = customToDoListItemService
-            .findAllAvailableCustomToDoListItemsByHabitAssignId(userId, habitAssignId);
+            .getCustomToDoListByHabitAssignId(userId, habitAssignId);
         List<UserToDoListItemResponseDto> userToDoItems = new ArrayList<>();
         userToDoItems.addAll(toDoListItems.stream()
             .map(toDoListItem -> modelMapper.map(toDoListItem, UserToDoListItemResponseDto.class))
@@ -671,7 +672,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .toList());
         userToDoItems.addAll(customToDoListItems.stream()
             .map(customToDoListItem -> modelMapper.map(customToDoListItem, UserToDoListItemResponseDto.class))
-            .map(userToDoItem -> userToDoItem.setIsCustomItem(false))
+            .map(userToDoItem -> userToDoItem.setIsCustomItem(true))
             .toList());
         return userToDoItems;
     }
@@ -1104,7 +1105,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void fullUpdateToDoList(
         Long userId,
         Long habitAssignId,
-        List<ToDoListItemDto> list) {
+        List<ToDoListItemWithStatusRequestDto> list) {
         updateAndDisableToDoListWithStatuses(userId, habitAssignId, list);
     }
 
@@ -1114,13 +1115,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
-     * @param toDoList      {@link ToDoListItemDto} User to-do lists.
+     * @param toDoList      {@link ToDoListItemResponseWithStatusDto} User to-do lists.
      */
     private void updateAndDisableToDoListWithStatuses(
         Long userId,
         Long habitAssignId,
-        List<ToDoListItemDto> toDoList) {
-        List<ToDoListItemDto> listToUpdate = toDoList.stream()
+        List<ToDoListItemWithStatusRequestDto> toDoList) {
+        List<ToDoListItemWithStatusRequestDto> listToUpdate = toDoList.stream()
             .filter(item -> item.getId() != null)
             .collect(Collectors.toList());
 
@@ -1139,8 +1140,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Map<Long, String> mapIdToStatus =
             listToUpdate.stream()
                 .collect(Collectors.toMap(
-                    ToDoListItemDto::getId,
-                    ToDoListItemDto::getStatus));
+                    ToDoListItemWithStatusRequestDto::getId,
+                    ToDoListItemWithStatusRequestDto::getStatus));
 
         List<UserToDoListItem> listToSave = new ArrayList<>();
         for (var currentItem : currentList) {
@@ -1155,9 +1156,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userToDoListItemRepo.saveAll(listToSave);
     }
 
-    private void checkDuplicationForToDoListById(List<ToDoListItemDto> listToUpdate) {
+    private void checkDuplicationForToDoListById(List<ToDoListItemWithStatusRequestDto> listToUpdate) {
         long countOfUnique = listToUpdate.stream()
-            .map(ToDoListItemDto::getId)
+            .map(ToDoListItemWithStatusRequestDto::getId)
             .distinct()
             .count();
         if (listToUpdate.size() != countOfUnique) {
@@ -1166,10 +1167,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void checkIfToDoItemsExist(
-        List<ToDoListItemDto> listToUpdate,
+        List<ToDoListItemWithStatusRequestDto> listToUpdate,
         List<UserToDoListItem> currentList) {
         List<Long> updateIds =
-            listToUpdate.stream().map(ToDoListItemDto::getId).collect(Collectors.toList());
+            listToUpdate.stream().map(ToDoListItemWithStatusRequestDto::getId).collect(Collectors.toList());
         List<Long> currentIds = currentList.stream().filter(userToDoListItem -> !userToDoListItem.getIsCustomItem())
             .map(UserToDoListItem::getTargetId).toList();
 

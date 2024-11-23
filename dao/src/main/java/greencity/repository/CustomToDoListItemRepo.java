@@ -22,11 +22,11 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
      * @param userId id of the {@link User} current user
      * @return list of {@link CustomToDoListItem}
      */
-    @Query("SELECT cg FROM CustomToDoListItem cg WHERE "
-        + "NOT cg.status='DISABLED' "
-        + "AND cg.user.id=:userId "
-        + "AND cg.habit.id=:habitId "
-        + "ORDER BY cg.id")
+    @Query(nativeQuery = true,
+        value = "SELECT ctd FROM custom_to_do_list_items ctd WHERE "
+            + "ctd.status like 'ACTIVE' "
+            + "AND ctd.user_id=:userId "
+            + "AND ctd.habit_id=:habitId")
     List<CustomToDoListItem> findAllAvailableCustomToDoListItemsForUserId(@Param("userId") Long userId,
         @Param("habitId") Long habitId);
 
@@ -36,22 +36,6 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
             + "WHERE ustdl.is_custom_item = true "
             + "AND ustdl.habit_assign_id = :habitAssignId")
     List<CustomToDoListItem> findAllByHabitAssignId(Long habitAssignId);
-
-    /**
-     * Method returns list of custom to-do list items by userId and habitId and
-     * INPROGRESS status.
-     *
-     * @param userId  id of the {@link User} current user
-     * @param habitId id of the {@link Long} habit
-     * @return list of {@link CustomToDoListItem}
-     */
-    @Query("SELECT cg FROM CustomToDoListItem cg WHERE "
-        + " cg.status='INPROGRESS' "
-        + "AND cg.user.id=:userId "
-        + "AND cg.habit.id=:habitId "
-        + "ORDER BY cg.id")
-    List<CustomToDoListItem> findAllCustomToDoListItemsForUserIdAndHabitIdInProgress(
-        @Param("userId") Long userId, @Param("habitId") Long habitId);
 
     /**
      * Method find all custom to-do list items by user.
@@ -96,47 +80,6 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
             + " ctd.user_id = :userId and "
             + " ctd.status like 'ACTIVE';")
     List<Long> getAllCustomToDoListItemIdByUserIdAndByHabitIdAndNotDefault(Long habitId, Long userId);
-
-    /**
-     * Method returns {@link CustomToDoListItem} by list item id.
-     *
-     * @param listId habit id
-     * @return list of {@link CustomToDoListItem}.
-     */
-    @Query("select g from CustomToDoListItem g where g.id in( :listId )")
-    List<CustomToDoListItem> getToDoListByListOfId(List<Long> listId);
-
-    /**
-     * Method returns particular selected custom to-do list items for user.
-     *
-     * @param userId id of the {@link User} current user
-     * @param itemId item id {@link Long}
-     * @return {@link CustomToDoListItem}
-     */
-    @Query("SELECT cg FROM CustomToDoListItem cg WHERE"
-        + " cg.user.id=:userId and cg.id=:itemId")
-    CustomToDoListItem findByUserIdAndItemId(@Param("userId") Long userId, @Param("itemId") Long itemId);
-
-    /**
-     * Method returns custom to-do list items by status.
-     *
-     * @param userId id of the {@link User} current user
-     * @param status item id {@link String}
-     * @return {@link CustomToDoListItem}
-     */
-    @Query(value = "SELECT * from custom_to_do_list_items where user_id = :userId and status = :stat",
-        nativeQuery = true)
-    List<CustomToDoListItem> findAllByUserIdAndStatus(@Param(value = "userId") Long userId,
-        @Param(value = "stat") String status);
-
-    /**
-     * Method returns all custom to-do list items.
-     *
-     * @param userId id of the {@link User} current user
-     * @return {@link CustomToDoListItem}
-     */
-    @Query(value = "SELECT * from custom_to_do_list_items where user_id = :userId", nativeQuery = true)
-    List<CustomToDoListItem> findAllByUserId(@Param(value = "userId") Long userId);
 
     /**
      * Method delete selected items from custom to-do list.

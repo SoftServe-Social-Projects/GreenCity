@@ -1,7 +1,7 @@
 package greencity.dto.habit;
 
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class ToDoAndCustomToDoListsDto {
     @Valid
-    List<@Valid ToDoListItemDto> toDoListItemDto;
+    List<@Valid ToDoListItemWithStatusRequestDto> toDoListItemDto;
     @Valid
     List<@Valid CustomToDoListItemRequestDto> customToDoListItemDto;
 }
