@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Long> {
@@ -63,10 +62,11 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<Long> getToDoListItemsByHabitAssignIdAndStatus(Long habitAssignId, String status);
 
     /**
-     * Method returns user to-do list item by habit assign and custom to-do list item id.
+     * Method returns user to-do list item by habit assign and custom to-do list
+     * item id.
      *
      * @param habitAssignId {@link Long} habit assign id.
-     * @param itemId {@link Long} custom to-do list item id.
+     * @param itemId        {@link Long} custom to-do list item id.
      */
     @Query(nativeQuery = true, value = """
         select utdl.* from user_to_do_list as utdl
@@ -79,7 +79,7 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
      * Method returns user to-do list item by habit assign and to-do list item id.
      *
      * @param habitAssignId {@link Long} habit assign id.
-     * @param itemId {@link Long} to-do list item id.
+     * @param itemId        {@link Long} to-do list item id.
      */
     @Query(nativeQuery = true, value = """
         select utdl.* from user_to_do_list as utdl

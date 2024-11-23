@@ -50,7 +50,8 @@ public class ToDoListItemController {
     @GetMapping("/{habitId}")
     @ApiLocale
     public ResponseEntity<List<ToDoListItemResponseWithStatusDto>> getAllToDoListItemsForHabit(
-        @Parameter(description = "Id of the Habit that belongs to current user. Cannot be empty.")
+        @Parameter(
+            description = "Id of the Habit that belongs to current user. Cannot be empty.")
         @PathVariable @Min(1) Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -58,32 +59,35 @@ public class ToDoListItemController {
     }
 
     /**
-     * Method finds all available to-do list items for adding to habit assign in specific language.
+     * Method finds all available to-do list items for adding to habit assign in
+     * specific language.
      *
-     * @param locale  {@link Locale} with needed language code.
+     * @param locale        {@link Locale} with needed language code.
      * @param habitAssignId {@link Long} with needed habit assign id.
      * @return List of {@link ToDoListItemResponseWithStatusDto}.
      */
     @Operation(description = "Get all not added to-do list for habit assign.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/assign/{habitAssignId}")
     @ApiLocale
     public ResponseEntity<List<ToDoListItemResponseWithStatusDto>> getAllNotAddedToDoListItemsForHabitAssign(
-            @Parameter(hidden = true) @CurrentUser UserVO user,
-            @Parameter(description = "Id of Habit Assign that belongs to current user. Cannot be empty.")
-            @PathVariable @Min(1) Long habitAssignId,
-            @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(
+            description = "Id of Habit Assign that belongs to current user. Cannot be empty.")
+        @PathVariable @Min(1) Long habitAssignId,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(toDoListItemService.findAvailableToDoListForHabitAssign(user.getId(), habitAssignId, locale.getLanguage()));
+            .body(toDoListItemService.findAvailableToDoListForHabitAssign(user.getId(), habitAssignId,
+                locale.getLanguage()));
     }
 }

@@ -105,9 +105,11 @@ public interface HabitService {
     void addToDoListItemToHabit(Long habitId, Long itemId);
 
     /**
-     * Method for deleting the {@link ToDoListItemResponseWithStatusDto} instance by its id.
+     * Method for deleting the {@link ToDoListItemResponseWithStatusDto} instance by
+     * its id.
      *
-     * @param itemId  - {@link ToDoListItemResponseWithStatusDto} instance id which will be deleted.
+     * @param itemId  - {@link ToDoListItemResponseWithStatusDto} instance id which
+     *                will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @author Marian Diakiv
@@ -119,7 +121,8 @@ public interface HabitService {
      *
      * @param listId  list of id {@link ToDoListItemResponseWithStatusDto}
      * @param habitId - {@link HabitDto} the id of the instance from which it will
-     *                be deleted. return list of id {@link ToDoListItemResponseWithStatusDto}
+     *                be deleted. return list of id
+     *                {@link ToDoListItemResponseWithStatusDto}
      * @author Marian Diakiv
      */
     List<Long> deleteAllToDoListItemsByListOfId(Long habitId, List<Long> listId);
@@ -129,7 +132,8 @@ public interface HabitService {
      *
      * @param listId  list of id {@link ToDoListItemResponseWithStatusDto}
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
-     *                added return list of id {@link ToDoListItemResponseWithStatusDto}
+     *                added return list of id
+     *                {@link ToDoListItemResponseWithStatusDto}
      * @author Marian Diakiv
      */
     List<Long> addAllToDoListItemsByListOfId(Long habitId, List<Long> listId);

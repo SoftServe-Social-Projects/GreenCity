@@ -1115,7 +1115,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
-     * @param toDoList      {@link ToDoListItemResponseWithStatusDto} User to-do lists.
+     * @param toDoList      {@link ToDoListItemResponseWithStatusDto} User to-do
+     *                      lists.
      */
     private void updateAndDisableToDoListWithStatuses(
         Long userId,
@@ -1123,7 +1124,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<ToDoListItemWithStatusRequestDto> toDoList) {
         List<ToDoListItemWithStatusRequestDto> listToUpdate = toDoList.stream()
             .filter(item -> item.getId() != null)
-            .collect(Collectors.toList());
+            .toList();
 
         checkDuplicationForToDoListById(listToUpdate);
 
@@ -1498,12 +1499,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = updateOrCreateHabitAssignWithStatus(habit, user, status);
 
         HabitAssignPropertiesDto customAssignProperties = habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto();
-        List<Long> defaultToDoList = customAssignProperties.getDefaultToDoListItems();
-        List<Long> customDefaultToDoList = customAssignProperties.getDefaultCustomToDoListItems();
-
         enhanceAssignWithCustomProperties(habitAssign, customAssignProperties);
         habitAssign = habitAssignRepo.save(habitAssign);
 
+        List<Long> defaultToDoList = customAssignProperties.getDefaultToDoListItems();
+        List<Long> customDefaultToDoList = customAssignProperties.getDefaultCustomToDoListItems();
         saveUserToDoListItems(defaultToDoList, habitAssign, false);
         saveUserToDoListItems(customDefaultToDoList, habitAssign, true);
         saveCustomToDoListItemsForCurrentUser(habitAssignCustomPropertiesDto.getCustomToDoListItemList(), user, habit,

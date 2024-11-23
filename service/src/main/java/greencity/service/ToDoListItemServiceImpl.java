@@ -152,31 +152,36 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
      */
     @Override
     public List<ToDoListItemResponseWithStatusDto> findAllHabitToDoList(Long habitId, String language) {
-        Habit habit = habitRepo.findById(habitId).orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         List<Long> habitToDoItemIds = toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId());
         return habitToDoItemIds.stream()
-                .map(toDoListItemRepo::getReferenceById)
-                .map(toDoListItem -> {
-                    ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, toDoListItem.getId());
-                    return ToDoListItemResponseWithStatusDto.builder()
-                            .id(toDoListItem.getId())
-                            .status(ToDoListItemStatus.ACTIVE)
-                            .text(itemTranslation.getContent())
-                            .build();
-                })
-                .toList();
+            .map(toDoListItemRepo::getReferenceById)
+            .map(toDoListItem -> {
+                ToDoListItemTranslation itemTranslation =
+                    toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, toDoListItem.getId());
+                return ToDoListItemResponseWithStatusDto.builder()
+                    .id(toDoListItem.getId())
+                    .status(ToDoListItemStatus.ACTIVE)
+                    .text(itemTranslation.getContent())
+                    .build();
+            })
+            .toList();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<ToDoListItemResponseWithStatusDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId, String language) {
+    public List<ToDoListItemResponseWithStatusDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId,
+        String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-                .orElseThrow(() -> new NotFoundException(
-                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-        List<ToDoListItemResponseWithStatusDto> addedItems = getToDoListByHabitAssignId(userId, habitAssignId, language);
-        List<ToDoListItemResponseWithStatusDto> allActiveHabitItems = findAllHabitToDoList(habitAssign.getHabit().getId(), language);
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+        List<ToDoListItemResponseWithStatusDto> addedItems =
+            getToDoListByHabitAssignId(userId, habitAssignId, language);
+        List<ToDoListItemResponseWithStatusDto> allActiveHabitItems =
+            findAllHabitToDoList(habitAssign.getHabit().getId(), language);
         allActiveHabitItems.removeAll(addedItems);
         return allActiveHabitItems;
     }
@@ -186,7 +191,7 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
      */
     @Override
     public List<ToDoListItemResponseWithStatusDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
-                                                                              String language) {
+        String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));

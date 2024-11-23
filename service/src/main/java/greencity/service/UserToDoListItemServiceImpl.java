@@ -19,7 +19,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +39,8 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
      */
     @Override
     public List<UserToDoListItemResponseDto> findAllForHabitAssign(Long habitAssignId, Long userId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId).orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -54,16 +54,18 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
      */
     @Transactional
     @Override
-    public List<UserToDoListItemResponseDto> saveUserToDoListItems(Long habitAssignId, List<UserToDoListItemRequestDto> userToDoListItems, Long userId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId).orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+    public List<UserToDoListItemResponseDto> saveUserToDoListItems(Long habitAssignId,
+        List<UserToDoListItemRequestDto> userToDoListItems, Long userId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
         List<UserToDoListItem> toSave = userToDoListItems.stream()
-                .map(userToDoListItemRequestDto -> modelMapper.map(userToDoListItemRequestDto, UserToDoListItem.class))
-                .toList();
+            .map(userToDoListItemRequestDto -> modelMapper.map(userToDoListItemRequestDto, UserToDoListItem.class))
+            .toList();
         toSave.forEach(item -> item.setStatus(UserToDoListItemStatus.INPROGRESS));
         toSave.forEach(item -> item.setHabitAssign(habitAssign));
         userToDoListItemRepo.saveAll(toSave);
@@ -75,7 +77,8 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
      */
     @Override
     public void deleteUserToDoListItems(Long habitAssignId, List<Long> itemIds, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId).orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -95,8 +98,10 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
      */
     @Transactional
     @Override
-    public List<UserToDoListItemResponseDto> changeStatusesUserToDoListItems(Long habitAssignId, List<UserToDoListItemRequestWithStatusDto> userToDoListItems, Long userId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId).orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+    public List<UserToDoListItemResponseDto> changeStatusesUserToDoListItems(Long habitAssignId,
+        List<UserToDoListItemRequestWithStatusDto> userToDoListItems, Long userId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -106,11 +111,13 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
         for (UserToDoListItemRequestWithStatusDto userItemRequest : userToDoListItems) {
             UserToDoListItem userItem;
             if (userItemRequest.getIsCustomItem()) {
-               userItem = userToDoListItemRepo.getCustomToDoItemIdByHabitAssignIdAndItemId(habitAssignId, userItemRequest.getTargetId())
-                        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND));
+                userItem = userToDoListItemRepo
+                    .getCustomToDoItemIdByHabitAssignIdAndItemId(habitAssignId, userItemRequest.getTargetId())
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND));
             } else {
-                userItem = userToDoListItemRepo.getToDoItemIdByHabitAssignIdAndItemId(habitAssignId, userItemRequest.getTargetId())
-                        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND));
+                userItem = userToDoListItemRepo
+                    .getToDoItemIdByHabitAssignIdAndItemId(habitAssignId, userItemRequest.getTargetId())
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND));
             }
             userItem.setStatus(userItemRequest.getStatus());
             toSave.add(userItem);
@@ -125,7 +132,8 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
             CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
             responseDto.setText(customItem.getText());
         } else {
-            ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userToDoListItem.getTargetId());
+            ToDoListItemTranslation itemTranslation =
+                toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userToDoListItem.getTargetId());
             responseDto.setText(itemTranslation.getContent());
         }
         return responseDto;
@@ -133,7 +141,7 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
 
     private List<UserToDoListItemResponseDto> getItemsByHabitAssignId(Long habitAssignId, String language) {
         return userToDoListItemRepo.findAllByHabitAssingId(habitAssignId).stream()
-                .map(userToDoListItem -> buildResponseDto(userToDoListItem, language))
-                .toList();
+            .map(userToDoListItem -> buildResponseDto(userToDoListItem, language))
+            .toList();
     }
 }

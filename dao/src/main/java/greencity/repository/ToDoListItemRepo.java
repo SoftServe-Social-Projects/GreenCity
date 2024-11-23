@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.ToDoListItem;
 import java.util.List;
-import greencity.entity.localization.ToDoListItemTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

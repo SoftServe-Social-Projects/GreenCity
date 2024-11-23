@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.dto.user.UserToDoListItemVO;
-import greencity.entity.ToDoListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.UserToDoListItem;
 import org.modelmapper.AbstractConverter;

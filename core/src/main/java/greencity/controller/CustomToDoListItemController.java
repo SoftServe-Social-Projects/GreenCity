@@ -47,37 +47,40 @@ public class CustomToDoListItemController {
     })
     @GetMapping("/{habitId}")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllCustomToDoListItemsForHabit(
-            @Parameter(hidden = true) @CurrentUser UserVO user,
-            @Parameter(description = "Id of the Habit that belongs to current user. Cannot be empty.")
-            @PathVariable @Min(1) Long habitId) {
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(
+            description = "Id of the Habit that belongs to current user. Cannot be empty.")
+        @PathVariable @Min(1) Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customToDoListItemService.findAllHabitCustomToDoList(user.getId(), habitId));
     }
 
     /**
-     * Method finds all available custom to-do list items for adding to habit assign.
+     * Method finds all available custom to-do list items for adding to habit
+     * assign.
      *
      * @param habitAssignId {@link Long} with needed habit assign id.
      * @return list of {@link CustomToDoListItemResponseDto}
      */
     @Operation(summary = "Get all not added custom to-do-list-items for habit assign.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/assign/{habitAssignId}")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllNotAddedCustomToDoListItemsForHabitAssign(
-            @Parameter(hidden = true) @CurrentUser UserVO user,
-            @Parameter(description = "Id of the Habit Assign that belongs to current user. Cannot be empty.")
-            @PathVariable @Min(1) Long habitAssignId) {
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(
+            description = "Id of the Habit Assign that belongs to current user. Cannot be empty.")
+        @PathVariable @Min(1) Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user.getId(), habitAssignId));
+            .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user.getId(), habitAssignId));
     }
 }

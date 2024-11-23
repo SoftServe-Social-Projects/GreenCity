@@ -52,7 +52,8 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      * {@inheritDoc}
      */
     @Override
-    public List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(Long userId, Long habitAssignId) {
+    public List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(Long userId,
+        Long habitAssignId) {
         List<CustomToDoListItemResponseDto> allHabitCustomItems = findAllHabitCustomToDoList(userId, habitAssignId);
         List<CustomToDoListItemResponseDto> addedItems = getCustomToDoListByHabitAssignId(userId, habitAssignId);
         allHabitCustomItems.removeAll(addedItems);
@@ -64,7 +65,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      */
     @Override
     public List<CustomToDoListItemResponseDto> getCustomToDoListByHabitAssignId(Long userId,
-                                                                                Long habitAssignId) {
+        Long habitAssignId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));

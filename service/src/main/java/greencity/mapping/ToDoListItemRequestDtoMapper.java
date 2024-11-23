@@ -1,9 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
-import greencity.entity.ToDoListItem;
 import greencity.entity.UserToDoListItem;
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;

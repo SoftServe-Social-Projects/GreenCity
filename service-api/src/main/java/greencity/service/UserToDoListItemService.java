@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.user.UserToDoListItemRequestDto;
 import greencity.dto.user.UserToDoListItemRequestWithStatusDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
-
 import java.util.List;
 
 /**
@@ -12,9 +11,11 @@ import java.util.List;
 public interface UserToDoListItemService {
     List<UserToDoListItemResponseDto> findAllForHabitAssign(Long habitAssignId, Long userId, String language);
 
-    List<UserToDoListItemResponseDto> saveUserToDoListItems(Long habitAssignId, List<UserToDoListItemRequestDto> userToDoListItems, Long userId, String language);
+    List<UserToDoListItemResponseDto> saveUserToDoListItems(Long habitAssignId,
+        List<UserToDoListItemRequestDto> userToDoListItems, Long userId, String language);
 
     void deleteUserToDoListItems(Long habitAssignId, List<Long> itemIds, Long userId);
 
-    List<UserToDoListItemResponseDto> changeStatusesUserToDoListItems(Long habitAssignId, List<UserToDoListItemRequestWithStatusDto> userToDoListItems, Long userId, String language);
+    List<UserToDoListItemResponseDto> changeStatusesUserToDoListItems(Long habitAssignId,
+        List<UserToDoListItemRequestWithStatusDto> userToDoListItems, Long userId, String language);
 }

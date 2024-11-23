@@ -523,9 +523,12 @@ class HabitServiceImplTest {
         ToDoListItemTranslation toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
         List<ToDoListItemTranslation> toDoListItemTranslations =
             Collections.singletonList(toDoListItemTranslation);
-        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto = new ToDoListItemResponseWithStatusDto(1L, "test", "ACTIVE");
-        List<ToDoListItemResponseWithStatusDto> toDoListItemResponseWithStatusDtos = Collections.singletonList(toDoListItemResponseWithStatusDto);
-        when(modelMapper.map(toDoListItemTranslation, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto);
+        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto =
+            new ToDoListItemResponseWithStatusDto(1L, "test", "ACTIVE");
+        List<ToDoListItemResponseWithStatusDto> toDoListItemResponseWithStatusDtos =
+            Collections.singletonList(toDoListItemResponseWithStatusDto);
+        when(modelMapper.map(toDoListItemTranslation, ToDoListItemResponseWithStatusDto.class))
+            .thenReturn(toDoListItemResponseWithStatusDto);
         when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode("en", 1L))
             .thenReturn(toDoListItemTranslations);
         assertEquals(toDoListItemResponseWithStatusDtos, habitService.getToDoListForHabit(1L, "en"));

@@ -80,21 +80,24 @@ public interface ToDoListItemService {
     /**
      * Method returns list of to-do list for habit in specific language.
      *
-     * @param habitId id of the {@link HabitVO} habit.
+     * @param habitId  id of the {@link HabitVO} habit.
      * @param language needed language code.
      * @return List of {@link ToDoListItemResponseWithStatusDto}.
      */
     List<ToDoListItemResponseWithStatusDto> findAllHabitToDoList(Long habitId, String language);
 
     /**
-     * Method returns list of to-do list items user not added to habit assign in specific language.
+     * Method returns list of to-do list items user not added to habit assign in
+     * specific language.
      *
-     * @param userId id of the {@link UserVO} current user.
-     * @param habitAssignId id of the {@link greencity.dto.habit.HabitAssignVO} habit assign.
-     * @param language needed language code.
+     * @param userId        id of the {@link UserVO} current user.
+     * @param habitAssignId id of the {@link greencity.dto.habit.HabitAssignVO}
+     *                      habit assign.
+     * @param language      needed language code.
      * @return List of {@link ToDoListItemResponseWithStatusDto}.
      */
-    List<ToDoListItemResponseWithStatusDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId, String language);
+    List<ToDoListItemResponseWithStatusDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId,
+        String language);
 
     /**
      * Method returns user to-do list by habitAssignId for specific language.
@@ -105,7 +108,7 @@ public interface ToDoListItemService {
      * @return List of {@link UserToDoListItemResponseDto}.
      */
     List<ToDoListItemResponseWithStatusDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
-                                                                       String language);
+        String language);
 
     /**
      * Method returns list of hopping list items for habit.

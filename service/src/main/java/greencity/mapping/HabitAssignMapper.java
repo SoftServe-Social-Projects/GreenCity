@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.entity.*;
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;

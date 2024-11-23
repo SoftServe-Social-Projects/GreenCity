@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
  * into {@link ToDoListItemResponseWithStatusDto}.
  */
 @Component
-public class ToDoListItemDtoMapper extends AbstractConverter<ToDoListItemTranslation, ToDoListItemResponseWithStatusDto> {
+public class ToDoListItemDtoMapper
+    extends AbstractConverter<ToDoListItemTranslation, ToDoListItemResponseWithStatusDto> {
     /**
      * Method for converting {@link ToDoListItemTranslation} into
      * {@link ToDoListItemResponseWithStatusDto}.

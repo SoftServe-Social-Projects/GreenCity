@@ -38,7 +38,8 @@ public class ManagementHabitToDoListItemController {
     }
 
     /**
-     * Controller for deleting {@link ToDoListItemResponseWithStatusDto} by given id.
+     * Controller for deleting {@link ToDoListItemResponseWithStatusDto} by given
+     * id.
      *
      * @param listId  list of IDs.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
@@ -69,9 +70,11 @@ public class ManagementHabitToDoListItemController {
     }
 
     /**
-     * Controller for c the {@link ToDoListItemResponseWithStatusDto} instance by its id.
+     * Controller for c the {@link ToDoListItemResponseWithStatusDto} instance by
+     * its id.
      *
-     * @param itemId  - {@link ToDoListItemResponseWithStatusDto} instance id which will be deleted.
+     * @param itemId  - {@link ToDoListItemResponseWithStatusDto} instance id which
+     *                will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @return {@link ResponseEntity}

@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-import greencity.dto.todolistitem.ToDoListItemVO;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.user.UserToDoListItemVO;
 import greencity.entity.UserToDoListItem;
