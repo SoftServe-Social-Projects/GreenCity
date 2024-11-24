@@ -16,13 +16,9 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -69,7 +65,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -79,9 +74,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-
 import static greencity.ModelUtils.getCustomToDoListItemResponseDto;
+import static greencity.ModelUtils.getToDoListItem;
 import static greencity.ModelUtils.getToDoListItemResponseWithStatusDto;
+import static greencity.ModelUtils.getUserToDoListItemResponseDto;
 import static greencity.ModelUtils.habitAssignInProgress;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
@@ -99,7 +95,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -266,9 +261,10 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(anyLong()))
                 .thenReturn(Arrays.asList(2L, 3L, 4L));
+        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(anyLong())).thenReturn(List.of(2L));
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
-        verify(toDoListItemRepo).getToDoListByListOfId(any());
+
     }
 
     @Test
@@ -869,6 +865,7 @@ class HabitAssignServiceImplTest {
     @Test
     void getAllHabitAssignsByUserIdAndStatusNotCancelled() {
         UserToDoListItem userToDoListItemCustom = ModelUtils.getFullUserToDoListItem();
+        ToDoListItem toDoListItem = getToDoListItem();
         HabitAssignDto habitAssignDtoCustom = ModelUtils.getHabitAssignDtoWithFriendsIds();
         List<HabitAssignDto> expected = List.of(habitAssignDtoCustom);
 
@@ -876,6 +873,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDtoCustom);
         when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(any()))
             .thenReturn(List.of(userToDoListItemCustom));
+        when(toDoListItemRepo.findById(anyLong())).thenReturn(Optional.of(toDoListItem));
         when(habitAssignRepo.findFriendsIdsTrackingHabit(anyLong(), anyLong())).thenReturn(List.of(1L, 2L));
 
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
@@ -1029,24 +1027,22 @@ class HabitAssignServiceImplTest {
         Long habitAssignId = 2L;
         Long userId = 3L;
 
-        List<CustomToDoListItemRequestDto> customToDoListItemRequestDtos =
-            List.of(ModelUtils.getCustomToDoListItemRequestDto());
-        List<ToDoListItemWithStatusRequestDto> toDoListItemWithStatusRequestDtos =
-            List.of(ModelUtils.getToDoListItemWithStatusRequestDto());
-        ToDoAndCustomToDoListsDto expected =
-            ToDoAndCustomToDoListsDto
-                .builder()
-                .customToDoListItemDto(customToDoListItemRequestDtos)
-                .toDoListItemDto(toDoListItemWithStatusRequestDtos)
-                .build();
+        List<UserToDoListItemResponseDto> expected = new ArrayList<>();
+        UserToDoListItemResponseDto fromCustomToDo = getUserToDoListItemResponseDto().setIsCustomItem(true);
+        UserToDoListItemResponseDto fromToDo = getUserToDoListItemResponseDto().setIsCustomItem(false);
+        expected.add(fromToDo);
+        expected.add(fromCustomToDo);
+        ToDoListItemResponseWithStatusDto toDoListItemResponseDto = getToDoListItemResponseWithStatusDto();
         CustomToDoListItemResponseDto customToDoListItemResponseDto = getCustomToDoListItemResponseDto();
 
         when(toDoListItemService.getToDoListByHabitAssignId(userId, habitAssignId, language))
-            .thenReturn(List.of(getToDoListItemResponseWithStatusDto()));
-
+            .thenReturn(List.of(toDoListItemResponseDto));
         when(
             customToDoListItemService.getCustomToDoListByHabitAssignId(userId, habitAssignId))
             .thenReturn(List.of(customToDoListItemResponseDto));
+
+        when(modelMapper.map(toDoListItemResponseDto, UserToDoListItemResponseDto.class)).thenReturn(fromToDo);
+        when(modelMapper.map(customToDoListItemResponseDto, UserToDoListItemResponseDto.class)).thenReturn(fromCustomToDo);
 
         List<UserToDoListItemResponseDto> actual =
             habitAssignService.getToDoAndCustomToDoLists(userId, habitAssignId, language);
@@ -1063,24 +1059,18 @@ class HabitAssignServiceImplTest {
         Habit habit1 = Habit.builder().id(3L)
             .complexity(1).build();
 
+        HabitAssign habitAssign1 = getHabitAssign(2L, habit1, HabitAssignStatus.INPROGRESS);
+        UserToDoListItem userToDoListItem = getUserToDoListItem();
+        habitAssign1.setUserToDoListItems(List.of(userToDoListItem));
         List<HabitAssign> habitAssignList =
-            List.of(ModelUtils.getHabitAssign(2L, habit1, HabitAssignStatus.INPROGRESS));
+            List.of(habitAssign1);
 
-        List<CustomToDoListItemRequestDto> customToDoListItemRequestDtos =
-            List.of(ModelUtils.getCustomToDoListItemRequestDto());
+        UserToDoListItemResponseDto responseDto = getUserToDoListItemResponseDto();
 
-        List<ToDoListItemWithStatusRequestDto> toDoListItemWithStatusRequestDto =
-            List.of(ToDoListItemWithStatusRequestDto
-                .builder().id(1L).status(ToDoListItemStatus.ACTIVE.toString()).build());
-
-        List<ToDoAndCustomToDoListsDto> expected = List.of(
-            ToDoAndCustomToDoListsDto
-                .builder()
-                .customToDoListItemDto(customToDoListItemRequestDtos)
-                .toDoListItemDto(toDoListItemWithStatusRequestDto)
-                .build());
+        List<UserToDoListItemResponseDto> expected = List.of(responseDto);
 
         when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(habitAssignList);
+        when(modelMapper.map(any(), eq(UserToDoListItemResponseDto.class))).thenReturn(responseDto);
 
         assertEquals(expected, habitAssignService.getListOfUserToDoListsWithStatusInprogress(1L, "en"));
 
@@ -1634,6 +1624,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
         when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(getToDoListItemTranslationList());
+        when(modelMapper.map(any(), eq(ToDoListItemResponseWithStatusDto.class))).thenReturn(getToDoListItemResponseWithStatusDto());
         when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
 
         HabitDto actual = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
@@ -1660,10 +1651,10 @@ class HabitAssignServiceImplTest {
             .thenReturn(List.of(userToDoListItem));
 
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(UserToDoListItemStatus.INPROGRESS, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.DONE, userToDoListItem.getStatus());
 
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(ToDoListItemStatus.ACTIVE, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.INPROGRESS, userToDoListItem.getStatus());
     }
 
     @Test
@@ -1687,11 +1678,11 @@ class HabitAssignServiceImplTest {
 
         userToDoListItem.setStatus(UserToDoListItemStatus.DONE);
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(UserToDoListItemStatus.DONE, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.INPROGRESS, userToDoListItem.getStatus());
 
         userToDoListItem.setStatus(UserToDoListItemStatus.DISABLED);
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(ToDoListItemStatus.DISABLED, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.DISABLED, userToDoListItem.getStatus());
     }
 
     @Test

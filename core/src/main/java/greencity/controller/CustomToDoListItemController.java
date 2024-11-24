@@ -79,6 +79,6 @@ public class CustomToDoListItemController {
             description = "Id of the Habit Assign that belongs to current user. Cannot be empty.")
         @PathVariable @Min(1) Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user, habitAssignId));
+            .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user.getId(), habitAssignId));
     }
 }

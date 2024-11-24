@@ -1,6 +1,5 @@
 package greencity.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -11,25 +10,18 @@ import greencity.dto.todolistitem.ToDoListItemManagementDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
-import greencity.dto.user.UserToDoListItemResponseDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.HabitAssign;
 import greencity.entity.Language;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
-import greencity.entity.UserToDoListItem;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
-import greencity.enums.ToDoListItemStatus;
-import greencity.enums.UserToDoListItemStatus;
-import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasNoToDoListItemsException;
-import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.ToDoListItemRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
@@ -53,16 +45,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static greencity.ModelUtils.getToDoListItem;
+import static greencity.ModelUtils.getToDoListItemResponseWithStatusDto;
+import static greencity.ModelUtils.getUserVO;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,6 +71,8 @@ class ToDoListItemServiceImplTest {
     HabitAssignRepo habitAssignRepo;
     @Mock
     private ToDoListItemRepo toDoListItemRepo;
+    @Mock
+    UserService userService;
     @InjectMocks
     private ToDoListItemServiceImpl toDoListItemService;
     @Mock
@@ -102,6 +96,8 @@ class ToDoListItemServiceImplTest {
         .dateOfRegistration(LocalDateTime.now())
         .socialNetworks(new ArrayList<>())
         .build();
+
+    UserVO userVO = getUserVO();
 
     private String language = "uk";
 
@@ -132,6 +128,7 @@ class ToDoListItemServiceImplTest {
     @BeforeEach
     void setUp() {
         habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.getUser().setId(userVO.getId());
     }
 
     @Test
@@ -293,38 +290,36 @@ class ToDoListItemServiceImplTest {
     void getToDoListByHabitAssignIdTest() {
         Long habitAssignId = 2L;
         Long userId3 = 3L;
-        Long userToDoListItemId = 4L;
+        Long toDoListItemId = 4L;
         Long toDoListItemTranslationId = 5L;
         String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
         String text = "text";
 
         habitAssign.setId(habitAssignId);
         habitAssign.getUser().setId(userId3);
+        userVO.setId(userId3);
 
-        UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
-        userToDoListItem.setId(userToDoListItemId);
-        userToDoListItem.setStatus(UserToDoListItemStatus.INPROGRESS);
+        ToDoListItem toDoListItem = getToDoListItem();
+        toDoListItem.setId(toDoListItemId);
 
-        UserToDoListItemResponseDto userToDoListItemResponseDto =
-            ModelUtils.getUserToDoListItemResponseDto();
-        userToDoListItemResponseDto.setId(userToDoListItemId);
+        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto = getToDoListItemResponseWithStatusDto();
+        toDoListItemResponseWithStatusDto.setId(toDoListItemId);
 
         ToDoListItemTranslation toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
         toDoListItemTranslation.setId(toDoListItemTranslationId);
         toDoListItemTranslation.setContent(text);
 
-        UserToDoListItemResponseDto expectedDto = ModelUtils.getUserToDoListItemResponseDto();
-        expectedDto.setId(userToDoListItemId);
-        expectedDto.setText(text);
+        List<ToDoListItemResponseWithStatusDto> expected = List.of(toDoListItemResponseWithStatusDto);
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.singletonList(
-            userToDoListItem));
-        when(modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class))
-            .thenReturn(userToDoListItemResponseDto);
+        when(userService.findById(userId3)).thenReturn(userVO);
+        when(toDoListItemRepo.findAllByHabitAssignId(habitAssignId)).thenReturn(Collections.singletonList(
+            toDoListItem));
+        when(modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class))
+            .thenReturn(toDoListItemResponseWithStatusDto);
         when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault,
-            userToDoListItemId))
+            toDoListItemId))
             .thenReturn(toDoListItemTranslation);
 
         List<ToDoListItemResponseWithStatusDto> actualDtoList = toDoListItemService
@@ -332,13 +327,13 @@ class ToDoListItemServiceImplTest {
 
         assertNotNull(actualDtoList);
         assertEquals(1, actualDtoList.size());
-        assertEquals(expectedDto, actualDtoList.getFirst());
+        assertEquals(expected, actualDtoList);
 
         verify(habitAssignRepo).findById(habitAssignId);
-        verify(userToDoListItemRepo).findAllByHabitAssingId(habitAssignId);
-        verify(modelMapper).map(userToDoListItem, UserToDoListItemResponseDto.class);
+        verify(toDoListItemRepo).findAllByHabitAssignId(habitAssignId);
+        verify(modelMapper).map(toDoListItem, ToDoListItemResponseWithStatusDto.class);
         verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId(languageDefault,
-            userToDoListItemId);
+            toDoListItemId);
     }
 
     @Test
@@ -352,13 +347,13 @@ class ToDoListItemServiceImplTest {
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
-        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.emptyList());
+        when(toDoListItemRepo.findAllByHabitAssignId(habitAssignId)).thenReturn(Collections.emptyList());
 
         assertEquals(Collections.emptyList(),
             toDoListItemService.getToDoListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         verify(habitAssignRepo).findById(habitAssignId);
-        verify(userToDoListItemRepo).findAllByHabitAssingId(habitAssignId);
+        verify(toDoListItemRepo).findAllByHabitAssignId(habitAssignId);
         verify(modelMapper, times(0)).map(any(), any());
         verify(toDoListItemTranslationRepo, times(0)).findByLangAndToDoListItemId(any(), anyLong());
     }
@@ -391,9 +386,11 @@ class ToDoListItemServiceImplTest {
 
         habitAssign.setId(habitAssignId);
         habitAssign.getUser().setId(userId3 + 1);
+        userVO.setId(userId3);
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
+        when(userService.findById(userId3)).thenReturn(userVO);
 
         UserHasNoPermissionToAccessException exception =
             assertThrows(UserHasNoPermissionToAccessException.class, () -> toDoListItemService
@@ -406,4 +403,6 @@ class ToDoListItemServiceImplTest {
         verify(modelMapper, times(0)).map(any(), any());
         verify(toDoListItemTranslationRepo, times(0)).findByLangAndToDoListItemId(any(), anyLong());
     }
+
+    //findAllHabitToDoList(), findAvailableToDoListForHabitAssign(), getAllToDoListItemsForUser()
 }

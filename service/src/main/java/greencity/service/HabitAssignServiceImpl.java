@@ -1504,8 +1504,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         List<Long> defaultToDoList = customAssignProperties.getDefaultToDoListItems();
         List<Long> customDefaultToDoList = customAssignProperties.getDefaultCustomToDoListItems();
-        saveUserToDoListItems(defaultToDoList, habitAssign, false);
-        saveUserToDoListItems(customDefaultToDoList, habitAssign, true);
+        if (defaultToDoList != null) {
+            saveUserToDoListItems(defaultToDoList, habitAssign, false);
+        }
+        if (customDefaultToDoList != null) {
+            saveUserToDoListItems(customDefaultToDoList, habitAssign, true);
+        }
         saveCustomToDoListItemsForCurrentUser(habitAssignCustomPropertiesDto.getCustomToDoListItemList(), user, habit,
             habitAssign);
 

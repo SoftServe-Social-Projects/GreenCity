@@ -118,11 +118,11 @@ class CustomToDoListItemControllerTest {
         UserVO userVO = getUserVO();
         List<CustomToDoListItemResponseDto> expected = List.of(dto);
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO, habitAssignId))
+        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId))
             .thenReturn(expected);
         this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
             .principal(principal)).andExpect(status().isOk());
-        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO, habitAssignId);
+        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId);
     }
 
     @Test
@@ -140,11 +140,11 @@ class CustomToDoListItemControllerTest {
         Long habitAssignId = 1L;
         UserVO userVO = getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO, habitAssignId))
+        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId))
             .thenThrow(UserHasNoPermissionToAccessException.class);
         this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
             .principal(principal)).andExpect(status().isForbidden());
-        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO, habitAssignId);
+        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId);
     }
 
     @Test
@@ -152,10 +152,10 @@ class CustomToDoListItemControllerTest {
         Long habitAssignId = 1L;
         UserVO userVO = getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO, habitAssignId))
+        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId))
             .thenThrow(NotFoundException.class);
         this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
             .principal(principal)).andExpect(status().isNotFound());
-        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO, habitAssignId);
+        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId);
     }
 }

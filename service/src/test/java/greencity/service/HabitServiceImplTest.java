@@ -10,7 +10,6 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -21,10 +20,8 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.HabitAssign;
 import greencity.entity.RatingPoints;
-import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
-import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -64,7 +61,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.ArrayList;
-
 import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -570,6 +566,7 @@ class HabitServiceImplTest {
         CustomHabitDtoRequest addCustomHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
         addCustomHabitDtoRequest.setImage(imageToEncode);
+        addCustomHabitDtoRequest.setCustomToDoListItemDto(List.of(getCustomToDoListItemRequestDto()));
         CustomHabitDtoResponse addCustomHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
         addCustomHabitDtoResponse.setImage(imageToEncode);
 
@@ -591,10 +588,10 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
@@ -611,7 +608,6 @@ class HabitServiceImplTest {
         verify(tagsRepo).findById(20L);
         verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
@@ -661,10 +657,10 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
@@ -681,7 +677,6 @@ class HabitServiceImplTest {
         verify(tagsRepo).findById(20L);
         verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
@@ -731,10 +726,10 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
@@ -751,7 +746,6 @@ class HabitServiceImplTest {
         verify(tagsRepo).findById(20L);
         verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
@@ -956,6 +950,8 @@ class HabitServiceImplTest {
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(customHabitDtoResponse);
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
+        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem))).thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
         when(habitRepo.save(habit)).thenReturn(habit);
@@ -969,7 +965,7 @@ class HabitServiceImplTest {
         verify(habitRepo).save(any());
         verify(customHabitMapper).convert(customHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(customToDoListItemRepo, times(2)).findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(anyLong(), anyLong());
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
@@ -1040,7 +1036,7 @@ class HabitServiceImplTest {
         assertEquals(customHabitDtoResponse,
             habitService.updateCustomHabit(customHabitDtoRequest, 1L, "user@email.com", image));
 
-        verify(customToDoListItemRepo, times(2)).findAllByUserIdAndHabitId(2L, 1L);
+        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(2L, 1L);
         verify(customToDoListItemRepo).save(any());
         verify(habitRepo).findById(anyLong());
         verify(userRepo).findByEmail(user.getEmail());

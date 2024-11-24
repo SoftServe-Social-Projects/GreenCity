@@ -61,13 +61,13 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
      * {@inheritDoc}
      */
     @Override
-    public List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(UserVO user,
+    public List<CustomToDoListItemResponseDto> findAvailableCustomToDoListForHabitAssign(Long userId,
         Long habitAssignId) {
-        List<CustomToDoListItemResponseDto> addedItems = getCustomToDoListByHabitAssignId(user.getId(), habitAssignId);
+        List<CustomToDoListItemResponseDto> addedItems = getCustomToDoListByHabitAssignId(userId, habitAssignId);
+        HabitAssign habitAssign = habitAssignRepo.getReferenceById(habitAssignId);
         List<CustomToDoListItemResponseDto> allHabitCustomItems =
-            findAllHabitCustomToDoList(user.getId(), habitAssignId);
-        allHabitCustomItems.removeAll(addedItems);
-        return allHabitCustomItems;
+            findAllHabitCustomToDoList(userId, habitAssign.getHabit().getId());
+        return allHabitCustomItems.stream().filter(item -> !addedItems.contains(item)).toList();
     }
 
     /**

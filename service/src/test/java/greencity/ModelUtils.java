@@ -1752,12 +1752,32 @@ public class ModelUtils {
             .build();
     }
 
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoWithId2() {
+        return CustomToDoListItemResponseDto.builder()
+                .id(2L)
+                .status(ToDoListItemStatus.ACTIVE)
+                .text("Custom item")
+                .build();
+    }
+
     public static CustomToDoListItem getCustomToDoListItem() {
         return CustomToDoListItem.builder()
             .id(1L)
             .status(ToDoListItemStatus.ACTIVE)
             .text("TEXT")
+            .habit(getHabit())
+            .user(getUser())
             .build();
+    }
+
+    public static CustomToDoListItem getCustomToDoListItemWithId2() {
+        return CustomToDoListItem.builder()
+                .id(2L)
+                .status(ToDoListItemStatus.ACTIVE)
+                .text("Custom item")
+                .habit(getHabit())
+                .user(getUser())
+                .build();
     }
 
     public static Event getEvent() {
