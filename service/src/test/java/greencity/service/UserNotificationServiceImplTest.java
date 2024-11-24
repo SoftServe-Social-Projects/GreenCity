@@ -49,9 +49,7 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.testUser;
 import static greencity.ModelUtils.testUserVo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -108,7 +106,6 @@ class UserNotificationServiceImplTest {
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 
-    @Test
     void notificationSocketTest() {
         ActionDto dto = getActionDto();
 
@@ -271,6 +268,63 @@ class UserNotificationServiceImplTest {
         Principal principal = getPrincipal();
         assertThrows(NotFoundException.class,
             () -> userNotificationService.deleteNotification(principal, notificationId));
+    }
+
+    @Test
+    void createNotification_ShouldUpdateExistingNotificationWithoutIdentifierSecondMessageId() {
+        Notification notification = mock(Notification.class);
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        NotificationType notificationType = NotificationType.HABIT_LIKE;
+        Long targetId = 1L;
+        String customMessage = "Custom Message";
+        String secondMessageText = "Second Message";
+        User targetUser = mock(User.class);
+
+        when(targetUserVO.getId()).thenReturn(1L);
+        when(notification.getTargetUser()).thenReturn(targetUser);
+        when(notification.getTargetUser().getId()).thenReturn(1L);
+        when(notificationRepo
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                        notificationType, targetId)).thenReturn(Optional.of(notification));
+
+        userNotificationService.createNotification(targetUserVO, actionUserVO, notificationType, targetId,
+                customMessage, secondMessageText);
+
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                notificationType, targetId);
+        verify(notificationService).sendEmailNotification(
+                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
+        verify(messagingTemplate).convertAndSend(TOPIC + targetUser.getId() + NOTIFICATION, 0L);
+    }
+
+    @Test
+    void createNotification_ShouldCreateNotificationWithoutIdentifierSecondMessageId() {
+        Notification notification = mock(Notification.class);
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        NotificationType notificationType = NotificationType.HABIT_LIKE;
+        Long targetId = 1L;
+        String customMessage = "Custom Message";
+        String secondMessageText = "Second Message";
+        User targetUser = mock(User.class);
+
+        when(targetUserVO.getId()).thenReturn(1L);
+        when(notification.getTargetUser()).thenReturn(targetUser);
+        when(notification.getTargetUser().getId()).thenReturn(1L);
+        when(modelMapper.map(targetUserVO, User.class)).thenReturn(targetUser);
+        when(notificationRepo
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                        notificationType, targetId)).thenReturn(Optional.ofNullable(null));
+
+        userNotificationService.createNotification(targetUserVO, actionUserVO, notificationType, targetId,
+                customMessage, secondMessageText);
+
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
+                targetUserVO.getId(), notificationType, targetId);
+        verify(notificationService).sendEmailNotification(
+                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
+        verify(messagingTemplate).convertAndSend(TOPIC + targetUser.getId() + NOTIFICATION, 0L);
     }
 
     @Test
