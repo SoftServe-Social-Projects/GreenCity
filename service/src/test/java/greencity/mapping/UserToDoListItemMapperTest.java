@@ -1,12 +1,10 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.todolistitem.ToDoListItemVO;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.user.UserToDoListItemVO;
 import greencity.entity.UserToDoListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

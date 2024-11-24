@@ -1,12 +1,9 @@
 package greencity.mapping;
 
-import greencity.entity.ToDoListItem;
 import greencity.entity.UserToDoListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
