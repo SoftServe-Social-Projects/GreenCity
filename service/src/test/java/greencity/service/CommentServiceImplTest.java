@@ -57,7 +57,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-
 import static greencity.ModelUtils.getAddCommentDtoResponse;
 import static greencity.ModelUtils.getAmountCommentLikesDto;
 import static greencity.ModelUtils.getComment;
@@ -827,10 +826,10 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.of(comment));
 
-        BadRequestException badRequestException =
-            assertThrows(BadRequestException.class,
+        UserHasNoPermissionToAccessException noAccessException =
+            assertThrows(UserHasNoPermissionToAccessException.class,
                 () -> commentService.update(editedText, commentId, userVO));
-        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
+        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
@@ -897,11 +896,14 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
 
+        Comment parentComment = getComment();
         Comment childComment = getComment();
-        childComment.setParentComment(getComment());
+        childComment.setId(2L);
+        childComment.setParentComment(parentComment);
 
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(ModelUtils.getCommentDto());
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
@@ -914,6 +916,7 @@ class CommentServiceImplTest {
         assertEquals(1, commentDtos.getCurrentPage());
         assertEquals(1, commentDtos.getPage().size());
 
+        verify(commentRepo).findById(parentCommentId);
         verify(modelMapper).map(childComment, CommentDto.class);
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);
@@ -928,12 +931,15 @@ class CommentServiceImplTest {
         User user = getUser();
         Long parentCommentId = 1L;
         Comment childComment = getComment();
+        Comment parentComment = getComment();
 
-        childComment.setParentComment(getComment());
+        childComment.setId(2L);
+        childComment.setParentComment(parentComment);
         childComment.setUsersLiked(new HashSet<>(Collections.singletonList(user)));
 
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
             .thenReturn(page);
@@ -944,9 +950,24 @@ class CommentServiceImplTest {
         assertTrue(result.getPage().getFirst().isCurrentUserLiked());
         assertFalse(result.getPage().getFirst().isCurrentUserDisliked());
 
+        verify(commentRepo).findById(parentCommentId);
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);
         verify(modelMapper).map(childComment, CommentDto.class);
+    }
+
+    @Test
+    void findAllActiveRepliesNotFoundParentCommentTest() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long parentCommentId = 1L;
+
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,
+            () -> commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
+        verify(commentRepo).findById(parentCommentId);
     }
 
     @Test
