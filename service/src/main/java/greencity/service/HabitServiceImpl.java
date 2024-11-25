@@ -549,33 +549,43 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public void like(Long habitId, UserVO userVO) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        Habit habit = findHabitById(habitId);
+        User habitAuthor = getHabitAuthor(habit);
 
-        User habitAuthor = null;
+        if (removeLikeIfExists(habit, userVO, habitAuthor)) {
+            return;
+        }
 
-        if (habit.getUserId() != null) {
-            habitAuthor = userRepo.findById(habit.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + habitId));
+        removeDislikeIfExists(habit, userVO);
+
+        habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_HABIT"), userVO);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+            AchievementAction.ASSIGN);
+
+        if (habitAuthor != null) {
+            sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
         }
-        if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT"), userVO);
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
-                AchievementAction.DELETE);
-            if (habitAuthor != null) {
-                userNotificationService.removeActionUserFromNotification(modelMapper.map(habitAuthor, UserVO.class),
-                    userVO, habitId, NotificationType.HABIT_LIKE);
-            }
-        } else {
-            habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_HABIT"), userVO);
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
-                AchievementAction.ASSIGN);
-            if (habitAuthor != null) {
-                sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
-            }
+
+        habitRepo.save(habit);
+    }
+
+    @Override
+    public void dislike(Long habitId, UserVO userVO) {
+        Habit habit = findHabitById(habitId);
+
+        removeLikeIfExists(habit, userVO, getHabitAuthor(habit));
+
+        if (removeDislikeIfExists(habit, userVO)) {
+            return;
         }
+
+        habit.getUsersDisliked().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+            AchievementAction.DELETE);
+
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT"), userVO);
+
         habitRepo.save(habit);
     }
 
@@ -669,5 +679,54 @@ public class HabitServiceImpl implements HabitService {
     private boolean isCurrentUserFollower(Habit habit, Long currentUserId) {
         return habit.getFollowers().stream()
             .anyMatch(user -> user.getId().equals(currentUserId));
+    }
+
+    private Habit findHabitById(Long habitId) {
+        return habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+    }
+
+    private User getHabitAuthor(Habit habit) {
+        return userRepo.findById(habit.getUserId())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + habit.getId()));
+    }
+
+    /**
+     * Removes a like from the habit if the user has already liked it. Returns true
+     * if a like was removed, false otherwise.
+     */
+    private boolean removeLikeIfExists(Habit habit, UserVO userVO, User habitAuthor) {
+        boolean userLiked = habit.getUsersLiked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        Long habitId = habit.getId();
+        if (userLiked) {
+            habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT"), userVO);
+
+            if (habitAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(modelMapper.map(habitAuthor, UserVO.class),
+                    userVO, habitId, NotificationType.HABIT_LIKE);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a dislike from the habit if the user has already disliked it. Returns
+     * true if a dislike was removed, false otherwise.
+     */
+    private boolean removeDislikeIfExists(Habit habit, UserVO userVO) {
+        boolean userDisliked = habit.getUsersDisliked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userDisliked) {
+            habit.getUsersDisliked().removeIf(user -> user.getId().equals(userVO.getId()));
+            return true;
+        }
+        return false;
     }
 }

@@ -779,6 +779,8 @@ public class ModelUtils {
                     .habitItem("")
                     .language(getLanguage())
                     .build()))
+                .usersLiked(new HashSet<>())
+                .usersDisliked(new HashSet<>())
                 .build())
             .user(getUser())
             .userToDoListItems(new ArrayList<>())
@@ -890,6 +892,8 @@ public class ModelUtils {
                     .habitItem("")
                     .language(getLanguage())
                     .build()))
+                .usersLiked(new HashSet<>())
+                .usersDisliked(new HashSet<>())
                 .build())
             .user(getUser())
             .userToDoListItems(getUserToDoListItemList())
@@ -1351,6 +1355,8 @@ public class ModelUtils {
     public static Habit getHabit() {
         Habit habit = Habit.builder().id(1L).image("image.png")
             .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
+            .userId(1L)
             .complexity(1).tags(new HashSet<>(getTags())).build();
 
         return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
@@ -2664,6 +2670,8 @@ public class ModelUtils {
                 .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
                 .build()))
+            .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
             .build();
     }
 

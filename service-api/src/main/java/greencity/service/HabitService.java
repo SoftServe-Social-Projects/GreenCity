@@ -190,12 +190,20 @@ public interface HabitService {
     void deleteCustomHabit(Long customHabitId, String ownerEmail);
 
     /**
-     * Method to like or dislike {@link HabitVO} specified by id.
+     * Method to like or unlike {@link HabitVO} specified by id.
+     *
+     * @param habitId id of {@link HabitVO} to like/unlike.
+     * @param userVO  current {@link UserVO} that wants to like/unlike.
+     */
+    void like(Long habitId, UserVO userVO);
+
+    /**
+     * Method to dislike or remove dislike {@link HabitVO} specified by id.
      *
      * @param habitId id of {@link HabitVO} to like/dislike.
      * @param userVO  current {@link UserVO} that wants to like/dislike.
      */
-    void like(Long habitId, UserVO userVO);
+    void dislike(Long habitId, UserVO userVO);
 
     /**
      * Method for adding a habit to favorites by habitId.
