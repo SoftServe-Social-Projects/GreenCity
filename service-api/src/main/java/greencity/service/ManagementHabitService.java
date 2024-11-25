@@ -58,4 +58,14 @@ public interface ManagementHabitService {
      * @param listId list of {@code Habit} id's.
      */
     void deleteAll(List<Long> listId);
+
+    /**
+     * Method switches the `isDeleted` status of a {@code Habit} instance.
+     *
+     * @param id {@code Habit} id. - If the current value of `isDeleted` is
+     *           {@code false}, it will be updated to {@code true}. - If the current
+     *           value of `isDeleted` is {@code true}, it will be updated to
+     *           {@code false}.
+     */
+    void switchIsDeletedStatus(Long id);
 }

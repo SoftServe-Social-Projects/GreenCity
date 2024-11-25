@@ -171,4 +171,13 @@ class ManagementHabitControllerTest {
 
         verify(managementHabitService).deleteAll(idsToDelete);
     }
+
+    @Test
+    void switchIsDeletedStatusTest() throws Exception {
+        Long habitId = 1L;
+        this.mockMvc.perform(MockMvcRequestBuilders.patch(habitManagementLink + "/switch-deleted-status/" + habitId))
+            .andExpect(status().isOk());
+
+        verify(managementHabitService).switchIsDeletedStatus(habitId);
+    }
 }
