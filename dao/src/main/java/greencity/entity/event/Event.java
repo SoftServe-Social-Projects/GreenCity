@@ -101,4 +101,11 @@ public class Event {
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLikedEvents = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "events_users_dislikes",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersDislikedEvents = new HashSet<>();
 }

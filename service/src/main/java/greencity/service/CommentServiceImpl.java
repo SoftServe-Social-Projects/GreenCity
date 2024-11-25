@@ -426,8 +426,10 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+        Comment parentComment = commentRepo.findById(parentCommentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId));
         Page<Comment> pages =
-            commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+            commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentComment.getId(),
                 CommentStatus.DELETED);
 
         pages = setCurrentUserLiked(pages, userVO);
@@ -614,7 +616,7 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(comment.getUser().getId())) {
-            throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 
         comment.setText(commentText);

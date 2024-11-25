@@ -50,6 +50,7 @@ public class SecurityConfig {
     private static final String ECO_NEWS_COMMENTS = ECO_NEWS + COMMENTS;
     private static final String REPLIES = "/replies";
     private static final String LIKE = "/like";
+    private static final String DISLIKE = "/dislike";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -175,7 +176,7 @@ public class SecurityConfig {
                     ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                     ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE + COUNT,
                     ECO_NEWS + COMMENTS,
-                    ECO_NEWS + COMMENTS + "/id",
+                    ECO_NEWS + COMMENTS + "/{id}",
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
                     ECO_NEWS + COMMENTS + ACTIVE,
@@ -261,6 +262,7 @@ public class SecurityConfig {
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,
                     EVENTS + EVENT_ID + LIKES + COUNT,
+                    EVENTS + EVENT_ID + DISLIKES + COUNT,
                     "/user/to-do-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomToDoListsInprogress",
@@ -271,6 +273,7 @@ public class SecurityConfig {
                     "/habit/all/{friendId}",
                     "/habit/allMutualHabits/{friendId}",
                     "/habit/{habitId}/friends/profile-pictures",
+                    "habit/favorites",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
@@ -286,6 +289,7 @@ public class SecurityConfig {
                     ECO_NEWS,
                     ECO_NEWS + ECO_NEWS_ID + LIKES,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES,
+                    EVENTS + EVENT_ID + DISLIKES,
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS_ID_COMMENTS,
                     ECO_NEWS_ID_COMMENTS + COMMENT_ID + LIKES,
@@ -296,6 +300,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
+                    EVENTS + EVENT_ID + DISLIKE,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
@@ -308,6 +313,7 @@ public class SecurityConfig {
                     "/habit/like",
                     HABITS + "/{habitId}/comments",
                     HABITS + "/comments/like",
+                    "/habit/{habitId}/favorites",
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
@@ -362,6 +368,7 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + ECO_NEWS_ID,
                     ECO_NEWS_ID_COMMENTS + COMMENT_ID,
                     HABITS + "/comments/{id}",
+                    "/habit/{habitId}/favorites",
                     CUSTOM_TO_DO_LIST_ITEMS,
                     CUSTOM_TO_DO_LIST_URL,
                     "/favorite_place/{placeId}",
