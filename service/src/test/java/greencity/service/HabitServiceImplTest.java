@@ -21,7 +21,6 @@ import greencity.entity.Language;
 import greencity.entity.RatingPoints;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.event.Event;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
@@ -66,8 +65,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-
-import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitDto;
