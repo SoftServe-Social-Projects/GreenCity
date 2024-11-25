@@ -240,11 +240,11 @@ public class EventCommentController {
     }
 
     /**
-     * Method to like/dislike certain {@link CommentDto} specified by id.
+     * Method to like/unlike certain {@link CommentDto} specified by id.
      *
      * @param commentId of {@link CommentDto} to like/dislike
      */
-    @Operation(summary = "Like/dislike comment.")
+    @Operation(summary = "Like/unlike comment.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -259,5 +259,27 @@ public class EventCommentController {
         @PathVariable Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         commentService.like(commentId, user, null);
+    }
+
+    /**
+     * Method to dislike certain {@link CommentDto} specified by id.
+     *
+     * @param commentId of {@link CommentDto} to like/dislike
+     */
+    @Operation(summary = "Like/unlike comment.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/comments/dislike/{commentId}")
+    public void dislike(
+        @PathVariable Long commentId,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        commentService.dislike(commentId, user, null);
     }
 }

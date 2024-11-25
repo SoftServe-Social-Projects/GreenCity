@@ -368,4 +368,57 @@ class HabitCommentControllerTest {
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).delete(1L, userVO);
     }
+
+    @Test
+    @SneakyThrows
+    void dislikeTest() {
+        String commentId = "1";
+        Long numericCommentId = Long.valueOf(commentId);
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(post(HABIT_LINK + "/comments/dislike")
+            .param("commentId", commentId)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(commentService).dislike(numericCommentId, userVO, Locale.ENGLISH);
+    }
+
+    @Test
+    @SneakyThrows
+    void dislikeWithNotValidIdBadRequestTest() {
+        String notValidId = "id";
+
+        mockMvc.perform(post(HABIT_LINK + "/comments/dislike")
+            .param("commentId", notValidId)
+            .principal(principal))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void dislikeNotFoundTest() {
+        Long commentId = 1L;
+        String commentIdParam = "1";
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        String errorMessage = "ErrorMessage";
+
+        doThrow(new NotFoundException(errorMessage))
+            .when(commentService)
+            .dislike(commentId, userVO, Locale.ENGLISH);
+
+        Assertions.assertThatThrownBy(
+            () -> mockMvc.perform(post(HABIT_LINK + "/comments/dislike")
+                .param("commentId", commentIdParam)
+                .principal(principal))
+                .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException(errorMessage));
+
+        verify(userService).findByEmail(anyString());
+    }
 }

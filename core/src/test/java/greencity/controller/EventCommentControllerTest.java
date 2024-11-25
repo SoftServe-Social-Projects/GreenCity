@@ -377,4 +377,50 @@ class EventCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
     }
+
+    @Test
+    @SneakyThrows
+    void dislikeTest() {
+        Long commentId = 1L;
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislike" + "/1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(commentService).dislike(commentId, userVO, null);
+    }
+
+    @Test
+    @SneakyThrows
+    void dislikeWithNotValidIdBadRequestTest() {
+        String notValidId = "id";
+
+        mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislike/" + notValidId)
+            .principal(principal))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void dislikeNotFoundTest() {
+        Long commentId = 1L;
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        String errorMessage = "ErrorMessage";
+
+        doThrow(new NotFoundException(errorMessage))
+            .when(commentService)
+            .dislike(commentId, userVO, null);
+
+        Assertions.assertThatThrownBy(
+            () -> mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislike/" + commentId)
+                .principal(principal))
+                .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException(errorMessage));
+    }
 }
