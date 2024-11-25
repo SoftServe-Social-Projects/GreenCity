@@ -11,18 +11,16 @@ import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
-import greencity.entity.Language;
 import greencity.entity.ToDoListItem;
-import greencity.entity.User;
 import greencity.entity.localization.ToDoListItemTranslation;
-import greencity.enums.EmailNotification;
-import greencity.enums.Role;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
 import greencity.repository.ToDoListItemRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserToDoListItemRepo;
@@ -39,19 +37,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static greencity.ModelUtils.getHabit;
+import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getLanguageTranslationDTO;
 import static greencity.ModelUtils.getToDoListItem;
 import static greencity.ModelUtils.getToDoListItemResponseWithStatusDto;
+import static greencity.ModelUtils.getToDoListItemTranslation;
 import static greencity.ModelUtils.getUserVO;
-import static greencity.enums.UserStatus.ACTIVATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -63,72 +63,56 @@ import static org.mockito.Mockito.when;
 class ToDoListItemServiceImplTest {
     @Mock
     private ToDoListItemTranslationRepo toDoListItemTranslationRepo;
+
     @Mock
     private ModelMapper modelMapper;
+
     @Mock
     UserToDoListItemRepo userToDoListItemRepo;
+
     @Mock
     HabitAssignRepo habitAssignRepo;
+
     @Mock
     private ToDoListItemRepo toDoListItemRepo;
+
+    @Mock
+    private HabitRepo habitRepo;
+
     @Mock
     UserService userService;
+
     @InjectMocks
     private ToDoListItemServiceImpl toDoListItemService;
-    @Mock
-    private final ToDoListItem toDoListItem =
-        ToDoListItem.builder().id(1L).translations(ModelUtils.getToDoListItemTranslations()).build();
 
-    private final List<LanguageTranslationDTO> languageTranslationDTOS =
-        Collections.singletonList(ModelUtils.getLanguageTranslationDTO());
-    private final ToDoListItemPostDto toDoListItemPostDto =
-        new ToDoListItemPostDto(languageTranslationDTOS, new ToDoListItemRequestDto(1L));
+    private ToDoListItem toDoListItem;
+
+    private List<LanguageTranslationDTO> languageTranslationDTOS;
+    private ToDoListItemPostDto toDoListItemPostDto;
 
     private HabitAssign habitAssign;
-    private User user = User.builder()
-        .id(1L)
-        .name("Test Testing")
-        .email("test@gmail.com")
-        .role(Role.ROLE_USER)
-        .userStatus(ACTIVATED)
-        .emailNotification(EmailNotification.DISABLED)
-        .lastActivityTime(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
-        .dateOfRegistration(LocalDateTime.now())
-        .socialNetworks(new ArrayList<>())
-        .build();
 
-    UserVO userVO = getUserVO();
+    private UserVO userVO;
 
-    private String language = "uk";
+    private Habit habit;
 
-    private List<ToDoListItemTranslation> toDoListItemTranslations = Arrays.asList(
-        ToDoListItemTranslation.builder()
-            .id(1L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
-            .content("TEST")
-            .toDoListItem(
-                new ToDoListItem(1L, Collections.emptySet(), Collections.emptyList()))
-            .build(),
-        ToDoListItemTranslation.builder()
-            .id(2L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
-            .content("TEST")
-            .toDoListItem(
-                new ToDoListItem(2L, Collections.emptySet(), Collections.emptyList()))
-            .build());
+    private ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto;
 
-    List<ToDoListItemRequestDto> toDoListItemRequestDtos =
-        Arrays.asList(new ToDoListItemRequestDto(1L), new ToDoListItemRequestDto(2L),
-            new ToDoListItemRequestDto(3L));
-
-    private Long userId = user.getId();
+    private ToDoListItemTranslation toDoListItemTranslation;
 
     @BeforeEach
     void setUp() {
-        habitAssign = ModelUtils.getHabitAssign();
+        toDoListItem = getToDoListItem();
+        languageTranslationDTOS =
+                Collections.singletonList(getLanguageTranslationDTO());
+        toDoListItemPostDto =
+                new ToDoListItemPostDto(languageTranslationDTOS, new ToDoListItemRequestDto(1L));
+        userVO = getUserVO();
+        habit = getHabit();
+        habitAssign = getHabitAssign();
         habitAssign.getUser().setId(userVO.getId());
+        toDoListItemResponseWithStatusDto = getToDoListItemResponseWithStatusDto();
+        toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
     }
 
     @Test
@@ -293,21 +277,13 @@ class ToDoListItemServiceImplTest {
         Long toDoListItemId = 4L;
         Long toDoListItemTranslationId = 5L;
         String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
-        String text = "text";
 
         habitAssign.setId(habitAssignId);
         habitAssign.getUser().setId(userId3);
         userVO.setId(userId3);
-
-        ToDoListItem toDoListItem = getToDoListItem();
         toDoListItem.setId(toDoListItemId);
-
-        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto = getToDoListItemResponseWithStatusDto();
         toDoListItemResponseWithStatusDto.setId(toDoListItemId);
-
-        ToDoListItemTranslation toDoListItemTranslation = ModelUtils.getToDoListItemTranslation();
         toDoListItemTranslation.setId(toDoListItemTranslationId);
-        toDoListItemTranslation.setContent(text);
 
         List<ToDoListItemResponseWithStatusDto> expected = List.of(toDoListItemResponseWithStatusDto);
 
@@ -404,5 +380,194 @@ class ToDoListItemServiceImplTest {
         verify(toDoListItemTranslationRepo, times(0)).findByLangAndToDoListItemId(any(), anyLong());
     }
 
-    //findAllHabitToDoList(), findAvailableToDoListForHabitAssign(), getAllToDoListItemsForUser()
+    @Test
+    void findAllHabitToDoList() {
+        Long habitId = 2L;
+        Long itemId = 3L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
+        habit.setId(habitId);
+        toDoListItem.setId(itemId);
+        toDoListItemResponseWithStatusDto.setId(itemId);
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(itemId));
+        when(toDoListItemRepo.getReferenceById(itemId)).thenReturn(toDoListItem);
+        when(modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId)).thenReturn(toDoListItemTranslation);
+
+        ToDoListItemResponseWithStatusDto expectedDto = getToDoListItemResponseWithStatusDto();
+        expectedDto.setId(itemId);
+        expectedDto.setText(toDoListItemTranslation.getContent());
+
+        List<ToDoListItemResponseWithStatusDto> result = toDoListItemService.findAllHabitToDoList(habitId, languageDefault);
+        assertEquals(1, result.size());
+        assertEquals(List.of(expectedDto), result);
+    }
+
+    @Test
+    void findAllHabitToDoListThrowsExceptionWhenHabitNotExist() {
+        Long habitId = 2L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> toDoListItemService.findAllHabitToDoList(habitId, languageDefault));
+    }
+
+    @Test
+    void findAvailableToDoListForHabitAssign() {
+        Long habitId = 2L;
+        Long itemId = 3L;
+        Long itemId2 = 2L;
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long toDoListItemTranslationId = 5L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        habit.setId(habitId);
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+        habitAssign.getHabit().setId(habitId);
+        userVO.setId(userId);
+        toDoListItemResponseWithStatusDto.setId(itemId);
+        toDoListItemTranslation.setId(toDoListItemTranslationId);
+        toDoListItem.setId(itemId);
+
+        ToDoListItem toDoListItem2 = getToDoListItem();
+        toDoListItem2.setId(itemId2);
+        ToDoListItemTranslation toDoListItemTranslation2 = getToDoListItemTranslation();
+        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto2 = getToDoListItemResponseWithStatusDto();
+        toDoListItemResponseWithStatusDto2.setId(itemId2);
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(userId)).thenReturn(userVO);
+        when(toDoListItemRepo.findAllByHabitAssignId(habitAssignId)).thenReturn(List.of(toDoListItem));
+        when(modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto);
+        when(modelMapper.map(toDoListItem2, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto2);
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(itemId, itemId2));
+        when(toDoListItemRepo.getReferenceById(itemId)).thenReturn(toDoListItem);
+        when(toDoListItemRepo.getReferenceById(itemId2)).thenReturn(toDoListItem2);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId)).thenReturn(toDoListItemTranslation);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId2)).thenReturn(toDoListItemTranslation2);
+
+        List<ToDoListItemResponseWithStatusDto> result = toDoListItemService.findAvailableToDoListForHabitAssign(userId, habitAssignId, languageDefault);
+        assertEquals(1, result.size());
+        assertEquals(List.of(toDoListItemResponseWithStatusDto2), result);
+    }
+
+    @Test
+    void findAvailableToDoListForHabitAssignAllItemsAdded() {
+        Long habitId = 2L;
+        Long itemId = 3L;
+        Long itemId2 = 2L;
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long toDoListItemTranslationId = 5L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        habit.setId(habitId);
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+        habitAssign.getHabit().setId(habitId);
+        userVO.setId(userId);
+        toDoListItemResponseWithStatusDto.setId(itemId);
+        toDoListItemTranslation.setId(toDoListItemTranslationId);
+        toDoListItem.setId(itemId);
+
+        ToDoListItem toDoListItem2 = getToDoListItem();
+        toDoListItem2.setId(itemId2);
+        ToDoListItemTranslation toDoListItemTranslation2 = getToDoListItemTranslation();
+        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto2 = getToDoListItemResponseWithStatusDto();
+        toDoListItemResponseWithStatusDto2.setId(itemId2);
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(userId)).thenReturn(userVO);
+        when(toDoListItemRepo.findAllByHabitAssignId(habitAssignId)).thenReturn(List.of(toDoListItem, toDoListItem2));
+        when(modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto);
+        when(modelMapper.map(toDoListItem2, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto2);
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(itemId, itemId2));
+        when(toDoListItemRepo.getReferenceById(itemId)).thenReturn(toDoListItem);
+        when(toDoListItemRepo.getReferenceById(itemId2)).thenReturn(toDoListItem2);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId)).thenReturn(toDoListItemTranslation);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId2)).thenReturn(toDoListItemTranslation2);
+
+        List<ToDoListItemResponseWithStatusDto> result = toDoListItemService.findAvailableToDoListForHabitAssign(userId, habitAssignId, languageDefault);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAvailableToDoListForHabitAssignNoItemsAdded() {
+        Long habitId = 2L;
+        Long itemId = 3L;
+        Long itemId2 = 2L;
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long toDoListItemTranslationId = 5L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        habit.setId(habitId);
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+        habitAssign.getHabit().setId(habitId);
+        userVO.setId(userId);
+        toDoListItemResponseWithStatusDto.setId(itemId);
+        toDoListItemTranslation.setId(toDoListItemTranslationId);
+        toDoListItem.setId(itemId);
+
+        ToDoListItem toDoListItem2 = getToDoListItem();
+        toDoListItem2.setId(itemId2);
+        ToDoListItemTranslation toDoListItemTranslation2 = getToDoListItemTranslation();
+        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto2 = getToDoListItemResponseWithStatusDto();
+        toDoListItemResponseWithStatusDto2.setId(itemId2);
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(userId)).thenReturn(userVO);
+        when(toDoListItemRepo.findAllByHabitAssignId(habitAssignId)).thenReturn(List.of());
+        when(modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto);
+        when(modelMapper.map(toDoListItem2, ToDoListItemResponseWithStatusDto.class)).thenReturn(toDoListItemResponseWithStatusDto2);
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(itemId, itemId2));
+        when(toDoListItemRepo.getReferenceById(itemId)).thenReturn(toDoListItem);
+        when(toDoListItemRepo.getReferenceById(itemId2)).thenReturn(toDoListItem2);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId)).thenReturn(toDoListItemTranslation);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(languageDefault, itemId2)).thenReturn(toDoListItemTranslation2);
+
+        List<ToDoListItemResponseWithStatusDto> result = toDoListItemService.findAvailableToDoListForHabitAssign(userId, habitAssignId, languageDefault);
+        assertEquals(2, result.size());
+        assertEquals(List.of(toDoListItemResponseWithStatusDto, toDoListItemResponseWithStatusDto2), result);
+    }
+
+    @Test
+    void findAvailableToDoListForHabitAssignEmptyLists() {
+        Long habitId = 2L;
+        Long itemId = 3L;
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long toDoListItemTranslationId = 5L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        habit.setId(habitId);
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+        habitAssign.getHabit().setId(habitId);
+        userVO.setId(userId);
+        toDoListItemResponseWithStatusDto.setId(itemId);
+        toDoListItemTranslation.setId(toDoListItemTranslationId);
+        toDoListItem.setId(itemId);
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(userId)).thenReturn(userVO);
+        when(toDoListItemRepo.findAllByHabitAssignId(habitAssignId)).thenReturn(List.of());
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of());
+
+        List<ToDoListItemResponseWithStatusDto> result = toDoListItemService.findAvailableToDoListForHabitAssign(userId, habitAssignId, languageDefault);
+        assertTrue(result.isEmpty());
+    }
 }

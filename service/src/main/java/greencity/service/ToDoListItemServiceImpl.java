@@ -161,13 +161,9 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         return habitToDoItemIds.stream()
             .map(toDoListItemRepo::getReferenceById)
             .map(toDoListItem -> {
-                ToDoListItemTranslation itemTranslation =
-                    toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, toDoListItem.getId());
-                return ToDoListItemResponseWithStatusDto.builder()
-                    .id(toDoListItem.getId())
-                    .status(ToDoListItemStatus.ACTIVE)
-                    .text(itemTranslation.getContent())
-                    .build();
+                ToDoListItemResponseWithStatusDto responseDto = modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class);
+                setTextForToDoListItem(responseDto, language);
+                return responseDto;
             })
             .toList();
     }
@@ -185,8 +181,9 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
             getToDoListByHabitAssignId(userId, habitAssignId, language);
         List<ToDoListItemResponseWithStatusDto> allActiveHabitItems =
             findAllHabitToDoList(habitAssign.getHabit().getId(), language);
-        allActiveHabitItems.removeAll(addedItems);
-        return allActiveHabitItems;
+        return allActiveHabitItems.stream()
+                .filter(item -> !addedItems.contains(item))
+                .toList();
     }
 
     /**
