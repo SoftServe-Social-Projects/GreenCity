@@ -42,6 +42,7 @@ import static greencity.ModelUtils.getSortModel;
 import static greencity.ModelUtils.getSortedPageable;
 import static greencity.TestConst.LANGUAGE_CODE_EN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -285,6 +286,19 @@ class ManagementHabitServiceImplTest {
         managementHabitService.switchIsDeletedStatus(1L);
 
         assertTrue(habit.getIsDeleted());
+        verify(habitRepo).save(habit);
+    }
+
+    @Test
+    void switchIsDeletedStatusToFalseTest() {
+        Habit habit = getHabit();
+        habit.setIsDeleted(true);
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+
+        managementHabitService.switchIsDeletedStatus(1L);
+
+        assertFalse(habit.getIsDeleted());
         verify(habitRepo).save(habit);
     }
 
