@@ -1,6 +1,9 @@
 package greencity.entity;
 
+import greencity.enums.HabitInvitationStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,4 +34,7 @@ public class HabitInvitation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invitee_habit_assign_id", nullable = false)
     private HabitAssign inviteeHabitAssign;
+
+    @Enumerated(EnumType.STRING)
+    private HabitInvitationStatus status;
 }

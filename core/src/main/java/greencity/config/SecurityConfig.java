@@ -81,6 +81,8 @@ public class SecurityConfig {
     private static final String ACHIEVEMENTS = "/achievements";
     private static final String NOTIFICATIONS = "/notifications";
     private static final String NOTIFICATION_ID = "/{notificationId}";
+    private static final String HABIT_INVITE = "/habit/invite";
+    private static final String INVITATION_ID = "/{invitationId}";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -358,7 +360,8 @@ public class SecurityConfig {
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
-                    FRIENDS + "/{friendId}/declineFriend")
+                    FRIENDS + "/{friendId}/declineFriend",
+                    HABIT_INVITE + INVITATION_ID + "/accept")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
@@ -385,7 +388,8 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    NOTIFICATIONS + NOTIFICATION_ID)
+                    NOTIFICATIONS + NOTIFICATION_ID,
+                    HABIT_INVITE + INVITATION_ID + "/reject")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
