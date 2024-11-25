@@ -36,8 +36,13 @@ public class CommentDto {
 
     private int likes;
 
+    private int dislikes;
+
     @Builder.Default
     private boolean currentUserLiked = false;
+
+    @Builder.Default
+    private boolean currentUserDisliked = false;
 
     private String status;
 

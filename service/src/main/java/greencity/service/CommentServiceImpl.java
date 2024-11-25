@@ -413,11 +413,6 @@ public class CommentServiceImpl implements CommentService {
             throw new BadRequestException("Comment with id: " + id + " doesn't belong to " + type.getLink());
         }
 
-        if (userVO != null) {
-            comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(userVO.getId())));
-        }
-
         return convertToCommentDto(comment, userVO);
     }
 
@@ -432,28 +427,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentComment.getId(),
                 CommentStatus.DELETED);
 
-        pages = setCurrentUserLiked(pages, userVO);
-
         return convertPagesToCommentDtos(pages, userVO);
-    }
-
-    /**
-     * Updates each {@link Comment} in a {@link Page} to set whether the current
-     * user has liked the comment.
-     *
-     * @param pages  the {@link Page} of {@link Comment} entities to be updated.
-     * @param userVO the {@link UserVO} representing the current user. This may be
-     *               {@code null}, in which case no updates will be made to the
-     *               comments' "current user liked" status.
-     * @return the same {@link Page} of {@link Comment} with updated "current user
-     *         liked" status for each comment.
-     */
-    public Page<Comment> setCurrentUserLiked(Page<Comment> pages, UserVO userVO) {
-        if (userVO != null) {
-            pages.forEach(ec -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(userVO.getId()))));
-        }
-        return pages;
     }
 
     /**
@@ -531,8 +505,6 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
                 pageable, articleId, articleType, CommentStatus.DELETED);
 
-        pages = setCurrentUserLiked(pages, userVO);
-
         return convertPagesToCommentDtos(pages, userVO);
     }
 
@@ -551,12 +523,15 @@ public class CommentServiceImpl implements CommentService {
         if (user != null) {
             commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
                 .anyMatch(u -> u.getId().equals(user.getId())));
+            commentDto.setCurrentUserDisliked(comment.getUsersDisliked().stream()
+                .anyMatch(u -> u.getId().equals(user.getId())));
         }
         if (comment.getParentComment() != null) {
             commentDto.setParentCommentId(comment.getParentComment().getId());
         }
         commentDto.setAuthor(modelMapper.map(comment.getUser(), CommentAuthorDto.class));
         commentDto.setLikes(comment.getUsersLiked().size());
+        commentDto.setDislikes(comment.getUsersDisliked().size());
         commentDto.setReplies(comment.getComments().size());
         commentDto.setStatus(comment.getStatus().name());
         return commentDto;
@@ -569,21 +544,38 @@ public class CommentServiceImpl implements CommentService {
     public void like(Long commentId, UserVO userVO, Locale locale) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-        if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
-                userVO);
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                userVO, commentId, getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
-        } else {
-            comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+
+        if (removeLikeIfExists(comment, userVO)) {
+            return;
         }
+
+        removeDislikeIfExists(comment, userVO);
+
+        comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
+        createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+
+        commentRepo.save(comment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void dislike(Long commentId, UserVO userVO, Locale locale) {
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+
+        if (removeDislikeIfExists(comment, userVO)) {
+            return;
+        }
+
+        removeLikeIfExists(comment, userVO);
+
+        comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
+
         commentRepo.save(comment);
     }
 
@@ -714,5 +706,50 @@ public class CommentServiceImpl implements CommentService {
             userIds.add(Long.valueOf(matcher.group(1)));
         }
         return userIds;
+    }
+
+    /**
+     * Removes a like from the comment if the user has already liked it. Returns
+     * true if a like was removed, false otherwise.
+     */
+    private boolean removeLikeIfExists(Comment comment, UserVO userVO) {
+        boolean userLiked = comment.getUsersLiked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userLiked) {
+            comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
+
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                userVO, comment.getId(), getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a dislike from the comment if the user has already disliked it.
+     * Returns true if a dislike was removed, false otherwise.
+     */
+    private boolean removeDislikeIfExists(Comment comment, UserVO userVO) {
+        boolean userDisliked = comment.getUsersDisliked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userDisliked) {
+            comment.getUsersDisliked().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
+
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                userVO, comment.getId(), getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
+            return true;
+        }
+        return false;
     }
 }
