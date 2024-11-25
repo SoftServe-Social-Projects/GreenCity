@@ -169,6 +169,44 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void saveCommentReplyNotification() {
+        Event event = getEvent();
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        User parentCommentCreator = getUser().setId(2L);
+        Comment parentComment = getComment()
+            .setUser(parentCommentCreator)
+            .setArticleId(1L)
+            .setArticleType(ArticleType.EVENT);
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        addCommentDtoRequest.setParentCommentId(1L);
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(commentRepo.findById(1L))
+            .thenReturn(Optional.of(parentComment));
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(modelMapper.map(commentRepo.save(comment), AddCommentDtoResponse.class))
+            .thenReturn(getAddCommentDtoResponse());
+
+        commentService.save(
+            ArticleType.EVENT,
+            1L,
+            addCommentDtoRequest,
+            null,
+            getUserVO(),
+            Locale.of("en"));
+
+        verify(userNotificationService)
+            .createNotification(any(), any(), any(), anyLong(), anyString(), anyLong(), anyString());
+    }
+
+    @Test
     void saveWithNullElementOfImages() {
         UserVO userVO = getUserVO();
         User user = getUser();

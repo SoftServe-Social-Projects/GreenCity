@@ -359,13 +359,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             default -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
         }
         final int messagesCount = notification.getActionUsers().size();
-        if (bodyText.contains("{times}")) {
+        final String times_in_dto = "{times}";
+        if (bodyText.contains(times_in_dto)) {
             if (size == 1) {
-                bodyText = bodyText.replace("{times}", language.equals("ua")
+                bodyText = bodyText.replace(times_in_dto, language.equals("ua")
                     ? resolveTimesInUkrainian(messagesCount)
                     : resolveTimesInEnglish(messagesCount));
             } else {
-                bodyText = bodyText.replace("{times}", "");
+                bodyText = bodyText.replace(times_in_dto, "");
             }
         }
         dto.setBodyText(bodyText);

@@ -20,6 +20,9 @@ import greencity.repository.NotificationRepo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,26 +32,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.security.Principal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static greencity.ModelUtils.getActionDto;
-import static greencity.ModelUtils.getHabit;
-import static greencity.ModelUtils.getHabitAssign;
-import static greencity.ModelUtils.getHabitTranslation;
-import static greencity.ModelUtils.getLanguage;
-import static greencity.ModelUtils.getLanguageVO;
-import static greencity.ModelUtils.getNotification;
-import static greencity.ModelUtils.getNotificationDto;
-import static greencity.ModelUtils.getNotificationWithSeveralActionUsers;
-import static greencity.ModelUtils.getPageableAdvancedDtoForNotificationDto;
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.testUser;
-import static greencity.ModelUtils.testUserVo;
+import java.util.stream.Stream;
+
+import static greencity.ModelUtils.*;
+import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
+import static greencity.enums.ProjectName.GREENCITY;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -103,6 +97,170 @@ class UserNotificationServiceImplTest {
 
         verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page);
+        verify(modelMapper).map(notification, NotificationDto.class);
+    }
+
+    static Stream<Arguments> getNotificationScenariosInEnglish() {
+        return Stream.of(
+            Arguments.of(
+                "You have been tagged in the comment.",
+                "{user} tagged you  in the event «{secondMessage}».",
+                List.of(getUser()),
+                List.of(1L),
+                List.of("Taras")),
+            Arguments.of(
+                "You have been tagged in the comment.",
+                "{user1} and {user2} tagged you  in the event «{secondMessage}».",
+                List.of(getUser(), getUser().setId(2L)),
+                List.of(1L, 2L),
+                List.of("Taras", "Taras")),
+            Arguments.of(
+                "You have been tagged in the comment.",
+                "{user} tagged you twice in the event «{secondMessage}».",
+                List.of(getUser(), getUser()),
+                List.of(1L),
+                List.of("Taras")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getNotificationScenariosInEnglish")
+    void getNotificationsWithTaggingFilteredInEnglish(
+        String titleText,
+        String bodyText,
+        List<User> actionUsers,
+        List<Long> actionUsersId,
+        List<String> actionUserText) {
+        Notification notification = getBaseOfNotificationForEventCommentUserTag(actionUsers);
+        NotificationDto notificationDto = NotificationDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(EVENT_COMMENT_USER_TAG.name())
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .build();
+        List<Notification> list = List.of(notification);
+
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
+
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
+            ProjectName.GREENCITY,
+            null,
+            true,
+            pageRequest))
+            .thenReturn(page);
+        when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
+
+        PageableAdvancedDto<NotificationDto> actual = userNotificationService
+            .getNotificationsFiltered(
+                pageRequest,
+                getPrincipal(),
+                "en",
+                ProjectName.GREENCITY,
+                null,
+                true);
+        PageableAdvancedDto<NotificationDto> expected =
+            getPageableAdvancedDtoWithNotificationForEventCommentUserTag(
+                getBaseOfNotificationDtoForEventCommentUserTag(
+                    titleText,
+                    bodyText,
+                    actionUsersId,
+                    actionUserText));
+
+        assertEquals(expected, actual);
+
+        verify(userService).findByEmail("danylo@gmail.com");
+        verify(notificationRepo)
+            .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, pageRequest);
+        verify(modelMapper).map(notification, NotificationDto.class);
+    }
+
+    static Stream<Arguments> getNotificationScenariosInUkrainian() {
+        return Stream.of(
+            Arguments.of(
+                "Вас тегнули в коментарі",
+                "{user} позначив вас  у події «{secondMessage}».",
+                List.of(getUser()),
+                List.of(1L),
+                List.of("Taras")),
+            Arguments.of(
+                "Вас тегнули в коментарі",
+                "{user1} та {user2} позначив вас  у події «{secondMessage}».",
+                List.of(getUser(), getUser().setId(2L)),
+                List.of(1L, 2L),
+                List.of("Taras", "Taras")),
+            Arguments.of(
+                "Вас тегнули в коментарі",
+                "{user} позначив вас 2 рази у події «{secondMessage}».",
+                List.of(getUser(), getUser()),
+                List.of(1L),
+                List.of("Taras")),
+            Arguments.of(
+                "Вас тегнули в коментарі",
+                "{user} позначив вас 5 разів у події «{secondMessage}».",
+                List.of(getUser(), getUser(), getUser(), getUser(), getUser()),
+                List.of(1L),
+                List.of("Taras")),
+            Arguments.of(
+                "Вас тегнули в коментарі",
+                "{user} позначив вас 10 разів у події «{secondMessage}».",
+                List.of(getUser(), getUser(), getUser(), getUser(), getUser(), getUser(), getUser(), getUser(),
+                    getUser(), getUser()),
+                List.of(1L),
+                List.of("Taras")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getNotificationScenariosInUkrainian")
+    void getNotificationsWithTaggingFilteredInUkrainian(
+        String titleText,
+        String bodyText,
+        List<User> actionUsers,
+        List<Long> actionUsersId,
+        List<String> actionUserText) {
+        Notification notification = getBaseOfNotificationForEventCommentUserTag(actionUsers);
+        NotificationDto notificationDto = NotificationDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(EVENT_COMMENT_USER_TAG.name())
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .build();
+        List<Notification> list = List.of(notification);
+
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
+
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
+            ProjectName.GREENCITY,
+            null,
+            true,
+            pageRequest))
+            .thenReturn(page);
+        when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
+
+        PageableAdvancedDto<NotificationDto> actual = userNotificationService
+            .getNotificationsFiltered(
+                pageRequest,
+                getPrincipal(),
+                "ua",
+                ProjectName.GREENCITY,
+                null,
+                true);
+        PageableAdvancedDto<NotificationDto> expected =
+            getPageableAdvancedDtoWithNotificationForEventCommentUserTag(
+                getBaseOfNotificationDtoForEventCommentUserTag(
+                    titleText,
+                    bodyText,
+                    actionUsersId,
+                    actionUserText));
+        assertEquals(expected, actual);
+
+        verify(userService).findByEmail("danylo@gmail.com");
+        verify(notificationRepo)
+            .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, pageRequest);
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 
@@ -285,16 +443,18 @@ class UserNotificationServiceImplTest {
         when(notification.getTargetUser()).thenReturn(targetUser);
         when(notification.getTargetUser().getId()).thenReturn(1L);
         when(notificationRepo
-                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                        notificationType, targetId)).thenReturn(Optional.of(notification));
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                notificationType, targetId))
+            .thenReturn(Optional.of(notification));
 
         userNotificationService.createNotification(targetUserVO, actionUserVO, notificationType, targetId,
-                customMessage, secondMessageText);
+            customMessage, secondMessageText);
 
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                notificationType, targetId);
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
+            targetUserVO.getId(),
+            notificationType, targetId);
         verify(notificationService).sendEmailNotification(
-                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         verify(messagingTemplate).convertAndSend(TOPIC + targetUser.getId() + NOTIFICATION, 0L);
     }
 
@@ -314,16 +474,17 @@ class UserNotificationServiceImplTest {
         when(notification.getTargetUser().getId()).thenReturn(1L);
         when(modelMapper.map(targetUserVO, User.class)).thenReturn(targetUser);
         when(notificationRepo
-                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                        notificationType, targetId)).thenReturn(Optional.ofNullable(null));
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                notificationType, targetId))
+            .thenReturn(Optional.ofNullable(null));
 
         userNotificationService.createNotification(targetUserVO, actionUserVO, notificationType, targetId,
-                customMessage, secondMessageText);
+            customMessage, secondMessageText);
 
         verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
-                targetUserVO.getId(), notificationType, targetId);
+            targetUserVO.getId(), notificationType, targetId);
         verify(notificationService).sendEmailNotification(
-                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         verify(messagingTemplate).convertAndSend(TOPIC + targetUser.getId() + NOTIFICATION, 0L);
     }
 
