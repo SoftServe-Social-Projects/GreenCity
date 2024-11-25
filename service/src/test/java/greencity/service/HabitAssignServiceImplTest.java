@@ -2791,6 +2791,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friendId)).thenReturn(
             habitAssignCancelled);
         when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssignCancelled);
+        when(habitInvitationRepo.save(any())).thenReturn(new HabitInvitation().builder().id(1l).build());
 
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
             locale);
@@ -2811,6 +2812,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friendId)).thenReturn(null);
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
+        when(habitInvitationRepo.save(any())).thenReturn(new HabitInvitation().builder().id(1l).build());
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
@@ -2822,7 +2824,7 @@ class HabitAssignServiceImplTest {
         verify(habitInvitationRepo, times(1)).save(any(HabitInvitation.class));
         verify(toDoListItemRepo, times(3)).getAllToDoListItemIdByHabitIdISContained(habit.getId());
         verify(userNotificationService).createNotification(new UserVO(), userVO, NotificationType.HABIT_INVITE,
-            habit.getId(), "");
+            habit.getId(), "", 1L, "");
 
     }
 

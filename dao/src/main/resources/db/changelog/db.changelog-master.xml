@@ -249,4 +249,5 @@
     <include file="db/changelog/logs/ch-add-habit-invite-table-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-table-habit-followers-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-events-users-dislike-table.xml"/>
+    <include file="db/changelog/logs/сh-add-new-column-to-habit-invites-Holotsvan.xml"/>
 </databaseChangeLog>
