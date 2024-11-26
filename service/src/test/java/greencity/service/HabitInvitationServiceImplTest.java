@@ -354,7 +354,6 @@ class HabitInvitationServiceImplTest {
 
     @Test
     void testGetAllUserHabitInvitationRequestsNoRequests() {
-        Long userId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
         Page<HabitInvitation> invitations = new PageImpl<>(Arrays.asList(), pageable, 0);
 
@@ -364,8 +363,8 @@ class HabitInvitationServiceImplTest {
         PageableAdvancedDto<HabitInvitationDto> result =
             habitInvitationService.getAllUserHabitInvitationRequests(userId, "en", pageable);
 
-        verify(habitInvitationRepo, times(1)).findByInviteeIdAndStatusIn(eq(userId),
-            eq(Collections.singleton(HabitInvitationStatus.PENDING)), eq(pageable));
+        verify(habitInvitationRepo, times(1)).findByInviteeIdAndStatusIn(userId,
+            Collections.singleton(HabitInvitationStatus.PENDING), pageable);
         assertNotNull(result);
         assertEquals(0, result.getPage().size());
     }
@@ -408,8 +407,8 @@ class HabitInvitationServiceImplTest {
         PageableAdvancedDto<HabitInvitationDto> result =
             habitInvitationService.getAllUserHabitInvitationRequests(userId, "en", pageable);
 
-        verify(habitInvitationRepo, times(1)).findByInviteeIdAndStatusIn(eq(userId),
-            eq(Collections.singleton(HabitInvitationStatus.PENDING)), eq(pageable));
+        verify(habitInvitationRepo, times(1)).findByInviteeIdAndStatusIn(userId,
+            Collections.singleton(HabitInvitationStatus.PENDING), pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getPage().size());

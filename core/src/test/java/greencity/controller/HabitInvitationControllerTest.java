@@ -71,7 +71,6 @@ class HabitInvitationControllerTest {
     @SneakyThrows
     void acceptHabitInvitationShouldReturn200() {
         Long invitationId = 1L;
-        UserVO userVO = new UserVO();
 
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
@@ -86,7 +85,6 @@ class HabitInvitationControllerTest {
     @SneakyThrows
     void rejectHabitInvitationShouldReturn200() {
         Long invitationId = 2L;
-        UserVO userVO = new UserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(delete("/habit/invite/{invitationId}/reject", invitationId)
