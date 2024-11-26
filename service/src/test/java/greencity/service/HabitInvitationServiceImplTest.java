@@ -1,10 +1,16 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitInvitationDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
+import greencity.entity.HabitTranslation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitInvitationStatus;
@@ -18,14 +24,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -334,5 +350,72 @@ class HabitInvitationServiceImplTest {
         });
 
         assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
+    }
+
+    @Test
+    void testGetAllUserHabitInvitationRequestsNoRequests() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<HabitInvitation> invitations = new PageImpl<>(Arrays.asList(), pageable, 0);
+
+        when(habitInvitationRepo.findByInviteeIdAndStatusIn(userId,
+            Collections.singleton(HabitInvitationStatus.PENDING), pageable)).thenReturn(invitations);
+
+        PageableAdvancedDto<HabitInvitationDto> result =
+            habitInvitationService.getAllUserHabitInvitationRequests(userId, "en", pageable);
+
+        verify(habitInvitationRepo, times(1)).findByInviteeIdAndStatusIn(eq(userId),
+            eq(Collections.singleton(HabitInvitationStatus.PENDING)), eq(pageable));
+        assertNotNull(result);
+        assertEquals(0, result.getPage().size());
+    }
+
+    @Test
+    void testGetAllUserHabitInvitationRequests() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        HabitInvitation habitInvitation = HabitInvitation.builder()
+            .id(1L)
+            .inviter(getUser())
+            .inviteeHabitAssign(getHabitAssign())
+            .status(HabitInvitationStatus.PENDING)
+            .build();
+
+        HabitDto habitDto = HabitDto.builder()
+            .habitTranslation(HabitTranslationDto.builder()
+                .description("Some description")
+                .name("Some Habit")
+                .build())
+            .build();
+
+        UserFriendDto userFriendDto = UserFriendDto.builder()
+            .id(1L)
+            .name("Taras")
+            .build();
+
+        Page<HabitInvitation> invitations = new PageImpl<>(Collections.singletonList(habitInvitation), pageable, 1);
+
+        when(habitInvitationRepo.findByInviteeIdAndStatusIn(userId,
+            Collections.singleton(HabitInvitationStatus.PENDING), pageable))
+            .thenReturn(invitations);
+
+        when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class)))
+            .thenReturn(habitDto);
+
+        when(modelMapper.map(any(User.class), eq(UserFriendDto.class)))
+            .thenReturn(userFriendDto);
+
+        PageableAdvancedDto<HabitInvitationDto> result =
+            habitInvitationService.getAllUserHabitInvitationRequests(userId, "en", pageable);
+
+        verify(habitInvitationRepo, times(1)).findByInviteeIdAndStatusIn(eq(userId),
+            eq(Collections.singleton(HabitInvitationStatus.PENDING)), eq(pageable));
+
+        assertNotNull(result);
+        assertEquals(1, result.getPage().size());
+        assertEquals(1L, result.getPage().get(0).invitationId());
+        assertEquals("Taras", result.getPage().get(0).inviter().getName());
+        assertEquals("Some Habit", result.getPage().get(0).habit().getHabitTranslation().getName());
+        assertEquals("Some description", result.getPage().get(0).habit().getHabitTranslation().getDescription());
     }
 }
