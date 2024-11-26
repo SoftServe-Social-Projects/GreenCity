@@ -54,5 +54,5 @@ public interface HabitInvitationService {
 
     // todo add java doc
     PageableAdvancedDto<HabitInvitationDto> getAllUserHabitInvitationRequests(Long userId, String language,
-                                                                              Pageable pageable);
+        Pageable pageable);
 }

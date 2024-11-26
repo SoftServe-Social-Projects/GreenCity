@@ -109,7 +109,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
     // todo add java doc.
     @Override
     public PageableAdvancedDto<HabitInvitationDto> getAllUserHabitInvitationRequests(Long userId, String language,
-                                                                                     Pageable pageable) {
+        Pageable pageable) {
         Page<HabitInvitation> invitations = habitInvitationRepo.findByInviteeIdAndStatusIn(userId,
             Collections.singleton(HabitInvitationStatus.PENDING), pageable);
         return buildPageableAdvancedGenericDto(invitations, language);
