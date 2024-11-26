@@ -4,10 +4,7 @@ import greencity.entity.Notification;
 import greencity.enums.NotificationType;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +50,27 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      */
     Notification findNotificationByTargetUserIdAndNotificationTypeAndTargetId(Long targetUserId,
         NotificationType notificationType, Long targetId);
+
+    /**
+     * Finds a {@link Notification} based on a unique combination of the target
+     * user's ID, the notification type, and an identifier that either matches the
+     * {@code secondMessageId} (if present) or the {@code targetId}. This query is
+     * designed to find a unique notification by the following criteria:
+     *
+     * @param targetUserId     user, that should receive Notification
+     * @param notificationType type of Notification
+     * @param identifier       identifier: either {@code secondMessageId} or
+     *                         {@code targetId}
+     * @return {@link Notification}
+     */
+    @Query("SELECT n "
+        + "FROM Notification AS n "
+        + "WHERE n.targetUser.id = :targetUserId "
+        + "AND n.notificationType = :notificationType "
+        + "AND ((n.secondMessageId IS NOT NULL AND n.secondMessageId = :identifier) "
+        + "OR (n.secondMessageId IS NULL AND n.targetId = :identifier))")
+    Notification findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(Long targetUserId,
+        NotificationType notificationType, Long identifier);
 
     /**
      * Method to find specific not viewed Notification.
@@ -130,4 +148,21 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      *         false otherwise
      */
     boolean existsByIdAndTargetUserId(Long notificationId, Long targetUserId);
+
+    /**
+     * Finds an unviewed {@link Notification} by target user's ID, notification
+     * type, target ID, and second message ID. Returns a notification that matches
+     * the provided {@code targetUserId}, {@code notificationType},
+     * {@code targetId}, and {@code secondMessageId}, with the {@code viewed} flag
+     * set to {@code false}.
+     *
+     * @param targetUserId     the ID of the target user.
+     * @param notificationType the type of the notification.
+     * @param targetId         the identifier of the notification's target.
+     * @param secondMessageId  the secondary message ID.
+     * @return an {@link Optional} containing the matching notification, or empty if
+     *         not found.
+     */
+    Optional<Notification> findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+        Long targetUserId, NotificationType notificationType, Long targetId, Long secondMessageId);
 }
