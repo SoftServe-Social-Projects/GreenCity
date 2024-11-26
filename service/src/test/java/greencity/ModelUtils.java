@@ -1468,6 +1468,8 @@ public class ModelUtils {
 
     public static Habit getHabitWithDefaultImage() {
         return Habit.builder()
+            .isCustomHabit(true)
+            .isDeleted(false)
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .build();
     }
