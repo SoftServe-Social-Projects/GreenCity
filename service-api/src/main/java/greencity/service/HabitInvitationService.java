@@ -52,7 +52,15 @@ public interface HabitInvitationService {
      */
     void rejectHabitInvitation(Long invitationId, UserVO invitedUser);
 
-    // todo add java doc
+    /**
+     * Retrieves a paginated list of habit invitation requests for a specific user.
+     *
+     * @param userId   The ID of the user.
+     * @param language The language for the response.
+     * @param pageable Pagination information.
+     *
+     * @return A paginated list of {@link HabitInvitationDto} for the user.
+     */
     PageableAdvancedDto<HabitInvitationDto> getAllUserHabitInvitationRequests(Long userId, String language,
         Pageable pageable);
 }

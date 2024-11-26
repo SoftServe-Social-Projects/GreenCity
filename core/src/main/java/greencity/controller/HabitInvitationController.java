@@ -83,7 +83,16 @@ public class HabitInvitationController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // todo Add java doc + add endpoint to sec config
+    /**
+     * Retrieves a paginated list of the user's habit invitation requests.
+     *
+     * @param page   The pagination information (page number, size, sorting).
+     * @param locale The user's preferred language for the response.
+     * @param userVO The current user details.
+     *
+     * @return A paginated list of {@link HabitInvitationDto} containing the user's
+     *         habit invitation requests.
+     */
     @Operation(summary = "Find user's requests")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),

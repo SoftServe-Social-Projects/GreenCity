@@ -106,7 +106,9 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
         checkAndDeleteHabitAssignIfUnused(invitation.getInviterHabitAssign());
     }
 
-    // todo add java doc.
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<HabitInvitationDto> getAllUserHabitInvitationRequests(Long userId, String language,
         Pageable pageable) {
