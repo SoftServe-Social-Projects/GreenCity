@@ -100,7 +100,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         Habit habit = buildHabitWithTranslations(habitManagementDto);
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setIsDeleted(false);
-        habit.setIsCustomHabit(false);
+        habit.setIsCustomHabit(true);
         habitRepo.save(habit);
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);

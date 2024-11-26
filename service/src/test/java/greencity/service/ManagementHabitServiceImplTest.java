@@ -128,7 +128,7 @@ class ManagementHabitServiceImplTest {
         Habit habit = Habit.builder()
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .isDeleted(false)
-            .isCustomHabit(false)
+            .isCustomHabit(true)
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(habitTranslationDto -> HabitTranslation.builder()
