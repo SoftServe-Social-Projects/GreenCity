@@ -1,7 +1,10 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitInvitationDto;
 import greencity.dto.user.UserVO;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface HabitInvitationService {
@@ -48,4 +51,16 @@ public interface HabitInvitationService {
      * @param invitedUser  the user who is rejecting the invitation
      */
     void rejectHabitInvitation(Long invitationId, UserVO invitedUser);
+
+    /**
+     * Retrieves a paginated list of habit invitation requests for a specific user.
+     *
+     * @param userId   The ID of the user.
+     * @param language The language for the response.
+     * @param pageable Pagination information.
+     *
+     * @return A paginated list of {@link HabitInvitationDto} for the user.
+     */
+    PageableAdvancedDto<HabitInvitationDto> getAllUserHabitInvitationRequests(Long userId, String language,
+        Pageable pageable);
 }

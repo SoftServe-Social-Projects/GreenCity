@@ -35,6 +35,14 @@ public class HabitInvitation {
     @JoinColumn(name = "invitee_habit_assign_id", nullable = false)
     private HabitAssign inviteeHabitAssign;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inviter_id", nullable = false)
+    private User inviter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invitee_id", nullable = false)
+    private User invitee;
+
     @Enumerated(EnumType.STRING)
     private HabitInvitationStatus status;
 }
