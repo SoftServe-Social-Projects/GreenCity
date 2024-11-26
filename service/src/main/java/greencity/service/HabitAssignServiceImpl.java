@@ -1637,6 +1637,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return HabitInvitation.builder()
             .inviteeHabitAssign(inviteeHabitAssign)
             .inviterHabitAssign(inviterHabitAssign)
+            .inviter(inviterHabitAssign.getUser())
+            .invitee(inviteeHabitAssign.getUser())
             .status(HabitInvitationStatus.PENDING)
             .build();
     }
