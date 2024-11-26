@@ -1,5 +1,7 @@
 package greencity.enums;
 
+import java.util.EnumSet;
+
 public enum NotificationType {
     ECONEWS_COMMENT_REPLY,
     ECONEWS_COMMENT_LIKE,
@@ -27,5 +29,12 @@ public enum NotificationType {
     HABIT_COMMENT_USER_TAG,
     HABIT_LAST_DAY_OF_PRIMARY_DURATION,
     PLACE_STATUS,
-    PLACE_ADDED
+    PLACE_ADDED;
+
+    private static final EnumSet<NotificationType> COMMENT_LIKE_TYPES = EnumSet.of(
+        ECONEWS_COMMENT_LIKE, EVENT_COMMENT_LIKE, HABIT_COMMENT_LIKE);
+
+    public static boolean isCommentLike(final NotificationType notificationType) {
+        return COMMENT_LIKE_TYPES.contains(notificationType);
+    }
 }
