@@ -83,7 +83,7 @@ public class HabitInvitationController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // todo Add java doc
+    // todo Add java doc + add endpoint to sec config
     @Operation(summary = "Find user's requests")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
