@@ -50,9 +50,7 @@ public class ToDoListItemController {
     @GetMapping("/{habitId}")
     @ApiLocale
     public ResponseEntity<List<ToDoListItemResponseWithStatusDto>> getAllToDoListItemsForHabit(
-        @Parameter(
-            description = "Id of the Habit that belongs to current user. Cannot be empty.")
-        @PathVariable @Min(1) Long habitId,
+        @Parameter @PathVariable @Min(1) Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(toDoListItemService.findAllHabitToDoList(habitId, locale.getLanguage()));
@@ -82,9 +80,7 @@ public class ToDoListItemController {
     @ApiLocale
     public ResponseEntity<List<ToDoListItemResponseWithStatusDto>> getAllNotAddedToDoListItemsForHabitAssign(
         @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter(
-            description = "Id of Habit Assign that belongs to current user. Cannot be empty.")
-        @PathVariable @Min(1) Long habitAssignId,
+        @Parameter @PathVariable @Min(1) Long habitAssignId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(toDoListItemService.findAvailableToDoListForHabitAssign(user.getId(), habitAssignId,

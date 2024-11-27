@@ -46,9 +46,7 @@ public class CustomToDoListItemController {
     @GetMapping("/{habitId}")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllCustomToDoListItemsForHabit(
         @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter(
-            description = "Id of the Habit that belongs to current user. Cannot be empty.")
-        @PathVariable @Min(1) Long habitId) {
+        @Parameter @PathVariable @Min(1) Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customToDoListItemService.findAllHabitCustomToDoList(user.getId(), habitId));
     }
@@ -75,9 +73,7 @@ public class CustomToDoListItemController {
     @GetMapping("/assign/{habitAssignId}")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllNotAddedCustomToDoListItemsForHabitAssign(
         @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter(
-            description = "Id of the Habit Assign that belongs to current user. Cannot be empty.")
-        @PathVariable @Min(1) Long habitAssignId) {
+        @Parameter @PathVariable @Min(1) Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(user.getId(), habitAssignId));
     }
