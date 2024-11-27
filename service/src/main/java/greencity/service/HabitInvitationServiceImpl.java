@@ -109,6 +109,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
 
     private List<Long> getUsersIdWhoIHaveInvited(Long currentUserId, Long habitAssignId) {
         return habitInvitationRepo.findByInviterHabitAssignId(habitAssignId).stream()
+            .filter(hi -> HabitInvitationStatus.ACCEPTED.equals(hi.getStatus()))
             .map(HabitInvitation::getInviteeHabitAssign)
             .map(HabitAssign::getUser)
             .map(User::getId)
