@@ -424,6 +424,21 @@ class HabitControllerTest {
 
     @Test
     @SneakyThrows
+    void dislikeTest() {
+        Long habitId = 1L;
+
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(post(habitLink + "/dislike")
+            .param("habitId", habitId.toString())
+            .principal(getPrincipal()))
+            .andExpect(status().isOk());
+
+        verify(habitService).dislike(habitId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
     void addToFavoritesTest() {
         Long habitId = 1L;
         mockMvc.perform(post(habitLink + "/{habitId}/favorites", habitId)
