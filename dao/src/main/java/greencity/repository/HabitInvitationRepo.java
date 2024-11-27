@@ -33,4 +33,6 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
     boolean existsByInviterHabitAssign(HabitAssign inviterHabitAssign);
 
     boolean existsByInviteeHabitAssign(HabitAssign inviteeHabitAssign);
+
+    boolean existsByInviterHabitAssignAndInviteeHabitAssign(HabitAssign inviterHabitAssign, HabitAssign habitAssign);
 }
