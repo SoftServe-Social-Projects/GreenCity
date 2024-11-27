@@ -10,7 +10,6 @@ import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.notification.LikeNotificationDto;
-import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -466,10 +465,10 @@ public class HabitServiceImpl implements HabitService {
                 }));
 
         List<CustomToDoListItem> itemsToDisable = customToDoListItems.stream()
-                .filter(item -> habitDto.getCustomToDoListItemDto().stream()
-                        .noneMatch(itemToUpdate -> item.getId().equals(itemToUpdate.getId())))
-                .map(item -> item.setStatus(ToDoListItemStatus.DISABLED))
-                .toList();
+            .filter(item -> habitDto.getCustomToDoListItemDto().stream()
+                .noneMatch(itemToUpdate -> item.getId().equals(itemToUpdate.getId())))
+            .map(item -> item.setStatus(ToDoListItemStatus.DISABLED))
+            .toList();
         customToDoListItemRepo.saveAll(itemsToDisable);
     }
 

@@ -621,7 +621,8 @@ class HabitServiceImplTest {
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
-        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
+            .thenReturn(List.of(customToDoListItem));
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
@@ -690,7 +691,8 @@ class HabitServiceImplTest {
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
-        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
+            .thenReturn(List.of(customToDoListItem));
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
@@ -759,7 +761,8 @@ class HabitServiceImplTest {
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
-        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
+            .thenReturn(List.of(customToDoListItem));
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
@@ -983,8 +986,10 @@ class HabitServiceImplTest {
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
             .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(customHabitDtoResponse);
-        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong())).thenReturn(List.of(customToDoListItem));
-        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem))).thenReturn(List.of(customToDoListItemResponseDto));
+        when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
+            .thenReturn(List.of(customToDoListItem));
+        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
+            .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
         when(habitRepo.save(habit)).thenReturn(habit);

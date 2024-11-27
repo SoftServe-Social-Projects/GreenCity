@@ -980,17 +980,17 @@ public class ModelUtils {
 
     public static UserToDoListItemRequestDto getUserToDoListItemRequestDto() {
         return UserToDoListItemRequestDto.builder()
-                .targetId(1L)
-                .isCustomItem(false)
-                .build();
+            .targetId(1L)
+            .isCustomItem(false)
+            .build();
     }
 
     public static UserToDoListItemRequestWithStatusDto getUserToDoListItemRequestWithStatusDto() {
         return UserToDoListItemRequestWithStatusDto.builder()
-                .targetId(1L)
-                .isCustomItem(false)
-                .status(UserToDoListItemStatus.DONE)
-                .build();
+            .targetId(1L)
+            .isCustomItem(false)
+            .status(UserToDoListItemStatus.DONE)
+            .build();
     }
 
     public static UserToDoListItem getPredefinedUserToDoListItem() {
@@ -1781,10 +1781,10 @@ public class ModelUtils {
 
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoWithId2() {
         return CustomToDoListItemResponseDto.builder()
-                .id(2L)
-                .status(ToDoListItemStatus.ACTIVE)
-                .text("Custom item")
-                .build();
+            .id(2L)
+            .status(ToDoListItemStatus.ACTIVE)
+            .text("Custom item")
+            .build();
     }
 
     public static CustomToDoListItem getCustomToDoListItem() {
@@ -1799,12 +1799,12 @@ public class ModelUtils {
 
     public static CustomToDoListItem getCustomToDoListItemWithId2() {
         return CustomToDoListItem.builder()
-                .id(2L)
-                .status(ToDoListItemStatus.ACTIVE)
-                .text("Custom item")
-                .habit(getHabit())
-                .user(getUser())
-                .build();
+            .id(2L)
+            .status(ToDoListItemStatus.ACTIVE)
+            .text("Custom item")
+            .habit(getHabit())
+            .user(getUser())
+            .build();
     }
 
     public static Event getEvent() {

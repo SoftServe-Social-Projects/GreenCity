@@ -144,9 +144,11 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
 
     private void checkItemReferenceExist(Long targetId, Boolean isCustom) {
         if (isCustom) {
-            CustomToDoListItem item = customToDoListItemRepo.findById(targetId).orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
+            CustomToDoListItem item = customToDoListItemRepo.findById(targetId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
         } else {
-            ToDoListItem item = toDoListItemRepo.findById(targetId).orElseThrow(() -> new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
+            ToDoListItem item = toDoListItemRepo.findById(targetId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
         }
     }
 }

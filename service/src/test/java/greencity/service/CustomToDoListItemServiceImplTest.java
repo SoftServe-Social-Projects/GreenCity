@@ -98,10 +98,12 @@ class CustomToDoListItemServiceImplTest {
         when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
             .thenReturn(List.of(itemId));
         when(customToDoListItemRepo.getReferenceById(itemId)).thenReturn(item);
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of());
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of());
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
         assertEquals(List.of(responseItem), result);
         assertEquals(1, result.size());
 
@@ -120,13 +122,15 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
-                .thenReturn(List.of(itemId));
+            .thenReturn(List.of(itemId));
         when(customToDoListItemRepo.getReferenceById(itemId)).thenReturn(item);
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of(item2));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of(item2));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
         when(modelMapper.map(item2, CustomToDoListItemResponseDto.class)).thenReturn(responseItem2);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
         assertEquals(List.of(responseItem, responseItem2), result);
         assertEquals(2, result.size());
 
@@ -147,12 +151,14 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
-                .thenReturn(List.of(itemId));
+            .thenReturn(List.of(itemId));
         when(customToDoListItemRepo.getReferenceById(itemId)).thenReturn(item);
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of(item));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of(item));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
         assertEquals(List.of(responseItem), result);
         assertEquals(1, result.size());
 
@@ -171,12 +177,14 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
-                .thenReturn(List.of());
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of(item, item2));
+            .thenReturn(List.of());
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of(item, item2));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
         when(modelMapper.map(item2, CustomToDoListItemResponseDto.class)).thenReturn(responseItem2);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
         assertEquals(List.of(responseItem, responseItem2), result);
         assertEquals(2, result.size());
 
@@ -194,10 +202,12 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
-                .thenReturn(List.of());
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of());
+            .thenReturn(List.of());
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of());
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAllHabitCustomToDoList(userId, habitId);
         assertTrue(result.isEmpty());
 
         verify(habitRepo).findById(habitId);
@@ -212,7 +222,8 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> customToDoListItemService.findAllHabitCustomToDoList(userId, habitId));
+        assertThrows(NotFoundException.class,
+            () -> customToDoListItemService.findAllHabitCustomToDoList(userId, habitId));
 
         verify(habitRepo).findById(habitId);
     }
@@ -247,10 +258,10 @@ class CustomToDoListItemServiceImplTest {
         Long userId = userVO.getId();
 
         when(habitAssignRepo.findById(habitAssignId))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> customToDoListItemService
-                .getCustomToDoListByHabitAssignId(userId, habitAssignId));
+            .getCustomToDoListByHabitAssignId(userId, habitAssignId));
 
         verify(habitAssignRepo).findById(habitAssignId);
     }
@@ -262,11 +273,11 @@ class CustomToDoListItemServiceImplTest {
         habitAssign.getUser().setId(userId + 1);
 
         when(habitAssignRepo.findById(habitAssignId))
-                .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssign));
         when(userService.findById(userId)).thenReturn(userVO);
 
         assertThrows(UserHasNoPermissionToAccessException.class, () -> customToDoListItemService
-                .getCustomToDoListByHabitAssignId(userId, habitAssignId));
+            .getCustomToDoListByHabitAssignId(userId, habitAssignId));
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userService).findById(userId);
@@ -280,14 +291,14 @@ class CustomToDoListItemServiceImplTest {
         habitAssign.getUser().setId(userId + 1);
 
         when(habitAssignRepo.findById(habitAssignId))
-                .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssign));
         when(userService.findById(userId)).thenReturn(adminUser);
         when(customToDoListItemRepo.findAllByHabitAssignId(habitAssignId))
-                .thenReturn(List.of(item));
+            .thenReturn(List.of(item));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
 
         List<CustomToDoListItemResponseDto> result = customToDoListItemService
-                .getCustomToDoListByHabitAssignId(userId, habitAssignId);
+            .getCustomToDoListByHabitAssignId(userId, habitAssignId);
 
         assertEquals(List.of(responseItem), result);
         assertEquals(1, result.size());
@@ -310,13 +321,16 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitAssignRepo.getReferenceById(habitAssignId)).thenReturn(habitAssign);
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
-        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(item.getId()));
+        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
+            .thenReturn(List.of(item.getId()));
         when(customToDoListItemRepo.getReferenceById(item.getId())).thenReturn(item);
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of(item2));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of(item2));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
         when(modelMapper.map(item2, CustomToDoListItemResponseDto.class)).thenReturn(responseItem2);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
         assertEquals(List.of(responseItem), result);
         assertEquals(1, result.size());
     }
@@ -333,13 +347,16 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitAssignRepo.getReferenceById(habitAssignId)).thenReturn(habitAssign);
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
-        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(item.getId()));
+        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
+            .thenReturn(List.of(item.getId()));
         when(customToDoListItemRepo.getReferenceById(item.getId())).thenReturn(item);
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of(item2));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of(item2));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
         when(modelMapper.map(item2, CustomToDoListItemResponseDto.class)).thenReturn(responseItem2);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
         assertEquals(List.of(responseItem, responseItem2), result);
         assertEquals(2, result.size());
     }
@@ -356,13 +373,16 @@ class CustomToDoListItemServiceImplTest {
 
         when(habitAssignRepo.getReferenceById(habitAssignId)).thenReturn(habitAssign);
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
-        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(item.getId()));
+        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId))
+            .thenReturn(List.of(item.getId()));
         when(customToDoListItemRepo.getReferenceById(item.getId())).thenReturn(item);
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of(item2));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of(item2));
         when(modelMapper.map(item, CustomToDoListItemResponseDto.class)).thenReturn(responseItem);
         when(modelMapper.map(item2, CustomToDoListItemResponseDto.class)).thenReturn(responseItem2);
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
         assertTrue(result.isEmpty());
     }
 
@@ -379,9 +399,11 @@ class CustomToDoListItemServiceImplTest {
         when(habitAssignRepo.getReferenceById(habitAssignId)).thenReturn(habitAssign);
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of());
-        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId)).thenReturn(List.of());
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId))
+            .thenReturn(List.of());
 
-        List<CustomToDoListItemResponseDto> result = customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
+        List<CustomToDoListItemResponseDto> result =
+            customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userId, habitAssignId);
         assertTrue(result.isEmpty());
     }
 }

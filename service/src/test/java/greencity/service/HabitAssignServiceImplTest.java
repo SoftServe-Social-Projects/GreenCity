@@ -1050,7 +1050,8 @@ class HabitAssignServiceImplTest {
             .thenReturn(List.of(customToDoListItemResponseDto));
 
         when(modelMapper.map(toDoListItemResponseDto, UserToDoListItemResponseDto.class)).thenReturn(fromToDo);
-        when(modelMapper.map(customToDoListItemResponseDto, UserToDoListItemResponseDto.class)).thenReturn(fromCustomToDo);
+        when(modelMapper.map(customToDoListItemResponseDto, UserToDoListItemResponseDto.class))
+            .thenReturn(fromCustomToDo);
 
         List<UserToDoListItemResponseDto> actual =
             habitAssignService.getToDoAndCustomToDoLists(userId, habitAssignId, language);
@@ -1631,7 +1632,8 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
         when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(getToDoListItemTranslationList());
-        when(modelMapper.map(any(), eq(ToDoListItemResponseWithStatusDto.class))).thenReturn(getToDoListItemResponseWithStatusDto());
+        when(modelMapper.map(any(), eq(ToDoListItemResponseWithStatusDto.class)))
+            .thenReturn(getToDoListItemResponseWithStatusDto());
         when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
 
         HabitDto actual = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);

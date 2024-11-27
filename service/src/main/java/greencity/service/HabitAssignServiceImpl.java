@@ -1428,7 +1428,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = assignHabitToUser(habit, friend);
         List<Long> toDoListItemIds = toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId);
         List<Long> customToDoListItemIds =
-                customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId);
+            customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId);
         saveUserToDoListItems(toDoListItemIds, habitAssign, false);
         saveUserToDoListItems(customToDoListItemIds, habitAssign, true);
 
@@ -1464,7 +1464,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 HabitAssign habitAssign = assignHabitToUser(habit, getUserById(userVO.getId()));
                 List<Long> toDoListItemIds = toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId());
                 List<Long> customToDoListItemIds =
-                        customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habit.getId());
+                    customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habit.getId());
                 saveUserToDoListItems(toDoListItemIds, habitAssign, false);
                 saveUserToDoListItems(customToDoListItemIds, habitAssign, true);
                 return habitAssign;

@@ -14,7 +14,6 @@ import greencity.entity.ToDoListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.Role;
-import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
@@ -161,7 +160,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         return habitToDoItemIds.stream()
             .map(toDoListItemRepo::getReferenceById)
             .map(toDoListItem -> {
-                ToDoListItemResponseWithStatusDto responseDto = modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class);
+                ToDoListItemResponseWithStatusDto responseDto =
+                    modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class);
                 setTextForToDoListItem(responseDto, language);
                 return responseDto;
             })
@@ -182,8 +182,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
         List<ToDoListItemResponseWithStatusDto> allActiveHabitItems =
             findAllHabitToDoList(habitAssign.getHabit().getId(), language);
         return allActiveHabitItems.stream()
-                .filter(item -> !addedItems.contains(item))
-                .toList();
+            .filter(item -> !addedItems.contains(item))
+            .toList();
     }
 
     /**
