@@ -69,7 +69,6 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -221,7 +220,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
@@ -2546,13 +2544,6 @@ public class ModelUtils {
 
     public static AddCommentDtoRequest getAddCommentDtoRequest() {
         return new AddCommentDtoRequest("text", 10L);
-    }
-
-    public static ToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return ToDoAndCustomToDoListsDto.builder()
-            .toDoListItemDto(List.of(getToDoListItemWithStatusRequestDto()))
-            .customToDoListItemDto(List.of(getCustomToDoListItemRequestDto()))
-            .build();
     }
 
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {

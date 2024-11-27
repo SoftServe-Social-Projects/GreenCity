@@ -6,7 +6,6 @@ import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
@@ -28,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getToDoAndCustomToDoListsDto;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -301,21 +299,6 @@ class HabitAssignControllerTest {
                 .locale(Locale.forLanguageTag("en")))
             .andExpect(status().isOk());
         verify(habitAssignService).getListOfUserToDoListsWithStatusInprogress(userVO.getId(), "en");
-    }
-
-    @Test
-    void updateUserToDoList() throws Exception {
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        ToDoAndCustomToDoListsDto dto = getToDoAndCustomToDoListsDto();
-        Gson gson = new Gson();
-        String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/{habitAssignId}/userToDoList", 1L)
-                .principal(principal)
-                .locale(Locale.forLanguageTag("ua"))
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(habitAssignService).fullUpdateUserToDoLists(userVO.getId(), 1L, dto);
     }
 
     @Test

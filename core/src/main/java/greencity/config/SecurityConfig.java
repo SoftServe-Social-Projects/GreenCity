@@ -72,7 +72,6 @@ public class SecurityConfig {
     private static final String RANDOM = "/random";
     private static final String SUBSCRIPTIONS = "/subscriptions";
     private static final String ACTIVE = "/active";
-    private static final String USER_CUSTOM_TO_DO_LIST_ITEMS = "/user/{userId}/custom-to-do-list-items";
     private static final String CUSTOM_TO_DO_LIST = "/habits/custom-to-do-list-items";
     private static final String TO_DO_LIST = "/habits/to-do-list-items";
     private static final String USER_TO_DO_LIST = "/habits/assign/user-to-do-list-items";
@@ -243,8 +242,6 @@ public class SecurityConfig {
                     "/place/v2/filteredPlacesCategories",
                     "/social-networks/image",
                     "/user",
-                    USER_CUSTOM_TO_DO_LIST_ITEMS,
-                    "/user/{userId}/custom-to-do-list-items/available",
                     "/user/{userId}/sixUserFriends/",
                     "/user/{userId}/profile/",
                     "/user/isOnline/{userId}/",
@@ -316,7 +313,6 @@ public class SecurityConfig {
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
-                    USER_CUSTOM_TO_DO_LIST_ITEMS,
                     USER_TO_DO_LIST + "/{habitAssignId}",
                     "/user/{userId}/habit",
                     "/user/{userId}/userFriend/{friendId}",
@@ -350,7 +346,6 @@ public class SecurityConfig {
                     HABIT_ASSIGN_ID,
                     USER_TO_DO_LIST + "/{habitAssignId}",
                     HABIT_ASSIGN_ID,
-                    USER_CUSTOM_TO_DO_LIST_ITEMS,
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
@@ -365,7 +360,6 @@ public class SecurityConfig {
                     "/habit/{habitId}/favorites",
                     "/favorite_place/{placeId}",
                     "/social-networks",
-                    USER_CUSTOM_TO_DO_LIST_ITEMS,
                     USER_TO_DO_LIST + "/{habitAssignId}",
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS + EVENT_ID,

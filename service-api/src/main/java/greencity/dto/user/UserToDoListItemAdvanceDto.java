@@ -26,11 +26,4 @@ public class UserToDoListItemAdvanceDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateCompleted;
     private String content;
-
-    /**
-     * Method returns status in Boolean.
-     */
-    public Boolean getBoolStatus() {
-        return status.equals(UserToDoListItemStatus.INPROGRESS);
-    }
 }

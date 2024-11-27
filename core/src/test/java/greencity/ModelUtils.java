@@ -28,7 +28,6 @@ import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -259,20 +258,6 @@ public class ModelUtils {
             .id(1L)
             .status(UserToDoListItemStatus.INPROGRESS)
             .text("text")
-            .build();
-    }
-
-    public static ToDoAndCustomToDoListsDto getToDoAndCustomToDoListsDto() {
-        return ToDoAndCustomToDoListsDto.builder()
-            .toDoListItemDto(List.of(getToDoListItemWithStatusRequestDto()))
-            .customToDoListItemDto(List.of(getCustomToDoListItemRequestDto()))
-            .build();
-    }
-
-    public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
-        return ToDoListItemWithStatusRequestDto.builder()
-            .id(1L)
-            .status(ToDoListItemStatus.ACTIVE.toString())
             .build();
     }
 

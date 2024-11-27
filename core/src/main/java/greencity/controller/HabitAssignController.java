@@ -16,7 +16,6 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
@@ -354,38 +353,6 @@ public class HabitAssignController {
     }
 
     /**
-     * Method that update UserToDoList.
-     *
-     * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO} instance.
-     * @param listsDto      {@link ToDoAndCustomToDoListsDto} instance.
-     */
-    @Operation(summary = "Update user and custom to-do lists",
-        description = """
-            If the item is already present in the db, the method updates it
-            If item is not present in the db and id is null, the method attempts to add it to the user
-            If some items from db are not present in the lists,
-            the method deletes them (except for items with DISABLED status).""")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @ApiLocale
-    @PutMapping("{habitAssignId}/userToDoList")
-    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserToDoList(
-        @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Valid @RequestBody ToDoAndCustomToDoListsDto listsDto) {
-        habitAssignService.fullUpdateUserToDoLists(userVO.getId(), habitAssignId, listsDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    /**
      * Method that return list of UserToDoLists for current user, specific language
      * and INPROGRESS status.
      *
@@ -396,7 +363,7 @@ public class HabitAssignController {
     @Operation(summary = "Get list of user to-do list items with status INPROGRESS")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
-            array = @ArraySchema(schema = @Schema(implementation = ToDoAndCustomToDoListsDto.class)))),
+            array = @ArraySchema(schema = @Schema(implementation = UserToDoListItemResponseDto.class)))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,

@@ -10,7 +10,6 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
@@ -309,23 +308,6 @@ public interface HabitAssignService {
      * @param itemId  {@link Long} item id.
      */
     void updateToDoItem(Long habitId, Long itemId);
-
-    /**
-     * Method that update UserToDoList and CustomToDo List.
-     *
-     * <ul>
-     * <li>If items are present in the db, method update them;</li>
-     * <li>If items don't present in the db and id is null, method try to add it to
-     * user;</li>
-     * <li>If some items from db don't present in the lists, method delete
-     * them(Except items with DISABLED status).</li>
-     * </ul>
-     *
-     * @param userId  {@code User} id.
-     * @param habitId {@code Habit} id.
-     * @param listDto {@link ToDoAndCustomToDoListsDto} User and Custom To-Do lists.
-     */
-    void fullUpdateUserToDoLists(Long userId, Long habitId, ToDoAndCustomToDoListsDto listDto);
 
     /**
      * Method updates value progressNotificationHasDisplayed to true.

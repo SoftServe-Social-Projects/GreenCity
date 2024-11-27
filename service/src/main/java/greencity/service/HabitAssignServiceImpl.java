@@ -17,13 +17,10 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.ToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -80,9 +77,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -448,8 +443,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         for (ToDoListItemTranslation translationItem : listItemTranslations) {
             boolean isContains = false;
             for (UserToDoListItem userItem : habitAssign.getUserToDoListItems()) {
+                boolean isCustomItem = userItem.getIsCustomItem();
                 if (translationItem.getToDoListItem().getId().equals(userItem.getTargetId())
-                    && !userItem.getIsCustomItem()) {
+                    && !isCustomItem) {
                     userItemList.add(UserToDoListItemAdvanceDto.builder()
                         .id(userItem.getId())
                         .targetId(userItem.getTargetId())
@@ -484,7 +480,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .orElseThrow(
                     () -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + customItemId));
             for (UserToDoListItem userItem : habitAssign.getUserToDoListItems()) {
-                if (customItemId.equals(userItem.getTargetId()) && userItem.getIsCustomItem()) {
+                boolean isCustomItem = userItem.getIsCustomItem();
+                if (customItemId.equals(userItem.getTargetId()) && isCustomItem) {
                     userItemList.add(UserToDoListItemAdvanceDto.builder()
                         .id(userItem.getId())
                         .targetId(userItem.getTargetId())
@@ -1097,282 +1094,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 utdli.setStatus(UserToDoListItemStatus.INPROGRESS);
             }
             userToDoListItemRepo.save(utdli);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional
-    public void fullUpdateUserToDoLists(
-        Long userId,
-        Long habitAssignId,
-        ToDoAndCustomToDoListsDto listsDto) {
-        fullUpdateToDoList(userId, habitAssignId, listsDto.getToDoListItemDto());
-        fullUpdateCustomToDoList(userId, habitAssignId, listsDto.getCustomToDoListItemDto());
-    }
-
-    /**
-     * Method that update UserToDoList.
-     *
-     * <ul>
-     * <li>If items are present in the db, method update them;</li>
-     * <li>If items don't present in the db and id is null, method try to add it to
-     * user;</li>
-     * <li>If some items from db don't present in the lists, method delete
-     * them(Except items with DISABLED status).</li>
-     * </ul>
-     *
-     * @param userId        {@code User} id.
-     * @param habitAssignId {@code HabitAssign} id.
-     * @param list          {@link UserToDoListItemResponseDto} User To-Do lists.
-     */
-    private void fullUpdateToDoList(
-        Long userId,
-        Long habitAssignId,
-        List<ToDoListItemWithStatusRequestDto> list) {
-        updateAndDisableToDoListWithStatuses(userId, habitAssignId, list);
-    }
-
-    /**
-     * Method that update or delete {@link UserToDoListItem}. Not founded items,
-     * except DISABLED, will be deleted.
-     *
-     * @param userId        {@code User} id.
-     * @param habitAssignId {@code HabitAssign} id.
-     * @param toDoList      {@link ToDoListItemResponseWithStatusDto} User to-do
-     *                      lists.
-     */
-    private void updateAndDisableToDoListWithStatuses(
-        Long userId,
-        Long habitAssignId,
-        List<ToDoListItemWithStatusRequestDto> toDoList) {
-        List<ToDoListItemWithStatusRequestDto> listToUpdate = toDoList.stream()
-            .filter(item -> item.getId() != null)
-            .toList();
-
-        checkDuplicationForToDoListById(listToUpdate);
-
-        HabitAssign habitAssign = habitAssignRepo
-            .findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
-
-        List<UserToDoListItem> currentList = habitAssign.getUserToDoListItems().stream()
-            .filter(userToDoListItem -> !userToDoListItem.getIsCustomItem()).toList();
-
-        checkIfToDoItemsExist(listToUpdate, currentList);
-
-        Map<Long, String> mapIdToStatus =
-            listToUpdate.stream()
-                .collect(Collectors.toMap(
-                    ToDoListItemWithStatusRequestDto::getId,
-                    ToDoListItemWithStatusRequestDto::getStatus));
-
-        List<UserToDoListItem> listToSave = new ArrayList<>();
-        for (var currentItem : currentList) {
-            String newStatus = mapIdToStatus.get(currentItem.getId());
-            if (newStatus != null) {
-                currentItem.setStatus(UserToDoListItemStatus.valueOf(newStatus.toUpperCase()));
-            } else {
-                currentItem.setStatus(UserToDoListItemStatus.DISABLED);
-            }
-            listToSave.add(currentItem);
-        }
-        userToDoListItemRepo.saveAll(listToSave);
-    }
-
-    private void checkDuplicationForToDoListById(List<ToDoListItemWithStatusRequestDto> listToUpdate) {
-        long countOfUnique = listToUpdate.stream()
-            .map(ToDoListItemWithStatusRequestDto::getId)
-            .distinct()
-            .count();
-        if (listToUpdate.size() != countOfUnique) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_TO_DO_LIST_ITEM);
-        }
-    }
-
-    private void checkIfToDoItemsExist(
-        List<ToDoListItemWithStatusRequestDto> listToUpdate,
-        List<UserToDoListItem> currentList) {
-        List<Long> updateIds =
-            listToUpdate.stream().map(ToDoListItemWithStatusRequestDto::getId).collect(Collectors.toList());
-        List<Long> currentIds = currentList.stream().filter(userToDoListItem -> !userToDoListItem.getIsCustomItem())
-            .map(UserToDoListItem::getTargetId).toList();
-
-        updateIds.removeAll(currentIds);
-
-        if (!updateIds.isEmpty()) {
-            String notFoundedIds = updateIds.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(", "));
-            throw new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND + notFoundedIds);
-        }
-    }
-
-    /**
-     * Method that update CustomToDo List.
-     *
-     * <ul>
-     * <li>If items are present in the db, method update them;</li>
-     * <li>If items don't present in the db and id is null, method try to add it to
-     * user;</li>
-     * <li>If some items from db don't present in the lists, method delete
-     * them(Except items with DISABLED status).</li>
-     * </ul>
-     *
-     * @param userId        {@code User} id.
-     * @param habitAssignId {@code HabitAssign} id.
-     * @param list          {@link CustomToDoListItemResponseDto} Custom To-Do
-     *                      lists.
-     */
-    private void fullUpdateCustomToDoList(
-        Long userId,
-        Long habitAssignId,
-        List<CustomToDoListItemRequestDto> list) {
-        updateAndDeleteCustomToDoListWithStatuses(userId, habitAssignId, list);
-        saveCustomToDoListWithStatuses(userId, habitAssignId, list);
-    }
-
-    /**
-     * Method that save {@link CustomToDoListItemResponseDto} for item with id =
-     * null.
-     *
-     * @param userId         {@code User} id.
-     * @param habitAssignId  {@code HabitAssign} id.
-     * @param customToDoList {@link CustomToDoListItemResponseDto} Custom to-do
-     *                       lists.
-     */
-    private void saveCustomToDoListWithStatuses(
-        Long userId,
-        Long habitAssignId,
-        List<CustomToDoListItemRequestDto> customToDoList) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        if (!habitAssign.getUser().getId().equals(userId)) {
-            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        List<CustomToDoListItemRequestDto> listToSave = customToDoList.stream()
-            .filter(toDoItem -> toDoItem.getId() == null)
-            .toList();
-
-        checkDuplicationForCustomToDoListByName(listToSave);
-
-        List<CustomToDoListItem> listToSaveItems = listToSave.stream()
-            .map(item -> CustomToDoListItem.builder()
-                .text(item.getText())
-                .user(habitAssign.getUser())
-                .habit(habitAssign.getHabit())
-                .status(ToDoListItemStatus.ACTIVE)
-                .isDefault(false)
-                .build())
-            .toList();
-
-        customToDoListItemRepo.saveAll(listToSaveItems);
-    }
-
-    private void checkDuplicationForCustomToDoListByName(List<CustomToDoListItemRequestDto> listToSave) {
-        long countOfUnique = listToSave.stream()
-            .map(CustomToDoListItemRequestDto::getText)
-            .distinct()
-            .count();
-        if (listToSave.size() != countOfUnique) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_TO_DO_LIST_ITEM);
-        }
-    }
-
-    /**
-     * Method that update or delete {@link CustomToDoListItem}. Not founded items,
-     * except DISABLED, will be deleted.
-     *
-     * @param userId         {@code User} id.
-     * @param habitAssignId  {@code HabitAssign} id.
-     * @param customToDoList {@link CustomToDoListItemResponseDto} Custom to-do
-     *                       lists.
-     */
-    private void updateAndDeleteCustomToDoListWithStatuses(
-        Long userId,
-        Long habitAssignId,
-        List<CustomToDoListItemRequestDto> customToDoList) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        if (!habitAssign.getUser().getId().equals(userId)) {
-            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        List<CustomToDoListItemRequestDto> listToUpdate = customToDoList.stream()
-            .filter(toDoItem -> toDoItem.getId() != null)
-            .toList();
-
-        checkDuplicationForCustomToDoListById(listToUpdate);
-
-        List<UserToDoListItem> currentList = userToDoListItemRepo.findAllByHabitAssingId(habitAssignId).stream()
-            .filter(UserToDoListItem::getIsCustomItem).toList();
-
-        checkIfCustomToDoItemsExist(listToUpdate, currentList);
-
-        Map<Long, String> mapIdToStatus =
-            listToUpdate.stream()
-                .collect(Collectors.toMap(
-                    CustomToDoListItemRequestDto::getId,
-                    CustomToDoListItemRequestDto::getStatus));
-
-        List<UserToDoListItem> listToSave = new ArrayList<>();
-        List<UserToDoListItem> listToDelete = new ArrayList<>();
-        List<CustomToDoListItem> customItemsToUpdate = new ArrayList<>();
-        for (var currentItem : currentList) {
-            String newStatus = mapIdToStatus.get(currentItem.getTargetId());
-            if (newStatus != null) {
-                currentItem.setStatus(UserToDoListItemStatus.valueOf(newStatus.toUpperCase()));
-                listToSave.add(currentItem);
-            } else {
-                CustomToDoListItem customToDoListItem = customToDoListItemRepo.findById(currentItem.getTargetId())
-                    .orElseThrow(() -> new NotFoundException(
-                        ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + currentItem.getTargetId()));
-                if (!customToDoListItem.getIsDefault() && customToDoListItem.getUser().getId().equals(userId)) {
-                    listToDelete.add(currentItem);
-                    customToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
-                    customItemsToUpdate.add(customToDoListItem);
-                } else {
-                    currentItem.setStatus(UserToDoListItemStatus.DISABLED);
-                    listToSave.add(currentItem);
-                }
-            }
-        }
-        userToDoListItemRepo.saveAll(listToSave);
-        userToDoListItemRepo.deleteAll(listToDelete);
-        customToDoListItemRepo.saveAll(customItemsToUpdate);
-    }
-
-    private void checkDuplicationForCustomToDoListById(List<CustomToDoListItemRequestDto> listToUpdate) {
-        long countOfUnique = listToUpdate.stream()
-            .map(CustomToDoListItemRequestDto::getId)
-            .distinct()
-            .count();
-        if (listToUpdate.size() != countOfUnique) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_TO_DO_LIST_ITEM);
-        }
-    }
-
-    private void checkIfCustomToDoItemsExist(
-        List<CustomToDoListItemRequestDto> listToUpdate,
-        List<UserToDoListItem> currentList) {
-        List<Long> currentIds = currentList.stream().map(UserToDoListItem::getTargetId).toList();
-        List<Long> updateIds = new ArrayList<>();
-        updateIds.addAll(listToUpdate.stream().map(CustomToDoListItemRequestDto::getId).toList());
-        updateIds.removeAll(currentIds);
-
-        if (!updateIds.isEmpty()) {
-            String notFoundedIds = updateIds.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(", "));
-            throw new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundedIds);
         }
     }
 

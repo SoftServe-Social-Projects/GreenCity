@@ -2,6 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ToDoListItemTranslation;
@@ -53,6 +54,13 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                         .findFirst().orElse(null))
                     .build())
                 .toList() : new ArrayList<>())
+            .customToDoListItems(habit.getCustomToDoListItems() != null ? habit.getCustomToDoListItems().stream()
+                    .map(customItem -> CustomToDoListItemResponseDto.builder()
+                            .id(customItem.getId())
+                            .text(customItem.getText())
+                            .status(customItem.getStatus())
+                            .build())
+                    .toList() : new ArrayList<>())
             .build();
     }
 }
