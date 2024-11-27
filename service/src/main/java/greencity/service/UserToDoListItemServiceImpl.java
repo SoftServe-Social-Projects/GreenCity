@@ -7,14 +7,17 @@ import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
 import greencity.entity.HabitAssign;
+import greencity.entity.ToDoListItem;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.Role;
 import greencity.enums.UserToDoListItemStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.ToDoListItemRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserToDoListItemRepo;
 import lombok.AllArgsConstructor;
@@ -34,6 +37,7 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
     private final HabitAssignRepo habitAssignRepo;
     private final CustomToDoListItemRepo customToDoListItemRepo;
     private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
+    private final ToDoListItemRepo toDoListItemRepo;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
@@ -55,6 +59,7 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
     public List<UserToDoListItemResponseDto> saveUserToDoListItems(Long habitAssignId,
         List<UserToDoListItemRequestDto> userToDoListItems, Long userId, String language) {
         checkUserPermission(habitAssignId, userId);
+        userToDoListItems.forEach(item -> checkItemReferenceExist(item.getTargetId(), item.getIsCustomItem()));
         HabitAssign habitAssign = habitAssignRepo.getReferenceById(habitAssignId);
         List<UserToDoListItem> toSave = userToDoListItems.stream()
             .map(userToDoListItemRequestDto -> modelMapper.map(userToDoListItemRequestDto, UserToDoListItem.class))
@@ -75,7 +80,7 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
         List<UserToDoListItem> itemsToDelete = userToDoListItemRepo.findAllById(itemIds);
         itemsToDelete.forEach(item -> {
             if (!item.getHabitAssign().getId().equals(habitAssignId)) {
-                throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+                throw new BadRequestException(ErrorMessage.USER_TO_DO_LIST_ITEMS_NOT_RELATED_TO_PROVIDED_HABIT_ASSIGN);
             }
         });
         userToDoListItemRepo.deleteAll(itemsToDelete);
@@ -134,6 +139,14 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
         UserVO user = userService.findById(userId);
         if (!habitAssign.getUser().getId().equals(userId) && !user.getRole().equals(Role.ROLE_ADMIN)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+    }
+
+    private void checkItemReferenceExist(Long targetId, Boolean isCustom) {
+        if (isCustom) {
+            CustomToDoListItem item = customToDoListItemRepo.findById(targetId).orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
+        } else {
+            ToDoListItem item = toDoListItemRepo.findById(targetId).orElseThrow(() -> new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
         }
     }
 }

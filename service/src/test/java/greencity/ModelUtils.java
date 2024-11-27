@@ -122,6 +122,8 @@ import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
+import greencity.dto.user.UserToDoListItemRequestDto;
+import greencity.dto.user.UserToDoListItemRequestWithStatusDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserStatusDto;
@@ -968,6 +970,21 @@ public class ModelUtils {
             .text("Buy electric car")
             .status(UserToDoListItemStatus.INPROGRESS)
             .build();
+    }
+
+    public static UserToDoListItemRequestDto getUserToDoListItemRequestDto() {
+        return UserToDoListItemRequestDto.builder()
+                .targetId(1L)
+                .isCustomItem(false)
+                .build();
+    }
+
+    public static UserToDoListItemRequestWithStatusDto getUserToDoListItemRequestWithStatusDto() {
+        return UserToDoListItemRequestWithStatusDto.builder()
+                .targetId(1L)
+                .isCustomItem(false)
+                .status(UserToDoListItemStatus.DONE)
+                .build();
     }
 
     public static UserToDoListItem getPredefinedUserToDoListItem() {
