@@ -56,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import static greencity.ModelUtils.getAddCommentDtoResponse;
 import static greencity.ModelUtils.getAmountCommentLikesDto;
 import static greencity.ModelUtils.getComment;
@@ -166,6 +167,44 @@ class CommentServiceImplTest {
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
         verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
+    }
+
+    @Test
+    void saveCommentReplyNotification() {
+        Event event = getEvent();
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        User parentCommentCreator = getUser().setId(2L);
+        Comment parentComment = getComment()
+            .setUser(parentCommentCreator)
+            .setArticleId(1L)
+            .setArticleType(ArticleType.EVENT);
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        addCommentDtoRequest.setParentCommentId(1L);
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(commentRepo.findById(1L))
+            .thenReturn(Optional.of(parentComment));
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(modelMapper.map(commentRepo.save(comment), AddCommentDtoResponse.class))
+            .thenReturn(getAddCommentDtoResponse());
+
+        commentService.save(
+            ArticleType.EVENT,
+            1L,
+            addCommentDtoRequest,
+            null,
+            getUserVO(),
+            Locale.of("en"));
+
+        verify(userNotificationService)
+            .createNotification(any(), any(), any(), anyLong(), anyString(), anyLong(), anyString());
     }
 
     @Test
@@ -825,10 +864,10 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.of(comment));
 
-        BadRequestException badRequestException =
-            assertThrows(BadRequestException.class,
+        UserHasNoPermissionToAccessException noAccessException =
+            assertThrows(UserHasNoPermissionToAccessException.class,
                 () -> commentService.update(editedText, commentId, userVO));
-        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
+        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
@@ -895,11 +934,14 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
 
+        Comment parentComment = getComment();
         Comment childComment = getComment();
-        childComment.setParentComment(getComment());
+        childComment.setId(2L);
+        childComment.setParentComment(parentComment);
 
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(ModelUtils.getCommentDto());
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
@@ -912,6 +954,7 @@ class CommentServiceImplTest {
         assertEquals(1, commentDtos.getCurrentPage());
         assertEquals(1, commentDtos.getPage().size());
 
+        verify(commentRepo).findById(parentCommentId);
         verify(modelMapper).map(childComment, CommentDto.class);
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);
@@ -925,25 +968,44 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Long parentCommentId = 1L;
-
         Comment childComment = getComment();
-        childComment.setParentComment(getComment());
+        Comment parentComment = getComment();
+
+        childComment.setId(2L);
+        childComment.setParentComment(parentComment);
         childComment.setUsersLiked(new HashSet<>(Collections.singletonList(user)));
 
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
             .thenReturn(page);
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(getCommentDto());
 
-        commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
+        PageableDto<CommentDto> result = commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
 
-        assertTrue(childComment.isCurrentUserLiked());
+        assertTrue(result.getPage().getFirst().isCurrentUserLiked());
+        assertFalse(result.getPage().getFirst().isCurrentUserDisliked());
 
+        verify(commentRepo).findById(parentCommentId);
         verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
             pageable, parentCommentId, CommentStatus.DELETED);
         verify(modelMapper).map(childComment, CommentDto.class);
+    }
+
+    @Test
+    void findAllActiveRepliesNotFoundParentCommentTest() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long parentCommentId = 1L;
+
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,
+            () -> commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
+        verify(commentRepo).findById(parentCommentId);
     }
 
     @Test
@@ -1095,6 +1157,69 @@ class CommentServiceImplTest {
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+    }
+
+    @Test
+    void givenCommentDislikedByUser_whenLikedByUser_shouldRemoveDislikeAndAddLike() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Comment comment = getComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        Long articleId = 10L;
+        Habit habit = getHabit();
+        habit.setUserId(user.getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
+        comment.setUsersLiked(new HashSet<>());
+        comment.setUsersDisliked(new HashSet<>(Set.of(user)));
+
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.ofNullable(habitTranslation));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+        commentService.like(1L, userVO, Locale.ENGLISH);
+
+        assertEquals(0, comment.getUsersDisliked().size());
+        assertEquals(1, comment.getUsersLiked().size());
+    }
+
+    @Test
+    void dislikeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Comment comment = getComment();
+        comment.setUsersDisliked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        commentService.dislike(1L, userVO, null);
+
+        verify(commentRepo).save(comment);
+        assertEquals(1L, comment.getUsersDisliked().size());
+    }
+
+    @Test
+    void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Comment comment = getComment();
+        comment.setUsersLiked(new HashSet<>(Set.of(user)));
+        comment.setUsersDisliked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        commentService.dislike(1L, userVO, null);
+
+        assertEquals(0, comment.getUsersLiked().size());
+        assertEquals(1, comment.getUsersDisliked().size());
     }
 
     @Test

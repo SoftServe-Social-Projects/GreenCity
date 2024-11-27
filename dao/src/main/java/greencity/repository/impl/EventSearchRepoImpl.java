@@ -137,6 +137,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
             addTagsPredicate(filterEventDto.getTags(), eventRoot, predicates);
             addTitlePredicate(filterEventDto.getTitle(), eventRoot, predicates);
             addTypePredicate(filterEventDto.getType(), eventRoot, predicates);
+            addDatePredicate(filterEventDto, eventRoot, predicates);
         }
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
@@ -207,6 +208,18 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     private void addTypePredicate(EventType type, Root<Event> eventRoot, List<Predicate> predicates) {
         if (type != null) {
             predicates.add(criteriaBuilder.equal(eventRoot.get(Event_.TYPE), type));
+        }
+    }
+
+    private void addDatePredicate(FilterEventDto filterEventDto, Root<Event> eventRoot, List<Predicate> predicates) {
+        ZonedDateTime from = filterEventDto.getFrom();
+        ZonedDateTime to = filterEventDto.getTo();
+        ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates, JoinType.LEFT);
+        if (from != null) {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from));
+        }
+        if (to != null) {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), to));
         }
     }
 

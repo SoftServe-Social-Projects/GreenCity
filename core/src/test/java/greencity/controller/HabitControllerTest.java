@@ -412,4 +412,39 @@ class HabitControllerTest {
 
         verify(habitService).like(habitId, userVO);
     }
+
+    @Test
+    @SneakyThrows
+    void dislikeTest() {
+        Long habitId = 1L;
+
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(post(habitLink + "/dislike")
+            .param("habitId", habitId.toString())
+            .principal(getPrincipal()))
+            .andExpect(status().isOk());
+
+        verify(habitService).dislike(habitId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void addToFavoritesTest() {
+        Long habitId = 1L;
+        mockMvc.perform(post(habitLink + "/{habitId}/favorites", habitId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(habitService).addToFavorites(habitId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void removeFromFavoritesTest() {
+        Long habitId = 1L;
+        mockMvc.perform(delete(habitLink + "/{habitId}/favorites", habitId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(habitService).removeFromFavorites(habitId, principal.getName());
+    }
 }

@@ -24,7 +24,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -90,7 +90,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .notificationType(notificationType)
                 .projectName(ProjectName.GREENCITY)
                 .targetUser(modelMapper.map(targetUserVO, User.class))
-                .time(LocalDateTime.now())
+                .time(ZonedDateTime.now())
                 .targetId(targetId)
                 .customMessage(message)
                 .secondMessage(title)
@@ -111,7 +111,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .notificationType(notificationType)
             .projectName(ProjectName.GREENCITY)
             .targetUser(modelMapper.map(targetUser, User.class))
-            .time(LocalDateTime.now())
+            .time(ZonedDateTime.now())
             .actionUsers(new ArrayList<>(List.of(modelMapper.map(actionUser, User.class))))
             .emailSent(false)
             .build();
@@ -139,7 +139,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .emailSent(false)
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
-        notification.setTime(LocalDateTime.now());
+        notification.setTime(ZonedDateTime.now());
         notificationService.sendEmailNotification(
             modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
@@ -152,24 +152,39 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
         Long targetId, String customMessage, Long secondMessageId, String secondMessageText) {
         Notification notification = notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                notificationType, targetId)
-            .orElse(Notification.builder()
-                .notificationType(notificationType)
-                .projectName(ProjectName.GREENCITY)
-                .targetUser(modelMapper.map(targetUserVO, User.class))
-                .actionUsers(new ArrayList<>())
-                .targetId(targetId)
-                .customMessage(customMessage)
-                .secondMessageId(secondMessageId)
-                .secondMessage(secondMessageText)
-                .emailSent(false)
-                .build());
+            .findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+                targetUserVO.getId(), notificationType, targetId, secondMessageId)
+            .orElse(buildNotification(
+                notificationType,
+                targetUserVO,
+                targetId,
+                customMessage,
+                secondMessageId,
+                secondMessageText));
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
-        notification.setTime(LocalDateTime.now());
+        notification.setTime(ZonedDateTime.now());
         notification.setCustomMessage(customMessage);
         notificationService.sendEmailNotification(
             modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
+        sendNotification(notification.getTargetUser().getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
+        Long targetId, String customMessage, String secondMessageText) {
+        final Notification notification = notificationRepo
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                notificationType, targetId)
+            .orElse(buildNotification(notificationType, targetUserVO, targetId, customMessage, null,
+                secondMessageText));
+        notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
+        notification.setTime(ZonedDateTime.now());
+        notification.setCustomMessage(customMessage);
+        notificationService
+            .sendEmailNotification(modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -195,7 +210,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .targetId(targetId)
             .customMessage(customMessage)
             .secondMessage(secondMessage)
-            .time(LocalDateTime.now())
+            .time(ZonedDateTime.now())
             .emailSent(false)
             .build();
         notificationService.sendEmailNotification(
@@ -213,7 +228,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .notificationType(NotificationType.PLACE_ADDED)
                 .projectName(ProjectName.GREENCITY)
                 .targetUser(modelMapper.map(targetUser, User.class))
-                .time(LocalDateTime.now())
+                .time(ZonedDateTime.now())
                 .targetId(targetId)
                 .customMessage(customMessage)
                 .secondMessage(secondMessage)
@@ -231,7 +246,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void removeActionUserFromNotification(UserVO targetUserVO, UserVO actionUserVO, Long targetId,
         NotificationType notificationType) {
-        Notification notification = notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(
+        Notification notification = notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(
             targetUserVO.getId(), notificationType, targetId);
         if (notification != null) {
             if (notification.getActionUsers().size() == 1) {
@@ -349,8 +364,43 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             case 2 -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("TWO_USERS"));
             default -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
         }
+        final int messagesCount = notification.getActionUsers().size();
+        final String times_in_dto = "{times}";
+        if (bodyText.contains(times_in_dto)) {
+            if (size == 1) {
+                bodyText = bodyText.replace(times_in_dto, language.equals("ua")
+                    ? resolveTimesInUkrainian(messagesCount)
+                    : resolveTimesInEnglish(messagesCount));
+            } else {
+                bodyText = bodyText.replace(times_in_dto, "");
+            }
+        }
         dto.setBodyText(bodyText);
         return dto;
+    }
+
+    private String resolveTimesInEnglish(final int number) {
+        return switch (number) {
+            case 1 -> "";
+            case 2 -> "twice";
+            default -> number + " times";
+        };
+    }
+
+    private String resolveTimesInUkrainian(int number) {
+        number = Math.abs(number);
+        final int lastTwoDigits = number % 100;
+        final int lastDigit = number % 10;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+            return number + " разів";
+        }
+
+        return switch (lastDigit) {
+            case 1 -> "";
+            case 2, 3, 4 -> number + " рази";
+            default -> number + " разів";
+        };
     }
 
     /**
@@ -364,66 +414,74 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     @Override
-    public void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
-        String habitName) {
-        Optional<Notification> existingNotification = notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                NotificationType.HABIT_INVITE, habitId);
-
-        if (existingNotification.isPresent()) {
-            Notification notification = existingNotification.get();
-            notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
-
-            notification
-                .setCustomMessage(createInvitationNotificationMessage(notification.getActionUsers(), habitName));
-            notification.setTime(LocalDateTime.now());
-            notificationRepo.save(notification);
-        } else {
-            String customMessage = String.format("%s invites you to add new habit %s.",
-                actionUserVO.getName(), habitName);
-            createNotification(targetUserVO, actionUserVO, NotificationType.HABIT_INVITE, habitId, customMessage);
-        }
-    }
-
-    private String createInvitationNotificationMessage(List<User> actionUsers, String habitName) {
-        int userCount = actionUsers.size();
-
-        return switch (userCount) {
-            case 1 -> String.format("%s invites you to add new habit %s.",
-                actionUsers.get(0).getName(), habitName);
-            case 2 -> String.format("%s and %s invite you to add new habit %s.",
-                actionUsers.get(0).getName(), actionUsers.get(1).getName(), habitName);
-            default -> String.format("%s, %s and other users invite you to add new habit %s.",
-                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(), habitName);
-        };
-    }
-
-    @Override
     public void createOrUpdateLikeNotification(final LikeNotificationDto likeNotificationDto) {
-        notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
-            likeNotificationDto.getTargetUserVO().getId(), likeNotificationDto.getNotificationType(),
-            likeNotificationDto.getNewsId())
-            .ifPresentOrElse(notification -> {
-                List<User> actionUsers = notification.getActionUsers();
-                actionUsers.removeIf(user -> user.getId().equals(likeNotificationDto.getActionUserVO().getId()));
-                if (likeNotificationDto.isLike()) {
-                    actionUsers.add(modelMapper.map(likeNotificationDto.getActionUserVO(), User.class));
-                }
+        boolean isCommentLike = NotificationType.isCommentLike(likeNotificationDto.getNotificationType());
+        Optional<Notification> baseNotification = (isCommentLike
+            ? notificationRepo.findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+                likeNotificationDto.getTargetUserVO().getId(), likeNotificationDto.getNotificationType(),
+                likeNotificationDto.getNewsId(), likeNotificationDto.getSecondMessageId())
+            : notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
+                likeNotificationDto.getTargetUserVO().getId(), likeNotificationDto.getNotificationType(),
+                likeNotificationDto.getNewsId()));
+        baseNotification.ifPresentOrElse(notification -> {
+            List<User> actionUsers = notification.getActionUsers();
+            actionUsers.removeIf(user -> user.getId().equals(likeNotificationDto.getActionUserVO().getId()));
+            if (likeNotificationDto.isLike()) {
+                actionUsers.add(modelMapper.map(likeNotificationDto.getActionUserVO(), User.class));
+            }
 
-                if (actionUsers.isEmpty()) {
-                    notificationRepo.delete(notification);
-                } else {
-                    notification.setCustomMessage(likeNotificationDto.getNewsTitle());
-                    notification.setTime(LocalDateTime.now());
-                    notificationRepo.save(notification);
-                }
-            }, () -> {
-                if (likeNotificationDto.isLike()) {
-                    createNotification(likeNotificationDto.getTargetUserVO(), likeNotificationDto.getActionUserVO(),
-                        likeNotificationDto.getNotificationType(), likeNotificationDto.getNewsId(),
-                        likeNotificationDto.getNewsTitle(), likeNotificationDto.getSecondMessageId(),
-                        likeNotificationDto.getSecondMessageText());
-                }
-            });
+            if (actionUsers.isEmpty()) {
+                notificationRepo.delete(notification);
+            } else {
+                notification.setCustomMessage(likeNotificationDto.getNewsTitle());
+                notification.setTime(ZonedDateTime.now());
+                notificationRepo.save(notification);
+            }
+        }, () -> {
+            if (likeNotificationDto.isLike()) {
+                generateNotification(likeNotificationDto.getTargetUserVO(), likeNotificationDto.getActionUserVO(),
+                    likeNotificationDto.getNotificationType(), likeNotificationDto.getNewsId(),
+                    likeNotificationDto.getNewsTitle(), likeNotificationDto.getSecondMessageId(),
+                    likeNotificationDto.getSecondMessageText());
+            }
+        });
+    }
+
+    private void generateNotification(final UserVO targetUserVO, final UserVO actionUserVO,
+        final NotificationType notificationType, final Long targetId,
+        final String customMessage, final Long secondMessageId,
+        final String secondMessageText) {
+        final Notification notification = Notification.builder()
+            .notificationType(notificationType)
+            .projectName(ProjectName.GREENCITY)
+            .targetUser(modelMapper.map(targetUserVO, User.class))
+            .actionUsers(new ArrayList<>())
+            .targetId(targetId)
+            .customMessage(customMessage)
+            .secondMessageId(secondMessageId)
+            .secondMessage(secondMessageText)
+            .emailSent(false)
+            .build();
+        notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
+        notification.setTime(ZonedDateTime.now());
+        notification.setCustomMessage(customMessage);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
+        sendNotification(notification.getTargetUser().getId());
+    }
+
+    private Notification buildNotification(NotificationType notificationType, UserVO targetUserVO, Long targetId,
+        String customMessage, Long secondMessageId, String secondMessageText) {
+        return Notification.builder()
+            .notificationType(notificationType)
+            .projectName(ProjectName.GREENCITY)
+            .targetUser(modelMapper.map(targetUserVO, User.class))
+            .actionUsers(new ArrayList<>())
+            .targetId(targetId)
+            .customMessage(customMessage)
+            .secondMessageId(secondMessageId)
+            .secondMessage(secondMessageText)
+            .emailSent(false)
+            .build();
     }
 }

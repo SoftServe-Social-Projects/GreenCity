@@ -186,9 +186,9 @@ public class HabitCommentController {
     /**
      * Method to like/dislike certain {@link CommentDto} comment specified by id.
      *
-     * @param commentId of {@link CommentDto} to like/dislike
+     * @param commentId of {@link CommentDto} to like/unlike
      */
-    @Operation(summary = "Like/dislike comment.")
+    @Operation(summary = "Like/unlike comment.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -203,6 +203,28 @@ public class HabitCommentController {
         @Parameter(hidden = true) @CurrentUser UserVO user,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         commentService.like(commentId, user, locale);
+    }
+
+    /**
+     * Method to dislike certain {@link CommentDto} comment specified by id.
+     *
+     * @param commentId of {@link CommentDto} to like/dislike
+     */
+    @Operation(summary = "Dislike comment.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/comments/dislike")
+    public void dislike(@RequestParam("commentId") Long commentId,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        commentService.dislike(commentId, user, locale);
     }
 
     /**

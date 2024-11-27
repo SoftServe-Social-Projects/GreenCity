@@ -99,6 +99,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
         Habit habit = buildHabitWithTranslations(habitManagementDto);
         uploadImageForHabit(habitManagementDto, image, habit);
+        habit.setIsDeleted(false);
+        habit.setIsCustomHabit(true);
         habitRepo.save(habit);
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);
@@ -161,6 +163,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setComplexity(habitManagementDto.getComplexity());
+        habit.setDefaultDuration(habitManagementDto.getDefaultDuration());
         habitRepo.save(habit);
     }
 
@@ -213,6 +216,20 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     @Transactional
     public void deleteAll(List<Long> listId) {
         listId.forEach(this::delete);
+    }
+
+    /**
+     * Method toggles the status of a Habit from "isDeleted" to true or false.
+     *
+     * @param id {@link HabitManagementDto}'s id.
+     */
+    @Override
+    @Transactional
+    public void switchIsDeletedStatus(Long id) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        habit.setIsDeleted(!habit.getIsDeleted());
+        habitRepo.save(habit);
     }
 
     private String getSortModel(Pageable pageable) {

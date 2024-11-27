@@ -200,6 +200,16 @@ public class ErrorMessage {
     public static final String NOTIFICATION_NOT_FOUND_BY_ID = "Notification doesn't exist by this id: ";
     public static final String DELETING_RATING_POINTS_NOT_ALLOWED =
         "Deleting this RatingPoints is not possible because an Achievement with such name still exists.";
+    public static final String USER_HAS_ALREADY_ADDED_HABIT_TO_FAVORITES =
+        "User has already added this habit to favorites.";
+    public static final String HABIT_NOT_IN_FAVORITES = "This habit is not in favorites.";
     public static final String IS_FAVORITE_PARAM_REQUIRE_AUTHENTICATED_USER =
         "isFavorite param require authenticated user";
+    public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT_ASSIGN =
+        "No friends are assigned on current habit assign with id: ";
+    public static final String CANNOT_ACCEPT_HABIT_INVITATION = "You can't accept this habit invitation";
+    public static final String CANNOT_REJECT_HABIT_INVITATION = "You can't reject this habit invitation";
+    public static final String INVITATION_NOT_FOUND = "Invitation not found";
+    public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
+    public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
 }

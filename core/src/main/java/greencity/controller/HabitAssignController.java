@@ -751,7 +751,7 @@ public class HabitAssignController {
             .build();
     }
 
-    @Operation(summary = "Get all friends habits working days for current habit")
+    @Operation(summary = "Retrieve all friends' habit working days for a specific habit assignment.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
             array = @ArraySchema(schema = @Schema(implementation = HabitWorkingDaysDto.class)))),
@@ -760,10 +760,10 @@ public class HabitAssignController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @GetMapping("/{habitId}/friends/habit-duration-info")
-    public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitId,
+    @GetMapping("/{habitAssignId}/friends/habit-duration-info")
+    public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
-            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitId));
+            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitAssignId));
     }
 }

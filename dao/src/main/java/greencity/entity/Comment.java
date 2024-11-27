@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,12 +60,23 @@ public class Comment {
     @Builder.Default
     private boolean currentUserLiked = false;
 
+    @Transient
+    @Builder.Default
+    private boolean currentUserDisliked = false;
+
     @ManyToMany
     @JoinTable(
         name = "comments_users_likes",
         joinColumns = @JoinColumn(name = "comment_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> usersLiked;
+    private Set<User> usersLiked = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "comments_users_dislikes",
+        joinColumns = @JoinColumn(name = "comment_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersDisliked = new HashSet<>();
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

@@ -86,19 +86,39 @@ public interface UserNotificationService {
         Long targetId, String customMessage);
 
     /**
-     * Method to create Notification.
+     * Creates a notification for a target user. Notifications are uniquely
+     * identified by the combination of {@code targetUserId},
+     * {@code notificationType}, {@code targetId}, and {@code secondMessageId}.
      *
-     * @param targetUser        user, that should receive Notification
-     * @param actionUser        user, that performed action
-     * @param notificationType  type of Notification
+     * @param targetUser        the user who will receive the notification
+     * @param actionUser        the user who performed the action triggering the
+     *                          notification
+     * @param notificationType  the type of notification to be created
      * @param targetId          represent the corresponding object's ID
-     * @param customMessage     text of Notification, {message} in template
-     * @param secondMessageId   if to secondMessageText
-     * @param secondMessageText additional text, {secondMessage} in template
-     * @author Volodymyr Mladonov
+     * @param customMessage     a custom message for the notification
+     * @param secondMessageId   a secondary identifier for additional context
+     * @param secondMessageText a secondary text for additional context
+     * @author Vitalii Fedyk
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
         Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
+
+    /**
+     * Creates a notification for a target user. Notifications are uniquely
+     * identified by the combination of {@code targetUserId},
+     * {@code notificationType}, and {@code targetId}.
+     *
+     * @param targetUser        the user who will receive the notification
+     * @param actionUser        the user who performed the action triggering the
+     *                          notification
+     * @param notificationType  the type of notification to be created
+     * @param targetId          represent the corresponding object's ID
+     * @param customMessage     a custom message for the notification
+     * @param secondMessageText a secondary text for additional context
+     * @author Vitalii Fedyk
+     */
+    void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
+        Long targetId, String customMessage, String secondMessageText);
 
     /**
      * Method to create Notification without actionUser.
@@ -169,21 +189,6 @@ public interface UserNotificationService {
      * @param notificationId id of notification, that should be marked
      */
     void viewNotification(Long notificationId);
-
-    /**
-     * Method to create a new or update an existing habit invite notification. If a
-     * notification for the specified habit and user already exists, this method
-     * updates the notification by adding the new user to the list of action users
-     * and adjusting the notification message accordingly. If no such notification
-     * exists, a new notification is created.
-     *
-     * @param targetUserVO the user who is invited to the habit
-     * @param actionUserVO the user who sends the invitation
-     * @param habitId      the ID of the habit for which the invitation is sent
-     * @param habitName    the name of the habit being invited to
-     */
-    void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
-        String habitName);
 
     /**
      * Creates a new like notification or updates an existing one. If a notification

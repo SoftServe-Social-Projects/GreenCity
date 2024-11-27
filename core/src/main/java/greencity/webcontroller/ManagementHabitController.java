@@ -26,6 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -206,5 +207,23 @@ public class ManagementHabitController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         managementHabitService.deleteAll(listId);
         return ResponseEntity.status(HttpStatus.OK).body(listId);
+    }
+
+    /**
+     * Method toggles the status of a Habit from "isDeleted" to true or false.
+     *
+     * @param id {@link HabitDto}'s id.
+     * @return {@link ResponseEntity}.
+     */
+    @Operation(summary = "Toggle the status of a Habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("/switch-deleted-status/{id}")
+    public ResponseEntity<Long> switchIsDeletedStatus(@PathVariable("id") Long id) {
+        managementHabitService.switchIsDeletedStatus(id);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }

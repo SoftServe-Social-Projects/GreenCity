@@ -297,15 +297,19 @@ public class HabitController {
     }
 
     /**
-     * Retrieves the list of profile pictures of the user's friends (which have
-     * INPROGRESS assign to the habit).
+     * Retrieves the list of profile pictures of the user's friends who are
+     * associated with a specified habit assignment and have an invitation
+     * relationship with the user. This includes friends who either invited the user
+     * or were invited by the user for the specific habit assignment.
      *
-     * @param habitId {@link HabitVO} id.
-     * @param userVO  {@link UserVO}.
-     * @return List of friends profile picture.
+     * @param habitAssignId The ID of the habit assignment.
+     * @param userVO        The current user, represented as a {@link UserVO}.
+     * @return A {@link ResponseEntity} containing a list of
+     *         {@link UserProfilePictureDto} objects representing the profile
+     *         pictures of the friends associated with the habit.
      */
     @Operation(summary = "Retrieves the list of profile pictures of the user's friends "
-        + "(which have INPROGRESS assign to the habit).")
+        + "who are associated with a specified habit assignment through invitations.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -315,12 +319,12 @@ public class HabitController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @GetMapping("/{habitId}/friends/profile-pictures")
+    @GetMapping("/{habitAssignId}/friends/profile-pictures")
     public ResponseEntity<List<UserProfilePictureDto>> getFriendsAssignedToHabitProfilePictures(
-        @PathVariable Long habitId,
+        @PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitId, userVO.getId()));
+            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userVO.getId()));
     }
 
     /**
@@ -378,11 +382,11 @@ public class HabitController {
     }
 
     /**
-     * Method to like/dislike certain {@link HabitDto} habit specified by id.
+     * Method to like/unlike certain {@link HabitDto} habit specified by id.
      *
-     * @param habitId of {@link HabitDto} to like/dislike
+     * @param habitId of {@link HabitDto} to like/unlike
      */
-    @Operation(summary = "Like/dislike habit.")
+    @Operation(summary = "Like/unlike habit.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -395,5 +399,91 @@ public class HabitController {
     @PostMapping("/like")
     public void like(@RequestParam("habitId") Long habitId, @Parameter(hidden = true) @CurrentUser UserVO user) {
         habitService.like(habitId, user);
+    }
+
+    /**
+     * Method to dislike or remove dislike for certain {@link HabitDto} habit
+     * specified by id.
+     *
+     * @param habitId of {@link HabitDto} to like/dislike
+     */
+    @Operation(summary = "Dislike/remove dislike from a habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/dislike")
+    public void dislike(@RequestParam("habitId") Long habitId, @Parameter(hidden = true) @CurrentUser UserVO user) {
+        habitService.dislike(habitId, user);
+    }
+
+    /**
+     * Method for adding a habit to favorites by habitId.
+     */
+    @Operation(summary = "Add a habit to favorites")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/{habitId}/favorites")
+    public ResponseEntity<Object> addToFavorites(@PathVariable Long habitId,
+        @Parameter(hidden = true) Principal principal) {
+        habitService.addToFavorites(habitId, principal.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method for removing a habit from favorites by habit id.
+     */
+    @Operation(summary = "Remove a habit from favorites")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @DeleteMapping("/{habitId}/favorites")
+    public ResponseEntity<Object> removeFromFavorites(@PathVariable Long habitId,
+        @Parameter(hidden = true) Principal principal) {
+        habitService.removeFromFavorites(habitId, principal.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method finds all favorite habits.
+     *
+     * @param pageable {@link Pageable} instance.
+     * @return Pageable of {@link HabitTranslationDto}.
+     */
+    @Operation(summary = "Find all favorite habits.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+
+    @GetMapping("/favorites")
+    @ApiPageable
+    public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
     }
 }

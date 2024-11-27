@@ -136,9 +136,9 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
         if (checkUserIsNotAuthor(userVO, articleAuthor) && !isCommentReply) {
-            createCommentNotification(articleType, articleId, comment, userVO, locale);
+            createCommentNotification(articleType, articleId, userVO, locale);
         }
-        sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, locale);
+        sendNotificationToTaggedUser(comment, articleType, locale);
 
         return addCommentDtoResponse;
     }
@@ -181,24 +181,28 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Sends a notification to users tagged in a comment on a specific article.
      *
-     * @param commentVO   the comment containing the tag, {@link CommentVO}.
      * @param articleType the type of the article where the comment is made,
      *                    {@link ArticleType}.
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      * @throws NotFoundException if a tagged user is not found by ID.
      */
-    private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, Locale locale) {
-        String commentText = commentVO.getText();
+    private void sendNotificationToTaggedUser(Comment comment, ArticleType articleType, Locale locale) {
+        String commentText = comment.getText();
         Set<Long> usersId = getUserIdFromComment(commentText);
+        NotificationType notificationType = getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG);
+        CommentVO commentVO = modelMapper.map(comment, CommentVO.class);
         if (!usersId.isEmpty()) {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-                createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
-                    modelMapper.map(commentVO, Comment.class),
+                userNotificationService.createNotification(
                     modelMapper.map(user, UserVO.class),
-                    locale);
+                    commentVO.getUser(),
+                    notificationType,
+                    commentVO.getArticleId(),
+                    null,
+                    getArticleTitle(articleType, commentVO.getArticleId(), locale));
             }
         }
     }
@@ -267,31 +271,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Generic method for creating a notification for various comment-related
-     * actions on an article.
-     *
-     * @param articleType      the type of the article, {@link ArticleType}.
-     * @param articleId        the ID of the article, {@link Long}.
-     * @param comment          the comment that triggered the notification,
-     *                         {@link Comment}.
-     * @param receiver         the user receiving the notification, {@link UserVO}.
-     * @param sender           the user sending the notification, {@link UserVO}.
-     * @param notificationType the type of notification, {@link NotificationType}.
-     * @throws BadRequestException if the article type is not supported.
-     */
-    private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver,
-        UserVO sender, NotificationType notificationType, Locale locale) {
-        userNotificationService.createNotification(
-            receiver,
-            sender,
-            notificationType,
-            articleId,
-            getArticleTitle(articleType, articleId, locale),
-            comment.getId(),
-            comment.getText());
-    }
-
-    /**
      * Determines the appropriate notification type based on article and action
      * type.
      *
@@ -331,16 +310,15 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param articleType the type of the article, {@link ArticleType}.
      * @param articleId   the ID of the article, {@link Long}.
-     * @param comment     the comment that was made, {@link Comment}.
      * @param userVO      the user who made the comment, {@link UserVO}.
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      */
-    private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO,
-        Locale locale) {
+    private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
         String message = null;
-        ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(locale.getLanguage()),
+        ResourceBundle bundle = ResourceBundle.getBundle("notification",
+            Locale.forLanguageTag(locale.getLanguage()),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
@@ -356,7 +334,6 @@ public class CommentServiceImpl implements CommentService {
             getNotificationType(articleType, CommentActionType.COMMENT),
             articleId,
             message,
-            comment.getId(),
             getArticleTitle(articleType, articleId, locale));
     }
 
@@ -397,25 +374,14 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
         UserVO sender, UserVO receiver, Locale locale) {
-        createNotification(articleType, articleId, comment, receiver,
-            sender, getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
-    }
-
-    /**
-     * Creates a notification for tagging a user in a comment.
-     *
-     * @param articleType the type of the article, {@link ArticleType}.
-     * @param articleId   the ID of the article, {@link Long}.
-     * @param comment     the comment where the user is tagged, {@link Comment}.
-     * @param receiver    the user who is tagged in the comment, {@link UserVO}.
-     * @param locale      the locale used for localization of the notification,
-     *                    {@link Locale}.
-     */
-    private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment,
-        UserVO receiver, Locale locale) {
-        createNotification(articleType, articleId, comment, receiver,
-            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-            getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
+        userNotificationService.createNotification(
+            receiver,
+            sender,
+            getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
+            articleId,
+            comment.getParentComment().getText(),
+            comment.getParentComment().getId(),
+            getArticleTitle(articleType, articleId, locale));
     }
 
     /**
@@ -430,11 +396,6 @@ public class CommentServiceImpl implements CommentService {
             throw new BadRequestException("Comment with id: " + id + " doesn't belong to " + type.getLink());
         }
 
-        if (userVO != null) {
-            comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(userVO.getId())));
-        }
-
         return convertToCommentDto(comment, userVO);
     }
 
@@ -443,32 +404,13 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+        Comment parentComment = commentRepo.findById(parentCommentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId));
         Page<Comment> pages =
-            commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+            commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentComment.getId(),
                 CommentStatus.DELETED);
 
-        pages = setCurrentUserLiked(pages, userVO);
-
         return convertPagesToCommentDtos(pages, userVO);
-    }
-
-    /**
-     * Updates each {@link Comment} in a {@link Page} to set whether the current
-     * user has liked the comment.
-     *
-     * @param pages  the {@link Page} of {@link Comment} entities to be updated.
-     * @param userVO the {@link UserVO} representing the current user. This may be
-     *               {@code null}, in which case no updates will be made to the
-     *               comments' "current user liked" status.
-     * @return the same {@link Page} of {@link Comment} with updated "current user
-     *         liked" status for each comment.
-     */
-    public Page<Comment> setCurrentUserLiked(Page<Comment> pages, UserVO userVO) {
-        if (userVO != null) {
-            pages.forEach(ec -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(userVO.getId()))));
-        }
-        return pages;
     }
 
     /**
@@ -546,8 +488,6 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
                 pageable, articleId, articleType, CommentStatus.DELETED);
 
-        pages = setCurrentUserLiked(pages, userVO);
-
         return convertPagesToCommentDtos(pages, userVO);
     }
 
@@ -566,12 +506,15 @@ public class CommentServiceImpl implements CommentService {
         if (user != null) {
             commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
                 .anyMatch(u -> u.getId().equals(user.getId())));
+            commentDto.setCurrentUserDisliked(comment.getUsersDisliked().stream()
+                .anyMatch(u -> u.getId().equals(user.getId())));
         }
         if (comment.getParentComment() != null) {
             commentDto.setParentCommentId(comment.getParentComment().getId());
         }
         commentDto.setAuthor(modelMapper.map(comment.getUser(), CommentAuthorDto.class));
         commentDto.setLikes(comment.getUsersLiked().size());
+        commentDto.setDislikes(comment.getUsersDisliked().size());
         commentDto.setReplies(comment.getComments().size());
         commentDto.setStatus(comment.getStatus().name());
         return commentDto;
@@ -584,21 +527,38 @@ public class CommentServiceImpl implements CommentService {
     public void like(Long commentId, UserVO userVO, Locale locale) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-        if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
-                userVO);
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                userVO, commentId, getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
-        } else {
-            comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+
+        if (removeLikeIfExists(comment, userVO)) {
+            return;
         }
+
+        removeDislikeIfExists(comment, userVO);
+
+        comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
+        createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+
+        commentRepo.save(comment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void dislike(Long commentId, UserVO userVO, Locale locale) {
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+
+        if (removeDislikeIfExists(comment, userVO)) {
+            return;
+        }
+
+        removeLikeIfExists(comment, userVO);
+
+        comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
+
         commentRepo.save(comment);
     }
 
@@ -631,7 +591,7 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(comment.getUser().getId())) {
-            throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 
         comment.setText(commentText);
@@ -729,5 +689,50 @@ public class CommentServiceImpl implements CommentService {
             userIds.add(Long.valueOf(matcher.group(1)));
         }
         return userIds;
+    }
+
+    /**
+     * Removes a like from the comment if the user has already liked it. Returns
+     * true if a like was removed, false otherwise.
+     */
+    private boolean removeLikeIfExists(Comment comment, UserVO userVO) {
+        boolean userLiked = comment.getUsersLiked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userLiked) {
+            comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
+
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                userVO, comment.getId(), getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a dislike from the comment if the user has already disliked it.
+     * Returns true if a dislike was removed, false otherwise.
+     */
+    private boolean removeDislikeIfExists(Comment comment, UserVO userVO) {
+        boolean userDisliked = comment.getUsersDisliked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userDisliked) {
+            comment.getUsersDisliked().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
+
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                userVO, comment.getId(), getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
+            return true;
+        }
+        return false;
     }
 }

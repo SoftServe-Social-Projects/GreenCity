@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import jakarta.persistence.CascadeType;
@@ -31,9 +32,9 @@ import lombok.ToString;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "toDoListItems", "customToDoListItems"})
+    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "toDoListItems", "customToDoListItems"})
 @ToString(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "toDoListItems", "customToDoListItems"})
+    exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "toDoListItems", "customToDoListItems"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,5 +90,19 @@ public class Habit {
         name = "habits_users_likes",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> usersLiked;
+    private Set<User> usersLiked = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "habits_users_dislikes",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersDisliked = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Builder.Default
+    @JoinTable(name = "habits_followers",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> followers = new HashSet<>();
 }

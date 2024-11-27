@@ -50,6 +50,7 @@ public class SecurityConfig {
     private static final String ECO_NEWS_COMMENTS = ECO_NEWS + COMMENTS;
     private static final String REPLIES = "/replies";
     private static final String LIKE = "/like";
+    private static final String DISLIKE = "/dislike";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -79,6 +80,8 @@ public class SecurityConfig {
     private static final String ACHIEVEMENTS = "/achievements";
     private static final String NOTIFICATIONS = "/notifications";
     private static final String NOTIFICATION_ID = "/{notificationId}";
+    private static final String HABIT_INVITE = "/habit/invite";
+    private static final String INVITATION_ID = "/{invitationId}";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -171,7 +174,7 @@ public class SecurityConfig {
                     ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                     ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE + COUNT,
                     ECO_NEWS + COMMENTS,
-                    ECO_NEWS + COMMENTS + "/id",
+                    ECO_NEWS + COMMENTS + "/{id}",
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
                     ECO_NEWS + COMMENTS + ACTIVE,
@@ -256,6 +259,7 @@ public class SecurityConfig {
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,
                     EVENTS + EVENT_ID + LIKES + COUNT,
+                    EVENTS + EVENT_ID + DISLIKES + COUNT,
                     "/habit/assign/{habitAssignId}/allUserToDoList",
                     "/habit/assign/allUserToDoListsInprogress",
                     "/habit/assign/{habitAssignId}",
@@ -265,6 +269,7 @@ public class SecurityConfig {
                     "/habit/all/{friendId}",
                     "/habit/allMutualHabits/{friendId}",
                     "/habit/{habitId}/friends/profile-pictures",
+                    "habit/favorites",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
@@ -280,7 +285,11 @@ public class SecurityConfig {
                     ECO_NEWS,
                     ECO_NEWS + ECO_NEWS_ID + LIKES,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES,
+                    EVENTS + EVENT_ID + DISLIKES,
                     ECO_NEWS + COMMENTS + LIKE,
+                    ECO_NEWS + COMMENTS + DISLIKE,
+                    HABITS + COMMENTS + DISLIKE,
+                    EVENTS + COMMENTS + DISLIKE + COMMENT_ID,
                     ECO_NEWS_ID_COMMENTS,
                     ECO_NEWS_ID_COMMENTS + COMMENT_ID + LIKES,
                     EVENTS_ID_COMMENTS,
@@ -290,6 +299,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
+                    EVENTS + EVENT_ID + DISLIKE,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     "/files",
@@ -299,8 +309,10 @@ public class SecurityConfig {
                     "/habit/assign/{habitAssignId}/unenroll/{date}",
                     "/habit/statistic/{habitId}",
                     "/habit/like",
+                    "/habit/dislike",
                     HABITS + "/{habitId}/comments",
                     HABITS + "/comments/like",
+                    "/habit/{habitId}/favorites",
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
@@ -342,13 +354,15 @@ public class SecurityConfig {
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
-                    FRIENDS + "/{friendId}/declineFriend")
+                    FRIENDS + "/{friendId}/declineFriend",
+                    HABIT_INVITE + INVITATION_ID + "/accept")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
                     ECO_NEWS + COMMENTS + ECO_NEWS_ID,
                     ECO_NEWS_ID_COMMENTS + COMMENT_ID,
                     HABITS + "/comments/{id}",
+                    "/habit/{habitId}/favorites",
                     "/favorite_place/{placeId}",
                     "/social-networks",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
@@ -365,7 +379,8 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    NOTIFICATIONS + NOTIFICATION_ID)
+                    NOTIFICATIONS + NOTIFICATION_ID,
+                    HABIT_INVITE + INVITATION_ID + "/reject")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,

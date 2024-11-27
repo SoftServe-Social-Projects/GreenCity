@@ -30,6 +30,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
 import greencity.entity.ToDoListItem;
@@ -39,8 +40,10 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitInvitationStatus;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserToDoListItemStatus;
+import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -54,6 +57,7 @@ import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.ToDoListItemRepo;
@@ -106,6 +110,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final RatingCalculation ratingCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+    private final HabitInvitationRepo habitInvitationRepo;
+    private final HabitInvitationService habitInvitationService;
 
     /**
      * {@inheritDoc}
@@ -356,6 +362,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
         setToDoListItems(habitAssignDto, habitAssign, language);
         setCustomToDoListItems(habitAssignDto, habitAssign);
+        setLikes(habitAssignDto, habitAssign);
+        setDislikes(habitAssignDto, habitAssign);
+        return habitAssignDto;
+    }
+
+    /**
+     * Method builds {@link HabitAssignDto} with one habit translation.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @param language    code of language.
+     * @return {@link HabitAssign} instance.
+     */
+    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language, Long userId) {
+        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
+        HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+        habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
+        habitAssignDto.setFriendsIdsTrackingHabit(
+            habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssign.getHabit().getId()));
+        setToDoListItems(habitAssignDto, habitAssign, language);
         return habitAssignDto;
     }
 
@@ -382,7 +407,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         .getContent())
                     .build();
             })
-            .collect(Collectors.toList()));
+            .toList());
     }
 
     private void setCustomToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
@@ -398,7 +423,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     .text(customToDoListItem.getText())
                     .build();
             })
-            .collect(Collectors.toList()));
+            .toList());
     }
 
     private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, String language) {
@@ -592,7 +617,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language) {
         return habitAssignRepo.findAllByUserId(userId)
-            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).toList();
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language, userId))
+            .toList();
     }
 
     /**
@@ -1244,7 +1270,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .status(ToDoListItemStatus.ACTIVE)
                 .isDefault(false)
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         customToDoListItemRepo.saveAll(listToSaveItems);
     }
@@ -1398,22 +1424,51 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void processHabitInvite(UserVO userVO, User friend, Long habitId, Locale locale) {
-        UserVO friendVO = mapToUserVO(friend);
         Habit habit = getHabitById(habitId);
-        HabitAssign habitAssign = assignHabitToFriend(habit, friend);
+        HabitAssign habitAssign = assignHabitToUser(habit, friend);
         List<Long> toDoListItemIds = toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId);
         List<Long> customToDoListItemIds =
-            customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId);
+                customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitId);
         saveUserToDoListItems(toDoListItemIds, habitAssign, false);
         saveUserToDoListItems(customToDoListItemIds, habitAssign, true);
 
+        HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
+        saveUserToDoListItems(toDoListItemIds, inviterHabitAssign, false);
+        saveUserToDoListItems(customToDoListItemIds, inviterHabitAssign, true);
+
+        boolean invitationExists = habitInvitationRepo.existsByInviterHabitAssignAndInviteeHabitAssign(
+            inviterHabitAssign, habitAssign);
+
+        if (invitationExists) {
+            throw new IllegalArgumentException(ErrorMessage.INVITATION_ALREADY_EXIST);
+        }
+
+        HabitInvitation habitInvitation =
+            habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
+
         String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
-        userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+        UserVO friendVO = mapToUserVO(friend);
+
+        userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitId, habitName,
+            habitInvitation.getId(), habitName);
     }
 
-    private HabitAssign assignHabitToFriend(Habit habit, User friend) {
-        HabitAssign habitAssign = updateOrCreateHabitAssignWithStatus(habit, friend, HabitAssignStatus.REQUESTED);
+    private HabitAssign assignHabitToUser(Habit habit, User user) {
+        HabitAssign habitAssign = updateOrCreateHabitAssignWithStatus(habit, user, HabitAssignStatus.REQUESTED);
         return habitAssignRepo.save(habitAssign);
+    }
+
+    private HabitAssign getOrAssignHabitToUser(UserVO userVO, Habit habit) {
+        return habitAssignRepo.findByHabitIdAndUserId(habit.getId(), userVO.getId())
+            .orElseGet(() -> {
+                HabitAssign habitAssign = assignHabitToUser(habit, getUserById(userVO.getId()));
+                List<Long> toDoListItemIds = toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId());
+                List<Long> customToDoListItemIds =
+                        customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habit.getId());
+                saveUserToDoListItems(toDoListItemIds, habitAssign, false);
+                saveUserToDoListItems(customToDoListItemIds, habitAssign, true);
+                return habitAssign;
+            });
     }
 
     private void checkIfUserIsAFriend(Long userId, Long friendId) {
@@ -1463,22 +1518,24 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitId) {
-        List<Long> friendsIdsTrackingHabit = habitAssignRepo.findFriendsIdsTrackingHabit(habitId, userId);
+    public List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitAssignId) {
+        List<Long> friendsIdsTrackingHabit =
+            habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId);
         if (friendsIdsTrackingHabit.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT + habitId);
+            throw new NotFoundException(ErrorMessage.NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT_ASSIGN + habitAssignId);
         }
 
-        List<HabitAssign> habitAssigns = habitAssignRepo.findByUserIdsAndHabitId(friendsIdsTrackingHabit, habitId);
+        List<HabitAssignDto> habitAssigns =
+            habitInvitationService.getHabitAssignsTrackingHabitList(userId, habitAssignId);
 
         return habitAssigns.stream()
             .map(this::convert)
             .toList();
     }
 
-    private HabitWorkingDaysDto convert(HabitAssign habitAssign) {
+    private HabitWorkingDaysDto convert(HabitAssignDto habitAssign) {
         return HabitWorkingDaysDto.builder()
-            .userId(habitAssign.getUser().getId())
+            .userId(habitAssign.getUserId())
             .duration(habitAssign.getDuration())
             .workingDays(habitAssign.getWorkingDays())
             .build();
@@ -1562,5 +1619,23 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .map(id -> userRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + id)))
             .toList();
+    }
+
+    private HabitInvitation createHabitInvitation(HabitAssign inviteeHabitAssign, HabitAssign inviterHabitAssign) {
+        return HabitInvitation.builder()
+            .inviteeHabitAssign(inviteeHabitAssign)
+            .inviterHabitAssign(inviterHabitAssign)
+            .status(HabitInvitationStatus.PENDING)
+            .build();
+    }
+
+    private void setLikes(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
+        int likes = habitAssign.getHabit().getUsersLiked().size();
+        habitAssignDto.getHabit().setLikes(likes);
+    }
+
+    private void setDislikes(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
+        int dislikes = habitAssign.getHabit().getUsersDisliked().size();
+        habitAssignDto.getHabit().setDislikes(dislikes);
     }
 }

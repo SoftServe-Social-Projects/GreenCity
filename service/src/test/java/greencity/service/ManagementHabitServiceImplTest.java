@@ -10,6 +10,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.options.HabitFilter;
@@ -31,6 +32,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitManagementDtoWithDefaultImage;
 import static greencity.ModelUtils.getHabitManagementDtoWithoutImage;
 import static greencity.ModelUtils.getHabitWithDefaultImage;
@@ -40,6 +42,9 @@ import static greencity.ModelUtils.getSortModel;
 import static greencity.ModelUtils.getSortedPageable;
 import static greencity.TestConst.LANGUAGE_CODE_EN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -122,6 +127,8 @@ class ManagementHabitServiceImplTest {
             .build();
         Habit habit = Habit.builder()
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
+            .isDeleted(false)
+            .isCustomHabit(true)
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(habitTranslationDto -> HabitTranslation.builder()
@@ -267,5 +274,41 @@ class ManagementHabitServiceImplTest {
         verify(habitRepo).save(habit);
         verify(modelMapper).map(habit, HabitManagementDto.class);
         verify(emptyImage).isEmpty();
+    }
+
+    @Test
+    void switchIsDeletedStatusTest() {
+        Habit habit = getHabit();
+        habit.setIsDeleted(false);
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+
+        managementHabitService.switchIsDeletedStatus(1L);
+
+        assertTrue(habit.getIsDeleted());
+        verify(habitRepo).save(habit);
+    }
+
+    @Test
+    void switchIsDeletedStatusToFalseTest() {
+        Habit habit = getHabit();
+        habit.setIsDeleted(true);
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+
+        managementHabitService.switchIsDeletedStatus(1L);
+
+        assertFalse(habit.getIsDeleted());
+        verify(habitRepo).save(habit);
+    }
+
+    @Test
+    void switchIsDeletedStatusTestWhenHabitIsNotFoundTest() {
+        Long habitId = 1L;
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> managementHabitService.switchIsDeletedStatus(habitId));
+        verify(habitRepo).findById(habitId);
     }
 }

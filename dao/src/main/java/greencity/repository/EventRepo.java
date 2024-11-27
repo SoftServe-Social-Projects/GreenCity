@@ -109,8 +109,9 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
                region_en, region_ua, country_en, country_ua, formatted_address_en,
                formatted_address_ua, e.type,
-               (true)              AS isRelevant,
+               (CURRENT_DATE <= edl_max.latest_finish_date) AS isRelevant,
                COUNT(DISTINCT eul) AS likes,
+               COUNT(DISTINCT eud) AS dislikes,
                COUNT(DISTINCT ec)  AS countComments,
                AVG(eg.grade)       AS grade,
                (false)             AS isOrganizedByFriend,
@@ -121,14 +122,19 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
                  LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
                  LEFT JOIN events_users_likes eul ON e.id = eul.event_id
+                 LEFT JOIN events_users_dislikes eud ON e.id = eud.event_id
                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
+                 LEFT JOIN (
+                    SELECT event_id, MAX(finish_date) AS latest_finish_date
+                    FROM events_dates_locations
+                    GROUP BY event_id
+                 ) edl_max ON e.id = edl_max.event_id
                  LEFT JOIN events_tags et ON e.id = et.event_id
                  LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
                  LEFT JOIN languages l ON tt.language_id = l.id
                  LEFT JOIN users u ON e.organizer_id = u.id
         WHERE (e.id IN (:ids))
-        GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id;
-        """)
+        GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id, edl_max.latest_finish_date;""")
     List<Tuple> loadEventDataByIds(List<Long> ids);
 
     /**
@@ -142,37 +148,46 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      * @return A list of Tuples containing the event preview data for the specified
      *         IDs.
      */
-    @Query(nativeQuery = true, value = """
-        SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
-               tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
-               e.title_image, e.creation_date, start_date, finish_date, online_link,
-               latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
-               region_en, region_ua, country_en, country_ua, formatted_address_en,
-               formatted_address_ua, e.type,
-               (true)                                            AS isRelevant,
-               COUNT(DISTINCT eul)                               AS likes,
-               COUNT(DISTINCT ec)                                AS countComments,
-               AVG(eg.grade)                                     AS grade,
-               (uf.friend_id IS NOT NULL)                        AS isOrganizedByFriend,
-               (e.organizer_id = :userId)                        AS isOrganizedByUser,
-               (ea.user_id = :userId AND ea.user_id IS NOT NULL) AS isSubscribed,
-               (ef.user_id IS NOT NULL)                          AS isFavorite
-        FROM events e
-                 LEFT JOIN events_grades eg ON e.id = eg.event_id
-                 LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
-                 LEFT JOIN events_users_likes eul ON e.id = eul.event_id
-                 LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
-                 LEFT JOIN events_tags et ON e.id = et.event_id
-                 LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
-                 LEFT JOIN languages l ON tt.language_id = l.id
-                 LEFT JOIN users u ON e.organizer_id = u.id
-                 LEFT JOIN users_friends uf ON
-                     uf.user_id = :userId AND uf.friend_id=e.organizer_id AND uf.status='FRIEND'
-                 LEFT JOIN events_followers ef ON e.id = ef.event_id AND ef.user_id = :userId
-                 LEFT JOIN events_attenders ea ON e.id = ea.event_id
-        WHERE (e.id IN (:ids))
-        GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id, uf.friend_id, ea.user_id, ef.user_id;
-        """)
+    @Query(nativeQuery = true,
+        value = """
+            SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
+                   tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
+                   e.title_image, e.creation_date, start_date, finish_date, online_link,
+                   latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
+                   region_en, region_ua, country_en, country_ua, formatted_address_en,
+                   formatted_address_ua, e.type,
+                   (CURRENT_DATE <= edl_max.latest_finish_date) AS isRelevant,
+                   COUNT(DISTINCT eul)                               AS likes,
+                   COUNT(DISTINCT eud)                               AS dislikes,
+                   COUNT(DISTINCT ec)                                AS countComments,
+                   AVG(eg.grade)                                     AS grade,
+                   (uf.friend_id IS NOT NULL)                        AS isOrganizedByFriend,
+                   (e.organizer_id = :userId)                        AS isOrganizedByUser,
+                   (ea.user_id = :userId AND ea.user_id IS NOT NULL) AS isSubscribed,
+                   (ef.user_id IS NOT NULL)                          AS isFavorite
+            FROM events e
+                LEFT JOIN events_grades eg ON e.id = eg.event_id
+                LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
+                LEFT JOIN events_users_likes eul ON e.id = eul.event_id
+                LEFT JOIN events_users_dislikes eud ON e.id = eud.event_id
+                LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
+                LEFT JOIN (
+                   SELECT event_id, MAX(finish_date) AS latest_finish_date
+                   FROM events_dates_locations
+                   GROUP BY event_id
+                ) edl_max ON e.id = edl_max.event_id
+                     LEFT JOIN events_tags et ON e.id = et.event_id
+                     LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
+                     LEFT JOIN languages l ON tt.language_id = l.id
+                     LEFT JOIN users u ON e.organizer_id = u.id
+                     LEFT JOIN users_friends uf ON
+                         uf.user_id = :userId AND uf.friend_id=e.organizer_id AND uf.status='FRIEND'
+                     LEFT JOIN events_followers ef ON e.id = ef.event_id AND ef.user_id = :userId
+                     LEFT JOIN events_attenders ea ON e.id = ea.event_id
+            WHERE (e.id IN (:ids))
+                GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id,
+                                uf.friend_id, ea.user_id, ef.user_id, edl_max.latest_finish_date;
+            """)
     List<Tuple> loadEventDataByIds(List<Long> ids, Long userId);
 
     /**

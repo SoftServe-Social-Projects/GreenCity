@@ -232,6 +232,7 @@ import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
 import static greencity.constant.EventTupleConstant.description;
+import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
@@ -262,6 +263,7 @@ import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.EventStatus.OPEN;
 import static greencity.enums.EventTime.PAST;
+import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
 import static greencity.enums.NotificationType.EVENT_CREATED;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.UserStatus.ACTIVATED;
@@ -784,6 +786,8 @@ public class ModelUtils {
                     .habitItem("")
                     .language(getLanguage())
                     .build()))
+                .usersLiked(new HashSet<>())
+                .usersDisliked(new HashSet<>())
                 .build())
             .user(getUser())
             .userToDoListItems(new ArrayList<>())
@@ -895,6 +899,8 @@ public class ModelUtils {
                     .habitItem("")
                     .language(getLanguage())
                     .build()))
+                .usersLiked(new HashSet<>())
+                .usersDisliked(new HashSet<>())
                 .build())
             .user(getUser())
             .userToDoListItems(getUserToDoListItemList())
@@ -1369,6 +1375,8 @@ public class ModelUtils {
     public static Habit getHabit() {
         Habit habit = Habit.builder().id(1L).image("image.png")
             .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
+            .userId(1L)
             .complexity(1).tags(new HashSet<>(getTags())).build();
 
         return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
@@ -1486,6 +1494,8 @@ public class ModelUtils {
 
     public static Habit getHabitWithDefaultImage() {
         return Habit.builder()
+            .isCustomHabit(true)
+            .isDeleted(false)
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .build();
     }
@@ -2451,6 +2461,7 @@ public class ModelUtils {
             .articleId(10L)
             .text("text")
             .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .comments(List.of(getSubComment()))
@@ -2465,6 +2476,7 @@ public class ModelUtils {
             .articleId(10L)
             .text("text")
             .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .comments(List.of(getSubComment()))
@@ -2714,6 +2726,8 @@ public class ModelUtils {
                 .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
                 .build()))
+            .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
             .build();
     }
 
@@ -2828,30 +2842,35 @@ public class ModelUtils {
                 isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
                 finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
                 cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
-                formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
+                formattedAddressUa, isRelevant, likes, dislikes, countComments, grade, isOrganizedByFriend,
+                isSubscribed,
                 isFavorite});
 
         Object[] row1 = new Object[] {1L, "test1", "<p>description</p>", 1L, "en", "Social", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
-            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
+            false,
             true, true, true};
         Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
-            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
+            false,
             true, true, true};
         Object[] row3 = new Object[] {3L, "test3", "<p>description</p>", 2L, "en", "Social1", true, "ONLINE_OFFLINE",
             2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
-            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
+            false,
             true, true, true};
         Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "ua", "Соціальний1", true,
             "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
-            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
+            false,
             true, true, true};
         return List.of(new TupleImpl(tupleMetadata, row1), new TupleImpl(tupleMetadata, row2),
             new TupleImpl(tupleMetadata, row3), new TupleImpl(tupleMetadata, row4));
@@ -2889,11 +2908,12 @@ public class ModelUtils {
             new TupleElementImpl<>(String.class, formattedAddressUa),
             new TupleElementImpl<>(Boolean.class, isRelevant),
             new TupleElementImpl<>(Long.class, likes),
+            new TupleElementImpl<>(Long.class, dislikes),
             new TupleElementImpl<>(Long.class, countComments),
             new TupleElementImpl<>(BigDecimal.class, grade),
             new TupleElementImpl<>(Boolean.class, isOrganizedByFriend),
             new TupleElementImpl<>(Boolean.class, isSubscribed),
-            new TupleElementImpl<>(Boolean.class, isFavorite)
+            new TupleElementImpl<>(Boolean.class, isFavorite),
         };
     }
 
@@ -2930,6 +2950,7 @@ public class ModelUtils {
                 .isFavorite(true)
                 .isRelevant(true)
                 .likes(0)
+                .dislikes(0)
                 .countComments(2)
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
@@ -2965,6 +2986,7 @@ public class ModelUtils {
                 .isFavorite(true)
                 .isRelevant(true)
                 .likes(0)
+                .dislikes(0)
                 .countComments(2)
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
@@ -2980,7 +3002,7 @@ public class ModelUtils {
             .notificationId(1L)
             .projectName(String.valueOf(GREENCITY))
             .notificationType(String.valueOf(EVENT_CREATED))
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .viewed(true)
             .titleText("You have created event")
             .bodyText("You successfully created event {message}.")
@@ -2993,6 +3015,41 @@ public class ModelUtils {
             .build();
     }
 
+    public static NotificationDto getBaseOfNotificationDtoForEventCommentUserTag(
+        String titleText, String bodyText, List<Long> actionUserId, List<String> actionUserText) {
+        return NotificationDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(EVENT_COMMENT_USER_TAG.name())
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText(titleText)
+            .bodyText(bodyText)
+            .actionUserId(actionUserId)
+            .actionUserText(actionUserText)
+            .build();
+    }
+
+    public static Notification getBaseOfNotificationForEventCommentUserTag(List<User> actionUsers) {
+        return Notification.builder()
+            .id(1L)
+            .actionUsers(actionUsers)
+            .targetId(1L)
+            .secondMessageId(null)
+            .notificationType(EVENT_COMMENT_USER_TAG)
+            .viewed(true)
+            .time(ZonedDateTime.of(2050, 6, 23, 12, 4, 0, 0, ZoneId.of("UTC")))
+            .emailSent(true)
+            .build();
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoWithNotificationForEventCommentUserTag(
+        NotificationDto notificationDto) {
+        return new PageableAdvancedDto<>(Collections.singletonList(notificationDto),
+            1, 0, 1, 0,
+            false, false, true, true);
+    }
+
     public static Notification getNotification() {
         return Notification.builder()
             .id(1L)
@@ -3003,7 +3060,7 @@ public class ModelUtils {
             .notificationType(EVENT_CREATED)
             .projectName(GREENCITY)
             .viewed(true)
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .actionUsers(List.of(getUser()))
             .emailSent(true)
             .build();
@@ -3027,7 +3084,7 @@ public class ModelUtils {
             .notificationType(EVENT_CREATED)
             .projectName(GREENCITY)
             .viewed(true)
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .actionUsers(actionUsers)
             .emailSent(true)
             .build();
