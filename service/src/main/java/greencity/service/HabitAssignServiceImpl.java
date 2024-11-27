@@ -1461,6 +1461,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
         assignToDoListToUser(habitId, inviterHabitAssign);
 
+        boolean invitationExists = habitInvitationRepo.existsByInviterHabitAssignAndInviteeHabitAssign(
+            inviterHabitAssign, habitAssign);
+
+        if (invitationExists) {
+            throw new IllegalArgumentException(ErrorMessage.INVITATION_ALREADY_EXIST);
+        }
+
         HabitInvitation habitInvitation =
             habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
 
