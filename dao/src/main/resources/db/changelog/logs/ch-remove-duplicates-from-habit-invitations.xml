@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="remove-duplicate-invites" author="Ivan Holotsvan">
+        <sql>
+            DELETE FROM habit_invitations
+            WHERE ctid NOT IN (
+                SELECT MIN(ctid)
+                FROM habit_invitations
+                GROUP BY inviter_habit_assign_id, invitee_habit_assign_id
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="unique-inviter-invitee_assigns" author="Ivan Holotsvan">
+        <addUniqueConstraint
+                tableName="habit_invitations"
+                columnNames="inviter_habit_assign_id, invitee_habit_assign_id"
+                constraintName="unique_inviter_invitee_assigns" />
+    </changeSet>
+</databaseChangeLog>
