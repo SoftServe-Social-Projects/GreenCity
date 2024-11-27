@@ -2,10 +2,8 @@ package greencity.mapping;
 
 import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import greencity.dto.habit.HabitAssignDto;
 import greencity.entity.HabitAssign;
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

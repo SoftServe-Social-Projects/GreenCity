@@ -34,7 +34,6 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
@@ -44,7 +43,6 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
@@ -76,10 +74,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import greencity.enums.UserToDoListItemStatus;
 import org.springframework.data.domain.Pageable;
-
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.enums.PlaceStatus.PROPOSED;

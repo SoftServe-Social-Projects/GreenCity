@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The class provides implementation of the {@code UserToDoListItemService}.
@@ -98,7 +99,8 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
         List<UserToDoListItem> toSave = new ArrayList<>();
         for (UserToDoListItemRequestWithStatusDto userItemRequest : userToDoListItems) {
             UserToDoListItem userItem;
-            if (userItemRequest.getIsCustomItem()) {
+            boolean isCustomItem = userItemRequest.getIsCustomItem();
+            if (isCustomItem) {
                 userItem = userToDoListItemRepo
                     .getCustomToDoItemIdByHabitAssignIdAndItemId(habitAssignId, userItemRequest.getTargetId())
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND));
@@ -116,7 +118,8 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
 
     private UserToDoListItemResponseDto buildResponseDto(UserToDoListItem userToDoListItem, String language) {
         UserToDoListItemResponseDto responseDto = modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
-        if (userToDoListItem.getIsCustomItem()) {
+        boolean isCustomItem = userToDoListItem.getIsCustomItem();
+        if (isCustomItem) {
             CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
             responseDto.setText(customItem.getText());
         } else {
@@ -144,11 +147,15 @@ public class UserToDoListItemServiceImpl implements UserToDoListItemService {
 
     private void checkItemReferenceExist(Long targetId, boolean isCustom) {
         if (isCustom) {
-            CustomToDoListItem item = customToDoListItemRepo.findById(targetId).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
+            Optional<CustomToDoListItem> item = customToDoListItemRepo.findById(targetId);
+            if (item.isEmpty()) {
+                throw new NotFoundException(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId);
+            }
         } else {
-            ToDoListItem item = toDoListItemRepo.findById(targetId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId));
+            Optional<ToDoListItem> item = toDoListItemRepo.findById(targetId);
+            if (item.isEmpty()) {
+                throw new NotFoundException(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + targetId);
+            }
         }
     }
 }

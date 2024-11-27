@@ -2,16 +2,13 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.entity.CustomToDoListItem;
 import greencity.enums.ToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
