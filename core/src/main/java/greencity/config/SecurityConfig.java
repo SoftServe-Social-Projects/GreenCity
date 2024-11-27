@@ -75,12 +75,13 @@ public class SecurityConfig {
     private static final String CUSTOM_TO_DO_LIST = "/habits/custom-to-do-list-items";
     private static final String TO_DO_LIST = "/habits/to-do-list-items";
     private static final String USER_TO_DO_LIST = "/habits/assign/user-to-do-list-items";
-    private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
+    private static final String HABIT_ASSIGN_WITH_HABIT_ID = "/habit/assign/{habitId}";
     private static final String ACHIEVEMENTS = "/achievements";
     private static final String NOTIFICATIONS = "/notifications";
     private static final String NOTIFICATION_ID = "/{notificationId}";
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
+    private static final String HABIT_ASSIGN_ID = "/{habitAssignId}";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -220,7 +221,7 @@ public class SecurityConfig {
                     CUSTOM_TO_DO_LIST + "/assign/{habitAssignId}",
                     TO_DO_LIST + "/{habitId}",
                     TO_DO_LIST + "/assign/{habitAssignId}",
-                    USER_TO_DO_LIST + "/{habitAssignId}",
+                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
@@ -232,9 +233,9 @@ public class SecurityConfig {
                     "/habit/assign/active/{date}",
                     "/habit/assign/{habitAssignId}/more",
                     "/habit/assign/activity/{from}/to/{to}",
-                    HABIT_ASSIGN_ID + ACTIVE,
-                    HABIT_ASSIGN_ID,
-                    HABIT_ASSIGN_ID + "/all",
+                    HABIT_ASSIGN_WITH_HABIT_ID + ACTIVE,
+                        HABIT_ASSIGN_WITH_HABIT_ID,
+                    HABIT_ASSIGN_WITH_HABIT_ID + "/all",
                     "/habit/statistic/acquired/count",
                     "/habit/statistic/in-progress/count",
                     FACT_OF_THE_DAY + RANDOM + "/by-tags",
@@ -275,7 +276,7 @@ public class SecurityConfig {
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     NOTIFICATIONS,
-                    HABIT_ASSIGN_ID + "/friends/habit-duration-info")
+                    HABIT_ASSIGN_WITH_HABIT_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -300,8 +301,8 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     "/files",
-                    HABIT_ASSIGN_ID,
-                    HABIT_ASSIGN_ID + "/custom",
+                        HABIT_ASSIGN_WITH_HABIT_ID,
+                    HABIT_ASSIGN_WITH_HABIT_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
                     "/habit/assign/{habitAssignId}/unenroll/{date}",
                     "/habit/statistic/{habitId}",
@@ -313,7 +314,7 @@ public class SecurityConfig {
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
-                    USER_TO_DO_LIST + "/{habitAssignId}",
+                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
                     "/user/{userId}/habit",
                     "/user/{userId}/userFriend/{friendId}",
                     "/user/{userId}/declineFriend/{friendId}",
@@ -333,9 +334,9 @@ public class SecurityConfig {
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS + EVENT_ID,
                     "/habit/update/{habitId}",
-                    HABIT_ASSIGN_ID + "/update-habit-duration",
+                    HABIT_ASSIGN_WITH_HABIT_ID + "/update-habit-duration",
                     "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
-                    HABIT_ASSIGN_ID + "/userToDoList",
+                    HABIT_ASSIGN_WITH_HABIT_ID + "/userToDoList",
                     "/habit/assign/{habitAssignId}/update-status-and-duration")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PATCH,
@@ -343,9 +344,9 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS,
                     EVENTS_COMMENTS + COMMENT_ID,
                     ECO_NEWS + COMMENTS,
-                    HABIT_ASSIGN_ID,
-                    USER_TO_DO_LIST + "/{habitAssignId}",
-                    HABIT_ASSIGN_ID,
+                        HABIT_ASSIGN_WITH_HABIT_ID,
+                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
+                        HABIT_ASSIGN_WITH_HABIT_ID,
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
@@ -360,7 +361,7 @@ public class SecurityConfig {
                     "/habit/{habitId}/favorites",
                     "/favorite_place/{placeId}",
                     "/social-networks",
-                    USER_TO_DO_LIST + "/{habitAssignId}",
+                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
