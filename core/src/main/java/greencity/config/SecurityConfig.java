@@ -73,8 +73,9 @@ public class SecurityConfig {
     private static final String ACTIVE = "/active";
     private static final String USER_CUSTOM_TO_DO_LIST_ITEMS = "/user/{userId}/custom-to-do-list-items";
     private static final String CUSTOM_TO_DO_LIST = "/habits/custom-to-do-list-items";
+    private static final String TO_DO_LIST = "/habits/to-do-list-items";
+    private static final String USER_TO_DO_LIST = "/habits/assign/user-to-do-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
-    private static final String USER_TO_DO_LIST = "/user/to-do-list-items";
     private static final String ACHIEVEMENTS = "/achievements";
     private static final String NOTIFICATIONS = "/notifications";
     private static final String NOTIFICATION_ID = "/{notificationId}";
@@ -145,7 +146,6 @@ public class SecurityConfig {
                     "/place/all",
                     "/habit",
                     "/habit/{id}",
-                    "/habit/{id}/to-do-list",
                     "/tags/search",
                     "/tags/v2/search",
                     "/habit/tags/all",
@@ -216,11 +216,13 @@ public class SecurityConfig {
                     ACHIEVEMENTS + CATEGORIES,
                     CUSTOM_TO_DO_LIST + "/{habitId}",
                     CUSTOM_TO_DO_LIST + "/assign/{habitAssignId}",
+                    TO_DO_LIST + "/{habitId}",
+                    TO_DO_LIST + "/assign/{habitAssignId}",
+                    USER_TO_DO_LIST + "/{habitAssignId}",
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
                     "/favorite_place/",
-                    "/to-do-list-items",
                     "/habit/assign/allForCurrentUser",
                     "/habit/assign/allMutualHabits/{userId}",
                     "/habit/assign/allUser/{userId}",
@@ -238,7 +240,6 @@ public class SecurityConfig {
                     "/place/v2/filteredPlacesCategories",
                     "/social-networks/image",
                     "/user",
-                    "/user/to-do-list-items/habits/{habitId}/to-do-list",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
                     "/user/{userId}/custom-to-do-list-items/available",
                     "/user/{userId}/sixUserFriends/",
@@ -255,9 +256,8 @@ public class SecurityConfig {
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,
                     EVENTS + EVENT_ID + LIKES + COUNT,
-                    "/user/to-do-list-items/{userId}/get-all-inprogress",
-                    "/habit/assign/{habitAssignId}/allUserAndCustomList",
-                    "/habit/assign/allUserAndCustomToDoListsInprogress",
+                    "/habit/assign/{habitAssignId}/allUserToDoList",
+                    "/habit/assign/allUserToDoListsInprogress",
                     "/habit/assign/{habitAssignId}",
                     "/habit/tags/search",
                     "/habit/search",
@@ -305,7 +305,7 @@ public class SecurityConfig {
                     "/place/propose",
                     "/place/save/favorite/",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
-                    USER_TO_DO_LIST,
+                    USER_TO_DO_LIST + "/{habitAssignId}",
                     "/user/{userId}/habit",
                     "/user/{userId}/userFriend/{friendId}",
                     "/user/{userId}/declineFriend/{friendId}",
@@ -327,7 +327,7 @@ public class SecurityConfig {
                     "/habit/update/{habitId}",
                     HABIT_ASSIGN_ID + "/update-habit-duration",
                     "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
-                    HABIT_ASSIGN_ID + "/allUserAndCustomList",
+                    HABIT_ASSIGN_ID + "/userToDoList",
                     "/habit/assign/{habitAssignId}/update-status-and-duration")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PATCH,
@@ -336,11 +336,9 @@ public class SecurityConfig {
                     EVENTS_COMMENTS + COMMENT_ID,
                     ECO_NEWS + COMMENTS,
                     HABIT_ASSIGN_ID,
-                    "/to-do-list-items/toDoList/{userId}",
+                    USER_TO_DO_LIST + "/{habitAssignId}",
                     HABIT_ASSIGN_ID,
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
-                    USER_TO_DO_LIST + "/{toDoListItemId}/status/{status}",
-                    USER_TO_DO_LIST + "/{userToDoListItemId}",
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
@@ -354,8 +352,7 @@ public class SecurityConfig {
                     "/favorite_place/{placeId}",
                     "/social-networks",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
-                    USER_TO_DO_LIST + "/user-to-do-list-items",
-                    USER_TO_DO_LIST,
+                    USER_TO_DO_LIST + "/{habitAssignId}",
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
