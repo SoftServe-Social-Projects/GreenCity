@@ -2,14 +2,12 @@ package greencity.dto.habit;
 
 import greencity.ModelUtils;
 import org.junit.jupiter.api.Test;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.List;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,7 +53,7 @@ class ToDoAndCustomToDoListsDtoTest {
     @Test
     void invalidTestWithInvalidCustomToDoList() {
         var customDto = ModelUtils.getCustomToDoListItemRequestDto();
-        customDto.setId(-1L);
+        customDto.setText("");
         var dto = ModelUtils.getToDoAndCustomToDoListsDto();
         dto.setCustomToDoListItemDto(List.of(customDto));
 

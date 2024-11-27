@@ -150,6 +150,7 @@ public class ModelUtils {
             .id(1L)
             .text("text")
             .status(UserToDoListItemStatus.INPROGRESS)
+            .targetId(1L)
             .isCustomItem(true)
             .build();
     }
