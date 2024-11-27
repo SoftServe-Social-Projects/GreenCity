@@ -38,4 +38,6 @@ public class HabitDto {
     private HabitAssignStatus habitAssignStatus;
     private Boolean isAssigned;
     private Boolean isFavorite;
+    private int likes;
+    private int dislikes;
 }

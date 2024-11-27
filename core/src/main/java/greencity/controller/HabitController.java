@@ -405,11 +405,11 @@ public class HabitController {
     }
 
     /**
-     * Method to like/dislike certain {@link HabitDto} habit specified by id.
+     * Method to like/unlike certain {@link HabitDto} habit specified by id.
      *
-     * @param habitId of {@link HabitDto} to like/dislike
+     * @param habitId of {@link HabitDto} to like/unlike
      */
-    @Operation(summary = "Like/dislike habit.")
+    @Operation(summary = "Like/unlike habit.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -422,6 +422,27 @@ public class HabitController {
     @PostMapping("/like")
     public void like(@RequestParam("habitId") Long habitId, @Parameter(hidden = true) @CurrentUser UserVO user) {
         habitService.like(habitId, user);
+    }
+
+    /**
+     * Method to dislike or remove dislike for certain {@link HabitDto} habit
+     * specified by id.
+     *
+     * @param habitId of {@link HabitDto} to like/dislike
+     */
+    @Operation(summary = "Dislike/remove dislike from a habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/dislike")
+    public void dislike(@RequestParam("habitId") Long habitId, @Parameter(hidden = true) @CurrentUser UserVO user) {
+        habitService.dislike(habitId, user);
     }
 
     /**
