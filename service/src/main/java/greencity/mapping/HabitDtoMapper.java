@@ -55,12 +55,12 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                     .build())
                 .toList() : new ArrayList<>())
             .customToDoListItems(habit.getCustomToDoListItems() != null ? habit.getCustomToDoListItems().stream()
-                    .map(customItem -> CustomToDoListItemResponseDto.builder()
-                            .id(customItem.getId())
-                            .text(customItem.getText())
-                            .status(customItem.getStatus())
-                            .build())
-                    .toList() : new ArrayList<>())
+                .map(customItem -> CustomToDoListItemResponseDto.builder()
+                    .id(customItem.getId())
+                    .text(customItem.getText())
+                    .status(customItem.getStatus())
+                    .build())
+                .toList() : new ArrayList<>())
             .build();
     }
 }
