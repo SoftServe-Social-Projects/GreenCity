@@ -1,6 +1,7 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import greencity.annotations.DecodedSize;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.List;
 public class AddEventDtoRequest {
     @NotEmpty
     @NotBlank
-    @Size(min = 1, max = 70)
+    @DecodedSize(min = 1, max = 70)
     private String title;
 
     @NotEmpty
