@@ -23,7 +23,8 @@ class DecodedSizeValidatorTest {
         "'a&lt;&gt;&amp;', 0, 9, true",
         "'a&lt;&gt;&amp;', 0, 3, false",
         "'Hello &lt;world&gt;', 0, 20, true",
-        "'Hello &lt;world&gt;', 0, 12, false"
+        "'Hello &lt;world&gt;', 0, 12, false",
+        "null, 0, 10, true",
     })
     void testDecodedSizeValidator(String input, int min, int max, boolean expectedValidity) {
         DecodedSize annotation = Mockito.mock(DecodedSize.class);
