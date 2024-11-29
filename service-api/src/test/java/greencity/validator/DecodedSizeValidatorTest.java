@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DecodedSizeValidatorTest {
+class DecodedSizeValidatorTest {
 
     private final DecodedSizeValidator validator = new DecodedSizeValidator();
 
