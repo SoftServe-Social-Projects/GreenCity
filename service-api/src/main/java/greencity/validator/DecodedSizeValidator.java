@@ -9,7 +9,6 @@ public class DecodedSizeValidator implements ConstraintValidator<DecodedSize, St
     private int max;
     private int min;
 
-
     @Override
     public void initialize(DecodedSize constraintAnnotation) {
         this.max = constraintAnnotation.max();
@@ -22,7 +21,7 @@ public class DecodedSizeValidator implements ConstraintValidator<DecodedSize, St
             return true;
         }
 
-        String decodedString = Parser.unescapeEntities(value,true);
+        String decodedString = Parser.unescapeEntities(value, true);
         int length = decodedString.length();
 
         return length >= min && length <= max;
