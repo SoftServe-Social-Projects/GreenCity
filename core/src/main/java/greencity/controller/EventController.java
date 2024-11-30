@@ -32,6 +32,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/events")
