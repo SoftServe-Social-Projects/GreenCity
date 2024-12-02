@@ -89,7 +89,7 @@ import java.util.Set;
             + "GROUP BY month",
         resultSetMapping = "monthsStatisticsMapping"),
     @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
-            query = """
+        query = """
                 WITH current_user_friends AS (
                     SELECT user_id
                     FROM users_friends
@@ -169,7 +169,7 @@ import java.util.Set;
                         )
                     )
             """,
-            resultSetMapping = "userFriendDtoMapping")
+        resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor
 @AllArgsConstructor

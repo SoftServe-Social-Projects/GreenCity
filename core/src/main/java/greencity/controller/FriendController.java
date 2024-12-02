@@ -264,7 +264,7 @@ public class FriendController {
             .body(friendService.findRecommendedFriends(userVO.getId(), type, page));
     }
 
-    //FIXME: test this: get all friend requests for curr user
+    // FIXME: test this: get all friend requests for curr user
     /**
      * Method to find {@link UserFriendDto}s which sent request to current user.
      *
