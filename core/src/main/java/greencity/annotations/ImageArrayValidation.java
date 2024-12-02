@@ -13,11 +13,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface ImageArrayValidation {
     /**
-     * Defines the message that will be showed when the input data is not valid.
+     * Defines the message that will be shown when the input data is not valid.
      *
      * @return message
      */
-    String message() default "Download PNG or JPEG or GIF only. Max size of 10Mb each.";
+    String message() default "Upload %s only. Max size of %s each.";
 
     /**
      * Let you select to split the annotations into different groups to apply
@@ -34,4 +34,11 @@ public @interface ImageArrayValidation {
      * @return payload
      */
     Class<? extends Payload>[] payload() default {};
+
+    /**
+     * Array of valid content MIME types.
+     *
+     * @return Valid content types
+     */
+    String[] allowedTypes() default {"image/jpeg", "image/png", "image/jpg", "image/gif"};
 }
