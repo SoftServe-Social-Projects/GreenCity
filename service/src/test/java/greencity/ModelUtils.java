@@ -3157,4 +3157,21 @@ public class ModelUtils {
             .category("Category")
             .build();
     }
+
+
+    public static List<EventDateLocationDto> getEventDateLocationDtoWithInvalidDuration() {
+        ZoneId zoneId = ZoneId.of("Europe/Kiev");
+
+        EventDateLocationDto invalidDto1 = new EventDateLocationDto();
+        invalidDto1.setStartDate(LocalDateTime.of(2024, 12, 2, 10, 0).atZone(zoneId));
+        invalidDto1.setFinishDate(LocalDateTime.of(2024, 12, 2, 10, 20).atZone(zoneId));
+
+        EventDateLocationDto invalidDto2 = new EventDateLocationDto();
+        invalidDto2.setStartDate(LocalDateTime.of(2024, 12, 2, 14, 0).atZone(zoneId));
+        invalidDto2.setFinishDate(LocalDateTime.of(2024, 12, 2, 14, 25).atZone(zoneId));
+
+        return List.of(invalidDto1, invalidDto2);
+    }
+
+
 }
