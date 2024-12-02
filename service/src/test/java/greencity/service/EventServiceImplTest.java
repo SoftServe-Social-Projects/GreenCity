@@ -74,7 +74,6 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -827,9 +826,10 @@ class EventServiceImplTest {
         User user = ModelUtils.getUser();
         when(eventRepo.findById(notExistsEventId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> eventService.rateEvent(notExistsEventId, user.getEmail(), 2))
-            .isInstanceOf(NotFoundException.class).hasMessage(ErrorMessage.EVENT_NOT_FOUND);
+        NotFoundException ex =
+            assertThrows(NotFoundException.class, () -> eventService.rateEvent(notExistsEventId, user.getEmail(), 2));
 
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND, ex.getMessage());
         verify(eventRepo, times(0)).save(any());
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
@@ -841,10 +841,10 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> eventService.rateEvent(event.getId(), user.getEmail(), 2))
-            .isInstanceOf(UserHasNoPermissionToAccessException.class)
-            .hasMessage(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
+        UserHasNoPermissionToAccessException ex = assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.rateEvent(event.getId(), user.getEmail(), 2));
 
+        assertEquals(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT, ex.getMessage());
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
@@ -856,9 +856,10 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> eventService.rateEvent(event.getId(), user.getEmail(), 2))
-            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.EVENT_IS_NOT_FINISHED);
+        BadRequestException ex =
+            assertThrows(BadRequestException.class, () -> eventService.rateEvent(event.getId(), user.getEmail(), 2));
 
+        assertEquals(ErrorMessage.EVENT_IS_NOT_FINISHED, ex.getMessage());
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
@@ -870,9 +871,10 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> eventService.rateEvent(event.getId(), user.getEmail(), 2))
-            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
+        BadRequestException ex =
+            assertThrows(BadRequestException.class, () -> eventService.rateEvent(event.getId(), user.getEmail(), 2));
 
+        assertEquals(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER, ex.getMessage());
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
@@ -886,9 +888,10 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(userRepo.findByEmail(userWhoRatesEvent.getEmail())).thenReturn(Optional.of(userWhoRatesEvent));
 
-        assertThatThrownBy(() -> eventService.rateEvent(event.getId(), userWhoRatesEvent.getEmail(), 2))
-            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.HAVE_ALREADY_RATED);
+        BadRequestException ex = assertThrows(BadRequestException.class,
+            () -> eventService.rateEvent(event.getId(), userWhoRatesEvent.getEmail(), 2));
 
+        assertEquals(ErrorMessage.HAVE_ALREADY_RATED, ex.getMessage());
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
