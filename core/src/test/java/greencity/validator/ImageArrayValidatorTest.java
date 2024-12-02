@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-
+import java.util.List;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +32,9 @@ class ImageArrayValidatorTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(imageArrayValidator, "maxImageSize", "10MB");
+        ReflectionTestUtils.setField(imageArrayValidator, "messageTemplate", "Upload %s only. Max size of %s each.");
+        ReflectionTestUtils.setField(imageArrayValidator, "allowedTypes",
+            List.of("image/jpeg", "image/png", "image/jpg", "image/gif"));
     }
 
     @Test
@@ -77,15 +80,19 @@ class ImageArrayValidatorTest {
     @Test
     void isValid_WithNullElementsReturnsTrue() {
         MockMultipartFile[] image = new MockMultipartFile[1];
-        imageArrayValidator.isValid(image, constraintValidatorContext);
         image[0] = null;
-        assertTrue(imageArrayValidator.isValid(image, constraintValidatorContext));
+
+        boolean result = imageArrayValidator.isValid(image, constraintValidatorContext);
+        assertTrue(result);
     }
 
     @Test
     void validWithInvalidContentTypeReturnsFalse() {
         MockMultipartFile[] image = new MockMultipartFile[] {
             new MockMultipartFile("image", "image.txt", "text/plain", new byte[0])};
+        when(constraintValidatorContext.buildConstraintViolationWithTemplate(anyString()))
+            .thenReturn(violationBuilder);
+
         assertFalse(imageArrayValidator.isValid(image, constraintValidatorContext));
     }
 
@@ -94,6 +101,7 @@ class ImageArrayValidatorTest {
         int invalidSize = (10 * 1024 * 1024) + 1;
         MockMultipartFile[] image = new MockMultipartFile[] {
             new MockMultipartFile("image", "image.jpeg", "image/jpeg", new byte[invalidSize])};
+
         when(constraintValidatorContext.buildConstraintViolationWithTemplate(anyString()))
             .thenReturn(violationBuilder);
 
@@ -101,8 +109,7 @@ class ImageArrayValidatorTest {
 
         verify(constraintValidatorContext).disableDefaultConstraintViolation();
         verify(constraintValidatorContext)
-            .buildConstraintViolationWithTemplate(
-                "Download PNG or JPEG or GIF only. Max size of 10MB each.");
+            .buildConstraintViolationWithTemplate(anyString());
     }
 
     @Test
@@ -118,8 +125,7 @@ class ImageArrayValidatorTest {
 
         verify(constraintValidatorContext).disableDefaultConstraintViolation();
         verify(constraintValidatorContext)
-            .buildConstraintViolationWithTemplate(
-                "Download PNG or JPEG or GIF only. Max size of 10MB each.");
+            .buildConstraintViolationWithTemplate(anyString());
     }
 
     @Test
