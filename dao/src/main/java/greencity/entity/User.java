@@ -117,9 +117,19 @@ import java.util.Set;
                         SELECT COUNT(*)
                         FROM users_friends uf1
                         WHERE (
-                            (uf1.friend_id = u.id AND uf1.user_id IN (SELECT user_id FROM current_user_friends) AND uf1.status = 'FRIEND')
-                            OR
-                            (uf1.friend_id IN (SELECT user_id FROM current_user_friends) AND uf1.user_id = u.id AND uf1.status = 'FRIEND')
+                            (uf1.friend_id = u.id AND uf1.user_id IN
+                                        (
+                                            SELECT user_id
+                                            FROM current_user_friends) AND uf1.status = 'FRIEND'
+                                        )
+                                        OR
+                                        (
+                                            uf1.friend_id IN
+                                            (
+                                                SELECT user_id FROM current_user_friends
+                                            )
+                                            AND uf1.user_id = u.id AND uf1.status = 'FRIEND'
+                                        )
                         )
                     ) AS mutualFriends,
                     u.profile_picture AS profilePicturePath,
