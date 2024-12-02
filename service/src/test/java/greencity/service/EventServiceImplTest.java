@@ -828,7 +828,7 @@ class EventServiceImplTest {
         when(eventRepo.findById(notExistsEventId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> eventService.rateEvent(notExistsEventId, user.getEmail(), 2))
-                .isInstanceOf(NotFoundException.class).hasMessage(ErrorMessage.EVENT_NOT_FOUND);
+            .isInstanceOf(NotFoundException.class).hasMessage(ErrorMessage.EVENT_NOT_FOUND);
 
         verify(eventRepo, times(0)).save(any());
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
@@ -842,7 +842,8 @@ class EventServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> eventService.rateEvent(event.getId(), user.getEmail(), 2))
-                .isInstanceOf(UserHasNoPermissionToAccessException.class).hasMessage(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
+            .isInstanceOf(UserHasNoPermissionToAccessException.class)
+            .hasMessage(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
 
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
@@ -856,7 +857,7 @@ class EventServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> eventService.rateEvent(event.getId(), user.getEmail(), 2))
-                .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.EVENT_IS_NOT_FINISHED);
+            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.EVENT_IS_NOT_FINISHED);
 
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
@@ -870,7 +871,7 @@ class EventServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> eventService.rateEvent(event.getId(), user.getEmail(), 2))
-                .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
+            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
 
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
@@ -886,12 +887,11 @@ class EventServiceImplTest {
         when(userRepo.findByEmail(userWhoRatesEvent.getEmail())).thenReturn(Optional.of(userWhoRatesEvent));
 
         assertThatThrownBy(() -> eventService.rateEvent(event.getId(), userWhoRatesEvent.getEmail(), 2))
-                .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.HAVE_ALREADY_RATED);
+            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.HAVE_ALREADY_RATED);
 
         verify(eventRepo, times(0)).save(event);
         verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
-
 
     @Test
     void getAllEventAttenders() {
