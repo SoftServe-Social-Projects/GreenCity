@@ -60,6 +60,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -67,22 +69,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import static greencity.ModelUtils.getAuthorVO;
-import static greencity.ModelUtils.getEvent;
-import static greencity.ModelUtils.getEventPreviewDtos;
-import static greencity.ModelUtils.getFilterEventDto;
-import static greencity.ModelUtils.getTupleElements;
-import static greencity.ModelUtils.getTuples;
-import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getUsersHashSet;
-import static greencity.ModelUtils.testUserVo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static greencity.ModelUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
@@ -157,6 +146,11 @@ class EventServiceImplTest {
         }.getType())).thenReturn(tags);
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
+        AddressDto build = AddressDto.builder()
+            .latitude(ModelUtils.getAddressDto().getLatitude())
+            .longitude(ModelUtils.getAddressDto().getLongitude())
+            .build();
+        when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
 
@@ -184,38 +178,19 @@ class EventServiceImplTest {
     @Test
     void saveEventWithoutAddress() {
         User user = ModelUtils.getUser();
-        EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
-        List<Long> eventIds = List.of(eventDtoWithoutCoordinatesDto.getId());
         AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutAddressRequest;
         Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
-        List<Tag> tags = ModelUtils.getEventTags();
 
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
-        when(restClient.findByEmail(user.getEmail())).thenReturn(testUserVo);
-        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
-        when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
-        when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
-        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
-            TagType.EVENT)).thenReturn(tagVOList);
-        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
-        }.getType())).thenReturn(tags);
-        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(eventWithoutCoordinates));
-        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId()))
-            .thenReturn(List.of(eventWithoutCoordinates));
+        when(eventRepo.save(any(Event.class))).thenReturn(eventWithoutCoordinates);
 
-        EventDto resultEventDto = eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null);
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null);
+        });
 
-        assertEquals(eventDtoWithoutCoordinatesDto, resultEventDto);
-        assertTrue(resultEventDto.isSubscribed());
-        assertTrue(resultEventDto.isFavorite());
+        assertEquals(ErrorMessage.INVALID_COORDINATES, exception.getMessage());
 
-        verify(restClient).findByEmail(user.getEmail());
-        verify(eventRepo).save(eventWithoutCoordinates);
-        verify(tagService).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
-            TagType.EVENT);
-        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
-        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+        verify(eventRepo, times(0)).save(eventWithoutCoordinates);
     }
 
     @Test
@@ -1084,7 +1059,7 @@ class EventServiceImplTest {
 
     @Test
     void getAllEventAddressesTest() {
-        AddressDto expectedAddressDto = ModelUtils.getAddressDto();
+        AddressDto expectedAddressDto = getAddressDto();
         List<AddressDto> expectedAddresses = List.of(expectedAddressDto);
         Address address = ModelUtils.getAddress();
 
