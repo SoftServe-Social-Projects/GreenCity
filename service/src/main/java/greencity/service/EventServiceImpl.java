@@ -930,7 +930,7 @@ public class EventServiceImpl implements EventService {
                     .filter(eventDateLocationDto -> Duration.between(
                             eventDateLocationDto.getStartDate(),
                             eventDateLocationDto.getFinishDate()
-                    ).toMinutes() <= 1)
+                    ).toMinutes() <= 29)
                     .findAny()
                     .ifPresent(eventDateLocationDto -> {
                         throw new IllegalArgumentException(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH);
