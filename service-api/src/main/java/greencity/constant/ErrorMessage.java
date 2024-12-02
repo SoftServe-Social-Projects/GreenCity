@@ -211,6 +211,5 @@ public class ErrorMessage {
     public static final String INVITATION_NOT_FOUND = "Invitation not found";
     public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
-    public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish"
-            ;
+    public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
 }

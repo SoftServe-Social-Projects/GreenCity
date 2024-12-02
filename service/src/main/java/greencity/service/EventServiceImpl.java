@@ -927,14 +927,13 @@ public class EventServiceImpl implements EventService {
     private void checkingEqualityDateTimeInEventDateLocationDto(List<EventDateLocationDto> eventDateLocationDtos) {
         if (eventDateLocationDtos != null && !eventDateLocationDtos.isEmpty()) {
             eventDateLocationDtos.stream()
-                    .filter(eventDateLocationDto -> Duration.between(
-                            eventDateLocationDto.getStartDate(),
-                            eventDateLocationDto.getFinishDate()
-                    ).toMinutes() < 30)
-                    .findAny()
-                    .ifPresent(eventDateLocationDto -> {
-                        throw new IllegalArgumentException(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH);
-                    });
+                .filter(eventDateLocationDto -> Duration.between(
+                    eventDateLocationDto.getStartDate(),
+                    eventDateLocationDto.getFinishDate()).toMinutes() < 30)
+                .findAny()
+                .ifPresent(eventDateLocationDto -> {
+                    throw new IllegalArgumentException(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH);
+                });
         }
 
     }
