@@ -7,15 +7,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddressDto;
-import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventVO;
-import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.event.*;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.notification.LikeNotificationDto;
@@ -30,12 +22,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
-import greencity.enums.AchievementAction;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.EventType;
-import greencity.enums.NotificationType;
-import greencity.enums.Role;
-import greencity.enums.TagType;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -60,52 +47,9 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import static greencity.constant.EventTupleConstant.cityEn;
-import static greencity.constant.EventTupleConstant.cityUa;
-import static greencity.constant.EventTupleConstant.countComments;
-import static greencity.constant.EventTupleConstant.countryEn;
-import static greencity.constant.EventTupleConstant.countryUa;
-import static greencity.constant.EventTupleConstant.creationDate;
-import static greencity.constant.EventTupleConstant.description;
-import static greencity.constant.EventTupleConstant.dislikes;
-import static greencity.constant.EventTupleConstant.eventId;
-import static greencity.constant.EventTupleConstant.finishDate;
-import static greencity.constant.EventTupleConstant.formattedAddressEn;
-import static greencity.constant.EventTupleConstant.formattedAddressUa;
-import static greencity.constant.EventTupleConstant.grade;
-import static greencity.constant.EventTupleConstant.houseNumber;
-import static greencity.constant.EventTupleConstant.isFavorite;
-import static greencity.constant.EventTupleConstant.isOpen;
-import static greencity.constant.EventTupleConstant.isOrganizedByFriend;
-import static greencity.constant.EventTupleConstant.isRelevant;
-import static greencity.constant.EventTupleConstant.isSubscribed;
-import static greencity.constant.EventTupleConstant.languageCode;
-import static greencity.constant.EventTupleConstant.latitude;
-import static greencity.constant.EventTupleConstant.likes;
-import static greencity.constant.EventTupleConstant.longitude;
-import static greencity.constant.EventTupleConstant.onlineLink;
-import static greencity.constant.EventTupleConstant.organizerId;
-import static greencity.constant.EventTupleConstant.organizerName;
-import static greencity.constant.EventTupleConstant.regionEn;
-import static greencity.constant.EventTupleConstant.regionUa;
-import static greencity.constant.EventTupleConstant.startDate;
-import static greencity.constant.EventTupleConstant.streetEn;
-import static greencity.constant.EventTupleConstant.streetUa;
-import static greencity.constant.EventTupleConstant.tagId;
-import static greencity.constant.EventTupleConstant.tagName;
-import static greencity.constant.EventTupleConstant.title;
-import static greencity.constant.EventTupleConstant.titleImage;
-import static greencity.constant.EventTupleConstant.type;
+import static greencity.constant.EventTupleConstant.*;
 
 @Service
 @Transactional
@@ -132,7 +76,7 @@ public class EventServiceImpl implements EventService {
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
         checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
-        addAddressToLocation(addEventDtoRequest.getDatesLocations());
+        validateEventRequest(addEventDtoRequest);
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         UserVO userVO = restClient.findByEmail(email);
         User organizer = modelMapper.map(userVO, User.class);
@@ -599,6 +543,33 @@ public class EventServiceImpl implements EventService {
         } else {
             toUpdate.setAdditionalImages(null);
         }
+    }
+
+    private void validateEventRequest(AddEventDtoRequest addEventDtoRequest) {
+        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
+
+        if (!validateCoordinates(addEventDtoRequest.getDatesLocations())) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_COORDINATES);
+        }
+        addAddressToLocation(addEventDtoRequest.getDatesLocations());
+    }
+
+    public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
+        for (EventDateLocationDto eventDateLocationDto : eventDateLocationDtos) {
+            AddressDto coordinates = eventDateLocationDto.getCoordinates();
+
+            if (coordinates == null || coordinates.getLatitude() == null || coordinates.getLongitude() == null) {
+                return false;
+            }
+
+            double latitude = coordinates.getLatitude();
+            double longitude = coordinates.getLongitude();
+
+            if (latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
