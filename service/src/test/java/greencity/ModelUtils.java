@@ -1825,6 +1825,25 @@ public class ModelUtils {
         return event;
     }
 
+    public static Event getEventNotStartedYet() {
+        LocalDate start = LocalDate.now().plusDays(1);
+        LocalDate end = LocalDate.now().plusDays(2);
+        Event event = new Event();
+        event.setDescription("Some event description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Some event title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+                ZonedDateTime.of(start.getYear(), start.getMonthValue(), start.getDayOfMonth(), 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(end.getYear(), end.getMonthValue(), end.getDayOfMonth(), 1, 1, 1, 1, ZoneId.systemDefault()),
+                getAddress(), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
     public static Event getEventWithoutAddress() {
         Event event = new Event();
         event.setDescription("Description");
