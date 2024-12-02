@@ -549,7 +549,7 @@ public class EventServiceImpl implements EventService {
         checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
 
         if (!validateCoordinates(addEventDtoRequest.getDatesLocations())) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_COORDINATES);
+            throw new BadRequestException(ErrorMessage.INVALID_COORDINATES);
         }
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
     }
