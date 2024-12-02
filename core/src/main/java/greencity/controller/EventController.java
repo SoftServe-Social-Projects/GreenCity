@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
@@ -81,7 +82,8 @@ public class EventController {
         @Parameter(description = SwaggerExampleModel.ADD_EVENT,
             required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
         @Parameter(hidden = true) Principal principal,
-        @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        @RequestPart(required = false) @Nullable @ImageArrayValidation(
+            allowedTypes = {"image/jpeg", "image/png", "image/jpg"}) MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(eventService.save(addEventDtoRequest, principal.getName(), images));
     }
