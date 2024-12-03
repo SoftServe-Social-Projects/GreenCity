@@ -76,6 +76,7 @@ import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.currentUserGrade;
 import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
@@ -852,6 +853,7 @@ public class EventServiceImpl implements EventService {
                     .eventRate(tuple.get(grade, BigDecimal.class) != null
                         ? tuple.get(grade, BigDecimal.class).doubleValue()
                         : 0.0)
+                    .currentUserGrade(tuple.get(currentUserGrade, Integer.class))
                     .dates(new ArrayList<>())
                     .tags(new ArrayList<>())
                     .build();
