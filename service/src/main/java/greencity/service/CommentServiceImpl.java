@@ -548,7 +548,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepo.save(comment);
     }
 
-     /*
+    /*
      * {@inheritDoc}
      */
     @Override
