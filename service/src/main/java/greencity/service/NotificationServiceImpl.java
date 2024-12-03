@@ -350,7 +350,7 @@ public class NotificationServiceImpl implements NotificationService {
         String subject = bundle.getString(notification.getNotificationType() + "_TITLE");
         String bodyTemplate = bundle.getString(notification.getNotificationType().toString());
         String actionUserText;
-        long actionUsersSize = notification.getActionUsers().size();
+        long actionUsersSize = notification.getActionUsers().stream().distinct().toList().size();
         if (actionUsersSize > 1) {
             actionUserText = actionUsersSize + " " + bundle.getString("USERS");
         } else if (actionUsersSize == 1) {

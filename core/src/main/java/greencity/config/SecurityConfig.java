@@ -315,6 +315,7 @@ public class SecurityConfig {
                     "/habit/assign/{habitAssignId}/unenroll/{date}",
                     "/habit/statistic/{habitId}",
                     "/habit/like",
+                    "/habit/dislike",
                     HABITS + "/{habitId}/comments",
                     HABITS + "/comments/like",
                     "/habit/{habitId}/favorites",

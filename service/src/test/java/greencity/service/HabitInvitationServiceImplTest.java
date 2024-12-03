@@ -59,6 +59,7 @@ class HabitInvitationServiceImplTest {
         habitInvitation1.setInviterHabitAssign(habitAssign1);
         HabitInvitation habitInvitation2 = new HabitInvitation();
         habitInvitation2.setInviteeHabitAssign(habitAssign2);
+        habitInvitation2.setStatus(HabitInvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findByInviteeHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation1));
         when(habitInvitationRepo.findByInviterHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation2));

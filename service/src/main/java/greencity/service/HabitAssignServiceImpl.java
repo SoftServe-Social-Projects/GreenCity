@@ -364,6 +364,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
         habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
         setToDoListItems(habitAssignDto, habitAssign, language);
+        setLikes(habitAssignDto, habitAssign);
+        setDislikes(habitAssignDto, habitAssign);
         return habitAssignDto;
     }
 
@@ -1459,6 +1461,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
         assignToDoListToUser(habitId, inviterHabitAssign);
 
+        boolean invitationExists = habitInvitationRepo.existsByInviterHabitAssignAndInviteeHabitAssign(
+            inviterHabitAssign, habitAssign);
+
+        if (invitationExists) {
+            throw new IllegalArgumentException(ErrorMessage.INVITATION_ALREADY_EXIST);
+        }
+
         HabitInvitation habitInvitation =
             habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
 
@@ -1639,5 +1648,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .inviterHabitAssign(inviterHabitAssign)
             .status(HabitInvitationStatus.PENDING)
             .build();
+    }
+
+    private void setLikes(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
+        int likes = habitAssign.getHabit().getUsersLiked().size();
+        habitAssignDto.getHabit().setLikes(likes);
+    }
+
+    private void setDislikes(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
+        int dislikes = habitAssign.getHabit().getUsersDisliked().size();
+        habitAssignDto.getHabit().setDislikes(dislikes);
     }
 }

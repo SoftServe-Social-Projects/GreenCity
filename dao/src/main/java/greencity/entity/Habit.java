@@ -90,7 +90,14 @@ public class Habit {
         name = "habits_users_likes",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> usersLiked;
+    private Set<User> usersLiked = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "habits_users_dislikes",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersDisliked = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @Builder.Default

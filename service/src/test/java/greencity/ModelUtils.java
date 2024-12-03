@@ -258,6 +258,7 @@ import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.EventStatus.OPEN;
 import static greencity.enums.EventTime.PAST;
+import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
 import static greencity.enums.NotificationType.EVENT_CREATED;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.UserStatus.ACTIVATED;
@@ -779,6 +780,8 @@ public class ModelUtils {
                     .habitItem("")
                     .language(getLanguage())
                     .build()))
+                .usersLiked(new HashSet<>())
+                .usersDisliked(new HashSet<>())
                 .build())
             .user(getUser())
             .userToDoListItems(new ArrayList<>())
@@ -890,6 +893,8 @@ public class ModelUtils {
                     .habitItem("")
                     .language(getLanguage())
                     .build()))
+                .usersLiked(new HashSet<>())
+                .usersDisliked(new HashSet<>())
                 .build())
             .user(getUser())
             .userToDoListItems(getUserToDoListItemList())
@@ -1351,6 +1356,8 @@ public class ModelUtils {
     public static Habit getHabit() {
         Habit habit = Habit.builder().id(1L).image("image.png")
             .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
+            .userId(1L)
             .complexity(1).tags(new HashSet<>(getTags())).build();
 
         return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
@@ -1468,6 +1475,8 @@ public class ModelUtils {
 
     public static Habit getHabitWithDefaultImage() {
         return Habit.builder()
+            .isCustomHabit(true)
+            .isDeleted(false)
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .build();
     }
@@ -2664,6 +2673,8 @@ public class ModelUtils {
                 .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
                 .build()))
+            .usersLiked(new HashSet<>())
+            .usersDisliked(new HashSet<>())
             .build();
     }
 
@@ -2938,7 +2949,7 @@ public class ModelUtils {
             .notificationId(1L)
             .projectName(String.valueOf(GREENCITY))
             .notificationType(String.valueOf(EVENT_CREATED))
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .viewed(true)
             .titleText("You have created event")
             .bodyText("You successfully created event {message}.")
@@ -2951,6 +2962,41 @@ public class ModelUtils {
             .build();
     }
 
+    public static NotificationDto getBaseOfNotificationDtoForEventCommentUserTag(
+        String titleText, String bodyText, List<Long> actionUserId, List<String> actionUserText) {
+        return NotificationDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(EVENT_COMMENT_USER_TAG.name())
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText(titleText)
+            .bodyText(bodyText)
+            .actionUserId(actionUserId)
+            .actionUserText(actionUserText)
+            .build();
+    }
+
+    public static Notification getBaseOfNotificationForEventCommentUserTag(List<User> actionUsers) {
+        return Notification.builder()
+            .id(1L)
+            .actionUsers(actionUsers)
+            .targetId(1L)
+            .secondMessageId(null)
+            .notificationType(EVENT_COMMENT_USER_TAG)
+            .viewed(true)
+            .time(ZonedDateTime.of(2050, 6, 23, 12, 4, 0, 0, ZoneId.of("UTC")))
+            .emailSent(true)
+            .build();
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoWithNotificationForEventCommentUserTag(
+        NotificationDto notificationDto) {
+        return new PageableAdvancedDto<>(Collections.singletonList(notificationDto),
+            1, 0, 1, 0,
+            false, false, true, true);
+    }
+
     public static Notification getNotification() {
         return Notification.builder()
             .id(1L)
@@ -2961,7 +3007,7 @@ public class ModelUtils {
             .notificationType(EVENT_CREATED)
             .projectName(GREENCITY)
             .viewed(true)
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .actionUsers(List.of(getUser()))
             .emailSent(true)
             .build();
@@ -2985,7 +3031,7 @@ public class ModelUtils {
             .notificationType(EVENT_CREATED)
             .projectName(GREENCITY)
             .viewed(true)
-            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
             .actionUsers(actionUsers)
             .emailSent(true)
             .build();
