@@ -611,7 +611,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private boolean isValidCoordinate(double latitude, double longitude) {
-        return latitude >= -90.0 && latitude <= 90.0 && longitude >= -180.0 && longitude <= 180.0;
+        return Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
     }
 
     public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
