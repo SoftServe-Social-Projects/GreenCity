@@ -3158,7 +3158,6 @@ public class ModelUtils {
             .build();
     }
 
-
     public static List<EventDateLocationDto> getEventDateLocationDtoWithInvalidDuration() {
         ZoneId zoneId = ZoneId.of("Europe/Kiev");
 
@@ -3172,6 +3171,5 @@ public class ModelUtils {
 
         return List.of(invalidDto1, invalidDto2);
     }
-
 
 }
