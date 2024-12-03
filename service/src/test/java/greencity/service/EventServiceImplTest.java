@@ -191,14 +191,12 @@ class EventServiceImplTest {
         User user = ModelUtils.getUser();
         AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutAddressRequest;
         Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
-
+        String email = user.getEmail();
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
         when(eventRepo.save(any(Event.class))).thenReturn(eventWithoutCoordinates);
-
         BadRequestException exception = assertThrows(
             BadRequestException.class,
-            () -> eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null));
-
+            () -> eventService.save(addEventDtoWithoutCoordinates, email, null));
         assertEquals(ErrorMessage.INVALID_COORDINATES, exception.getMessage());
         verify(eventRepo, times(0)).save(eventWithoutCoordinates);
     }
