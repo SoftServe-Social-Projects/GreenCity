@@ -1914,6 +1914,13 @@ public class ModelUtils {
         return AddressDto.builder().build();
     }
 
+    public static AddressDto getLongitudeAndLatitude() {
+        return AddressDto.builder()
+            .latitude(ModelUtils.getAddressDto().getLatitude())
+            .longitude(ModelUtils.getAddressDto().getLongitude())
+            .build();
+    }
+
     public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)

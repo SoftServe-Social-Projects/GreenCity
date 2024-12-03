@@ -157,10 +157,7 @@ class EventServiceImplTest {
         }.getType())).thenReturn(tags);
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
-        AddressDto build = AddressDto.builder()
-            .latitude(ModelUtils.getAddressDto().getLatitude())
-            .longitude(ModelUtils.getAddressDto().getLongitude())
-            .build();
+        AddressDto build = ModelUtils.getLongitudeAndLatitude();
         when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());

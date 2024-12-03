@@ -610,18 +610,23 @@ public class EventServiceImpl implements EventService {
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
     }
 
+    private boolean isValidCoordinate(double latitude, double longitude) {
+        return latitude >= -90.0 && latitude <= 90.0 && longitude >= -180.0 && longitude <= 180.0;
+    }
+
     public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
         for (EventDateLocationDto eventDateLocationDto : eventDateLocationDtos) {
             AddressDto coordinates = eventDateLocationDto.getCoordinates();
 
-            if (coordinates == null || coordinates.getLatitude() == null || coordinates.getLongitude() == null) {
+            if (Objects.isNull(coordinates) || Objects.isNull(coordinates.getLatitude())
+                || Objects.isNull(coordinates.getLongitude())) {
                 return false;
             }
 
             double latitude = coordinates.getLatitude();
             double longitude = coordinates.getLongitude();
 
-            if (latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0) {
+            if (!isValidCoordinate(latitude, longitude)) {
                 return false;
             }
         }
