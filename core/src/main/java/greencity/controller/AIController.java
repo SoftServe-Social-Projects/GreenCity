@@ -25,8 +25,8 @@ import java.util.Locale;
 public class AIController {
     private final AIService aiService;
 
-    @Operation(summary = "Makes predictions about the environmental impact of the current user " +
-        "based on the analysis of their habits and habit duration.")
+    @Operation(summary = "Makes predictions about the environmental impact of the current user "
+        + "based on the analysis of their habits and habit duration.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,

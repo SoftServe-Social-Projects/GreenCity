@@ -19,14 +19,12 @@ import java.util.Map;
 public class OpenAIServiceImpl implements OpenAIService {
     @Value("${openai.api.key}")
     private String apiKey;
-
     @Value("${openai.api.url}")
     private String apiUrl;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public String makeRequest(String prompt) {
-        RestTemplate restTemplate = new RestTemplate();
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + apiKey);
         headers.add("Content-Type", "application/json");
@@ -47,8 +45,6 @@ public class OpenAIServiceImpl implements OpenAIService {
             Map<String, Object> message = (Map<String, Object>) choice.get("message");
             return (String) message.get("content");
         }
-
         return ErrorMessage.OPEN_AI_IS_NOT_RESPONDING;
     }
-
 }
