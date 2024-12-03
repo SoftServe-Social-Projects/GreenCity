@@ -534,11 +534,12 @@ public class CommentServiceImpl implements CommentService {
 
         removeDislikeIfExists(comment, userVO);
 
-        if (modelMapper.map(userVO, User.class).equals(comment.getUser())) {
+        User mappedUser = modelMapper.map(userVO, User.class);
+        if (mappedUser.equals(comment.getUser())) {
             return;
         }
 
-        comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        comment.getUsersLiked().add(mappedUser);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
@@ -547,7 +548,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepo.save(comment);
     }
 
-    /**
+     /*
      * {@inheritDoc}
      */
     @Override
@@ -560,10 +561,6 @@ public class CommentServiceImpl implements CommentService {
         }
 
         removeLikeIfExists(comment, userVO);
-
-        if (modelMapper.map(userVO, User.class).equals(comment.getUser())) {
-            return;
-        }
 
         comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
 
