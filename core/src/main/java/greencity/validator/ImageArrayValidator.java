@@ -7,36 +7,33 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ImageArrayValidator implements ConstraintValidator<ImageArrayValidation, MultipartFile[]> {
-    private final List<String> validType = Arrays.asList("image/jpeg", "image/png", "image/jpg", "image/gif");
+    private List<String> allowedTypes;
+    private String messageTemplate;
 
     @Value("${max-multipart-comment-image-size}")
     private String maxImageSize;
 
     @Override
+    public void initialize(ImageArrayValidation constraintAnnotation) {
+        this.allowedTypes = Arrays.asList(constraintAnnotation.allowedTypes());
+        this.messageTemplate = constraintAnnotation.message();
+    }
+
+    @Override
     public boolean isValid(MultipartFile[] images, ConstraintValidatorContext context) {
-        if (images == null) {
-            return true;
+        if (Objects.isNull(images) || images.length == 0) {
+            return true; // skip validation for null or empty inputs
         }
-        for (MultipartFile image : images) {
-            if (image == null) {
-                return true;
-            } else {
-                if (image.getSize() > getMaxSizeInBytes()) {
-                    context.disableDefaultConstraintViolation();
-                    context
-                        .buildConstraintViolationWithTemplate(
-                            "Download PNG or JPEG or GIF only. Max size of " + maxImageSize + " each.")
-                        .addConstraintViolation();
-                    return false;
-                }
-                if (!validType.contains(image.getContentType())) {
-                    return false;
-                }
-            }
+
+        boolean isValid = Arrays.stream(images).allMatch(this::isValidImage);
+
+        if (!isValid) {
+            addViolation(context);
         }
-        return true;
+        return isValid;
     }
 
     long getMaxSizeInBytes() {
@@ -49,5 +46,30 @@ public class ImageArrayValidator implements ConstraintValidator<ImageArrayValida
         } else {
             throw new IllegalArgumentException("Invalid file size unit: " + maxImageSize);
         }
+    }
+
+    private String createMessage() {
+        String validTypesList = String.join(", ", allowedTypes);
+        return String.format(messageTemplate, validTypesList, maxImageSize);
+    }
+
+    private void addViolation(ConstraintValidatorContext context) {
+        String message = createMessage();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message)
+            .addConstraintViolation();
+    }
+
+    private boolean isValidImage(MultipartFile image) {
+        if (Objects.isNull(image)) {
+            return true;
+        }
+
+        if (image.getSize() > getMaxSizeInBytes()) {
+            return false;
+        }
+
+        String mimeType = image.getContentType();
+        return allowedTypes.contains(mimeType);
     }
 }
