@@ -561,6 +561,10 @@ public class CommentServiceImpl implements CommentService {
 
         removeLikeIfExists(comment, userVO);
 
+        if (modelMapper.map(userVO, User.class).equals(comment.getUser())) {
+            return;
+        }
+
         comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
 
         commentRepo.save(comment);
