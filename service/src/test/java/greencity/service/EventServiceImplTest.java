@@ -1070,7 +1070,7 @@ class EventServiceImplTest {
         List<EventDateLocationDto> eventDateLocationDtos = ModelUtils.getEventDateLocationDtoWithInvalidDuration();
 
         Method method = EventServiceImpl.class.getDeclaredMethod(
-                "checkingEqualityDateTimeInEventDateLocationDto", List.class);
+            "checkingEqualityDateTimeInEventDateLocationDto", List.class);
         method.setAccessible(true);
 
         InvocationTargetException exception = assertThrows(InvocationTargetException.class, () -> {
