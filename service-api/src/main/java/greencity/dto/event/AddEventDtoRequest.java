@@ -12,8 +12,6 @@ import lombok.Setter;
 import lombok.Builder;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import org.springframework.validation.annotation.Validated;
-
 import java.util.List;
 
 @NoArgsConstructor
