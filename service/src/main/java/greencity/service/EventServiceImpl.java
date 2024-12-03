@@ -667,10 +667,15 @@ public class EventServiceImpl implements EventService {
 
     private EventDto buildEventDto(Event event, Long userId) {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
-
+        Integer currentUserGrade = event.getEventGrades()
+            .stream()
+            .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
+            .map(EventGrade::getGrade)
+            .findFirst()
+            .orElse(null);
         setFollowers(List.of(eventDto), userId);
         setSubscribes(List.of(eventDto), userId);
-
+        eventDto.setCurrentUserGrade(currentUserGrade);
         return eventDto;
     }
 
