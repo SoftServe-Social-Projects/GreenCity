@@ -1071,13 +1071,13 @@ class CommentServiceImplTest {
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
-                .thenReturn(Optional.ofNullable(habitTranslation));
+            .thenReturn(Optional.ofNullable(habitTranslation));
         when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         doNothing().when(userNotificationService).createNotification(
-                any(UserVO.class), any(UserVO.class), any(NotificationType.class),
-                anyLong(), anyString(), anyLong(), anyString());
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
 
         commentService.like(commentId, userVO, Locale.ENGLISH);
 
