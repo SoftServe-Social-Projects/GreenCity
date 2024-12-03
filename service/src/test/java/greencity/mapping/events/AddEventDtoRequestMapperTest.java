@@ -20,13 +20,6 @@ class AddEventDtoRequestMapperTest {
     @InjectMocks
     private AddEventDtoRequestMapper mapper;
 
-    /*
-     * @Test void convertTest() { Event expected = ModelUtils.getEvent();
-     * AddEventDtoRequest request = ModelUtils.addEventDtoRequest;
-     *
-     * assertEquals(expected.getTitle(), mapper.convert(request).getTitle()); }
-     */
-
     @Test
     void convertTestWithoutAddress() {
         Event expected = ModelUtils.getEventWithoutAddress();

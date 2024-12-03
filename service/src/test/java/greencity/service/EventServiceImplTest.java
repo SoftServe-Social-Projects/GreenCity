@@ -60,8 +60,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -69,9 +67,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static greencity.ModelUtils.getAuthorVO;
+import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getEventPreviewDtos;
+import static greencity.ModelUtils.getFilterEventDto;
+import static greencity.ModelUtils.getTupleElements;
+import static greencity.ModelUtils.getTuples;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getUsersHashSet;
+import static greencity.ModelUtils.testUserVo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
@@ -184,12 +195,11 @@ class EventServiceImplTest {
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
         when(eventRepo.save(any(Event.class))).thenReturn(eventWithoutCoordinates);
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null);
-        });
+        BadRequestException exception = assertThrows(
+            BadRequestException.class,
+            () -> eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null));
 
         assertEquals(ErrorMessage.INVALID_COORDINATES, exception.getMessage());
-
         verify(eventRepo, times(0)).save(eventWithoutCoordinates);
     }
 
@@ -1059,7 +1069,7 @@ class EventServiceImplTest {
 
     @Test
     void getAllEventAddressesTest() {
-        AddressDto expectedAddressDto = getAddressDto();
+        AddressDto expectedAddressDto = ModelUtils.getAddressDto();
         List<AddressDto> expectedAddresses = List.of(expectedAddressDto);
         Address address = ModelUtils.getAddress();
 
