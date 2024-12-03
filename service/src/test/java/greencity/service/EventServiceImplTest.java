@@ -826,7 +826,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void rateEventEventNotExistsNotFoundExceptionThrown() {
+    void rateEventEventNotExistsNotFoundExceptionThrownTest() {
         long notExistsEventId = 999L;
         String userEmail = ModelUtils.testEmail;
         when(eventRepo.findById(notExistsEventId)).thenReturn(Optional.empty());
@@ -839,7 +839,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void rateEventUserRatesOwnEventUserHasNoPermissionToAccessExceptionThrown() {
+    void rateEventUserRatesOwnEventUserHasNoPermissionToAccessExceptionThrownTest() {
         Event event = ModelUtils.getEventWithFinishedDate();
         User user = event.getOrganizer();
         Long eventId = event.getId();
@@ -856,7 +856,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void rateEventUserRatesNotFinishedEventYetBadRequestExceptionThrown() {
+    void rateEventUserRatesNotFinishedEventYetBadRequestExceptionThrownTest() {
         Event event = ModelUtils.getEventNotStartedYet();
         User user = ModelUtils.getTestUser();
         Long eventId = event.getId();
@@ -872,7 +872,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void rateEventUserNotEventSubscriberBadRequestExceptionThrown() {
+    void rateEventUserNotEventSubscriberBadRequestExceptionThrownTest() {
         Event event = ModelUtils.getEventWithFinishedDate();
         User user = ModelUtils.getTestUser();
         Long eventId = event.getId();
@@ -888,7 +888,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void rateEventUserAlreadyRatedEventBadRequestExceptionThrown() {
+    void rateEventUserAlreadyRatedEventBadRequestExceptionThrownTest() {
         Event event = ModelUtils.getEventWithFinishedDate();
         User userWhoRatesEvent = ModelUtils.getTestUser();
         Long eventId = event.getId();
