@@ -20,12 +20,10 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 public class AddEventDtoRequest {
-    @NotEmpty
     @NotBlank
     @DecodedSize(min = 1, max = 70)
     private String title;
 
-    @NotEmpty
     @NotBlank
     @Size(min = 20, max = 63206)
     private String description;
