@@ -2,6 +2,7 @@ package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.annotations.DecodedSize;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,8 @@ import lombok.Setter;
 import lombok.Builder;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
 
 @NoArgsConstructor
@@ -29,6 +32,7 @@ public class AddEventDtoRequest {
     private String description;
 
     @NotEmpty
+    @Valid
     private List<EventDateLocationDto> datesLocations;
 
     @NotEmpty

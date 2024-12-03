@@ -11,12 +11,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Data
 public abstract class AbstractEventDateLocationDto {
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "Start date must not be null or empty")
     private ZonedDateTime startDate;
 
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "Finish date must not be null or empty")
     private ZonedDateTime finishDate;
 
     private String onlineLink;
