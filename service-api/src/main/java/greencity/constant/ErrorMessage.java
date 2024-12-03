@@ -168,6 +168,7 @@ public class ErrorMessage {
     public static final String YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT =
         "The event is close. You can't createSubscription to it";
     public static final String HAVE_ALREADY_RATED = "You have already rated this event";
+    public static final String USER_HAS_NO_RIGHTS_TO_RATE_EVENT = "Organizer have no rights to rate the own event";
     public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
     public static final String EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL =
