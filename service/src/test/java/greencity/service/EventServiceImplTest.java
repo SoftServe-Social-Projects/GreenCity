@@ -27,6 +27,7 @@ import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import greencity.entity.event.EventGrade;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -77,12 +78,14 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
@@ -814,12 +817,92 @@ class EventServiceImplTest {
         User user = ModelUtils.getAttenderUser();
         event.setAttenders(Set.of(user));
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         doNothing().when(userService).updateEventOrganizerRating(event.getOrganizer().getId(), 2.0);
         List<Event> events = List.of(event, ModelUtils.getExpectedEvent(), ModelUtils.getEventWithGrades());
         when(eventRepo.getAllByOrganizer(event.getOrganizer())).thenReturn(events);
         eventService.rateEvent(event.getId(), user.getEmail(), 2);
         verify(eventRepo).save(event);
+    }
+
+    @Test
+    void rateEventEventNotExistsNotFoundExceptionThrownTest() {
+        long notExistsEventId = 999L;
+        String userEmail = ModelUtils.testEmail;
+        when(eventRepo.findById(notExistsEventId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> eventService.rateEvent(notExistsEventId, userEmail, 2))
+            .isInstanceOf(NotFoundException.class).hasMessage(ErrorMessage.EVENT_NOT_FOUND);
+
+        verify(eventRepo, times(0)).save(any());
+        verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
+    }
+
+    @Test
+    void rateEventUserRatesOwnEventUserHasNoPermissionToAccessExceptionThrownTest() {
+        Event event = ModelUtils.getEventWithFinishedDate();
+        User user = event.getOrganizer();
+        Long eventId = event.getId();
+        String userEmail = user.getEmail();
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userEmail, 2))
+            .isInstanceOf(UserHasNoPermissionToAccessException.class)
+            .hasMessage(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
+
+        verify(eventRepo, times(0)).save(event);
+        verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
+    }
+
+    @Test
+    void rateEventUserRatesNotFinishedEventYetBadRequestExceptionThrownTest() {
+        Event event = ModelUtils.getEventNotStartedYet();
+        User user = ModelUtils.getTestUser();
+        Long eventId = event.getId();
+        String userEmail = user.getEmail();
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userEmail, 2))
+            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.EVENT_IS_NOT_FINISHED);
+
+        verify(eventRepo, times(0)).save(event);
+        verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
+    }
+
+    @Test
+    void rateEventUserNotEventSubscriberBadRequestExceptionThrownTest() {
+        Event event = ModelUtils.getEventWithFinishedDate();
+        User user = ModelUtils.getTestUser();
+        Long eventId = event.getId();
+        String userEmail = user.getEmail();
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userEmail, 2))
+            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
+
+        verify(eventRepo, times(0)).save(event);
+        verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
+    }
+
+    @Test
+    void rateEventUserAlreadyRatedEventBadRequestExceptionThrownTest() {
+        Event event = ModelUtils.getEventWithFinishedDate();
+        User userWhoRatesEvent = ModelUtils.getTestUser();
+        Long eventId = event.getId();
+        String userEmail = userWhoRatesEvent.getEmail();
+        event.setAttenders(Set.of(userWhoRatesEvent));
+        event.setEventGrades(List.of(EventGrade.builder().grade(2).event(event).user(userWhoRatesEvent).build()));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(userWhoRatesEvent.getEmail())).thenReturn(Optional.of(userWhoRatesEvent));
+
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userEmail, 2))
+            .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.HAVE_ALREADY_RATED);
+
+        verify(eventRepo, times(0)).save(event);
+        verify(userService, times(0)).updateEventOrganizerRating(anyLong(), anyDouble());
     }
 
     @Test

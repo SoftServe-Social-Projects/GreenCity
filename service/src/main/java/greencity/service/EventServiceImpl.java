@@ -412,8 +412,12 @@ public class EventServiceImpl implements EventService {
     public void rateEvent(Long eventId, String email, int grade) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
+        if (event.getOrganizer().getId().equals(currentUser.getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
+        }
         if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
         }
