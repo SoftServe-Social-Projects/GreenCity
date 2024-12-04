@@ -1279,7 +1279,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void testDislikeIfWasAlreadyPlaced(){
+    void testDislikeIfWasAlreadyPlaced() {
         UserVO userVO = getUserVO();
         User user = getUser();
         Event event = getEvent();
