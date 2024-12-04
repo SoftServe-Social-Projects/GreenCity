@@ -26,6 +26,7 @@ import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.event.EventGrade;
 import greencity.enums.NotificationType;
@@ -516,7 +517,7 @@ class EventServiceImplTest {
         assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
         assertFalse(actual.isSubscribed());
         assertFalse(actual.isFavorite());
-
+        assertNull(actual.getCurrentUserGrade());
         verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
         verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
     }
@@ -529,6 +530,8 @@ class EventServiceImplTest {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
 
+        event.setEventGrades(List.of(EventGrade.builder().grade(5).user(user).event(event).build()));
+
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
         when(restClient.findByEmail(principal.getName())).thenReturn(testUserVo);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
@@ -540,7 +543,7 @@ class EventServiceImplTest {
 
         assertTrue(actual.isSubscribed());
         assertTrue(actual.isFavorite());
-
+        assertEquals(5, actual.getCurrentUserGrade());
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
     }
@@ -1359,6 +1362,23 @@ class EventServiceImplTest {
 
         verify(eventRepo).save(event);
         assertEquals(1L, event.getUsersDislikedEvents().size());
+    }
+
+    @Test
+    void testDislikeIfWasAlreadyPlaced() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        Set<User> usersDisliked = new HashSet<>();
+        usersDisliked.add(user);
+        event.setUsersDislikedEvents(usersDisliked);
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        eventService.dislike(userVO, event.getId());
+
+        verify(eventRepo).save(event);
+        assertEquals(0L, event.getUsersDislikedEvents().size());
     }
 
     @Test

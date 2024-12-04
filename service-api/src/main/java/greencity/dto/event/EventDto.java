@@ -65,6 +65,8 @@ public class EventDto {
 
     private double eventRate;
 
+    private Integer currentUserGrade;
+
     /**
      * Return String of event tags in English.
      */
