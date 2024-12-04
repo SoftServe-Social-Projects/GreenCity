@@ -118,6 +118,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                (false)             AS isOrganizedByUser,
                (false)             AS isSubscribed,
                (false)             AS isFavorite
+                NULL AS currentUserGrade
         FROM events e
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
                  LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
@@ -165,6 +166,10 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                    (e.organizer_id = :userId)                        AS isOrganizedByUser,
                    (ea.user_id = :userId AND ea.user_id IS NOT NULL) AS isSubscribed,
                    (ef.user_id IS NOT NULL)                          AS isFavorite
+                   CASE
+                        WHEN eg.user_id = :userId THEN eg.grade
+                        ELSE Null
+                    END AS currentUserGrade
             FROM events e
                 LEFT JOIN events_grades eg ON e.id = eg.event_id
                 LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'

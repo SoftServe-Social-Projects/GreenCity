@@ -20,6 +20,7 @@ public class EventTupleConstant {
     public static final String isFavorite = "isFavorite";
     public static final String isSubscribed = "isSubscribed";
     public static final String grade = "grade";
+    public static final String currentUserGrade = "currentUserGrade";
     public static final String startDate = "start_date";
     public static final String finishDate = "finish_date";
     public static final String onlineLink = "online_link";
