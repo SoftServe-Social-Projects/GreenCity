@@ -159,8 +159,6 @@ public class ErrorMessage {
         "Start date must be in future and before finish date";
     public static final String SAME_EVENT_DATES =
         "User shouldn't be able to create event with the same event dates for two days within one event";
-    public static final String SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE =
-        "The start time coincides with the end time on one of the event dates";
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
@@ -212,4 +210,5 @@ public class ErrorMessage {
     public static final String INVITATION_NOT_FOUND = "Invitation not found";
     public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
+    public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
 }

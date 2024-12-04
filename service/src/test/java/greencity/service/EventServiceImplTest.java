@@ -1152,11 +1152,11 @@ class EventServiceImplTest {
     }
 
     @Test
-    void testCheckingEqualityDateTimeInEventDateLocationDto() throws Exception {
-        List<EventDateLocationDto> eventDateLocationDtos = ModelUtils.getEventDateLocationDtoWithSameDateTime();
+    void shouldThrowIllegalArgumentExceptionWhenDurationIsLessThan30Minutes() throws Exception {
+        List<EventDateLocationDto> eventDateLocationDtos = ModelUtils.getEventDateLocationDtoWithInvalidDuration();
 
-        Method method =
-            EventServiceImpl.class.getDeclaredMethod("checkingEqualityDateTimeInEventDateLocationDto", List.class);
+        Method method = EventServiceImpl.class.getDeclaredMethod(
+            "checkingEqualityDateTimeInEventDateLocationDto", List.class);
         method.setAccessible(true);
 
         InvocationTargetException exception = assertThrows(InvocationTargetException.class, () -> {
@@ -1165,7 +1165,7 @@ class EventServiceImplTest {
 
         Throwable cause = exception.getCause();
         assertInstanceOf(IllegalArgumentException.class, cause);
-        assertEquals(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE, cause.getMessage());
+        assertEquals(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH, cause.getMessage());
     }
 
     @Test
