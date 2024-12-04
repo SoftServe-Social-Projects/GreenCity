@@ -1279,6 +1279,23 @@ class EventServiceImplTest {
     }
 
     @Test
+    void testDislikeIfWasAlreadyPlaced(){
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        Set<User> usersDisliked = new HashSet<>();
+        usersDisliked.add(user);
+        event.setUsersDislikedEvents(usersDisliked);
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        eventService.dislike(userVO, event.getId());
+
+        verify(eventRepo).save(event);
+        assertEquals(0L, event.getUsersDislikedEvents().size());
+    }
+
+    @Test
     void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();

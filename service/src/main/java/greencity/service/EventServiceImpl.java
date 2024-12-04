@@ -760,6 +760,7 @@ public class EventServiceImpl implements EventService {
         removeLikeIfExists(event, userVO, getEventAuthor(event));
 
         if (removeDislikeIfExists(event, userVO)) {
+            eventRepo.save(event);
             return;
         }
 
