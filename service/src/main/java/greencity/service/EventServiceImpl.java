@@ -131,7 +131,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
         validateEventRequest(addEventDtoRequest);
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         UserVO userVO = restClient.findByEmail(email);
@@ -603,7 +602,6 @@ public class EventServiceImpl implements EventService {
 
     private void validateEventRequest(AddEventDtoRequest addEventDtoRequest) {
         checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
-
         if (!validateCoordinates(addEventDtoRequest.getDatesLocations())) {
             throw new BadRequestException(ErrorMessage.INVALID_COORDINATES);
         }
