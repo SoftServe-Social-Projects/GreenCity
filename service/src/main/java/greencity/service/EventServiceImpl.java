@@ -953,6 +953,7 @@ public class EventServiceImpl implements EventService {
                     throw new IllegalArgumentException(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH);
                 });
         }
+
     }
 
     private Event findEventId(Long id) {
