@@ -442,6 +442,23 @@ public class ModelUtils {
             .build();
     }
 
+    public static User getUserNotCommentOwner() {
+        return User.builder()
+            .id(2L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastActivityTime(localDateTime)
+            .verifyEmail(new VerifyEmail())
+            .dateOfRegistration(localDateTime)
+            .subscribedEvents(new HashSet<>())
+            .favoriteEcoNews(new HashSet<>())
+            .favoriteEvents(new HashSet<>())
+            .language(getLanguage())
+            .build();
+    }
+
     public static User getAttenderUser() {
         return User.builder()
             .id(2L)
@@ -510,6 +527,19 @@ public class ModelUtils {
     public static UserVO getUserVO() {
         return UserVO.builder()
             .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .lastActivityTime(localDateTime)
+            .verifyEmail(new VerifyEmailVO())
+            .dateOfRegistration(localDateTime)
+            .languageVO(getLanguageVO())
+            .build();
+    }
+
+    public static UserVO getUserVONotCommentOwner() {
+        return UserVO.builder()
+            .id(2L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
