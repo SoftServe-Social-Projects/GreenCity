@@ -57,6 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -944,11 +945,12 @@ public class EventServiceImpl implements EventService {
     private void checkingEqualityDateTimeInEventDateLocationDto(List<EventDateLocationDto> eventDateLocationDtos) {
         if (eventDateLocationDtos != null && !eventDateLocationDtos.isEmpty()) {
             eventDateLocationDtos.stream()
-                .filter(eventDateLocationDto -> eventDateLocationDto.getStartDate()
-                    .isEqual(eventDateLocationDto.getFinishDate()))
+                .filter(eventDateLocationDto -> Duration.between(
+                    eventDateLocationDto.getStartDate(),
+                    eventDateLocationDto.getFinishDate()).toMinutes() < 30)
                 .findAny()
                 .ifPresent(eventDateLocationDto -> {
-                    throw new IllegalArgumentException(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE);
+                    throw new IllegalArgumentException(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH);
                 });
         }
     }
