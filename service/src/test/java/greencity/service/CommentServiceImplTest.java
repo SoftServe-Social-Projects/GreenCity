@@ -57,20 +57,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import static greencity.ModelUtils.getAddCommentDtoResponse;
-import static greencity.ModelUtils.getAmountCommentLikesDto;
-import static greencity.ModelUtils.getComment;
-import static greencity.ModelUtils.getCommentDto;
-import static greencity.ModelUtils.getCommentVO;
-import static greencity.ModelUtils.getEcoNews;
-import static greencity.ModelUtils.getEvent;
-import static greencity.ModelUtils.getHabit;
-import static greencity.ModelUtils.getHabitTranslation;
-import static greencity.ModelUtils.getMultipartImageFiles;
-import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getUserSearchDto;
-import static greencity.ModelUtils.getUserTagDto;
-import static greencity.ModelUtils.getUserVO;
+
+import static greencity.ModelUtils.*;
 import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1040,8 +1028,8 @@ class CommentServiceImplTest {
     @Test
     void likeTest() {
         Long commentId = 1L;
-        UserVO userVO = getUserVO();
-        User user = getUser();
+        UserVO userVO = getUserVONotCommentOwner();
+        User user = getUserNotCommentOwner();
         Comment comment = getComment();
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;
@@ -1069,10 +1057,41 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void likeEcoNewsCommentTest() {
+    void likeTest_OwnerUserLikesTheirComment_ShouldNotLike() {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
         User user = getUser();
+        Comment comment = getComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        Long articleId = 10L;
+        Habit habit = getHabit();
+        habit.setUserId(user.getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
+
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.ofNullable(habitTranslation));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.like(commentId, userVO, Locale.ENGLISH);
+
+        assertFalse(comment.getUsersLiked().contains(user));
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        verify(modelMapper).map(userVO, User.class);
+    }
+
+    @Test
+    void likeEcoNewsCommentTest() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVONotCommentOwner();
+        User user = getUserNotCommentOwner();
         Comment comment = getComment();
         comment.setArticleType(ArticleType.ECO_NEWS);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
@@ -1099,8 +1118,8 @@ class CommentServiceImplTest {
     @Test
     void likeEventCommentTest() {
         Long commentId = 1L;
-        UserVO userVO = getUserVO();
-        User user = getUser();
+        UserVO userVO = getUserVONotCommentOwner();
+        User user = getUserNotCommentOwner();
         Comment comment = getComment();
         comment.setArticleType(ArticleType.EVENT);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
@@ -1162,8 +1181,8 @@ class CommentServiceImplTest {
     @Test
     void givenCommentDislikedByUser_whenLikedByUser_shouldRemoveDislikeAndAddLike() {
         Long commentId = 1L;
-        UserVO userVO = getUserVO();
-        User user = getUser();
+        UserVO userVO = getUserVONotCommentOwner();
+        User user = getUserNotCommentOwner();
         Comment comment = getComment();
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;

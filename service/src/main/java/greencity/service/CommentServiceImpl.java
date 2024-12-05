@@ -534,7 +534,12 @@ public class CommentServiceImpl implements CommentService {
 
         removeDislikeIfExists(comment, userVO);
 
-        comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        User mappedUser = modelMapper.map(userVO, User.class);
+        if (mappedUser.equals(comment.getUser())) {
+            return;
+        }
+
+        comment.getUsersLiked().add(mappedUser);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
