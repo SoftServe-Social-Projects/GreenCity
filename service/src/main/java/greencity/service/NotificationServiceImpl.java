@@ -37,6 +37,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 @Slf4j
 @Service
@@ -383,29 +385,5 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String createBaseLink(Notification notification) {
         return clientAddress + "/#/profile/" + notification.getTargetUser().getId() + "/notifications";
-    }
-
-    private String resolveTimesInEnglish(final int number) {
-        return switch (number) {
-            case 1 -> "";
-            case 2 -> "twice";
-            default -> number + " times";
-        };
-    }
-
-    private String resolveTimesInUkrainian(int number) {
-        number = Math.abs(number);
-        final int lastTwoDigits = number % 100;
-        final int lastDigit = number % 10;
-
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-            return number + " разів";
-        }
-
-        return switch (lastDigit) {
-            case 1 -> "";
-            case 2, 3, 4 -> number + " рази";
-            default -> number + " разів";
-        };
     }
 }
