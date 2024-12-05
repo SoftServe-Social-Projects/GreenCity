@@ -246,6 +246,12 @@ public class EventServiceImpl implements EventService {
         }
 
         Page<Long> eventIds = eventRepo.findEventsIds(page, filterEventDto, userId);
+
+        if (page.getPageNumber() >= eventIds.getTotalPages() && eventIds.getTotalPages() > 0) {
+            throw new BadRequestException(
+                String.format(ErrorMessage.PAGE_NOT_FOUND_MESSAGE, page.getPageNumber(), eventIds.getTotalPages()));
+        }
+
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
