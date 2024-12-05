@@ -37,6 +37,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 @Slf4j
 @Service
@@ -360,10 +362,15 @@ public class NotificationServiceImpl implements NotificationService {
         }
         String customMessage = notification.getCustomMessage() != null ? notification.getCustomMessage() : "";
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
+        int messagesCount = notification.getActionUsers().size();
+        String times = language.equals("ua")
+            ? resolveTimesInUkrainian(messagesCount)
+            : resolveTimesInEnglish(messagesCount);
         String body = bodyTemplate
             .replace("{user}", actionUserText)
             .replace("{message}", customMessage)
-            .replace("{secondMessage}", secondMessage);
+            .replace("{secondMessage}", secondMessage)
+            .replace("{times}", times);
 
         return ScheduledEmailMessage.builder()
             .email(notification.getTargetUser().getEmail())
