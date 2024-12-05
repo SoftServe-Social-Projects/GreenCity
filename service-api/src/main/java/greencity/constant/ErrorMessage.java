@@ -212,4 +212,5 @@ public class ErrorMessage {
     public static final String INVITATION_NOT_FOUND = "Invitation not found";
     public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
+    public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
 }

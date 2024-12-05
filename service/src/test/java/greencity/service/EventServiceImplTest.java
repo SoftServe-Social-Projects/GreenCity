@@ -96,6 +96,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -998,6 +999,36 @@ class EventServiceImplTest {
 
         verify(eventRepo).findEventsIds(pageable, filterEventDto, null);
         verify(eventRepo).loadEventDataByIds(idsPage.getContent());
+    }
+
+    @Test
+    void testGetEventsForAuthorizedUserExceedingPageTest() {
+        int requestedPage = 10;
+        int totalPages = 2;
+        int pageSize = 6;
+        Pageable pageable = PageRequest.of(requestedPage, pageSize);
+        Long userId = 1L;
+        FilterEventDto filterEventDto = getFilterEventDto();
+
+        Page<Long> idsPage = new PageImpl<>(
+            List.of(3L, 1L),
+            PageRequest.of(0, pageSize),
+            totalPages * pageSize);
+
+        when(restClient.findById(userId)).thenReturn(getUserVO());
+        when(eventRepo.findEventsIds(pageable, filterEventDto, userId)).thenReturn(idsPage);
+
+        BadRequestException exception = assertThrows(
+            BadRequestException.class,
+            () -> eventService.getEvents(pageable, filterEventDto, userId),
+            "Expected BadRequestException to be thrown");
+
+        String expectedMessage = String.format("Requested page %d exceeds total pages %d.", requestedPage, totalPages);
+        assertEquals(expectedMessage, exception.getMessage());
+
+        verify(restClient).findById(userId);
+        verify(eventRepo).findEventsIds(pageable, filterEventDto, userId);
+        verify(eventRepo, never()).loadEventDataByIds(anyList(), anyLong());
     }
 
     @Test
