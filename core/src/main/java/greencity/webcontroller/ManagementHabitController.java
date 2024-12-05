@@ -222,8 +222,8 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/switch-deleted-status/{id}")
-    public ResponseEntity<Long> switchIsDeletedStatus(@PathVariable("id") Long id) {
-        managementHabitService.switchIsDeletedStatus(id);
+    public ResponseEntity<Long> switchIsDeletedStatus(@PathVariable("id") Long id, @RequestBody Boolean newStatus) {
+        managementHabitService.switchIsDeletedStatus(id, newStatus);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }
