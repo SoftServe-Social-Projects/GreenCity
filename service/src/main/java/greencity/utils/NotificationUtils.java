@@ -1,5 +1,9 @@
 package greencity.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NotificationUtils {
     public static String resolveTimesInEnglish(final int number) {
         return switch (number) {
