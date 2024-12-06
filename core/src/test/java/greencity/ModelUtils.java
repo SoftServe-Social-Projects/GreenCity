@@ -33,7 +33,6 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
@@ -215,21 +214,6 @@ public class ModelUtils {
         return HabitAssignCustomPropertiesDto.builder()
             .habitAssignPropertiesDto(getHabitAssignPropertiesDto())
             .friendsIdsList(List.of(1L, 2L))
-            .build();
-    }
-
-    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
-        return CustomToDoListItemResponseDto.builder()
-            .id(1L)
-            .text("text")
-            .build();
-    }
-
-    public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
-        return CustomToDoListItemRequestDto.builder()
-            .id(1L)
-            .status(ToDoListItemStatus.ACTIVE.toString())
-            .text("text")
             .build();
     }
 

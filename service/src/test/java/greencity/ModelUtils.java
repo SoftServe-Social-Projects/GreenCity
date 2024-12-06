@@ -112,7 +112,6 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserFilterDto;
@@ -1623,13 +1622,6 @@ public class ModelUtils {
         return ToDoListItemResponseDto.builder()
             .id(1L)
             .text("to-do item")
-            .build();
-    }
-
-    public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
-        return ToDoListItemWithStatusRequestDto.builder()
-            .id(1L)
-            .status(ToDoListItemStatus.ACTIVE.toString())
             .build();
     }
 

@@ -4,7 +4,6 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;

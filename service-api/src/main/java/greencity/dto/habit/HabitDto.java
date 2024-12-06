@@ -4,7 +4,6 @@ import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import java.util.List;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

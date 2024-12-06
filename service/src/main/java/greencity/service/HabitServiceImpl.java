@@ -12,7 +12,6 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;

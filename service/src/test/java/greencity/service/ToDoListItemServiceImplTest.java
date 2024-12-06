@@ -6,7 +6,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.todolistitem.ToDoListItemManagementDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
@@ -308,7 +307,7 @@ class ToDoListItemServiceImplTest {
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(toDoListItemRepo).findAllByHabitAssignId(habitAssignId);
-        verify(modelMapper).map(toDoListItem, ToDoListItemResponseWithStatusDto.class);
+        verify(modelMapper).map(toDoListItem, ToDoListItemResponseDto.class);
         verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId(languageDefault,
             toDoListItemId);
     }

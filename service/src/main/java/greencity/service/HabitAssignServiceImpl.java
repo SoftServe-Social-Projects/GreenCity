@@ -21,7 +21,6 @@ import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;

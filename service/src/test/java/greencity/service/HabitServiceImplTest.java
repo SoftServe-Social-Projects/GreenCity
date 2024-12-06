@@ -9,7 +9,6 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -587,10 +586,6 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomToDoListItemRequestDto customToDoListItemRequestDto =
-            getCustomToDoListItemRequestDto();
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
@@ -618,13 +613,9 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
-        when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
-            .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
         when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
             .thenReturn(List.of(customToDoListItem));
-        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
-            .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
@@ -639,9 +630,7 @@ class HabitServiceImplTest {
         verify(tagsRepo).findById(20L);
         verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
-        verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
         verify(fileService).convertToMultipartImage(any());
@@ -659,10 +648,6 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
-        CustomToDoListItemRequestDto customToDoListItemRequestDto =
-            getCustomToDoListItemRequestDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
@@ -688,13 +673,9 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
-        when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
-            .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
         when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
             .thenReturn(List.of(customToDoListItem));
-        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
-            .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
@@ -709,9 +690,7 @@ class HabitServiceImplTest {
         verify(tagsRepo).findById(20L);
         verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
-        verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
         verify(fileService).upload(any(MultipartFile.class));
@@ -729,10 +708,6 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
-        CustomToDoListItemRequestDto customToDoListItemRequestDto =
-            getCustomToDoListItemRequestDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
@@ -758,13 +733,9 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
-        when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
-            .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
         when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
             .thenReturn(List.of(customToDoListItem));
-        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
-            .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
@@ -779,9 +750,7 @@ class HabitServiceImplTest {
         verify(tagsRepo).findById(20L);
         verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
-        verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
     }
@@ -955,10 +924,6 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
-        CustomToDoListItemRequestDto customToDoListItemRequestDto =
-            getCustomToDoListItemRequestDto();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
 
         CustomHabitDtoRequest customHabitDtoRequest =
@@ -983,13 +948,9 @@ class HabitServiceImplTest {
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(customToDoListItemRepo.findAllByUserIdAndHabitId(anyLong(), anyLong()))
             .thenReturn(List.of(customToDoListItem));
-        when(customToDoListMapper.mapAllToList(List.of(customToDoListItemRequestDto)))
-            .thenReturn(List.of(customToDoListItem));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(customHabitDtoResponse);
         when(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(anyLong()))
             .thenReturn(List.of(customToDoListItem));
-        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
-            .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
         when(habitRepo.save(habit)).thenReturn(habit);
@@ -1004,9 +965,7 @@ class HabitServiceImplTest {
         verify(customHabitMapper).convert(customHabitDtoRequest);
         verify(tagsRepo).findById(20L);
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(anyLong(), anyLong());
-        verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
-        verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo, times(2)).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
     }

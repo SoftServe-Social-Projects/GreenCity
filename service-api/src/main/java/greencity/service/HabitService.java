@@ -4,7 +4,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -105,10 +104,10 @@ public interface HabitService {
     void addToDoListItemToHabit(Long habitId, Long itemId);
 
     /**
-     * Method for deleting the {@link ToDoListItemResponseWithStatusDto} instance by
+     * Method for deleting the {@link greencity.dto.todolistitem.ToDoListItemVO} instance by
      * its id.
      *
-     * @param itemId  - {@link ToDoListItemResponseWithStatusDto} instance id which
+     * @param itemId  - {@link greencity.dto.todolistitem.ToDoListItemVO} instance id which
      *                will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
@@ -117,23 +116,23 @@ public interface HabitService {
     void deleteToDoListItem(Long habitId, Long itemId);
 
     /**
-     * Method deletes all {@link ToDoListItemResponseWithStatusDto} by list of ids.
+     * Method deletes all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of ids.
      *
-     * @param listId  list of id {@link ToDoListItemResponseWithStatusDto}
+     * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted. return list of id
-     *                {@link ToDoListItemResponseWithStatusDto}
+     *                {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @author Marian Diakiv
      */
     List<Long> deleteAllToDoListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method add all {@link ToDoListItemResponseWithStatusDto} by list of ids.
+     * Method add all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of ids.
      *
-     * @param listId  list of id {@link ToDoListItemResponseWithStatusDto}
+     * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
      *                added return list of id
-     *                {@link ToDoListItemResponseWithStatusDto}
+     *                {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @author Marian Diakiv
      */
     List<Long> addAllToDoListItemsByListOfId(Long habitId, List<Long> listId);
