@@ -208,6 +208,8 @@
                                 </th>
                                 <th>[[#{greenCity.pages.table.description}]]
                                 </th>
+                                <th>[[#{greenCity.pages.table.isCustomHabit}]]</th>
+                                <th>[[#{greenCity.pages.table.isDeleted}]]</th>
                                 <th>
                                     [[#{greenCity.pages.table.actions}]]
                                 </th>
@@ -242,6 +244,15 @@
                                     <td>
                                         <div class="pr" style="width: 27em">[[${translation.description}]]</div>
                                     </td>
+                                    <td class="habit_isCustomHabit" th:text="${habit.isCustomHabit}"></td>
+                                    <td class="habit_isDeleted">
+                                        <select th:id="'status-'+${habit.id}" th:onchange="'toggleStatus('+${habit.id}+');'" class="form-control">
+                                            <option th:if="${habit.isDeleted == null}" th:value="null" th:selected="true">Not Set</option>
+                                            <option th:value="true" th:selected="${habit.isDeleted == true}">True</option>
+                                            <option th:value="false" th:selected="${habit.isDeleted == false}">False</option>
+                                        </select>
+                                    </td>
+
                                     <td>
                                         <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
                                             <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
@@ -852,6 +863,53 @@
             });
         });
     });
+</script>
+<script th:inline="javascript">
+    function toggleStatus(habitId) {
+        const selectElement = document.getElementById('status-' + habitId);
+        const selectedValue = selectElement.value;
+
+        if (selectedValue === "null") {
+            alert('You must select a valid status (True or False)');
+            return;
+        }
+
+        const newStatus = selectedValue === 'true';
+
+        fetch(`/management/habits/switch-deleted-status/${habitId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newStatus)
+        })
+            .then(response => {
+                if (response.ok) {
+                    updateDropdown(habitId, newStatus);
+                    alert('Status updated successfully');
+                } else {
+                    alert('Failed to update status');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating status:', error);
+                alert('An error occurred while updating the status');
+            });
+    }
+
+    function updateDropdown(habitId, newStatus) {
+        const selectElement = document.getElementById('status-' + habitId);
+
+        selectElement.innerHTML = '';
+
+        if (newStatus) {
+            selectElement.innerHTML += `<option value="true" selected>True</option>`;
+            selectElement.innerHTML += `<option value="false">False</option>`;
+        } else {
+            selectElement.innerHTML += `<option value="false" selected>False</option>`;
+            selectElement.innerHTML += `<option value="true">True</option>`;
+        }
+    }
 </script>
 </body>
 

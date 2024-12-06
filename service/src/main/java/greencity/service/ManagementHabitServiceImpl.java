@@ -219,16 +219,14 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     }
 
     /**
-     * Method toggles the status of a Habit from "isDeleted" to true or false.
-     *
-     * @param id {@link HabitManagementDto}'s id.
+     * {@inheritDoc}
      */
     @Override
     @Transactional
-    public void switchIsDeletedStatus(Long id) {
+    public void switchIsDeletedStatus(Long id, Boolean newStatus) {
         Habit habit = habitRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
-        habit.setIsDeleted(!habit.getIsDeleted());
+        habit.setIsDeleted(newStatus);
         habitRepo.save(habit);
     }
 
