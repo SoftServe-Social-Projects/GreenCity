@@ -29,7 +29,7 @@ class AIServiceImplTest {
     private ModelMapper modelMapper;
     @InjectMocks
     private AIServiceImpl aiServiceImpl;
-    private HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);;
+    private HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
     private DurationHabitDto durationHabitDto = new DurationHabitDto("", 0L);
     private Long userId = 1L;
     private String language = "en";
@@ -38,7 +38,7 @@ class AIServiceImplTest {
     void getForecast_ReturnsResponse_FromOpenAIService() {
         when(habitAssignRepo.findAllByUserId(userId)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
-        when(openAIService.makeRequest(eq("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto))))
+        when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
                 .thenReturn("Forecast Response");
 
         String result = aiServiceImpl.getForecast(userId, language);
@@ -53,7 +53,7 @@ class AIServiceImplTest {
     void getForecast_ThrowsException_WhenOpenAIServiceFails() {
         when(habitAssignRepo.findAllByUserId(userId)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
-        when(openAIService.makeRequest(eq("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto))))
+        when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
                 .thenThrow(new RuntimeException("OpenAI Service Failed"));
 
         assertThrows(RuntimeException.class, () -> aiServiceImpl.getForecast(userId, language));

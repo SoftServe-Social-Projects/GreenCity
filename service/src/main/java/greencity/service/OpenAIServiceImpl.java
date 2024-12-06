@@ -1,7 +1,9 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Setter
 @Slf4j
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
@@ -21,7 +24,11 @@ public class OpenAIServiceImpl implements OpenAIService {
     private String apiKey;
     @Value("${openai.api.url}")
     private String apiUrl;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public OpenAIServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public String makeRequest(String prompt) {
@@ -37,13 +44,16 @@ public class OpenAIServiceImpl implements OpenAIService {
         body.put("max_tokens", 450);
         body.put("temperature", 0.8);
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-        ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, request, Map.class);
-
-        List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
-        if (choices != null && !choices.isEmpty()) {
-            Map<String, Object> choice = choices.get(0);
-            Map<String, Object> message = (Map<String, Object>) choice.get("message");
-            return (String) message.get("content");
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(apiUrl, HttpMethod.POST, request,
+            new ParameterizedTypeReference<>() {
+            });
+        if (response.getBody() != null && response.getBody().containsKey("choices")) {
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
+            if (choices != null && !choices.isEmpty()) {
+                Map<String, Object> choice = choices.get(0);
+                Map<String, Object> message = (Map<String, Object>) choice.get("message");
+                return (String) message.get("content");
+            }
         }
         return ErrorMessage.OPEN_AI_IS_NOT_RESPONDING;
     }
