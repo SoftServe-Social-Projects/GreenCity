@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ToDoListItemResponseDtoFromToDoListItemTranslationMapper
-        extends AbstractConverter<ToDoListItemTranslation, ToDoListItemResponseDto> {
+    extends AbstractConverter<ToDoListItemTranslation, ToDoListItemResponseDto> {
     @Override
     protected ToDoListItemResponseDto convert(ToDoListItemTranslation toDoListItemTranslation) {
         return ToDoListItemResponseDto.builder()
-                .id(toDoListItemTranslation.getToDoListItem().getId())
-                .text(toDoListItemTranslation.getContent())
-                .build();
+            .id(toDoListItemTranslation.getToDoListItem().getId())
+            .text(toDoListItemTranslation.getContent())
+            .build();
     }
 }

@@ -6,7 +6,6 @@ import greencity.entity.ToDoListItem;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import java.util.stream.Collectors;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link ToDoListItem} into

@@ -38,7 +38,7 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitInvitationStatus;
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.Role;
 import greencity.enums.UserToDoListItemStatus;
 import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
@@ -95,8 +95,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final CustomToDoListItemRepo customToDoListItemRepo;
     private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
     private final HabitStatusCalendarRepo habitStatusCalendarRepo;
-    private final ToDoListItemService toDoListItemService;
-    private final CustomToDoListItemService customToDoListItemService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
@@ -389,59 +387,65 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void setToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
-        habitAssignDto.getHabit().setToDoListItems(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId())
+        habitAssignDto.getHabit()
+            .setToDoListItems(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId())
                 .stream()
                 .map(toDoListItemId -> {
-                ToDoListItem toDoListItem =
-                    toDoListItemRepo.getReferenceById(toDoListItemId);
-                return ToDoListItemResponseDto.builder()
-                    .id(toDoListItem.getId())
-                    .text(toDoListItem.getTranslations().stream()
-                        .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
-                        .orElseThrow(
-                            () -> new NotFoundException(
-                                ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
-                        .getContent())
-                    .build();
-            })
-            .toList());
+                    ToDoListItem toDoListItem =
+                        toDoListItemRepo.getReferenceById(toDoListItemId);
+                    return ToDoListItemResponseDto.builder()
+                        .id(toDoListItem.getId())
+                        .text(toDoListItem.getTranslations().stream()
+                            .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
+                            .orElseThrow(
+                                () -> new NotFoundException(
+                                    ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND
+                                        + habitAssignDto.getHabit().getId()))
+                            .getContent())
+                        .build();
+                })
+                .toList());
     }
 
     private void setCustomToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
-        habitAssignDto.getHabit().setCustomToDoListItems(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId())
+        habitAssignDto.getHabit().setCustomToDoListItems(
+            customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId())
                 .stream()
                 .map(customToDoListItemId -> {
-                CustomToDoListItem customToDoListItem = customToDoListItemRepo.getReferenceById(customToDoListItemId);
-                return CustomToDoListItemResponseDto.builder()
-                    .id(customToDoListItem.getId())
-                    .text(customToDoListItem.getText())
-                    .build();
-            })
-            .toList());
+                    CustomToDoListItem customToDoListItem =
+                        customToDoListItemRepo.getReferenceById(customToDoListItemId);
+                    return CustomToDoListItemResponseDto.builder()
+                        .id(customToDoListItem.getId())
+                        .text(customToDoListItem.getText())
+                        .build();
+                })
+                .toList());
     }
 
     private void setUserToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
         List<UserToDoListItem> userToDoListItems = userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId());
         List<UserToDoListItemAdvanceDto> userToDoListItemDtos = userToDoListItems.stream()
-                .map(userToDoListItem -> {
-                    UserToDoListItemAdvanceDto itemDto = UserToDoListItemAdvanceDto.builder()
-                            .id(userToDoListItem.getId())
-                            .targetId(userToDoListItem.getTargetId())
-                            .isCustomItem(userToDoListItem.getIsCustomItem())
-                            .status(userToDoListItem.getStatus())
-                            .dateCompleted(userToDoListItem.getDateCompleted())
-                            .build();
-                    boolean isCustomItem = userToDoListItem.getIsCustomItem();
-                    if (isCustomItem) {
-                        CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
-                        itemDto.setContent(customItem.getText());
-                    } else {
-                        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, itemDto.getTargetId());
-                        itemDto.setContent(itemTranslation.getContent());
-                    }
-                    return itemDto;
-                })
-                .toList();
+            .map(userToDoListItem -> {
+                UserToDoListItemAdvanceDto itemDto = UserToDoListItemAdvanceDto.builder()
+                    .id(userToDoListItem.getId())
+                    .targetId(userToDoListItem.getTargetId())
+                    .isCustomItem(userToDoListItem.getIsCustomItem())
+                    .status(userToDoListItem.getStatus())
+                    .dateCompleted(userToDoListItem.getDateCompleted())
+                    .build();
+                boolean isCustomItem = userToDoListItem.getIsCustomItem();
+                if (isCustomItem) {
+                    CustomToDoListItem customItem =
+                        customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
+                    itemDto.setContent(customItem.getText());
+                } else {
+                    ToDoListItemTranslation itemTranslation =
+                        toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, itemDto.getTargetId());
+                    itemDto.setContent(itemTranslation.getContent());
+                }
+                return itemDto;
+            })
+            .toList();
         habitAssignDto.setUserToDoListItems(userToDoListItemDtos);
     }
 
@@ -670,25 +674,31 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<UserToDoListItemResponseDto> getToDoAndCustomToDoLists(
         Long userId, Long habitAssignId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        UserVO userVO = userService.findById(userId);
+        if (!habitAssign.getUser().getId().equals(userId) && !userVO.getRole().equals(Role.ROLE_ADMIN)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
         return userToDoListItemRepo.findAllByHabitAssingId(habitAssignId)
-                .stream()
-                .map(userToDoListItem -> {
-                    UserToDoListItemResponseDto itemDto = UserToDoListItemResponseDto.builder()
-                            .id(userToDoListItem.getId())
-                            .status(userToDoListItem.getStatus())
-                            .targetId(userToDoListItem.getTargetId())
-                            .isCustomItem(userToDoListItem.getIsCustomItem())
-                            .build();
-                    boolean isCustomItem = userToDoListItem.getIsCustomItem();
-                    if (isCustomItem) {
-                        CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
-                        itemDto.setText(customItem.getText());
-                    } else {
-                        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userToDoListItem.getTargetId());
-                        itemDto.setText(itemTranslation.getContent());
-                    }
-                    return itemDto;
-                }).toList();
+            .stream()
+            .map(userToDoListItem -> {
+                UserToDoListItemResponseDto itemDto =
+                    modelMapper.map(userToDoListItem, UserToDoListItemResponseDto.class);
+                boolean isCustomItem = userToDoListItem.getIsCustomItem();
+                if (isCustomItem) {
+                    CustomToDoListItem customItem =
+                        customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
+                    itemDto.setText(customItem.getText());
+                } else {
+                    ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo
+                        .findByLangAndToDoListItemId(language, userToDoListItem.getTargetId());
+                    itemDto.setText(itemTranslation.getContent());
+                }
+                return itemDto;
+            }).toList();
     }
 
     @Transactional

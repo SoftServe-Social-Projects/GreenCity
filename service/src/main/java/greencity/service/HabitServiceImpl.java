@@ -371,9 +371,10 @@ public class HabitServiceImpl implements HabitService {
     private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit) {
         CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
 
-        List<CustomToDoListItem> habitCustomItems = customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId());
+        List<CustomToDoListItem> habitCustomItems =
+            customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId());
         response.setCustomToDoListItemDto(habitCustomItems.stream()
-                .map(item -> modelMapper.map(item, CustomToDoListItemWithStatusResponseDto.class)).toList());
+            .map(item -> modelMapper.map(item, CustomToDoListItemWithStatusResponseDto.class)).toList());
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
@@ -439,12 +440,12 @@ public class HabitServiceImpl implements HabitService {
 
     private void saveNewCustomToDoListItemsToUpdate(CustomHabitDtoRequest habitDto, Habit habit, User user) {
         List<CustomToDoListItem> customToDoListItems = habitDto.getCustomToDoListItemDto()
-                .stream()
-                .filter(item -> Objects.isNull(item.getId()))
-                .map(item -> CustomToDoListItem.builder()
-                        .text(item.getText())
-                        .build())
-                .toList();
+            .stream()
+            .filter(item -> Objects.isNull(item.getId()))
+            .map(item -> CustomToDoListItem.builder()
+                .text(item.getText())
+                .build())
+            .toList();
 
         customToDoListItems.forEach(customToDoListItem -> {
             customToDoListItem.setHabit(habit);
@@ -513,10 +514,10 @@ public class HabitServiceImpl implements HabitService {
 
     private void setCustomToDoListItemToHabit(CustomHabitDtoRequest habitDto, Habit habit, User user) {
         List<CustomToDoListItem> customToDoListItems = habitDto.getCustomToDoListItemDto().stream()
-                .map(item -> CustomToDoListItem.builder()
-                        .text(item.getText())
-                        .build())
-                .toList();
+            .map(item -> CustomToDoListItem.builder()
+                .text(item.getText())
+                .build())
+            .toList();
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setHabit(habit));
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setUser(user));
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setIsDefault(true));

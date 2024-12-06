@@ -104,11 +104,11 @@ public interface HabitService {
     void addToDoListItemToHabit(Long habitId, Long itemId);
 
     /**
-     * Method for deleting the {@link greencity.dto.todolistitem.ToDoListItemVO} instance by
-     * its id.
+     * Method for deleting the {@link greencity.dto.todolistitem.ToDoListItemVO}
+     * instance by its id.
      *
-     * @param itemId  - {@link greencity.dto.todolistitem.ToDoListItemVO} instance id which
-     *                will be deleted.
+     * @param itemId  - {@link greencity.dto.todolistitem.ToDoListItemVO} instance
+     *                id which will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @author Marian Diakiv
@@ -116,7 +116,8 @@ public interface HabitService {
     void deleteToDoListItem(Long habitId, Long itemId);
 
     /**
-     * Method deletes all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of ids.
+     * Method deletes all {@link greencity.dto.todolistitem.ToDoListItemVO} by list
+     * of ids.
      *
      * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance from which it will
@@ -127,7 +128,8 @@ public interface HabitService {
     List<Long> deleteAllToDoListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method add all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of ids.
+     * Method add all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of
+     * ids.
      *
      * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
