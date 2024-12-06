@@ -27,7 +27,6 @@ import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
-import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.RatingPoints;
@@ -75,9 +74,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-
 import static greencity.ModelUtils.getCustomToDoListItem;
-import static greencity.ModelUtils.getToDoListItem;
 import static greencity.ModelUtils.getToDoListItemTranslation;
 import static greencity.ModelUtils.getUserToDoListItemResponseDto;
 import static greencity.ModelUtils.getHabitAssignDto;
