@@ -180,10 +180,10 @@ public class EventController {
         @Parameter(hidden = true) Pageable pageable,
         @RequestParam(required = false, name = "user-id") Long userId,
         @Schema(
-                description = "Filters for events",
-                name = "FilterEventDto",
-                type = "object",
-                example = FilterEventDto.defaultJson) FilterEventDto filterEventDto) {
+            description = "Filters for events",
+            name = "FilterEventDto",
+            type = "object",
+            example = FilterEventDto.defaultJson) FilterEventDto filterEventDto) {
         if (filterEventDto != null && filterEventDto.getStatuses() != null) {
             validateStatusesRequireUserId(filterEventDto.getStatuses(), userId);
         }
