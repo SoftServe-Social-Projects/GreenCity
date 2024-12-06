@@ -179,7 +179,11 @@ public class EventController {
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvents(
         @Parameter(hidden = true) Pageable pageable,
         @RequestParam(required = false, name = "user-id") Long userId,
-        FilterEventDto filterEventDto) {
+        @Schema(
+                description = "Filters for events",
+                name = "FilterEventDto",
+                type = "object",
+                example = FilterEventDto.defaultJson) FilterEventDto filterEventDto) {
         if (filterEventDto != null && filterEventDto.getStatuses() != null) {
             validateStatusesRequireUserId(filterEventDto.getStatuses(), userId);
         }
