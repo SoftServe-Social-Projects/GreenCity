@@ -865,7 +865,6 @@ class HabitAssignServiceImplTest {
     @Test
     void getAllHabitAssignsByUserIdAndStatusNotCancelled() {
         UserToDoListItem userToDoListItemCustom = ModelUtils.getFullUserToDoListItem();
-        ToDoListItem toDoListItem = getToDoListItem();
         HabitAssignDto habitAssignDtoCustom = ModelUtils.getHabitAssignDtoWithFriendsIds();
         List<HabitAssignDto> expected = List.of(habitAssignDtoCustom);
 

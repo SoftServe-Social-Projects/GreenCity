@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.handler.CustomExceptionHandler;

@@ -14,13 +14,10 @@ import greencity.entity.localization.TagTranslation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import greencity.enums.ToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import static greencity.ModelUtils.getCustomToDoListItem;
 import static greencity.ModelUtils.getHabitTranslation;
 import static greencity.ModelUtils.getToDoListItem;
