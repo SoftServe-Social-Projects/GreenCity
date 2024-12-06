@@ -159,8 +159,6 @@ public class ErrorMessage {
         "Start date must be in future and before finish date";
     public static final String SAME_EVENT_DATES =
         "User shouldn't be able to create event with the same event dates for two days within one event";
-    public static final String SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE =
-        "The start time coincides with the end time on one of the event dates";
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
@@ -168,6 +166,7 @@ public class ErrorMessage {
     public static final String YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT =
         "The event is close. You can't createSubscription to it";
     public static final String HAVE_ALREADY_RATED = "You have already rated this event";
+    public static final String USER_HAS_NO_RIGHTS_TO_RATE_EVENT = "Organizer have no rights to rate the own event";
     public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
     public static final String EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL =
@@ -179,6 +178,9 @@ public class ErrorMessage {
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
+    public static final String INVALID_COORDINATES = "The coordinates field must not be empty";
+    public static final String INVALID_LONGITUDE = "Longitude must be between -180 and 180 degrees";
+    public static final String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
     public static final String INVALID_DATE = "Date can't be null or empty";
     public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
         "No friends are assigned on current habit with id: ";
@@ -211,5 +213,7 @@ public class ErrorMessage {
     public static final String INVITATION_NOT_FOUND = "Invitation not found";
     public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
+    public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
+    public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
     public static final String OPEN_AI_IS_NOT_RESPONDING = "Could not get a response from OpenAI.";
 }

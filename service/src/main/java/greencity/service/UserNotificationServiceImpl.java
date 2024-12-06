@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 /**
  * Implementation of {@link UserNotificationService}.
@@ -377,30 +379,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         }
         dto.setBodyText(bodyText);
         return dto;
-    }
-
-    private String resolveTimesInEnglish(final int number) {
-        return switch (number) {
-            case 1 -> "";
-            case 2 -> "twice";
-            default -> number + " times";
-        };
-    }
-
-    private String resolveTimesInUkrainian(int number) {
-        number = Math.abs(number);
-        final int lastTwoDigits = number % 100;
-        final int lastDigit = number % 10;
-
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-            return number + " разів";
-        }
-
-        return switch (lastDigit) {
-            case 1 -> "";
-            case 2, 3, 4 -> number + " рази";
-            default -> number + " разів";
-        };
     }
 
     /**

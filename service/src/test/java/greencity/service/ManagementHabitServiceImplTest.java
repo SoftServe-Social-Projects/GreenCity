@@ -280,10 +280,11 @@ class ManagementHabitServiceImplTest {
     void switchIsDeletedStatusTest() {
         Habit habit = getHabit();
         habit.setIsDeleted(false);
+        Boolean newStatus = true;
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
 
-        managementHabitService.switchIsDeletedStatus(1L);
+        managementHabitService.switchIsDeletedStatus(1L, newStatus);
 
         assertTrue(habit.getIsDeleted());
         verify(habitRepo).save(habit);
@@ -292,23 +293,25 @@ class ManagementHabitServiceImplTest {
     @Test
     void switchIsDeletedStatusToFalseTest() {
         Habit habit = getHabit();
+        Boolean newStatus = false;
         habit.setIsDeleted(true);
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
 
-        managementHabitService.switchIsDeletedStatus(1L);
+        managementHabitService.switchIsDeletedStatus(1L, newStatus);
 
         assertFalse(habit.getIsDeleted());
         verify(habitRepo).save(habit);
     }
 
     @Test
-    void switchIsDeletedStatusTestWhenHabitIsNotFoundTest() {
+    void switchIsDeletedStatusWhenHabitIsNotFoundTest() {
         Long habitId = 1L;
+        Boolean newStatus = false;
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> managementHabitService.switchIsDeletedStatus(habitId));
+        assertThrows(NotFoundException.class, () -> managementHabitService.switchIsDeletedStatus(habitId, newStatus));
         verify(habitRepo).findById(habitId);
     }
 }

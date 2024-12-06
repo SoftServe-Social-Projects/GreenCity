@@ -117,7 +117,8 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                (false)             AS isOrganizedByFriend,
                (false)             AS isOrganizedByUser,
                (false)             AS isSubscribed,
-               (false)             AS isFavorite
+               (false)             AS isFavorite,
+                NULL AS currentUserGrade
         FROM events e
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
                  LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
@@ -164,7 +165,11 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                    (uf.friend_id IS NOT NULL)                        AS isOrganizedByFriend,
                    (e.organizer_id = :userId)                        AS isOrganizedByUser,
                    (ea.user_id = :userId AND ea.user_id IS NOT NULL) AS isSubscribed,
-                   (ef.user_id IS NOT NULL)                          AS isFavorite
+                   (ef.user_id IS NOT NULL)                          AS isFavorite,
+                   CASE
+                        WHEN eg.user_id = :userId THEN eg.grade
+                        ELSE NULL
+                    END AS currentUserGrade
             FROM events e
                 LEFT JOIN events_grades eg ON e.id = eg.event_id
                 LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT' AND ec.status != 'DELETED'
@@ -185,8 +190,8 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                      LEFT JOIN events_followers ef ON e.id = ef.event_id AND ef.user_id = :userId
                      LEFT JOIN events_attenders ea ON e.id = ea.event_id
             WHERE (e.id IN (:ids))
-                GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id,
-                                uf.friend_id, ea.user_id, ef.user_id, edl_max.latest_finish_date;
+                GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id,eg.user_id,
+                                uf.friend_id, ea.user_id, ef.user_id, edl_max.latest_finish_date,eg.grade;
             """)
     List<Tuple> loadEventDataByIds(List<Long> ids, Long userId);
 
