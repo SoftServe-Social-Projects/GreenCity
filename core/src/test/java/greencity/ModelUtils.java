@@ -34,7 +34,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
@@ -206,7 +206,7 @@ public class ModelUtils {
 
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
         return HabitAssignPropertiesDto.builder()
-            .defaultToDoListItems(List.of(1L, 2L))
+            .defaultToDoListItemIds(List.of(1L, 2L))
             .duration(20)
             .build();
     }
@@ -221,7 +221,6 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
             .text("text")
             .build();
     }
@@ -257,11 +256,10 @@ public class ModelUtils {
             .build();
     }
 
-    public static ToDoListItemResponseWithStatusDto getToDoListItemResponseWithStatusDto() {
-        return ToDoListItemResponseWithStatusDto.builder()
+    public static ToDoListItemResponseDto getToDoListItemResponseDto() {
+        return ToDoListItemResponseDto.builder()
             .id(1L)
             .text("item text")
-            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 

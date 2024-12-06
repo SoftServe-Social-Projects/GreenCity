@@ -10,6 +10,6 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
-        <addUniqueConstraint tableName="user_to_do_list" columnNames="target_id, is_custom_item"/>
+        <addUniqueConstraint tableName="user_to_do_list" columnNames="target_id, is_custom_item, habit_assign_id"/>
     </changeSet>
 </databaseChangeLog>

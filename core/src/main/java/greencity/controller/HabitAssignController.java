@@ -342,7 +342,7 @@ public class HabitAssignController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiLocale
-    @GetMapping("{habitAssignId}/allUserToDoList")
+    @GetMapping("/{habitAssignId}/allUserToDoList")
     public ResponseEntity<List<UserToDoListItemResponseDto>> getToDoAndCustomToDoLists(
         @PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,

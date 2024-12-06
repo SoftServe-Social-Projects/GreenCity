@@ -3,6 +3,7 @@ package greencity.dto.habit;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import java.util.List;
 import jakarta.validation.constraints.Max;
@@ -31,7 +32,7 @@ public class HabitDto {
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     private Integer complexity;
     private List<String> tags;
-    private List<ToDoListItemResponseWithStatusDto> toDoListItems;
+    private List<ToDoListItemResponseDto> toDoListItems;
     private List<CustomToDoListItemResponseDto> customToDoListItems;
     private Boolean isCustomHabit;
     private Long usersIdWhoCreatedCustomHabit;

@@ -33,9 +33,9 @@ public interface ToDoListItemRepo
      * @return list of id.
      */
     @Query(nativeQuery = true,
-        value = "select to_do_list_items.id from to_do_list_items  where id not in"
+        value = "select to_do_list_items.id from to_do_list_items where id not in"
             + " (select to_do_list_item_id from habit_to_do_list_items where habit_id = :habitId and "
-            + "habit_to_do_list_items.status like 'ACTUAL');")
+            + "habit_to_do_list_items.status like 'ACTIVE');")
     List<Long> getAllToDoListItemsByHabitIdNotContained(@Param("habitId") Long habitId);
 
     /**
@@ -45,7 +45,7 @@ public interface ToDoListItemRepo
      * @return list of id.
      */
     @Query(nativeQuery = true,
-        value = "select to_do_list_item_id from habit_to_do_list_items  where habit_id = :habitId and "
+        value = "select to_do_list_item_id from habit_to_do_list_items where habit_id = :habitId and "
             + " habit_to_do_list_items.status like 'ACTIVE';")
     List<Long> getAllToDoListItemIdByHabitIdIsContained(@Param("habitId") Long habitId);
 
@@ -69,7 +69,7 @@ public interface ToDoListItemRepo
 
     @Query(nativeQuery = true,
         value = "SELECT tdli.* FROM to_do_list_items tdli "
-            + "JOIN user_to_do_list ustdl ON ustdl.target_id = tdli.id "
+            + "JOIN user_to_do_list ustdl ON ustdl.to_do_list_item_id = tdli.id "
             + "WHERE ustdl.is_custom_item = false "
             + "AND ustdl.habit_assign_id = :habitAssignId")
     List<ToDoListItem> findAllByHabitAssignId(Long habitAssignId);

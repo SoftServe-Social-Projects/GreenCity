@@ -27,7 +27,7 @@ public class HabitAssignPropertiesDto {
     @NotNull
     private Boolean isPrivate;
 
-    private List<Long> defaultToDoListItems;
+    private List<Long> defaultToDoListItemIds;
 
-    private List<Long> defaultCustomToDoListItems;
+    private List<Long> defaultCustomToDoListItemIds;
 }

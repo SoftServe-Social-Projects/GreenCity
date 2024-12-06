@@ -1,6 +1,6 @@
 package greencity.filters;
 
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.entity.ToDoListItem;
 import greencity.entity.ToDoListItem_;
 import greencity.entity.Translation;
@@ -59,19 +59,19 @@ class ToDoListItemSpecificationTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto = new ToDoListItemResponseWithStatusDto();
-        toDoListItemResponseWithStatusDto.setId(1L);
-        toDoListItemResponseWithStatusDto.setText("content");
+        ToDoListItemResponseDto toDoListItemResponseDto = new ToDoListItemResponseDto();
+        toDoListItemResponseDto.setId(1L);
+        toDoListItemResponseDto.setText("content");
         searchCriteriaList = new ArrayList<>();
         searchCriteriaList.add(SearchCriteria.builder()
             .key("id")
             .type("id")
-            .value(toDoListItemResponseWithStatusDto.getId())
+            .value(toDoListItemResponseDto.getId())
             .build());
         searchCriteriaList.add(SearchCriteria.builder()
             .key("content")
             .type("content")
-            .value(toDoListItemResponseWithStatusDto.getText())
+            .value(toDoListItemResponseDto.getText())
             .build());
         ToDoListItemTranslation_.toDoListItem = toDoListItem;
         ToDoListItem_.id = id;
@@ -81,18 +81,18 @@ class ToDoListItemSpecificationTest {
 
     @Test
     void toPredicate() {
-        ToDoListItemResponseWithStatusDto toDoListItemResponseWithStatusDto = new ToDoListItemResponseWithStatusDto();
-        toDoListItemResponseWithStatusDto.setId(1L);
-        toDoListItemResponseWithStatusDto.setText("content");
+        ToDoListItemResponseDto toDoListItemResponseDto = new ToDoListItemResponseDto();
+        toDoListItemResponseDto.setId(1L);
+        toDoListItemResponseDto.setText("content");
         SearchCriteria buildId = SearchCriteria.builder()
             .key("id")
             .type("id")
-            .value(toDoListItemResponseWithStatusDto.getId())
+            .value(toDoListItemResponseDto.getId())
             .build();
         SearchCriteria buildContent = SearchCriteria.builder()
             .key("content")
             .type("content")
-            .value(toDoListItemResponseWithStatusDto.getText())
+            .value(toDoListItemResponseDto.getText())
             .build();
         when(criteriaBuilderMock.conjunction()).thenReturn(expected);
         when(toDoListItemRootMock.get(buildId.getKey())).thenReturn(objectPath);

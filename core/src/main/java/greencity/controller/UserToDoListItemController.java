@@ -33,7 +33,7 @@ import java.util.Locale;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/habits/assign/user-to-do-list-items")
+@RequestMapping("/habits/assign/user-to-do-list-items/{habitAssignId}")
 public class UserToDoListItemController {
     private final UserToDoListItemService userToDoListItemService;
 
@@ -57,7 +57,7 @@ public class UserToDoListItemController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @GetMapping("/{habitAssignId}")
+    @GetMapping
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> getUserToDoListItemsForHabitAssign(
         @PathVariable @Min(1) Long habitAssignId,
@@ -89,7 +89,7 @@ public class UserToDoListItemController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PostMapping("/{habitAssignId}")
+    @PostMapping
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> saveUserToDoListItemsForHabitAssign(
         @PathVariable @Min(1) Long habitAssignId,
@@ -122,8 +122,7 @@ public class UserToDoListItemController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @DeleteMapping("/{habitAssignId}")
-    @ApiLocale
+    @DeleteMapping
     public ResponseEntity<Object> deleteUserToDoListItemsForHabitAssign(
         @PathVariable @Min(1) Long habitAssignId,
         @RequestBody List<@Min(1) Long> userToDoListItemsIds,
@@ -154,7 +153,7 @@ public class UserToDoListItemController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PatchMapping("/{habitAssignId}")
+    @PatchMapping
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> changeStatusUserToDoListItems(
         @PathVariable @Min(1) Long habitAssignId,

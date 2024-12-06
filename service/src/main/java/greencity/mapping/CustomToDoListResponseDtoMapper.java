@@ -14,7 +14,6 @@ public class CustomToDoListResponseDtoMapper
         return CustomToDoListItemResponseDto.builder()
             .id(customToDoListItem.getId())
             .text(customToDoListItem.getText())
-            .status(customToDoListItem.getStatus())
             .build();
     }
 

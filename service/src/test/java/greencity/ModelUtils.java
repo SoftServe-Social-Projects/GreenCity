@@ -100,8 +100,8 @@ import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
+import greencity.dto.todolistitem.CustomToDoListItemWithStatusResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -708,13 +708,6 @@ public class ModelUtils {
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
-            .build();
-    }
-
-    public static CustomToDoListItemWithStatusSaveRequestDto getCustomToDoListItemWithStatusSaveRequestDto() {
-        return CustomToDoListItemWithStatusSaveRequestDto.builder()
-            .text("TEXT")
-            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
@@ -1626,11 +1619,10 @@ public class ModelUtils {
             .build();
     }
 
-    public static ToDoListItemResponseWithStatusDto getToDoListItemResponseWithStatusDto() {
-        return ToDoListItemResponseWithStatusDto.builder()
+    public static ToDoListItemResponseDto getToDoListItemResponseDto() {
+        return ToDoListItemResponseDto.builder()
             .id(1L)
             .text("to-do item")
-            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
@@ -1643,7 +1635,7 @@ public class ModelUtils {
 
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
         return HabitAssignPropertiesDto.builder()
-            .defaultToDoListItems(List.of(1L))
+            .defaultToDoListItemIds(List.of(1L))
             .duration(20)
             .build();
     }
@@ -1772,7 +1764,6 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
             .text("TEXT")
             .build();
     }
@@ -1780,7 +1771,6 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoWithId2() {
         return CustomToDoListItemResponseDto.builder()
             .id(2L)
-            .status(ToDoListItemStatus.ACTIVE)
             .text("Custom item")
             .build();
     }
@@ -2647,10 +2637,10 @@ public class ModelUtils {
             .id(1L)
             .complexity(2)
             .customToDoListItemDto(List.of(
-                CustomToDoListItemResponseDto.builder()
+                CustomToDoListItemWithStatusResponseDto.builder()
                     .id(1L)
-                    .status(ToDoListItemStatus.ACTIVE)
                     .text(toDoListText)
+                    .status(ToDoListItemStatus.ACTIVE)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
@@ -2674,7 +2664,6 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoForServiceTest() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
             .text(toDoListText)
             .build();
     }
@@ -2769,7 +2758,6 @@ public class ModelUtils {
         return CustomToDoListItemResponseDto.builder()
             .id(2L)
             .text("item")
-            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 

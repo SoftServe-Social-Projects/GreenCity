@@ -67,8 +67,7 @@ class CustomToDoListItemControllerTest {
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
             .build();
 
-        dto = new CustomToDoListItemResponseDto(3L, "text",
-            ToDoListItemStatus.ACTIVE);
+        dto = new CustomToDoListItemResponseDto(3L, "text");
     }
 
     @Test

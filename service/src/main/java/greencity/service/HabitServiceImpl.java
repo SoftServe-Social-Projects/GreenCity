@@ -10,6 +10,8 @@ import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.notification.LikeNotificationDto;
+import greencity.dto.todolistitem.CustomToDoListItemWithStatusResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -31,7 +33,6 @@ import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomHabitMapper;
-import greencity.mapping.CustomToDoListMapper;
 import greencity.mapping.CustomToDoListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
@@ -74,7 +75,6 @@ public class HabitServiceImpl implements HabitService {
     private final ModelMapper modelMapper;
     private final CustomToDoListResponseDtoMapper customToDoListResponseDtoMapper;
     private final HabitTranslationDtoMapper habitTranslationDtoMapper;
-    private final CustomToDoListMapper customToDoListMapper;
     private final HabitTranslationMapper habitTranslationMapper;
     private final CustomHabitMapper customHabitMapper;
     private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
@@ -106,10 +106,10 @@ public class HabitServiceImpl implements HabitService {
         HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
         var habitDto = modelMapper.map(habitTranslation, HabitDto.class);
-        List<ToDoListItemResponseWithStatusDto> toDoListItems = new ArrayList<>();
+        List<ToDoListItemResponseDto> toDoListItems = new ArrayList<>();
         toDoListItemTranslationRepo
             .findToDoListByHabitIdAndByLanguageCode(languageCode, id)
-            .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemResponseWithStatusDto.class)));
+            .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemResponseDto.class)));
         habitDto.setToDoListItems(toDoListItems);
         habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
         boolean isCustomHabit = habit.getIsCustomHabit();
@@ -372,8 +372,9 @@ public class HabitServiceImpl implements HabitService {
     private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit) {
         CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
 
-        response.setCustomToDoListItemDto(customToDoListResponseDtoMapper
-            .mapAllToList(customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId())));
+        List<CustomToDoListItem> habitCustomItems = customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId());
+        response.setCustomToDoListItemDto(habitCustomItems.stream()
+                .map(item -> modelMapper.map(item, CustomToDoListItemWithStatusResponseDto.class)).toList());
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
@@ -394,7 +395,7 @@ public class HabitServiceImpl implements HabitService {
         List<Long> ids = habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssignId);
         List<User> users = userRepo.findAllById(ids);
         return users.stream().map(user -> modelMapper.map(user, UserProfilePictureDto.class))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Transactional
@@ -438,17 +439,21 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void saveNewCustomToDoListItemsToUpdate(CustomHabitDtoRequest habitDto, Habit habit, User user) {
-        List<CustomToDoListItem> customToDoListItems = customToDoListMapper
-            .mapAllToList(habitDto.getCustomToDoListItemDto());
+        List<CustomToDoListItem> customToDoListItems = habitDto.getCustomToDoListItemDto()
+                .stream()
+                .filter(item -> Objects.isNull(item.getId()))
+                .map(item -> CustomToDoListItem.builder()
+                        .text(item.getText())
+                        .build())
+                .toList();
 
-        customToDoListItems.stream()
-            .filter(item -> Objects.isNull(item.getId()))
-            .forEach(customToDoListItem -> {
-                customToDoListItem.setHabit(habit);
-                customToDoListItem.setUser(user);
-                customToDoListItem.setIsDefault(true);
-                customToDoListItemRepo.save(customToDoListItem);
-            });
+        customToDoListItems.forEach(customToDoListItem -> {
+            customToDoListItem.setHabit(habit);
+            customToDoListItem.setUser(user);
+            customToDoListItem.setIsDefault(true);
+            customToDoListItem.setStatus(ToDoListItemStatus.ACTIVE);
+            customToDoListItemRepo.save(customToDoListItem);
+        });
     }
 
     private void updateExistingCustomToDoListItems(CustomHabitDtoRequest habitDto, Habit habit, User user) {
@@ -508,11 +513,15 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void setCustomToDoListItemToHabit(CustomHabitDtoRequest habitDto, Habit habit, User user) {
-        List<CustomToDoListItem> customToDoListItems =
-            customToDoListMapper.mapAllToList(habitDto.getCustomToDoListItemDto());
+        List<CustomToDoListItem> customToDoListItems = habitDto.getCustomToDoListItemDto().stream()
+                .map(item -> CustomToDoListItem.builder()
+                        .text(item.getText())
+                        .build())
+                .toList();
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setHabit(habit));
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setUser(user));
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setIsDefault(true));
+        customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setStatus(ToDoListItemStatus.ACTIVE));
         customToDoListItemRepo.saveAll(customToDoListItems);
         habit.setCustomToDoListItems(customToDoListItems);
     }

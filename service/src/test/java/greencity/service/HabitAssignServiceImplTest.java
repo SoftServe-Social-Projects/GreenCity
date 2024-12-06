@@ -18,6 +18,7 @@ import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -79,7 +80,7 @@ import java.util.Locale;
 import java.util.Optional;
 import static greencity.ModelUtils.getCustomToDoListItemResponseDto;
 import static greencity.ModelUtils.getToDoListItem;
-import static greencity.ModelUtils.getToDoListItemResponseWithStatusDto;
+import static greencity.ModelUtils.getToDoListItemResponseDto;
 import static greencity.ModelUtils.getUserToDoListItemResponseDto;
 import static greencity.ModelUtils.getHabitAssignDto;
 import static greencity.ModelUtils.habitAssignInProgress;
@@ -186,7 +187,7 @@ class HabitAssignServiceImplTest {
     private List<HabitAssign> fullHabitAssigns = Collections.singletonList(fullHabitAssign);
 
     private HabitAssignPropertiesDto habitAssignPropertiesDto =
-        HabitAssignPropertiesDto.builder().duration(14).defaultToDoListItems(List.of(1L)).isPrivate(false).build();
+        HabitAssignPropertiesDto.builder().duration(14).defaultToDoListItemIds(List.of(1L)).isPrivate(false).build();
 
     private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
         HabitAssignCustomPropertiesDto.builder()
@@ -889,9 +890,8 @@ class HabitAssignServiceImplTest {
             .thenReturn(ModelUtils.getHabitAssignDtoWithFriendsIds().getHabit());
 
         expected.getFirst().getHabit().setToDoListItems(
-            List.of(ToDoListItemResponseWithStatusDto.builder()
+            List.of(ToDoListItemResponseDto.builder()
                 .id(userToDoListItemCustom.getId())
-                .status(ToDoListItemStatus.ACTIVE)
                 .build()));
 
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
@@ -1040,7 +1040,7 @@ class HabitAssignServiceImplTest {
         UserToDoListItemResponseDto fromToDo = getUserToDoListItemResponseDto().setIsCustomItem(false);
         expected.add(fromToDo);
         expected.add(fromCustomToDo);
-        ToDoListItemResponseWithStatusDto toDoListItemResponseDto = getToDoListItemResponseWithStatusDto();
+        ToDoListItemResponseDto toDoListItemResponseDto = getToDoListItemResponseDto();
         CustomToDoListItemResponseDto customToDoListItemResponseDto = getCustomToDoListItemResponseDto();
 
         when(toDoListItemService.getToDoListByHabitAssignId(userId, habitAssignId, language))
@@ -1632,8 +1632,8 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
         when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(getToDoListItemTranslationList());
-        when(modelMapper.map(any(), eq(ToDoListItemResponseWithStatusDto.class)))
-            .thenReturn(getToDoListItemResponseWithStatusDto());
+        when(modelMapper.map(any(), eq(ToDoListItemResponseDto.class)))
+            .thenReturn(getToDoListItemResponseDto());
         when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
 
         HabitDto actual = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);

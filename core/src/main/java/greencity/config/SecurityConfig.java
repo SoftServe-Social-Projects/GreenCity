@@ -74,14 +74,13 @@ public class SecurityConfig {
     private static final String ACTIVE = "/active";
     private static final String CUSTOM_TO_DO_LIST = "/habits/custom-to-do-list-items";
     private static final String TO_DO_LIST = "/habits/to-do-list-items";
-    private static final String USER_TO_DO_LIST = "/habits/assign/user-to-do-list-items";
+    private static final String USER_TO_DO_LIST = "/habits/assign/user-to-do-list-items/{habitAssignId}";
     private static final String HABIT_ASSIGN_WITH_HABIT_ID = "/habit/assign/{habitId}";
     private static final String ACHIEVEMENTS = "/achievements";
     private static final String NOTIFICATIONS = "/notifications";
     private static final String NOTIFICATION_ID = "/{notificationId}";
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
-    private static final String HABIT_ASSIGN_ID = "/{habitAssignId}";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -221,7 +220,7 @@ public class SecurityConfig {
                     CUSTOM_TO_DO_LIST + "/assign/{habitAssignId}",
                     TO_DO_LIST + "/{habitId}",
                     TO_DO_LIST + "/assign/{habitAssignId}",
-                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
+                    USER_TO_DO_LIST,
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
@@ -314,7 +313,7 @@ public class SecurityConfig {
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
-                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
+                    USER_TO_DO_LIST,
                     "/user/{userId}/habit",
                     "/user/{userId}/userFriend/{friendId}",
                     "/user/{userId}/declineFriend/{friendId}",
@@ -345,7 +344,7 @@ public class SecurityConfig {
                     EVENTS_COMMENTS + COMMENT_ID,
                     ECO_NEWS + COMMENTS,
                     HABIT_ASSIGN_WITH_HABIT_ID,
-                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
+                    USER_TO_DO_LIST,
                     HABIT_ASSIGN_WITH_HABIT_ID,
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
@@ -361,7 +360,7 @@ public class SecurityConfig {
                     "/habit/{habitId}/favorites",
                     "/favorite_place/{placeId}",
                     "/social-networks",
-                    USER_TO_DO_LIST + HABIT_ASSIGN_ID,
+                    USER_TO_DO_LIST,
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,

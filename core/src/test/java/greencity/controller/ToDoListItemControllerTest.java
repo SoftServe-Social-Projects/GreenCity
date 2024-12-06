@@ -2,7 +2,7 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -22,7 +22,7 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getToDoListItemResponseWithStatusDto;
+import static greencity.ModelUtils.getToDoListItemResponseDto;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -62,7 +62,7 @@ class ToDoListItemControllerTest {
 
     private final Principal principal = getPrincipal();
 
-    private ToDoListItemResponseWithStatusDto dto;
+    private ToDoListItemResponseDto dto;
 
     @BeforeEach
     void setUp() {
@@ -74,13 +74,13 @@ class ToDoListItemControllerTest {
             .setValidator(mockValidator)
             .build();
 
-        dto = getToDoListItemResponseWithStatusDto();
+        dto = getToDoListItemResponseDto();
     }
 
     @Test
     void getAllToDoListItemsForHabitIsOk() throws Exception {
         Long habitId = 1L;
-        List<ToDoListItemResponseWithStatusDto> expected = List.of(dto);
+        List<ToDoListItemResponseDto> expected = List.of(dto);
         when(toDoListItemService.findAllHabitToDoList(eq(habitId), anyString()))
             .thenReturn(expected);
         this.mockMvc.perform(get(toDoListItemLink + "/" + habitId)
@@ -102,7 +102,7 @@ class ToDoListItemControllerTest {
     void findAvailableToDoListForHabitAssignIsOk() throws Exception {
         Long habitAssignId = 1L;
         UserVO userVO = getUserVO();
-        List<ToDoListItemResponseWithStatusDto> expected = List.of(dto);
+        List<ToDoListItemResponseDto> expected = List.of(dto);
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         when(
             toDoListItemService.findAvailableToDoListForHabitAssign(eq(userVO.getId()), eq(habitAssignId), anyString()))

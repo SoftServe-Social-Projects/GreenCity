@@ -20,6 +20,7 @@ import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
@@ -185,6 +186,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 if (duplicates.isEmpty()) {
                     customToDoListItem.setUser(user);
                     customToDoListItem.setHabit(habit);
+                    customToDoListItem.setIsDefault(false);
                     user.getCustomToDoListItems().add(customToDoListItem);
                     customToDoListItemRepo.save(customToDoListItem);
                 } else {
@@ -357,6 +359,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
         setToDoListItems(habitAssignDto, habitAssign, language);
         setCustomToDoListItems(habitAssignDto, habitAssign);
+        setUserToDoListItems(habitAssignDto, habitAssign, language);
         setLikes(habitAssignDto, habitAssign);
         setDislikes(habitAssignDto, habitAssign);
         return habitAssignDto;
@@ -376,6 +379,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignDto.setFriendsIdsTrackingHabit(
             habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssign.getHabit().getId()));
         setToDoListItems(habitAssignDto, habitAssign, language);
+        setCustomToDoListItems(habitAssignDto, habitAssign);
+        setUserToDoListItems(habitAssignDto, habitAssign, language);
         return habitAssignDto;
     }
 
@@ -385,15 +390,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void setToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
-        habitAssignDto.getHabit().setToDoListItems(userToDoListItemRepo
-            .getAllAssignedToDoListItemsFull(habitAssign.getId()).stream()
-            .map(userToDoListItem -> {
+        habitAssignDto.getHabit().setToDoListItems(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId())
+                .stream()
+                .map(toDoListItemId -> {
                 ToDoListItem toDoListItem =
-                    toDoListItemRepo.findById(userToDoListItem.getTargetId()).orElseThrow(() -> new NotFoundException(
-                        ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userToDoListItem.getTargetId()));
-                return ToDoListItemResponseWithStatusDto.builder()
+                    toDoListItemRepo.getReferenceById(toDoListItemId);
+                return ToDoListItemResponseDto.builder()
                     .id(toDoListItem.getId())
-                    .status(ToDoListItemStatus.ACTIVE)
                     .text(toDoListItem.getTranslations().stream()
                         .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
                         .orElseThrow(
@@ -406,19 +409,41 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void setCustomToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign) {
-        habitAssignDto.getHabit().setCustomToDoListItems(userToDoListItemRepo
-            .getAllAssignedCustomToDoListItemsFull(habitAssign.getId()).stream()
-            .map(userToDoListItem -> {
-                CustomToDoListItem customToDoListItem = customToDoListItemRepo.findById(userToDoListItem.getTargetId())
-                    .orElseThrow(() -> new NotFoundException(
-                        ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_ID + userToDoListItem.getTargetId()));
+        habitAssignDto.getHabit().setCustomToDoListItems(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habitAssign.getHabit().getId())
+                .stream()
+                .map(customToDoListItemId -> {
+                CustomToDoListItem customToDoListItem = customToDoListItemRepo.getReferenceById(customToDoListItemId);
                 return CustomToDoListItemResponseDto.builder()
                     .id(customToDoListItem.getId())
-                    .status(ToDoListItemStatus.ACTIVE)
                     .text(customToDoListItem.getText())
                     .build();
             })
             .toList());
+    }
+
+    private void setUserToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
+        List<UserToDoListItem> userToDoListItems = userToDoListItemRepo.findAllByHabitAssingId(habitAssign.getId());
+        List<UserToDoListItemAdvanceDto> userToDoListItemDtos = userToDoListItems.stream()
+                .map(userToDoListItem -> {
+                    UserToDoListItemAdvanceDto itemDto = UserToDoListItemAdvanceDto.builder()
+                            .id(userToDoListItem.getId())
+                            .targetId(userToDoListItem.getTargetId())
+                            .isCustomItem(userToDoListItem.getIsCustomItem())
+                            .status(userToDoListItem.getStatus())
+                            .dateCompleted(userToDoListItem.getDateCompleted())
+                            .build();
+                    boolean isCustomItem = userToDoListItem.getIsCustomItem();
+                    if (isCustomItem) {
+                        CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
+                        itemDto.setContent(customItem.getText());
+                    } else {
+                        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, itemDto.getTargetId());
+                        itemDto.setContent(itemTranslation.getContent());
+                    }
+                    return itemDto;
+                })
+                .toList();
+        habitAssignDto.setUserToDoListItems(userToDoListItemDtos);
     }
 
     private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, String language) {
@@ -565,47 +590,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
-        List<ToDoListItemResponseWithStatusDto> toDoListItems =
-            toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habit.getId())
-                .stream()
-                .map(toDoListItem -> modelMapper.map(toDoListItem, ToDoListItemResponseWithStatusDto.class))
-                .map(toDoListItem -> toDoListItem.setStatus(ToDoListItemStatus.DISABLED)).toList();
-        changeStatuses(UserToDoListItemStatus.INPROGRESS.toString(),
-            habitAssign.getId(), toDoListItems);
-        changeStatuses(UserToDoListItemStatus.DONE.toString(),
-            habitAssign.getId(), toDoListItems);
-        List<CustomToDoListItemResponseDto> customToDoListItems =
-            customToDoListItemRepo.findAllByHabitIdAndIsDefaultTrue(habit.getId())
-                .stream()
-                .map(customToDoListItem -> modelMapper.map(customToDoListItem, CustomToDoListItemResponseDto.class))
-                .toList();
-        habit.setToDoListItems(toDoListItems);
-        habit.setCustomToDoListItems(customToDoListItems);
         habit.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habit.getId()));
         habit.setHabitAssignStatus(habitAssign.getStatus());
         return habit;
-    }
-
-    /**
-     * Method changes statuses in toDoListItems.
-     *
-     * @param status        String status to set.
-     * @param habitAssignId Long id.
-     * @param toDoListItems list with habit's items.
-     */
-    private void changeStatuses(String status, Long habitAssignId,
-        List<ToDoListItemResponseWithStatusDto> toDoListItems) {
-        List<Long> otherStatusItems = userToDoListItemRepo
-            .getToDoListItemsByHabitAssignIdAndStatus(habitAssignId, status);
-        if (!otherStatusItems.isEmpty()) {
-            for (Long otherStatusItemId : otherStatusItems) {
-                for (ToDoListItemResponseWithStatusDto slid : toDoListItems) {
-                    if (slid.getId().equals(otherStatusItemId)) {
-                        slid.setStatus(ToDoListItemStatus.ACTIVE);
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -684,20 +671,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<UserToDoListItemResponseDto> getToDoAndCustomToDoLists(
         Long userId, Long habitAssignId, String language) {
-        List<ToDoListItemResponseWithStatusDto> toDoListItems =
-            toDoListItemService.getToDoListByHabitAssignId(userId, habitAssignId, language);
-        List<CustomToDoListItemResponseDto> customToDoListItems = customToDoListItemService
-            .getCustomToDoListByHabitAssignId(userId, habitAssignId);
-        List<UserToDoListItemResponseDto> userToDoItems = new ArrayList<>();
-        userToDoItems.addAll(toDoListItems.stream()
-            .map(toDoListItem -> modelMapper.map(toDoListItem, UserToDoListItemResponseDto.class))
-            .map(userToDoItem -> userToDoItem.setIsCustomItem(false))
-            .toList());
-        userToDoItems.addAll(customToDoListItems.stream()
-            .map(customToDoListItem -> modelMapper.map(customToDoListItem, UserToDoListItemResponseDto.class))
-            .map(userToDoItem -> userToDoItem.setIsCustomItem(true))
-            .toList());
-        return userToDoItems;
+        return userToDoListItemRepo.findAllByHabitAssingId(habitAssignId)
+                .stream()
+                .map(userToDoListItem -> {
+                    UserToDoListItemResponseDto itemDto = UserToDoListItemResponseDto.builder()
+                            .id(userToDoListItem.getId())
+                            .status(userToDoListItem.getStatus())
+                            .targetId(userToDoListItem.getTargetId())
+                            .isCustomItem(userToDoListItem.getIsCustomItem())
+                            .build();
+                    boolean isCustomItem = userToDoListItem.getIsCustomItem();
+                    if (isCustomItem) {
+                        CustomToDoListItem customItem = customToDoListItemRepo.getReferenceById(userToDoListItem.getTargetId());
+                        itemDto.setText(customItem.getText());
+                    } else {
+                        ToDoListItemTranslation itemTranslation = toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userToDoListItem.getTargetId());
+                        itemDto.setText(itemTranslation.getContent());
+                    }
+                    return itemDto;
+                }).toList();
     }
 
     @Transactional
@@ -1280,8 +1272,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         enhanceAssignWithCustomProperties(habitAssign, customAssignProperties);
         habitAssign = habitAssignRepo.save(habitAssign);
 
-        List<Long> defaultToDoList = customAssignProperties.getDefaultToDoListItems();
-        List<Long> customDefaultToDoList = customAssignProperties.getDefaultCustomToDoListItems();
+        List<Long> defaultToDoList = customAssignProperties.getDefaultToDoListItemIds();
+        List<Long> customDefaultToDoList = customAssignProperties.getDefaultCustomToDoListItemIds();
         if (defaultToDoList != null) {
             saveUserToDoListItems(defaultToDoList, habitAssign, false);
         }
@@ -1321,8 +1313,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     private HabitAssignCustomPropertiesDto buildDefaultHabitAssignPropertiesDto(Habit habit) {
         HabitAssignPropertiesDto habitAssignPropertiesDto = HabitAssignPropertiesDto.builder()
-            .defaultToDoListItems(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId()))
-            .defaultCustomToDoListItems(
+            .defaultToDoListItemIds(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId()))
+            .defaultCustomToDoListItemIds(
                 customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(habit.getId()))
             .duration(habit.getDefaultDuration())
             .isPrivate(false)

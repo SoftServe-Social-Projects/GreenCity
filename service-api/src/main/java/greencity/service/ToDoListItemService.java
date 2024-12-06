@@ -66,7 +66,7 @@ public interface ToDoListItemService {
      * @param id id of to-do list item you need to find
      * @author Dmytro Khonko
      */
-    ToDoListItemResponseDto findToDoListItemById(Long id);
+    ToDoListItemResponseWithTranslationDto findToDoListItemById(Long id);
 
     /**
      * Method to filter to-do list items.
@@ -82,9 +82,9 @@ public interface ToDoListItemService {
      *
      * @param habitId  id of the {@link HabitVO} habit.
      * @param language needed language code.
-     * @return List of {@link ToDoListItemResponseWithStatusDto}.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
-    List<ToDoListItemResponseWithStatusDto> findAllHabitToDoList(Long habitId, String language);
+    List<ToDoListItemResponseDto> findAllHabitToDoList(Long habitId, String language);
 
     /**
      * Method returns list of to-do list items user not added to habit assign in
@@ -94,9 +94,9 @@ public interface ToDoListItemService {
      * @param habitAssignId id of the {@link greencity.dto.habit.HabitAssignVO}
      *                      habit assign.
      * @param language      needed language code.
-     * @return List of {@link ToDoListItemResponseWithStatusDto}.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
-    List<ToDoListItemResponseWithStatusDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId,
+    List<ToDoListItemResponseDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId,
         String language);
 
     /**
@@ -107,7 +107,7 @@ public interface ToDoListItemService {
      * @param language      needed language code.
      * @return List of {@link UserToDoListItemResponseDto}.
      */
-    List<ToDoListItemResponseWithStatusDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
+    List<ToDoListItemResponseDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
         String language);
 
     /**

@@ -20,6 +20,8 @@ public class UserToDoListItemResponseDtoMapper
         return UserToDoListItemResponseDto.builder()
             .id(userToDoListItem.getId())
             .status(userToDoListItem.getStatus())
+            .targetId(userToDoListItem.getTargetId())
+            .isCustomItem(userToDoListItem.getIsCustomItem())
             .build();
     }
 }

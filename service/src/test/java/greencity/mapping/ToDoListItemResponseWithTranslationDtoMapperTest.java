@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.todolistitem.ToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseWithTranslationDto;
 import greencity.dto.todolistitem.ToDoListItemTranslationDTO;
 import greencity.entity.ToDoListItem;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class ToDoListItemResponseDtoMapperTest {
+class ToDoListItemResponseWithTranslationDtoMapperTest {
     @InjectMocks
     ToDoListItemResponseDtoMapper toDoListItemResponseDtoMapper;
 
@@ -24,7 +24,7 @@ class ToDoListItemResponseDtoMapperTest {
             .id(1L)
             .translations(ModelUtils.getToDoListItemTranslations())
             .build();
-        ToDoListItemResponseDto expected = ToDoListItemResponseDto.builder()
+        ToDoListItemResponseWithTranslationDto expected = ToDoListItemResponseWithTranslationDto.builder()
             .id(toDoListItem.getId())
             .translations(toDoListItem.getTranslations().stream().map(
                 shoppingListItemTranslation -> ToDoListItemTranslationDTO.builder()
@@ -33,7 +33,7 @@ class ToDoListItemResponseDtoMapperTest {
                     .build())
                 .collect(Collectors.toList()))
             .build();
-        ToDoListItemResponseDto actual = toDoListItemResponseDtoMapper.convert(toDoListItem);
+        ToDoListItemResponseWithTranslationDto actual = toDoListItemResponseDtoMapper.convert(toDoListItem);
         assertEquals(expected, actual);
     }
 }

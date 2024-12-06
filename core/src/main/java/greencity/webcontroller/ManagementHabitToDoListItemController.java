@@ -1,6 +1,5 @@
 package greencity.webcontroller;
 
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
 import greencity.dto.todolistitem.ToDoListItemManagementDto;
 import greencity.dto.habit.HabitDto;
 import greencity.service.ToDoListItemService;
@@ -38,7 +37,7 @@ public class ManagementHabitToDoListItemController {
     }
 
     /**
-     * Controller for deleting {@link ToDoListItemResponseWithStatusDto} by given
+     * Controller for deleting {@link greencity.dto.todolistitem.ToDoListItemVO} by given
      * id.
      *
      * @param listId  list of IDs.
@@ -54,9 +53,9 @@ public class ManagementHabitToDoListItemController {
     }
 
     /**
-     * Controller add all {@link ToDoListItemResponseWithStatusDto} by list of ids.
+     * Controller add all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of ids.
      *
-     * @param listId  list of id {@link ToDoListItemResponseWithStatusDto}
+     * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
      *                added.
      * @return {@link ResponseEntity}
@@ -70,10 +69,10 @@ public class ManagementHabitToDoListItemController {
     }
 
     /**
-     * Controller for c the {@link ToDoListItemResponseWithStatusDto} instance by
+     * Controller for c the {@link greencity.dto.todolistitem.ToDoListItemVO} instance by
      * its id.
      *
-     * @param itemId  - {@link ToDoListItemResponseWithStatusDto} instance id which
+     * @param itemId  - {@link greencity.dto.todolistitem.ToDoListItemVO} instance id which
      *                will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
@@ -88,7 +87,7 @@ public class ManagementHabitToDoListItemController {
     }
 
     /**
-     * Controller add {@link ToDoListItemResponseWithStatusDto} by id.
+     * Controller add {@link greencity.dto.todolistitem.ToDoListItemVO} by id.
      *
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
      *                added.

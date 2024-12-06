@@ -4,7 +4,7 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.todolistitem.ToDoListItemResponseWithStatusDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.service.ToDoListItemService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -35,7 +35,7 @@ public class ToDoListItemController {
      *
      * @param locale  {@link Locale} with needed language code.
      * @param habitId {@link Long} with needed habit id.
-     * @return list of {@link ToDoListItemResponseWithStatusDto}.
+     * @return list of {@link ToDoListItemResponseDto}.
      */
     @Operation(description = "Get all available to-do list for habit.")
     @ApiResponses(value = {
@@ -49,7 +49,7 @@ public class ToDoListItemController {
     })
     @GetMapping("/{habitId}")
     @ApiLocale
-    public ResponseEntity<List<ToDoListItemResponseWithStatusDto>> getAllToDoListItemsForHabit(
+    public ResponseEntity<List<ToDoListItemResponseDto>> getAllToDoListItemsForHabit(
         @Parameter @PathVariable @Min(1) Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -62,7 +62,7 @@ public class ToDoListItemController {
      *
      * @param locale        {@link Locale} with needed language code.
      * @param habitAssignId {@link Long} with needed habit assign id.
-     * @return List of {@link ToDoListItemResponseWithStatusDto}.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
     @Operation(description = "Get all not added to-do list for habit assign.")
     @ApiResponses(value = {
@@ -78,7 +78,7 @@ public class ToDoListItemController {
     })
     @GetMapping("/assign/{habitAssignId}")
     @ApiLocale
-    public ResponseEntity<List<ToDoListItemResponseWithStatusDto>> getAllNotAddedToDoListItemsForHabitAssign(
+    public ResponseEntity<List<ToDoListItemResponseDto>> getAllNotAddedToDoListItemsForHabitAssign(
         @Parameter(hidden = true) @CurrentUser UserVO user,
         @Parameter @PathVariable @Min(1) Long habitAssignId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {

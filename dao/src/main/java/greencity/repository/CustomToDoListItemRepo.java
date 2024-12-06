@@ -23,7 +23,7 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
      * @return list of {@link CustomToDoListItem}
      */
     @Query(nativeQuery = true,
-        value = "SELECT ctd FROM custom_to_do_list_items ctd WHERE "
+        value = "SELECT * FROM custom_to_do_list_items ctd WHERE "
             + "ctd.status like 'ACTIVE' "
             + "AND ctd.user_id=:userId "
             + "AND ctd.habit_id=:habitId")
@@ -32,7 +32,7 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
 
     @Query(nativeQuery = true,
         value = "SELECT ctdl.* FROM custom_to_do_list_items ctdl "
-            + "JOIN user_to_do_list ustdl ON ustdl.target_id = ctdl.id "
+            + "JOIN user_to_do_list ustdl ON ustdl.to_do_list_item_id = ctdl.id "
             + "WHERE ustdl.is_custom_item = true "
             + "AND ustdl.habit_assign_id = :habitAssignId")
     List<CustomToDoListItem> findAllByHabitAssignId(Long habitAssignId);

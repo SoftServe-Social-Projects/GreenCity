@@ -157,7 +157,6 @@ public class ModelUtils {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 

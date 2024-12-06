@@ -100,7 +100,7 @@ public class ManagementToDoListItemsController {
      * @author Dmytro Khonko
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ToDoListItemResponseDto> getToDoListItemById(
+    public ResponseEntity<ToDoListItemResponseWithTranslationDto> getToDoListItemById(
         @PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(toDoListItemService.findToDoListItemById(id));
     }
