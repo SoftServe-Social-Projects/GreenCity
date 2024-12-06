@@ -17,7 +17,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {

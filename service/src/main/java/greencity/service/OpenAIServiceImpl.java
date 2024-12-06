@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Setter
 @Slf4j
@@ -44,17 +45,25 @@ public class OpenAIServiceImpl implements OpenAIService {
         body.put("max_tokens", 450);
         body.put("temperature", 0.8);
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(apiUrl, HttpMethod.POST, request,
-            new ParameterizedTypeReference<>() {
-            });
-        if (response.getBody() != null && response.getBody().containsKey("choices")) {
-            List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
-            if (choices != null && !choices.isEmpty()) {
-                Map<String, Object> choice = choices.get(0);
-                Map<String, Object> message = (Map<String, Object>) choice.get("message");
-                return (String) message.get("content");
-            }
+        try {
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<>() {
+                });
+
+            return Optional.ofNullable(response)
+                .map(ResponseEntity::getBody)
+                .filter(responseBody -> responseBody.containsKey("choices"))
+                .map(responseBody -> (List<Map<String, Object>>) responseBody.get("choices"))
+                .filter(choices -> !choices.isEmpty())
+                .map(choices -> choices.get(0))
+                .map(choice -> (Map<String, Object>) choice.get("message"))
+                .map(message -> (String) message.get("content"))
+                .orElse(ErrorMessage.OPEN_AI_IS_NOT_RESPONDING);
+        } catch (Exception e) {
+            return ErrorMessage.OPEN_AI_IS_NOT_RESPONDING;
         }
-        return ErrorMessage.OPEN_AI_IS_NOT_RESPONDING;
     }
 }
