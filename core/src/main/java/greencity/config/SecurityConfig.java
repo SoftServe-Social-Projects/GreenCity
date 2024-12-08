@@ -205,7 +205,8 @@ public class SecurityConfig {
                     FRIENDS + "/user/{userId}",
                     "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
-                    "/database/backupFiles")
+                    "/database/backupFiles",
+                    "/ai/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
