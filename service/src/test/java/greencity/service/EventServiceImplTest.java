@@ -1228,8 +1228,8 @@ class EventServiceImplTest {
         UserVO userVO = getUserVO();
         UserVO eventAuthorVO = getAuthorVO();
         User user = getUser();
-        User eventAuthor = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_EVENT").points(1).build();
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
@@ -1264,14 +1264,15 @@ class EventServiceImplTest {
     @Test
     void removeLikeTest() {
         UserVO userVO = getUserVO();
+        User eventAuthor = getUser().setId(2L);
         User user = getUser();
-        Event event = getEvent();
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.getUsersLikedEvents().add(user);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_EVENT").points(-1).build();
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        when(modelMapper.map(userVO, User.class)).thenReturn(event.getOrganizer());
+        when(userRepo.findById(2L)).thenReturn(Optional.of(eventAuthor));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT")).thenReturn(ratingPoints);
 
         eventService.like(event.getId(), userVO);
@@ -1280,7 +1281,7 @@ class EventServiceImplTest {
         verify(userNotificationService, times(1)).removeActionUserFromNotification(
             modelMapper.map(user, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
         verify(eventRepo).findById(event.getId());
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(eventAuthor.getId());
     }
 
     @Test
@@ -1357,15 +1358,16 @@ class EventServiceImplTest {
     }
 
     @Test
-    void givenEventDislikedByUser_whenLikedByUser_shouldRemoveDislikeAndAddLike() {
+    void givenEventDislikedByUser_whenLikedByUser_shouldRemoveDislikeAddLike() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.setUsersLikedEvents(new HashSet<>());
         event.setUsersDislikedEvents(new HashSet<>(Set.of(user)));
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
 
         eventService.like(1L, userVO);
 
@@ -1376,12 +1378,12 @@ class EventServiceImplTest {
     @Test
     void dislikeTest() {
         UserVO userVO = getUserVO();
-        User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.setUsersDislikedEvents(new HashSet<>());
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
 
         eventService.dislike(userVO, event.getId());
 
@@ -1405,13 +1407,14 @@ class EventServiceImplTest {
     void testDislikeIfWasAlreadyPlaced() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         Set<User> usersDisliked = new HashSet<>();
         usersDisliked.add(user);
         event.setUsersDislikedEvents(usersDisliked);
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
         eventService.dislike(userVO, event.getId());
 
         verify(eventRepo).save(event);
@@ -1422,12 +1425,13 @@ class EventServiceImplTest {
     void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.setUsersLikedEvents(new HashSet<>(Set.of(user)));
         event.setUsersDislikedEvents(new HashSet<>());
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
 
         eventService.dislike(userVO, 1L);
 
