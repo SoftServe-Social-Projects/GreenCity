@@ -1043,6 +1043,7 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        comment.getUser().setId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;
         Habit habit = getHabit();
@@ -1069,12 +1070,25 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void testLikeOwn() {
+        UserVO userVO = getUserVO();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        commentVO.setUsersLiked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+
+        assertThrows(BadRequestException.class, () -> commentService.like(1L, userVO, Locale.ENGLISH));
+    }
+
+    @Test
     void likeEcoNewsCommentTest() {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
         comment.setArticleType(ArticleType.ECO_NEWS);
+        comment.getUser().setId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;
         EcoNews ecoNews = getEcoNews();
@@ -1103,6 +1117,7 @@ class CommentServiceImplTest {
         User user = getUser();
         Comment comment = getComment();
         comment.setArticleType(ArticleType.EVENT);
+        comment.getUser().setId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;
         Event event = getEvent();
@@ -1132,6 +1147,7 @@ class CommentServiceImplTest {
         Comment comment = getComment();
         comment.setCurrentUserLiked(true);
         comment.getUsersLiked().add(user);
+        comment.getUser().setId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
@@ -1165,6 +1181,7 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        comment.getUser().setId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;
         Habit habit = getHabit();
@@ -1194,6 +1211,7 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        comment.getUser().setId(2L);
         comment.setUsersDisliked(new HashSet<>());
 
         when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
@@ -1206,10 +1224,23 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void testDislikeOwn() {
+        UserVO userVO = getUserVO();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        commentVO.setUsersLiked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+
+        assertThrows(BadRequestException.class, () -> commentService.dislike(1L, userVO, Locale.ENGLISH));
+    }
+
+    @Test
     void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        comment.getUser().setId(2L);
         comment.setUsersLiked(new HashSet<>(Set.of(user)));
         comment.setUsersDisliked(new HashSet<>());
 

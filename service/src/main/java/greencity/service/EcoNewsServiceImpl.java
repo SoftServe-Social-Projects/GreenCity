@@ -478,6 +478,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void dislike(UserVO userVO, Long id) {
         EcoNews ecoNews = findEcoNewsById(id);
+        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor());
 

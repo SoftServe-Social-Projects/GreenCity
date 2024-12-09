@@ -550,9 +550,14 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public void like(Long habitId, UserVO userVO) {
         Habit habit = findHabitById(habitId);
-        User habitAuthor = getHabitAuthor(habit);
+        User author = getHabitAuthor(habit);
+        boolean isAuthor = habit.getUserId().equals(userVO.getId());
 
-        if (removeLikeIfExists(habit, userVO, habitAuthor)) {
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        if (removeLikeIfExists(habit, userVO, author)) {
             return;
         }
 
@@ -563,9 +568,7 @@ public class HabitServiceImpl implements HabitService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
             AchievementAction.ASSIGN);
 
-        if (habitAuthor != null) {
-            sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
-        }
+        sendHabitLikeNotification(author, userVO, habitId, habit);
 
         habitRepo.save(habit);
     }
@@ -573,6 +576,11 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public void dislike(Long habitId, UserVO userVO) {
         Habit habit = findHabitById(habitId);
+        boolean isAuthor = habit.getUserId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         removeLikeIfExists(habit, userVO, getHabitAuthor(habit));
 
@@ -581,10 +589,6 @@ public class HabitServiceImpl implements HabitService {
         }
 
         habit.getUsersDisliked().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
-            AchievementAction.DELETE);
-
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT"), userVO);
 
         habitRepo.save(habit);
     }
