@@ -161,6 +161,8 @@ class EventServiceImplTest {
         }.getType())).thenReturn(tags);
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
+        AddressDto build = ModelUtils.getLongitudeAndLatitude();
+        when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
 
@@ -188,38 +190,16 @@ class EventServiceImplTest {
     @Test
     void saveEventWithoutAddress() {
         User user = ModelUtils.getUser();
-        EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
-        List<Long> eventIds = List.of(eventDtoWithoutCoordinatesDto.getId());
         AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutAddressRequest;
         Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
-        List<Tag> tags = ModelUtils.getEventTags();
-
+        String email = user.getEmail();
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
-        when(restClient.findByEmail(user.getEmail())).thenReturn(testUserVo);
-        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
-        when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
-        when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
-        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
-            TagType.EVENT)).thenReturn(tagVOList);
-        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
-        }.getType())).thenReturn(tags);
-        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(eventWithoutCoordinates));
-        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId()))
-            .thenReturn(List.of(eventWithoutCoordinates));
-
-        EventDto resultEventDto = eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null);
-
-        assertEquals(eventDtoWithoutCoordinatesDto, resultEventDto);
-        assertTrue(resultEventDto.isSubscribed());
-        assertTrue(resultEventDto.isFavorite());
-
-        verify(restClient).findByEmail(user.getEmail());
-        verify(eventRepo).save(eventWithoutCoordinates);
-        verify(tagService).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
-            TagType.EVENT);
-        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
-        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+        when(eventRepo.save(any(Event.class))).thenReturn(eventWithoutCoordinates);
+        BadRequestException exception = assertThrows(
+            BadRequestException.class,
+            () -> eventService.save(addEventDtoWithoutCoordinates, email, null));
+        assertEquals(ErrorMessage.INVALID_COORDINATES, exception.getMessage());
+        verify(eventRepo, times(0)).save(eventWithoutCoordinates);
     }
 
     @Test
@@ -969,6 +949,36 @@ class EventServiceImplTest {
         verify(restClient).findById(userId);
         verify(eventRepo).findEventsIds(pageable, filterEventDto, userId);
         verify(eventRepo).loadEventDataByIds(idsPage.getContent(), userId);
+    }
+
+    @Test
+    void testGetEventsForAuthorizedUserExceedingPageTest() {
+        int requestedPage = 10;
+        int totalPages = 2;
+        int pageSize = 6;
+        Pageable pageable = PageRequest.of(requestedPage, pageSize);
+        Long userId = 1L;
+        FilterEventDto filterEventDto = getFilterEventDto();
+
+        Page<Long> idsPage = new PageImpl<>(
+            List.of(3L, 1L),
+            PageRequest.of(0, pageSize),
+            totalPages * pageSize);
+
+        when(restClient.findById(userId)).thenReturn(getUserVO());
+        when(eventRepo.findEventsIds(pageable, filterEventDto, userId)).thenReturn(idsPage);
+
+        BadRequestException exception = assertThrows(
+            BadRequestException.class,
+            () -> eventService.getEvents(pageable, filterEventDto, userId),
+            "Expected BadRequestException to be thrown");
+
+        String expectedMessage = String.format("Requested page %d exceeds total pages %d.", requestedPage, totalPages);
+        assertEquals(expectedMessage, exception.getMessage());
+
+        verify(restClient).findById(userId);
+        verify(eventRepo).findEventsIds(pageable, filterEventDto, userId);
+        verify(eventRepo, never()).loadEventDataByIds(anyList(), anyLong());
     }
 
     @Test

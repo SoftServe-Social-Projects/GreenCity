@@ -133,8 +133,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
-        addAddressToLocation(addEventDtoRequest.getDatesLocations());
+        validateEventRequest(addEventDtoRequest);
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         UserVO userVO = restClient.findByEmail(email);
         User organizer = modelMapper.map(userVO, User.class);
@@ -246,6 +245,12 @@ public class EventServiceImpl implements EventService {
         }
 
         Page<Long> eventIds = eventRepo.findEventsIds(page, filterEventDto, userId);
+
+        if (page.getPageNumber() >= eventIds.getTotalPages() && eventIds.getTotalPages() > 0) {
+            throw new BadRequestException(
+                String.format(ErrorMessage.PAGE_NOT_FOUND_MESSAGE, page.getPageNumber(), eventIds.getTotalPages()));
+        }
+
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
@@ -605,6 +610,37 @@ public class EventServiceImpl implements EventService {
         } else {
             toUpdate.setAdditionalImages(null);
         }
+    }
+
+    private void validateEventRequest(AddEventDtoRequest addEventDtoRequest) {
+        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
+        if (!validateCoordinates(addEventDtoRequest.getDatesLocations())) {
+            throw new BadRequestException(ErrorMessage.INVALID_COORDINATES);
+        }
+        addAddressToLocation(addEventDtoRequest.getDatesLocations());
+    }
+
+    private boolean isValidCoordinate(double latitude, double longitude) {
+        return Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
+    }
+
+    public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
+        for (EventDateLocationDto eventDateLocationDto : eventDateLocationDtos) {
+            AddressDto coordinates = eventDateLocationDto.getCoordinates();
+
+            if (Objects.isNull(coordinates) || Objects.isNull(coordinates.getLatitude())
+                || Objects.isNull(coordinates.getLongitude())) {
+                return false;
+            }
+
+            double latitude = coordinates.getLatitude();
+            double longitude = coordinates.getLongitude();
+
+            if (!isValidCoordinate(latitude, longitude)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {

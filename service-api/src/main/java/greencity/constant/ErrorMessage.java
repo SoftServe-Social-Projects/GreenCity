@@ -178,6 +178,9 @@ public class ErrorMessage {
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
+    public static final String INVALID_COORDINATES = "The coordinates field must not be empty";
+    public static final String INVALID_LONGITUDE = "Longitude must be between -180 and 180 degrees";
+    public static final String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
     public static final String INVALID_DATE = "Date can't be null or empty";
     public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
         "No friends are assigned on current habit with id: ";
@@ -211,4 +214,6 @@ public class ErrorMessage {
     public static final String YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION = "Current user already has accepted invitation";
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
     public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
+    public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
+    public static final String OPEN_AI_IS_NOT_RESPONDING = "Could not get a response from OpenAI.";
 }
