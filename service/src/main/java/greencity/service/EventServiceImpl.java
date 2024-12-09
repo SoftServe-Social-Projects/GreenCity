@@ -860,6 +860,7 @@ public class EventServiceImpl implements EventService {
             .newsId(eventId)
             .newsTitle(event.getTitle())
             .notificationType(NotificationType.EVENT_LIKE)
+            .secondMessageText(event.getTitle())
             .isLike(true)
             .build();
         userNotificationService.createOrUpdateLikeNotification(likeNotificationDto);
