@@ -13,6 +13,7 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
@@ -66,12 +67,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import static greencity.ModelUtils.getAuthorVO;
 import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getEventPreviewDtos;
+import static greencity.ModelUtils.getEventVO;
 import static greencity.ModelUtils.getFilterEventDto;
 import static greencity.ModelUtils.getTupleElements;
 import static greencity.ModelUtils.getTuples;
@@ -1247,6 +1250,18 @@ class EventServiceImplTest {
     }
 
     @Test
+    void testLikeOwn() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+
+        assertThrows(BadRequestException.class, () -> eventService.like(1L, userVO));
+    }
+
+    @Test
     void removeLikeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
@@ -1372,6 +1387,18 @@ class EventServiceImplTest {
 
         verify(eventRepo).save(event);
         assertEquals(1L, event.getUsersDislikedEvents().size());
+    }
+
+    @Test
+    void testDislikeOwn() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+
+        assertThrows(BadRequestException.class, () -> eventService.dislike(userVO, 1L));
     }
 
     @Test
