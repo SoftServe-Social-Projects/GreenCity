@@ -14,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class HabitTranslationMapperTests {
-    private final String UA = "ua";
-    private final String EN = "en";
     @InjectMocks
     private HabitTranslationMapper habitTranslationMapper;
 
@@ -69,7 +67,7 @@ class HabitTranslationMapperTests {
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
-        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, EN));
+        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, "en"));
     }
 
     @Test
@@ -84,6 +82,6 @@ class HabitTranslationMapperTests {
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
-        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, UA));
+        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, "ua"));
     }
 }
