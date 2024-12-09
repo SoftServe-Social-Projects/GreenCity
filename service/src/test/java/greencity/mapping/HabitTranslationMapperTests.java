@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class HabitTranslationMapperTests {
+    private final String UA = "ua";
+    private final String EN = "en";
     @InjectMocks
     private HabitTranslationMapper habitTranslationMapper;
 
@@ -30,6 +32,18 @@ class HabitTranslationMapperTests {
     }
 
     @Test
+    void convertUaWithValidHabitTranslationDtoSucceeds() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
+
+        HabitTranslation expected = HabitTranslation.builder()
+            .description(habitTranslationDto.getDescriptionUa())
+            .habitItem(habitTranslationDto.getHabitItemUa())
+            .name(habitTranslationDto.getNameUa())
+            .build();
+        assertEquals(expected, habitTranslationMapper.convertUa(habitTranslationDto));
+    }
+
+    @Test
     void mapAllToListTest() {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(ModelUtils.getHabitTranslationDto());
@@ -41,5 +55,35 @@ class HabitTranslationMapperTests {
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
         assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList));
+    }
+
+    @Test
+    void mapAllToListWithEnLanguageReturnsList() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
+
+        HabitTranslation expected = HabitTranslation.builder()
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
+            .build();
+        List<HabitTranslation> expectedList = List.of(expected);
+
+        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, EN));
+    }
+
+    @Test
+    void mapAllToListWithUaLanguageReturnsList() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
+
+        HabitTranslation expected = HabitTranslation.builder()
+            .description(habitTranslationDto.getDescriptionUa())
+            .habitItem(habitTranslationDto.getHabitItemUa())
+            .name(habitTranslationDto.getNameUa())
+            .build();
+        List<HabitTranslation> expectedList = List.of(expected);
+
+        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, UA));
     }
 }

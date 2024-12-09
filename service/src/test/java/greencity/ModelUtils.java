@@ -276,9 +276,12 @@ public class ModelUtils {
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
     public static String habitTranslationName = "use shopper";
+    public static String habitTranslationNameUa = "Назва звички українською";
     public static String habitTranslationDescription = "Description";
+    public static String habitTranslationDescriptionUa = "Опис звички українською";
     public static String toDoListText = "buy a shopper";
     public static String habitItem = "Item";
+    public static String habitItemUa = "Айтем звички українською";
     public static String habitDefaultImage = "img/habit-default.png";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
@@ -2574,6 +2577,18 @@ public class ModelUtils {
             .description(habitTranslationDescription)
             .habitItem(habitItem)
             .name(habitTranslationName)
+            .build();
+    }
+
+    public static HabitTranslationDto getHabitTranslationDtoEnAndUa() {
+        return HabitTranslationDto.builder()
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
+            .languageCode("en")
+            .nameUa(habitTranslationNameUa)
+            .descriptionUa(habitTranslationDescriptionUa)
+            .habitItemUa(habitItemUa)
             .build();
     }
 

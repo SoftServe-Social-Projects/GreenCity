@@ -491,21 +491,26 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
-        List<HabitTranslation> habitTranslationListForUa = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
+        final String UA = "ua";
+        final String EN = "en";
+        List<HabitTranslation> habitTranslationListForUa =
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, UA);
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode("ua").orElseThrow(NoSuchElementException::new)));
+            languageRepo.findByCode(UA).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForUa);
 
-        List<HabitTranslation> habitTranslationListForEn = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
+        List<HabitTranslation> habitTranslationListForEn =
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, EN);
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode("en").orElseThrow(NoSuchElementException::new)));
+            languageRepo.findByCode(EN).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForEn);
     }
 
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto) {
-        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations());
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
+        String language) {
+        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language);
     }
 
     private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
