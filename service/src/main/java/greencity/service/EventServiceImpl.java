@@ -770,9 +770,6 @@ public class EventServiceImpl implements EventService {
         }
 
         event.getUsersDislikedEvents().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
-            AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
 
         eventRepo.save(event);
     }
