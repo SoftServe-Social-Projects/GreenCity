@@ -1319,12 +1319,12 @@ class HabitServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Habit habit = getHabit().setUserId(user.getId());
-
+        Long habitId = habit.getId();
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
-        assertThrows(BadRequestException.class, () -> habitService.dislike(habit.getId(), userVO));
+        assertThrows(BadRequestException.class, () -> habitService.dislike(habitId, userVO));
     }
 
     @Test
