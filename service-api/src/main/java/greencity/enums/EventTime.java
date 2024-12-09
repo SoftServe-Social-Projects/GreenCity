@@ -1,6 +1,6 @@
 package greencity.enums;
 
 public enum EventTime {
-    FUTURE,
+    UPCOMING,
     PAST
 }
