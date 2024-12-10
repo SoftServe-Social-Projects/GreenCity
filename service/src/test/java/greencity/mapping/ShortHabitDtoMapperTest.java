@@ -26,7 +26,7 @@ class ShortHabitDtoMapperTest {
     }
 
     @Test
-    void convert_ShouldMapHabitToShortHabitDto() {
+    void convert() {
         ShortHabitDto result = mapper.convert(habit);
 
         assertEquals(id, result.getId());
