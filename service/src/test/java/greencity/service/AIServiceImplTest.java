@@ -49,7 +49,7 @@ class AIServiceImplTest {
     private final ShortHabitDto shortHabitDto = new ShortHabitDto(id, habitTranslationName);
 
     @Test
-    void getForecast_ReturnsResponse_FromOpenAIService() {
+    void getForecastReturnsResponseFromOpenAIService() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
@@ -64,7 +64,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getForecast_ThrowsException_WhenOpenAIServiceFails() {
+    void getForecastThrowsExceptionWhenOpenAIServiceFails() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
@@ -78,7 +78,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getForecast_CallsGetAdvice_WhenHabitAssignsIsEmpty() {
+    void getForecastCallsGetAdviceWhenHabitAssignsIsEmpty() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(Collections.emptyList());
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
@@ -95,7 +95,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getAdvice_ReturnsResponse_FromOpenAIService() {
+    void getAdviceReturnsResponseFromOpenAIService() {
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
@@ -110,7 +110,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getAdvice_ThrowsException_WhenOpenAIServiceFails() {
+    void getAdviceThrowsExceptionWhenOpenAIServiceFails() {
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
