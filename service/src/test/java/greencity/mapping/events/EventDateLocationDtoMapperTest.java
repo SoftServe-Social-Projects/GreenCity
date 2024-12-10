@@ -56,9 +56,9 @@ class EventDateLocationDtoMapperTest {
         List<EventDateLocationDto> eventDateLocationDtoList = List.of(eventDateLocationDto);
 
         EventDateLocation dto = EventDateLocation.builder().id(eventDateLocationDto.getId())
-                .startDate(eventDateLocationDto.getStartDate()).finishDate(eventDateLocationDto.getFinishDate())
-                .address(addressDtoMapper.convert(eventDateLocationDto.getCoordinates()))
-                .onlineLink(eventDateLocationDto.getOnlineLink()).build();
+            .startDate(eventDateLocationDto.getStartDate()).finishDate(eventDateLocationDto.getFinishDate())
+            .address(addressDtoMapper.convert(eventDateLocationDto.getCoordinates()))
+            .onlineLink(eventDateLocationDto.getOnlineLink()).build();
 
         List<EventDateLocation> expectedList = List.of(dto);
         assertEquals(expectedList, mapper.mapAllToList(eventDateLocationDtoList));

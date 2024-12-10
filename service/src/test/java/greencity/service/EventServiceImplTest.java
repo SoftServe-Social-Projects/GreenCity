@@ -168,7 +168,8 @@ class EventServiceImplTest {
         when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
-        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations())).thenReturn(event.getDates());
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations()))
+            .thenReturn(event.getDates());
 
         EventDto resultEventDto = eventService.save(addEventDtoRequest, user.getEmail(), null);
         assertEquals(eventDto, resultEventDto);
@@ -216,9 +217,10 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDtoWithoutAddress();
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
 
-        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations())).thenReturn(event.getDates());
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations()))
+            .thenReturn(event.getDates());
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
-                .thenReturn(ModelUtils.getAddressLatLngResponse());
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
         when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(addressDto);
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
@@ -233,7 +235,7 @@ class EventServiceImplTest {
         when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
 
         assertEquals(eventDto,
-                eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
+            eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
     }
 
     @Test
