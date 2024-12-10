@@ -258,6 +258,12 @@ spec:
               name: {{ .Values.externalSecret.secretName }}
               key: GOOGLE-API-KEY
 
+        - name: OPEN_AI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: { { .Values.externalSecret.secretName } }
+              key: OPEN-AI-API-KEY
+
         ports:
         - containerPort: 8080
           name: tomcat
