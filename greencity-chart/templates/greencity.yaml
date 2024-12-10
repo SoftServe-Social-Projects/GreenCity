@@ -261,7 +261,7 @@ spec:
         - name: OPEN_AI_API_KEY
           valueFrom:
             secretKeyRef:
-              name: { { .Values.externalSecret.secretName } }
+              name: {{ .Values.externalSecret.secretName }}
               key: OPEN-AI-API-KEY
 
         ports:
