@@ -81,14 +81,14 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
         value = """
                 WITH sampled_habits AS (
                    SELECT *
-                   FROM habits 
+                   FROM habits
                             TABLESAMPLE SYSTEM(15)
                    WHERE is_deleted = false
                    LIMIT 1
                ),
                 fallback_habit AS (
                     SELECT *
-                    FROM habits 
+                    FROM habits
                     WHERE is_deleted = false
                     LIMIT 1
                 )
