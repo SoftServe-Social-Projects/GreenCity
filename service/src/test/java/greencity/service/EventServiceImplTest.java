@@ -34,6 +34,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
@@ -103,6 +104,9 @@ class EventServiceImplTest {
     ModelMapper modelMapper;
 
     @Mock
+    EventDateLocationDtoMapper eventDateLocationDtoMapper;
+
+    @Mock
     EventRepo eventRepo;
 
     @Mock
@@ -164,6 +168,7 @@ class EventServiceImplTest {
         when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations())).thenReturn(event.getDates());
 
         EventDto resultEventDto = eventService.save(addEventDtoRequest, user.getEmail(), null);
         assertEquals(eventDto, resultEventDto);
@@ -199,6 +204,36 @@ class EventServiceImplTest {
             () -> eventService.save(addEventDtoWithoutCoordinates, email, null));
         assertEquals(ErrorMessage.INVALID_COORDINATES, exception.getMessage());
         verify(eventRepo, times(0)).save(eventWithoutCoordinates);
+    }
+
+    @Test
+    void saveOnlineEventSuccessTest() {
+        User user = ModelUtils.getUser();
+        AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoWithoutAddressRequest;
+        Event event = ModelUtils.getEventWithoutAddress();
+        List<Tag> tags = ModelUtils.getEventTags();
+        AddressDto addressDto = ModelUtils.getLongitudeAndLatitude();
+        EventDto eventDto = ModelUtils.getEventDtoWithoutAddress();
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations())).thenReturn(event.getDates());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+                .thenReturn(ModelUtils.getAddressLatLngResponse());
+        when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(addressDto);
+        when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
+        when(eventRepo.save(event)).thenReturn(event);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+
+        assertEquals(eventDto,
+                eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
     }
 
     @Test
