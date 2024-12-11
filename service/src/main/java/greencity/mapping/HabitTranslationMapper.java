@@ -1,7 +1,9 @@
 package greencity.mapping;
 
+import greencity.constant.AppConstant;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.HabitTranslation;
+import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -30,21 +32,12 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      */
     public HabitTranslation convertUa(HabitTranslationDto habitTranslationDto) {
         HabitTranslation habitTranslation = new HabitTranslation();
-        if (habitTranslationDto.getNameUa() == null) {
-            habitTranslation.setName(habitTranslationDto.getName());
-        } else {
-            habitTranslation.setName(habitTranslationDto.getNameUa());
-        }
-        if (habitTranslationDto.getDescriptionUa() == null) {
-            habitTranslation.setDescription(habitTranslationDto.getDescription());
-        } else {
-            habitTranslation.setDescription(habitTranslationDto.getDescriptionUa());
-        }
-        if (habitTranslationDto.getHabitItemUa() == null) {
-            habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
-        } else {
-            habitTranslation.setHabitItem(habitTranslationDto.getHabitItemUa());
-        }
+        habitTranslation
+            .setName(ObjectUtils.defaultIfNull(habitTranslationDto.getNameUa(), habitTranslationDto.getName()));
+        habitTranslation.setDescription(
+            ObjectUtils.defaultIfNull(habitTranslationDto.getDescriptionUa(), habitTranslationDto.getDescription()));
+        habitTranslation.setHabitItem(
+            ObjectUtils.defaultIfNull(habitTranslationDto.getHabitItemUa(), habitTranslationDto.getHabitItem()));
 
         return habitTranslation;
     }
@@ -73,7 +66,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      * @author Chernenko Vitaliy
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, String language) {
-        if (language.equals("ua")) {
+        if (AppConstant.LANGUAGE_CODE_UA.equals(language)) {
             return dtoList.stream().map(this::convertUa).collect(Collectors.toList());
         }
         return dtoList.stream().map(this::convert).collect(Collectors.toList());

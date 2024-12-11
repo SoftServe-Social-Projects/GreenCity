@@ -491,20 +491,18 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
-        final String UA = "ua";
-        final String EN = "en";
         List<HabitTranslation> habitTranslationListForUa =
-            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, UA);
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.LANGUAGE_CODE_UA);
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode(UA).orElseThrow(NoSuchElementException::new)));
+            languageRepo.findByCode(AppConstant.LANGUAGE_CODE_UA).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForUa);
 
         List<HabitTranslation> habitTranslationListForEn =
-            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, EN);
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.DEFAULT_LANGUAGE_CODE);
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode(EN).orElseThrow(NoSuchElementException::new)));
+            languageRepo.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForEn);
     }
 
