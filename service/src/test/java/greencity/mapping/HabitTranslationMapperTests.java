@@ -67,7 +67,8 @@ class HabitTranslationMapperTests {
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
-        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.DEFAULT_LANGUAGE_CODE));
+        assertEquals(expectedList,
+            habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.DEFAULT_LANGUAGE_CODE));
     }
 
     @Test
@@ -82,7 +83,8 @@ class HabitTranslationMapperTests {
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
-        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.LANGUAGE_CODE_UA));
+        assertEquals(expectedList,
+            habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.LANGUAGE_CODE_UA));
     }
 
     @Test
@@ -91,12 +93,13 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-                .description(habitTranslationDto.getDescription())
-                .habitItem(habitTranslationDto.getHabitItem())
-                .name(habitTranslationDto.getName())
-                .build();
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
+            .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
-        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.LANGUAGE_CODE_UA));
+        assertEquals(expectedList,
+            habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.LANGUAGE_CODE_UA));
     }
 }
