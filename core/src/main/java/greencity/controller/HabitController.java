@@ -9,7 +9,6 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
-import greencity.dto.friends.UserFriendDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.*;
 import greencity.dto.todolistitem.ToDoListItemDto;
@@ -513,7 +512,7 @@ public class HabitController {
             habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
     }
 
-    //todo write java doc
+    // todo write java doc
     @Operation(summary = "Find all friends to be invited")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),

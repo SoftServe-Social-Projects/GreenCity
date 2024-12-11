@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.friends.UserFriendDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
@@ -232,7 +231,7 @@ public interface HabitService {
      */
     PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
 
-    //todo write java doc
+    // todo write java doc
     PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable,
         Long habitId);
 }
