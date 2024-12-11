@@ -1518,7 +1518,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    public void testGetAllFavoriteHabitsByLanguageCode() {
+    void testGetAllFavoriteHabitsByLanguageCode() {
         UserVO userVO = new UserVO();
         userVO.setId(1L);
 
@@ -1546,7 +1546,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    public void testGetAllFavoriteHabitsByLanguageCodeEmptyPage() {
+    void testGetAllFavoriteHabitsByLanguageCodeEmptyPage() {
         UserVO userVO = getUserVO();
         Pageable pageable = PageRequest.of(0, 1);
         String languageCode = "en";
