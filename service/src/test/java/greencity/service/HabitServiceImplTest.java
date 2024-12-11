@@ -1562,7 +1562,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void findAllFriendsOfUser_noNameProvided_noInvitations() {
+    void testFindAllFriendsOfUserNoNameProvidedNoInvitations() {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
@@ -1577,22 +1577,32 @@ class HabitServiceImplTest {
         when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 2L, habitId)).thenReturn(false);
         when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 3L, habitId)).thenReturn(false);
 
-        List<UserFriendHabitInviteDto> expectedDtos = List.of(
-                new UserFriendHabitInviteDto(friends.get(0), false),
-                new UserFriendHabitInviteDto(friends.get(1), false)
-        );
+        List<UserFriendHabitInviteDto> expectedDtos = friends.stream()
+            .map(friend -> new UserFriendHabitInviteDto(friend, false))
+            .toList();
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
 
+        assertNotNull(result);
+        assertEquals(2, result.getPage().size());
+
         for (int i = 0; i < expectedDtos.size(); i++) {
             UserFriendHabitInviteDto expected = expectedDtos.get(i);
             UserFriendHabitInviteDto actual = result.getPage().get(i);
-            assertEquals(expected, actual);
+            assertEquals(expected.getId(), actual.getId());
+            assertEquals(expected.getName(), actual.getName());
+            assertEquals(expected.getEmail(), actual.getEmail());
+            assertEquals(expected.getRating(), actual.getRating());
+            assertEquals(expected.getMutualFriends(), actual.getMutualFriends());
+            assertEquals(expected.getProfilePicturePath(), actual.getProfilePicturePath());
+            assertEquals(expected.getChatId(), actual.getChatId());
+            assertEquals(expected.getFriendStatus(), actual.getFriendStatus());
+            assertEquals(expected.getRequesterId(), actual.getRequesterId());
+            assertEquals(expected.getUserLocationDto(), actual.getUserLocationDto());
+            assertEquals(expected.getHasInvitation(), actual.getHasInvitation());
         }
 
-        assertNotNull(result);
-        assertEquals(2, result.getPage().size());
         assertFalse(result.getPage().get(0).getHasInvitation());
         assertFalse(result.getPage().get(1).getHasInvitation());
 
@@ -1600,7 +1610,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void findAllFriendsOfUser_nameProvided_withInvitations() {
+    void testFindAllFriendsOfUserNameProvidedWithInvitations() {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
@@ -1616,9 +1626,8 @@ class HabitServiceImplTest {
         when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 3L, habitId)).thenReturn(false);
 
         List<UserFriendHabitInviteDto> expectedDtos = List.of(
-                new UserFriendHabitInviteDto(friends.get(0), true),
-                new UserFriendHabitInviteDto(friends.get(1), false)
-        );
+            new UserFriendHabitInviteDto(friends.get(0), true),
+            new UserFriendHabitInviteDto(friends.get(1), false));
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, "John", pageable, habitId);
@@ -1639,7 +1648,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void findAllFriendsOfUser_noFriendsFound() {
+    void testFindAllFriendsOfUserNoFriendsFound() {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
@@ -1659,7 +1668,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void findAllFriendsOfUser_withEmptyNameAndPageable() {
+    void testFindAllFriendsOfUserWithEmptyNameAndPageable() {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
