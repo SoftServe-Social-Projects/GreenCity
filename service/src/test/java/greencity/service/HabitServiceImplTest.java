@@ -1577,8 +1577,19 @@ class HabitServiceImplTest {
         when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 2L, habitId)).thenReturn(false);
         when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 3L, habitId)).thenReturn(false);
 
+        List<UserFriendHabitInviteDto> expectedDtos = List.of(
+                new UserFriendHabitInviteDto(friends.get(0), false),
+                new UserFriendHabitInviteDto(friends.get(1), false)
+        );
+
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+
+        for (int i = 0; i < expectedDtos.size(); i++) {
+            UserFriendHabitInviteDto expected = expectedDtos.get(i);
+            UserFriendHabitInviteDto actual = result.getPage().get(i);
+            assertEquals(expected, actual);
+        }
 
         assertNotNull(result);
         assertEquals(2, result.getPage().size());
@@ -1604,6 +1615,11 @@ class HabitServiceImplTest {
         when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 2L, habitId)).thenReturn(true);
         when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 3L, habitId)).thenReturn(false);
 
+        List<UserFriendHabitInviteDto> expectedDtos = List.of(
+                new UserFriendHabitInviteDto(friends.get(0), true),
+                new UserFriendHabitInviteDto(friends.get(1), false)
+        );
+
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, "John", pageable, habitId);
 
@@ -1611,6 +1627,12 @@ class HabitServiceImplTest {
         assertEquals(2, result.getPage().size());
         assertTrue(result.getPage().get(0).getHasInvitation());
         assertFalse(result.getPage().get(1).getHasInvitation());
+
+        for (int i = 0; i < expectedDtos.size(); i++) {
+            UserFriendHabitInviteDto expected = expectedDtos.get(i);
+            UserFriendHabitInviteDto actual = result.getPage().get(i);
+            assertEquals(expected, actual);
+        }
 
         verify(habitInvitationRepo).existsPendingInvitationFromUser(userVO.getId(), 2L, habitId);
         verify(habitInvitationRepo).existsPendingInvitationFromUser(userVO.getId(), 3L, habitId);
