@@ -441,4 +441,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             AND n.id IS NULL
         """)
     List<HabitAssign> getHabitAssignsWithLastDayOfPrimaryDurationToMessage();
+
+    boolean existsByUserIdAndStatus(Long userId, HabitAssignStatus status);
 }

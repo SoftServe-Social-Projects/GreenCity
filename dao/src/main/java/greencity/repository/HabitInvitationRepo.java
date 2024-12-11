@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -35,4 +36,18 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
     boolean existsByInviteeHabitAssign(HabitAssign inviteeHabitAssign);
 
     boolean existsByInviterHabitAssignAndInviteeHabitAssign(HabitAssign inviterHabitAssign, HabitAssign habitAssign);
+
+    @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM habit_invitations i
+            WHERE i.status = 'PENDING'
+              AND i.inviter_id = :userId
+              AND i.invitee_id = :friendId
+              AND i.inviter_habit_assign_id IN (
+                  SELECT ha.id FROM habit_assign ha WHERE ha.habit_id = :habitId
+              )
+        """, nativeQuery = true)
+    boolean existsPendingInvitationFromUser(Long userId,
+        Long friendId,
+        Long habitId);
 }
