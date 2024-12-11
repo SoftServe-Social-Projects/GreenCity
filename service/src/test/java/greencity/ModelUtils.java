@@ -276,7 +276,9 @@ public class ModelUtils {
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
     public static String habitTranslationName = "use shopper";
+    public static String habitTranslationNameUa = "використовуй шопер";
     public static String habitTranslationDescription = "Description";
+    public static String habitTranslationDescriptionUa = "Опис";
     public static String toDoListText = "buy a shopper";
     public static String habitItem = "Item";
     public static String habitDefaultImage = "img/habit-default.png";
@@ -2572,8 +2574,10 @@ public class ModelUtils {
     public static HabitTranslationDto getHabitTranslationDto() {
         return HabitTranslationDto.builder()
             .description(habitTranslationDescription)
+            .descriptionUa(habitTranslationDescriptionUa)
             .habitItem(habitItem)
             .name(habitTranslationName)
+            .nameUa(habitTranslationNameUa)
             .build();
     }
 

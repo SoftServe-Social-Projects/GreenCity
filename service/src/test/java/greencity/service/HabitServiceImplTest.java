@@ -69,6 +69,7 @@ import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitDto;
 import static greencity.ModelUtils.getHabitTranslation;
+import static greencity.ModelUtils.getHabitTranslationDto;
 import static greencity.ModelUtils.getHabitTranslationUa;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
@@ -76,6 +77,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -1501,4 +1503,49 @@ class HabitServiceImplTest {
         verify(habitRepo).findById(any());
         verify(userRepo).findByEmail(TestConst.EMAIL);
     }
+
+    @Test
+    public void testGetAllFavoriteHabitsByLanguageCode() {
+        UserVO userVO = new UserVO();
+        userVO.setId(1L);
+
+        Pageable pageable = PageRequest.of(0, 1);
+        String languageCode = "en";
+
+        HabitDto habitDto = getHabitDto().setHabitTranslation(getHabitTranslationDto());
+        Habit habit = getHabit().setIsCustomHabit(false);
+        HabitTranslation habitTranslation = getHabitTranslation().setHabit(habit);
+
+        Page<HabitTranslation> habitTranslationPage = new PageImpl<>(List.of(habitTranslation), pageable, 1);
+
+        when(habitTranslationRepo.findMyFavoriteHabits(pageable, 1L, languageCode))
+            .thenReturn(habitTranslationPage);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habitTranslation.getHabit().getId()))
+            .thenReturn(habitTranslation);
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+
+        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+
+        assertNotNull(result);
+        assertEquals(1, result.getPage().size());
+        verify(habitTranslationRepo, times(1)).findMyFavoriteHabits(pageable, 1L, languageCode);
+    }
+
+    @Test
+    public void testGetAllFavoriteHabitsByLanguageCodeEmptyPage() {
+        UserVO userVO = getUserVO();
+        Pageable pageable = PageRequest.of(0, 1);
+        String languageCode = "en";
+
+        Page<HabitTranslation> habitTranslationPage = Page.empty(pageable);
+        when(habitTranslationRepo.findMyFavoriteHabits(pageable, 1L, languageCode)).thenReturn(habitTranslationPage);
+
+        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        verify(habitTranslationRepo, times(1)).findMyFavoriteHabits(pageable, 1L, languageCode);
+    }
+
 }
