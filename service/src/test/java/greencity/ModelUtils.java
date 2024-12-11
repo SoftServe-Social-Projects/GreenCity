@@ -1887,11 +1887,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            null, "http://somelink.com"));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null, "url/"));
+            null, "http://somelink.com"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -3233,4 +3233,16 @@ public class ModelUtils {
         return List.of(invalidDto1, invalidDto2);
     }
 
+    public static EventDateLocationDto getEventDateLocationDtoWithLinkAndCoordinates() {
+        return EventDateLocationDto.builder()
+            .id(1L)
+            .startDate(ZonedDateTime.now())
+            .finishDate(ZonedDateTime.now().plusDays(2L))
+            .onlineLink("https://someevents.com")
+            .coordinates(AddressDto.builder()
+                .latitude(50.1234)
+                .latitude(30.1234)
+                .build())
+            .build();
+    }
 }

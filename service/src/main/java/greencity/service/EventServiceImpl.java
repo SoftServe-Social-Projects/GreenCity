@@ -39,6 +39,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.RatingPointsRepo;
@@ -116,6 +117,7 @@ public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final EventRepo eventRepo;
     private final ModelMapper modelMapper;
+    private final EventDateLocationDtoMapper eventDateLocationDtoMapper;
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
@@ -627,7 +629,11 @@ public class EventServiceImpl implements EventService {
     public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
         for (EventDateLocationDto eventDateLocationDto : eventDateLocationDtos) {
             AddressDto coordinates = eventDateLocationDto.getCoordinates();
+            EventType eventType = getEventType(eventDateLocationDtoMapper.mapAllToList(eventDateLocationDtos));
 
+            if (EventType.ONLINE == eventType) {
+                return true;
+            }
             if (Objects.isNull(coordinates) || Objects.isNull(coordinates.getLatitude())
                 || Objects.isNull(coordinates.getLongitude())) {
                 return false;
