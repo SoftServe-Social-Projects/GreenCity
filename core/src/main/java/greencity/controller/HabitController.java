@@ -516,10 +516,10 @@ public class HabitController {
      * Retrieves a paginated list of friends who can be invited to a specific habit.
      * Optionally filters by friend name.
      *
-     * @param page The pagination information (page number, size).
-     * @param name Optional name filter for friends.
+     * @param page    The pagination information (page number, size).
+     * @param name    Optional name filter for friends.
      * @param habitId The ID of the habit for which friends are being invited.
-     * @param userVO The current user's details.
+     * @param userVO  The current user's details.
      * @return A paginated list of friends (UserFriendHabitInviteDto) to be invited.
      */
     @Operation(summary = "Find all friends to be invited")
