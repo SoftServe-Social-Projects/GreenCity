@@ -693,7 +693,10 @@ public class HabitServiceImpl implements HabitService {
         List<UserFriendHabitInviteDto> extendedDtoList = userFriendDtoPageable.getPage().stream()
             .map(friend -> {
                 boolean hasInvitation = checkIfInvited(userId, friend.getId(), habitId);
-                return new UserFriendHabitInviteDto(friend, hasInvitation);
+                UserFriendHabitInviteDto userFriendHabitInviteDto =
+                    modelMapper.map(friend, UserFriendHabitInviteDto.class);
+                userFriendHabitInviteDto.setHasInvitation(hasInvitation);
+                return userFriendHabitInviteDto;
             })
             .toList();
         return new PageableDto<>(

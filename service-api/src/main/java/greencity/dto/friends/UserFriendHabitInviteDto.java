@@ -1,29 +1,25 @@
 package greencity.dto.friends;
 
+import greencity.dto.location.UserLocationDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserFriendHabitInviteDto extends UserFriendDto {
+@Builder
+public class UserFriendHabitInviteDto {
     private Boolean hasInvitation;
-
-    public UserFriendHabitInviteDto(UserFriendDto userFriendDto, Boolean hasInvitation) {
-        super(
-            userFriendDto.getId(),
-            userFriendDto.getName(),
-            userFriendDto.getEmail(),
-            userFriendDto.getRating(),
-            userFriendDto.getMutualFriends(),
-            userFriendDto.getProfilePicturePath(),
-            userFriendDto.getChatId(),
-            userFriendDto.getFriendStatus(),
-            userFriendDto.getRequesterId(),
-            userFriendDto.getUserLocationDto());
-        this.hasInvitation = hasInvitation;
-    }
+    private Long id;
+    private String name;
+    private String email;
+    private Double rating;
+    private Long mutualFriends;
+    private String profilePicturePath;
+    private Long chatId;
+    private String friendStatus;
+    private Long requesterId;
+    private UserLocationDto userLocationDto;
 }
