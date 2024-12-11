@@ -1,14 +1,12 @@
 package greencity.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
 public class ScheduledEmailMessage implements EmailMessage {
     private String username;
     private String email;
@@ -17,9 +15,4 @@ public class ScheduledEmailMessage implements EmailMessage {
     private String body;
     private String language;
     private boolean isUbs;
-
-    @Override
-    public String getEmail() {
-        return email;
-    }
 }
