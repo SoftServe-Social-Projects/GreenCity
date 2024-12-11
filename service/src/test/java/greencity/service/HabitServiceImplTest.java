@@ -5,6 +5,8 @@ import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserFriendDto;
+import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
@@ -37,6 +39,7 @@ import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.LanguageRepo;
@@ -72,6 +75,7 @@ import static greencity.ModelUtils.getHabitTranslation;
 import static greencity.ModelUtils.getHabitTranslationDto;
 import static greencity.ModelUtils.getHabitTranslationUa;
 import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserFriendDto;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -80,15 +84,18 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -154,6 +161,12 @@ class HabitServiceImplTest {
     private AchievementCalculation achievementCalculation;
     @Mock
     private UserNotificationServiceImpl userNotificationService;
+
+    @Mock
+    private HabitInvitationRepo habitInvitationRepo;
+
+    @Mock
+    private FriendService friendService;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -1548,4 +1561,96 @@ class HabitServiceImplTest {
         verify(habitTranslationRepo, times(1)).findMyFavoriteHabits(pageable, 1L, languageCode);
     }
 
+    @Test
+    void findAllFriendsOfUser_noNameProvided_noInvitations() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+        List<UserFriendDto> friends = List.of(
+            getUserFriendDto().setName("John").setId(2L),
+            getUserFriendDto().setName("Ivan").setId(3L));
+
+        Page<UserFriendDto> friendPage = new PageImpl<>(friends);
+        PageableDto<UserFriendDto> pageableDto = new PageableDto<>(friends, friendPage.getTotalElements(), 0, 1);
+
+        when(friendService.findAllFriendsOfUser(userVO.getId(), "", pageable)).thenReturn(pageableDto);
+        when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 2L, habitId)).thenReturn(false);
+        when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 3L, habitId)).thenReturn(false);
+
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+
+        assertNotNull(result);
+        assertEquals(2, result.getPage().size());
+        assertFalse(result.getPage().get(0).getHasInvitation());
+        assertFalse(result.getPage().get(1).getHasInvitation());
+
+        verify(habitInvitationRepo, times(2)).existsPendingInvitationFromUser(eq(1L), anyLong(), eq(habitId));
+    }
+
+    @Test
+    void findAllFriendsOfUser_nameProvided_withInvitations() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+        List<UserFriendDto> friends = List.of(
+            getUserFriendDto().setName("John").setId(2L),
+            getUserFriendDto().setName("Ivan").setId(3L));
+
+        Page<UserFriendDto> friendPage = new PageImpl<>(friends);
+        PageableDto<UserFriendDto> pageableDto = new PageableDto<>(friends, friendPage.getTotalElements(), 0, 1);
+
+        when(friendService.findAllFriendsOfUser(userVO.getId(), "John", pageable)).thenReturn(pageableDto);
+        when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 2L, habitId)).thenReturn(true);
+        when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 3L, habitId)).thenReturn(false);
+
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO, "John", pageable, habitId);
+
+        assertNotNull(result);
+        assertEquals(2, result.getPage().size());
+        assertTrue(result.getPage().get(0).getHasInvitation());
+        assertFalse(result.getPage().get(1).getHasInvitation());
+
+        verify(habitInvitationRepo).existsPendingInvitationFromUser(userVO.getId(), 2L, habitId);
+        verify(habitInvitationRepo).existsPendingInvitationFromUser(userVO.getId(), 3L, habitId);
+    }
+
+    @Test
+    void findAllFriendsOfUser_noFriendsFound() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+        List<UserFriendDto> friends = List.of();
+        Page<UserFriendDto> friendPage = new PageImpl<>(friends);
+        PageableDto<UserFriendDto> pageableDto = new PageableDto<>(friends, friendPage.getTotalElements(), 0, 0);
+
+        when(friendService.findAllFriendsOfUser(userVO.getId(), "", pageable)).thenReturn(pageableDto);
+
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        assertEquals(0, result.getTotalElements());
+        assertEquals(0, result.getTotalPages());
+    }
+
+    @Test
+    void findAllFriendsOfUser_withEmptyNameAndPageable() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+        when(friendService.findAllFriendsOfUser(userVO.getId(), "", pageable))
+            .thenReturn(new PageableDto<>(List.of(), 0, 0, 0));
+
+        PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO, "", pageable, habitId);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        assertEquals(0, result.getTotalElements());
+        assertEquals(0, result.getTotalPages());
+
+        verifyNoInteractions(habitInvitationRepo);
+    }
 }
