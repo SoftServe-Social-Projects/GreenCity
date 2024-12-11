@@ -4,22 +4,15 @@ import greencity.dto.location.UserLocationDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class UserFriendHabitInviteDto {
+@SuperBuilder
+public class UserFriendHabitInviteDto extends UserFriendDto {
     private Boolean hasInvitation;
-    private Long id;
-    private String name;
-    private String email;
-    private Double rating;
-    private Long mutualFriends;
-    private String profilePicturePath;
-    private Long chatId;
-    private String friendStatus;
-    private Long requesterId;
-    private UserLocationDto userLocationDto;
 }
