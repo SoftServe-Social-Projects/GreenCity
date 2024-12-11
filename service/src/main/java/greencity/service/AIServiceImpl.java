@@ -39,4 +39,10 @@ public class AIServiceImpl implements AIService {
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
         return openAIService.makeRequest(language + OpenAIRequest.ADVICE + shortHabitDto);
     }
+
+    @Override
+    public String getNews(String language, String query) {
+        return query == null ? openAIService.makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY)
+            : openAIService.makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query);
+    }
 }

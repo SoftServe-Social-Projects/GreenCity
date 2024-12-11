@@ -42,7 +42,7 @@ class AIControllerTest {
     }
 
     @Test
-    void forecast_ReturnsForecast_FromAIService() throws Exception {
+    void forecastReturnsForecastFromAIServiceTest() throws Exception {
         Locale testLocale = Locale.forLanguageTag("en");
 
         mockMvc.perform(get("/ai/forecast")
@@ -51,5 +51,17 @@ class AIControllerTest {
             .andExpect(status().isOk());
 
         verify(aiService, times(1)).getForecast(any(), eq(testLocale.getDisplayLanguage()));
+    }
+
+    @Test
+    void creatingEcoNewsReturnsEcoNewsFromAIServiceTest() throws Exception {
+        Locale testLocale = Locale.forLanguageTag("en");
+
+        mockMvc.perform(get("/ai/generate/eco-news")
+            .principal(principal)
+            .locale(testLocale))
+            .andExpect(status().isOk());
+
+        verify(aiService, times(1)).getNews(eq(testLocale.getDisplayLanguage()), any());
     }
 }
