@@ -530,6 +530,6 @@ public class HabitController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(habitService.findAllFriendsOfUser(userVO.getId(), name, page, habitId));
+            .body(habitService.findAllFriendsOfUser(userVO, name, page, habitId));
     }
 }

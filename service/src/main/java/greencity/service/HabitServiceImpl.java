@@ -685,8 +685,9 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(long userId, String name, Pageable pageable,
+    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, String name, Pageable pageable,
         Long habitId) {
+        Long userId = userVO.getId();
         name = Optional.ofNullable(name).orElse("");
         PageableDto<UserFriendDto> userFriendDtoPageable = friendService.findAllFriendsOfUser(userId, name, pageable);
         List<UserFriendHabitInviteDto> extendedDtoList = userFriendDtoPageable.getPage().stream()
