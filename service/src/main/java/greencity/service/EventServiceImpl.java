@@ -631,7 +631,7 @@ public class EventServiceImpl implements EventService {
             AddressDto coordinates = eventDateLocationDto.getCoordinates();
             EventType eventType = getEventType(eventDateLocationDtoMapper.mapAllToList(eventDateLocationDtos));
 
-            if (EventType.ONLINE.equals(eventType)) {
+            if (EventType.ONLINE == eventType) {
                 return true;
             }
             if (Objects.isNull(coordinates) || Objects.isNull(coordinates.getLatitude())
