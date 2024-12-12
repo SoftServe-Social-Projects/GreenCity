@@ -19,9 +19,12 @@ import java.util.Collections;
 import java.util.List;
 import static greencity.ModelUtils.getHabitAssign;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
@@ -49,7 +52,7 @@ class AIServiceImplTest {
     private final ShortHabitDto shortHabitDto = new ShortHabitDto(id, habitTranslationName);
 
     @Test
-    void getForecastReturnsResponseFromOpenAIService() {
+    void getForecastReturnsResponseFromOpenAIServiceTest() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
@@ -64,7 +67,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getForecastThrowsExceptionWhenOpenAIServiceFails() {
+    void getForecastThrowsExceptionWhenOpenAIServiceFailsTest() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
@@ -78,7 +81,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getForecastCallsGetAdviceWhenHabitAssignsIsEmpty() {
+    void getForecastCallsGetAdviceWhenHabitAssignsIsEmptyTest() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(Collections.emptyList());
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
@@ -95,7 +98,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getAdviceReturnsResponseFromOpenAIService() {
+    void getAdviceReturnsResponseFromOpenAIServiceTest() {
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
@@ -110,7 +113,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void getAdviceThrowsExceptionWhenOpenAIServiceFails() {
+    void getAdviceThrowsExceptionWhenOpenAIServiceFailsTest() {
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
         when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
@@ -121,5 +124,34 @@ class AIServiceImplTest {
         verify(habitRepo).findRandomHabit();
         verify(modelMapper).map(habit, ShortHabitDto.class);
         verify(openAIService).makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto);
+    }
+
+    @Test
+    void getNewsShouldReturnWithoutQueryWhenQueryIsNullTest() {
+        String expectedResponse = "Mocked Response";
+        when(openAIService.makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY))
+            .thenReturn(expectedResponse);
+
+        String actualResponse = aiServiceImpl.getNews(language, null);
+
+        assertEquals(expectedResponse, actualResponse);
+        verify(openAIService, times(1))
+            .makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY);
+        verifyNoMoreInteractions(openAIService);
+    }
+
+    @Test
+    void getNewsShouldReturnWithQueryWhenQueryIsNotNullTest() {
+        String query = "climate change";
+        String expectedResponse = "Mocked Response";
+        when(openAIService.makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query))
+            .thenReturn(expectedResponse);
+
+        String actualResponse = aiServiceImpl.getNews(language, query);
+
+        assertEquals(expectedResponse, actualResponse);
+        verify(openAIService, times(1))
+            .makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query);
+        verifyNoMoreInteractions(openAIService);
     }
 }
