@@ -15,6 +15,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="content" type="varchar(300)"/>
+            <column name="fact_of_day_status" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

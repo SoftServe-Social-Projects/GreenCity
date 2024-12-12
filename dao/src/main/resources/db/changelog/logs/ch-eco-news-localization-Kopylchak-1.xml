@@ -16,13 +16,8 @@
             <column name="language_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="text" type="varchar(255)"/>
         </createTable>
-    </changeSet>
-
-    <changeSet id="0lezhka-9" author="Kopylchak O.">
-        <dropColumn tableName="eco_news">
-            <column name="title"/>
-        </dropColumn>
     </changeSet>
 
     <changeSet id="0lezhka-10" author="Kopylchak O.">

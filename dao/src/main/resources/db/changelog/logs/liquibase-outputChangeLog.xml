@@ -188,10 +188,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="email_notification" type="INT"/>
-            <column name="first_name" type="VARCHAR(20)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_name" type="VARCHAR(20)">
+            <column name="name" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
             <column name="last_visit" type="datetime(6)">
@@ -201,6 +198,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_status" type="INT"/>
+            <column name="profile_picture" type="varchar(300)"/>
+            <column name="rating" type="double"/>
+            <column name="last_activity_time" type="timestamp with time zone"/>
             <column name="refresh_token_key" type="varchar(255)" defaultValue="secret">
                 <constraints nullable="false"/>
             </column>

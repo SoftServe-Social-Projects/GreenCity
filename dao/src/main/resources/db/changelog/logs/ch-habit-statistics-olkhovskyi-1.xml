@@ -14,7 +14,7 @@
             <column name="rate" type="VARCHAR(10)">
             </column>
 
-            <column  name="date" type="date">
+            <column name="date" type="TIMESTAMPTZ">
                 <constraints nullable="false"/>
             </column>
 

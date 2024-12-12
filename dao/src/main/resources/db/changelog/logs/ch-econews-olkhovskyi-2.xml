@@ -10,21 +10,32 @@
                 <constraints primaryKey="true"/>
             </column>
 
-            <column name="title" type="varchar(255)">
+            <column name="author_id" type="BIGINT"/>
+
+            <column name="text" type="varchar(63206)">
                 <constraints nullable="false"/>
+            </column>
+
+            <column name="title" type="varchar(170)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="source" type="varchar(255)">
+                <constraints nullable="true"/>
             </column>
 
             <column name="creation_date" type="TIMESTAMPTZ">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="text" type="text">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="image_path" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="image_path" type="varchar(255)"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="taraskovaliv3" author="Kovaliv Taras">
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="eco_news"
+                                 constraintName="FK_eco_news_users"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
     </changeSet>
 </databaseChangeLog>

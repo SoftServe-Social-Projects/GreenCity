@@ -4,13 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
-<!--    <changeSet author="Volodymyr Turko" id="465132683344-2012222">-->
-<!--        <addColumn tableName="habits">-->
-<!--        <column name="habit_dictionary_translation_id" type="BIGINT">-->
-<!--            <constraints nullable="false"/>-->
-<!--        </column>-->
-<!--        </addColumn>-->
-<!--    </changeSet>-->
+
     <changeSet author="Volodymyr Turko" id="46513268344-2012222">
         <createTable tableName="habit_dictionary_translation">
             <column autoIncrement="true" name="id" type="BIGINT">

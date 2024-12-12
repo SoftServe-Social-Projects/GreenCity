@@ -15,7 +15,7 @@
             <column name="status" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_date" type="datetime(6)">
+            <column name="create_date" type="TIMESTAMPTZ">
                 <constraints nullable="false"/>
             </column>
         </createTable>
