@@ -1,11 +1,17 @@
 package greencity.repository;
 
+import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
+import jakarta.persistence.Tuple;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long> {
@@ -37,17 +43,71 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
 
     boolean existsByInviterHabitAssignAndInviteeHabitAssign(HabitAssign inviterHabitAssign, HabitAssign habitAssign);
 
-    @Query(value = """
-            SELECT COUNT(*) > 0
+    /**
+     * Retrieves a paginated list of a user's friends with optional name filtering.
+     * Each friend is represented as a {@link UserFriendHabitInviteDto}, including a
+     * {@code hasInvitation} flag indicating if the friend has a pending habit
+     * invitation for the specified habit. Friends without invitations will have
+     * {@code hasInvitation} set to {@code false}.
+     *
+     * @param userId   the ID of the user whose friends are retrieved.
+     * @param name     an optional case-insensitive name filter.
+     * @param habitId  the ID of the habit to check for pending invitations.
+     * @param pageable pagination information for the result.
+     * @return a {@link Page} of {@link UserFriendHabitInviteDto}.
+     */
+    @Query(nativeQuery = true, value = """
+        WITH friends AS (
+            SELECT DISTINCT user_id AS id
+            FROM users_friends
+            WHERE friend_id = :userId AND status = 'FRIEND'
+            UNION
+            SELECT friend_id AS id
+            FROM users_friends
+            WHERE user_id = :userId AND status = 'FRIEND'
+        ),
+        filtered_friends AS (
+            SELECT u.id,
+                   u.name,
+                   u.email,
+                   u.profile_picture
+            FROM users u
+            WHERE u.id IN (SELECT id FROM friends)
+              AND LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))
+        ),
+        invitations AS (
+            SELECT DISTINCT i.invitee_id AS friend_id,
+                            TRUE AS has_invitation
             FROM habit_invitations i
             WHERE i.status = 'PENDING'
               AND i.inviter_id = :userId
-              AND i.invitee_id = :friendId
               AND i.inviter_habit_assign_id IN (
                   SELECT ha.id FROM habit_assign ha WHERE ha.habit_id = :habitId
               )
-        """, nativeQuery = true)
-    boolean existsPendingInvitationFromUser(Long userId,
-        Long friendId,
-        Long habitId);
+        )
+        SELECT f.id,
+               f.name,
+               f.email,
+               f.profile_picture,
+               COALESCE(inv.has_invitation, FALSE) AS has_invitation
+        FROM filtered_friends f
+        LEFT JOIN invitations inv ON f.id = inv.friend_id
+        """)
+    List<Tuple> findUserFriendsWithHabitInvites(
+        Long userId, String name, Long habitId, Pageable pageable);
+
+    default Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
+        Long userId, String name, Long habitId, Pageable pageable) {
+        List<Tuple> tuples = findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
+        List<UserFriendHabitInviteDto> dtoList = tuples.stream()
+            .map(tuple -> UserFriendHabitInviteDto.builder()
+                .id(tuple.get(0, Long.class))
+                .name(tuple.get(1, String.class))
+                .email(tuple.get(2, String.class))
+                .profilePicturePath(tuple.get(3, String.class))
+                .hasInvitation(tuple.get(4, Boolean.class))
+                .build())
+            .collect(Collectors.toList());
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
+    }
 }

@@ -5,7 +5,6 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.HabitTranslationFilterDto;
-import greencity.dto.friends.UserFriendDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
@@ -689,21 +688,13 @@ public class HabitServiceImpl implements HabitService {
         Long habitId) {
         Long userId = userVO.getId();
         name = Optional.ofNullable(name).orElse("");
-        PageableDto<UserFriendDto> userFriendDtoPageable = friendService.findAllFriendsOfUser(userId, name, pageable);
-        List<UserFriendHabitInviteDto> extendedDtoList = userFriendDtoPageable.getPage().stream()
-            .map(friend -> {
-                boolean hasInvitation = checkIfInvited(userId, friend.getId(), habitId);
-                UserFriendHabitInviteDto userFriendHabitInviteDto =
-                    modelMapper.map(friend, UserFriendHabitInviteDto.class);
-                userFriendHabitInviteDto.setHasInvitation(hasInvitation);
-                return userFriendHabitInviteDto;
-            })
-            .toList();
+        Page<UserFriendHabitInviteDto> friendsWithIsInvitedStatus =
+            habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(userId, name, habitId, pageable);
         return new PageableDto<>(
-            extendedDtoList,
-            userFriendDtoPageable.getTotalElements(),
-            userFriendDtoPageable.getCurrentPage(),
-            userFriendDtoPageable.getTotalPages());
+            friendsWithIsInvitedStatus.getContent(),
+            friendsWithIsInvitedStatus.getTotalElements(),
+            friendsWithIsInvitedStatus.getNumber(),
+            friendsWithIsInvitedStatus.getTotalPages());
     }
 
     private boolean isCurrentUserFollower(Habit habit, Long currentUserId) {
@@ -758,9 +749,5 @@ public class HabitServiceImpl implements HabitService {
             return true;
         }
         return false;
-    }
-
-    private boolean checkIfInvited(Long userId, Long friendId, Long habitId) {
-        return habitInvitationRepo.existsPendingInvitationFromUser(userId, friendId, habitId);
     }
 }

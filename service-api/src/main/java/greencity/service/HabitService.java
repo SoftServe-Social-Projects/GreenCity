@@ -232,8 +232,8 @@ public interface HabitService {
     PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
 
     /**
-     * Retrieves a paginated list of friends of a user who can be invited to a
-     * specific habit. Optionally filters by friend name.
+     * Retrieves a paginated list of friends of a user with has invitation status.
+     * Optionally filters by friend name.
      *
      * @param userVO   The current user's details.
      * @param name     Optional name filter for friends.

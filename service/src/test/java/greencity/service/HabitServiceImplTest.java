@@ -1566,33 +1566,23 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        List<UserFriendDto> friends = List.of(
-            getUserFriendDto().setName("John").setId(2L),
-            getUserFriendDto().setName("Ivan").setId(3L));
-
         List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of(
-            UserFriendHabitInviteDto.builder().id(2L).name("John").build(),
-            UserFriendHabitInviteDto.builder().id(3L).name("Ivan").build());
+            UserFriendHabitInviteDto.builder().id(2L).name("John").hasInvitation(false).build(),
+            UserFriendHabitInviteDto.builder().id(3L).name("Ivan").hasInvitation(false).build());
+        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
-        Page<UserFriendDto> friendPage = new PageImpl<>(friends);
-        PageableDto<UserFriendDto> pageableDto = new PageableDto<>(friends, friendPage.getTotalElements(), 0, 1);
-
-        when(friendService.findAllFriendsOfUser(userVO.getId(), "", pageable)).thenReturn(pageableDto);
-        when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 2L, habitId)).thenReturn(false);
-        when(habitInvitationRepo.existsPendingInvitationFromUser(1L, 3L, habitId)).thenReturn(false);
-        when(modelMapper.map(friends.get(0), UserFriendHabitInviteDto.class)).thenReturn(friendHabitInviteDtos.get(0));
-        when(modelMapper.map(friends.get(1), UserFriendHabitInviteDto.class)).thenReturn(friendHabitInviteDtos.get(1));
+        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "", habitId, pageable))
+            .thenReturn(friendPage);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
 
         assertNotNull(result);
         assertEquals(2, result.getPage().size());
-
         assertFalse(result.getPage().get(0).getHasInvitation());
         assertFalse(result.getPage().get(1).getHasInvitation());
-
-        verify(habitInvitationRepo, times(2)).existsPendingInvitationFromUser(eq(1L), anyLong(), eq(habitId));
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(eq(1L), eq(""), eq(habitId),
+            eq(pageable));
     }
 
     @Test
@@ -1600,33 +1590,19 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        List<UserFriendDto> friends = List.of(
-            getUserFriendDto().setName("John").setId(2L),
-            getUserFriendDto().setName("Ivan").setId(3L));
-
         List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of(
-            UserFriendHabitInviteDto.builder().id(2L).name("John").build(),
-            UserFriendHabitInviteDto.builder().id(3L).name("Ivan").build());
+            UserFriendHabitInviteDto.builder().id(2L).name("John").hasInvitation(true).build());
+        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
-        Page<UserFriendDto> friendPage = new PageImpl<>(friends);
-        PageableDto<UserFriendDto> pageableDto = new PageableDto<>(friends, friendPage.getTotalElements(), 0, 1);
-
-        when(friendService.findAllFriendsOfUser(userVO.getId(), "John", pageable)).thenReturn(pageableDto);
-        when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 2L, habitId)).thenReturn(true);
-        when(habitInvitationRepo.existsPendingInvitationFromUser(userVO.getId(), 3L, habitId)).thenReturn(false);
-        when(modelMapper.map(friends.get(0), UserFriendHabitInviteDto.class)).thenReturn(friendHabitInviteDtos.get(0));
-        when(modelMapper.map(friends.get(1), UserFriendHabitInviteDto.class)).thenReturn(friendHabitInviteDtos.get(1));
-
+        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "Jo", habitId, pageable))
+            .thenReturn(friendPage);
         PageableDto<UserFriendHabitInviteDto> result =
-            habitService.findAllFriendsOfUser(userVO, "John", pageable, habitId);
+            habitService.findAllFriendsOfUser(userVO, "Jo", pageable, habitId);
 
         assertNotNull(result);
-        assertEquals(2, result.getPage().size());
-        assertTrue(result.getPage().get(0).getHasInvitation());
-        assertFalse(result.getPage().get(1).getHasInvitation());
-
-        verify(habitInvitationRepo).existsPendingInvitationFromUser(userVO.getId(), 2L, habitId);
-        verify(habitInvitationRepo).existsPendingInvitationFromUser(userVO.getId(), 3L, habitId);
+        assertEquals(1, result.getPage().size());
+        assertTrue(result.getPage().getFirst().getHasInvitation());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "Jo", habitId, pageable);
     }
 
     @Test
@@ -1634,11 +1610,11 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        List<UserFriendDto> friends = List.of();
-        Page<UserFriendDto> friendPage = new PageImpl<>(friends);
-        PageableDto<UserFriendDto> pageableDto = new PageableDto<>(friends, friendPage.getTotalElements(), 0, 0);
+        List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of();
+        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
-        when(friendService.findAllFriendsOfUser(userVO.getId(), "", pageable)).thenReturn(pageableDto);
+        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "", habitId, pageable))
+            .thenReturn(friendPage);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
@@ -1646,7 +1622,8 @@ class HabitServiceImplTest {
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());
         assertEquals(0, result.getTotalElements());
-        assertEquals(0, result.getTotalPages());
+        assertEquals(1, result.getTotalPages());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "", habitId, pageable);
     }
 
     @Test
@@ -1654,16 +1631,17 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        when(friendService.findAllFriendsOfUser(userVO.getId(), "", pageable))
-            .thenReturn(new PageableDto<>(List.of(), 0, 0, 0));
+        List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of();
+        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
+        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "", habitId, pageable))
+            .thenReturn(friendPage);
         PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO, "", pageable, habitId);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());
         assertEquals(0, result.getTotalElements());
-        assertEquals(0, result.getTotalPages());
-
-        verifyNoInteractions(habitInvitationRepo);
+        assertEquals(1, result.getTotalPages());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "", habitId, pageable);
     }
 }
