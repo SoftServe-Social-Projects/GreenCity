@@ -5,7 +5,6 @@ import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.friends.UserFriendDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
@@ -49,6 +48,11 @@ import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
 import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
+import org.hibernate.sql.results.internal.TupleElementImpl;
+import org.hibernate.sql.results.internal.TupleImpl;
+import org.hibernate.sql.results.internal.TupleMetadata;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -62,7 +66,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
@@ -77,7 +80,8 @@ import static greencity.ModelUtils.getHabitTranslation;
 import static greencity.ModelUtils.getHabitTranslationDto;
 import static greencity.ModelUtils.getHabitTranslationUa;
 import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getUserFriendDto;
+import static greencity.ModelUtils.getUserFriendInviteHabitDtoTuple1;
+import static greencity.ModelUtils.getUserFriendInviteHabitDtoTuple2;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,7 +101,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -1568,13 +1571,11 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of(
-            UserFriendHabitInviteDto.builder().id(2L).name("John").hasInvitation(false).build(),
-            UserFriendHabitInviteDto.builder().id(3L).name("Ivan").hasInvitation(false).build());
-        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
-        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "", habitId, pageable))
-            .thenReturn(friendPage);
+        List<Tuple> tuples  = getUserFriendInviteHabitDtoTuple2();
+
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
+            .thenReturn(tuples);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
@@ -1583,7 +1584,15 @@ class HabitServiceImplTest {
         assertEquals(2, result.getPage().size());
         assertFalse(result.getPage().get(0).getHasInvitation());
         assertFalse(result.getPage().get(1).getHasInvitation());
-        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(eq(1L), eq(""), eq(habitId),
+        assertEquals("John", result.getPage().get(0).getName());
+        assertEquals("Ivan", result.getPage().get(1).getName());
+        assertEquals("john@example.com", result.getPage().get(0).getEmail());
+        assertEquals("ivan@example.com", result.getPage().get(1).getEmail());
+        assertEquals(2L, result.getPage().get(0).getId());
+        assertEquals(3L, result.getPage().get(1).getId());
+        assertEquals("/image/path/john.png", result.getPage().get(0).getProfilePicturePath());
+        assertEquals("/image/path/ivan.png", result.getPage().get(1).getProfilePicturePath());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(eq(1L), eq(""), eq(habitId),
             eq(pageable));
     }
 
@@ -1592,37 +1601,21 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        Tuple tuple = mock(Tuple.class);
-        List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of(
-            UserFriendHabitInviteDto.builder()
-                .id(2L)
-                .email("john@example.com")
-                .name("John")
-                .profilePicturePath("/image/path/john.png")
-                .hasInvitation(true).build());
-        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
+        List<Tuple> tuples = getUserFriendInviteHabitDtoTuple1();
 
-        when(tuple.get(0, Long.class)).thenReturn(2L);
-        when(tuple.get(1, String.class)).thenReturn("John");
-        when(tuple.get(2, String.class)).thenReturn("john@example.com");
-        when(tuple.get(3, String.class)).thenReturn("/image/path/john.png");
-        when(tuple.get(4, Boolean.class)).thenReturn(true);
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
-            .thenReturn(List.of(tuple));
-        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "Jo", habitId, pageable))
-            .thenReturn(friendPage);
+            .thenReturn(tuples);
+
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, "Jo", pageable, habitId);
 
         assertNotNull(result);
-        assertEquals(1, result.getPage().size());
         assertTrue(result.getPage().getFirst().getHasInvitation());
-        assertEquals(2L, result.getPage().getFirst().getId());
         assertEquals("John", result.getPage().getFirst().getName());
         assertEquals("john@example.com", result.getPage().getFirst().getEmail());
+        assertEquals(2L, result.getPage().getFirst().getId());
         assertEquals("/image/path/john.png", result.getPage().getFirst().getProfilePicturePath());
-        assertTrue(result.getPage().getFirst().getHasInvitation());
-        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "Jo", habitId, pageable);
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(userVO.getId(), "Jo", habitId, pageable);
     }
 
     @Test
@@ -1630,11 +1623,9 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of();
-        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
-        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "", habitId, pageable))
-            .thenReturn(friendPage);
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
+            .thenReturn(List.of());
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
@@ -1643,7 +1634,7 @@ class HabitServiceImplTest {
         assertTrue(result.getPage().isEmpty());
         assertEquals(0, result.getTotalElements());
         assertEquals(1, result.getTotalPages());
-        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "", habitId, pageable);
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(userVO.getId(), "", habitId, pageable);
     }
 
     @Test
@@ -1651,17 +1642,14 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-        List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of();
-        Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
-
-        when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "", habitId, pageable))
-            .thenReturn(friendPage);
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
+            .thenReturn(List.of());
         PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO, "", pageable, habitId);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());
         assertEquals(0, result.getTotalElements());
         assertEquals(1, result.getTotalPages());
-        verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "", habitId, pageable);
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(userVO.getId(), "", habitId, pageable);
     }
 }

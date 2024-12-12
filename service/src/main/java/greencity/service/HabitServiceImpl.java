@@ -53,10 +53,12 @@ import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
+import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -689,7 +691,7 @@ public class HabitServiceImpl implements HabitService {
         Long userId = userVO.getId();
         name = Optional.ofNullable(name).orElse("");
         Page<UserFriendHabitInviteDto> friendsWithIsInvitedStatus =
-            habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(userId, name, habitId, pageable);
+            findUserFriendsWithHabitInvitesMapped(userId, name, habitId, pageable);
         return new PageableDto<>(
             friendsWithIsInvitedStatus.getContent(),
             friendsWithIsInvitedStatus.getTotalElements(),
@@ -749,5 +751,20 @@ public class HabitServiceImpl implements HabitService {
             return true;
         }
         return false;
+    }
+
+    private Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
+            Long userId, String name, Long habitId, Pageable pageable) {
+        List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
+        List<UserFriendHabitInviteDto> dtoList = tuples.stream()
+                .map(tuple -> UserFriendHabitInviteDto.builder()
+                        .id(tuple.get("id", Long.class))
+                        .name(tuple.get("name", String.class))
+                        .email(tuple.get("email", String.class))
+                        .profilePicturePath(tuple.get("profile_picture", String.class))
+                        .hasInvitation(tuple.get("has_invitation", Boolean.class))
+                        .build())
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 }

@@ -95,19 +95,4 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
         """)
     List<Tuple> findUserFriendsWithHabitInvites(
         Long userId, String name, Long habitId, Pageable pageable);
-
-    default Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
-        Long userId, String name, Long habitId, Pageable pageable) {
-        List<Tuple> tuples = findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
-        List<UserFriendHabitInviteDto> dtoList = tuples.stream()
-            .map(tuple -> UserFriendHabitInviteDto.builder()
-                .id(tuple.get(0, Long.class))
-                .name(tuple.get(1, String.class))
-                .email(tuple.get(2, String.class))
-                .profilePicturePath(tuple.get(3, String.class))
-                .hasInvitation(tuple.get(4, Boolean.class))
-                .build())
-            .collect(Collectors.toList());
-        return new PageImpl<>(dtoList, pageable, dtoList.size());
-    }
 }
