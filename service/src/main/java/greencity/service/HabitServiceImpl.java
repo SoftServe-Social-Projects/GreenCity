@@ -758,17 +758,17 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
-            Long userId, String name, Long habitId, Pageable pageable) {
+        Long userId, String name, Long habitId, Pageable pageable) {
         List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
-                .map(tuple -> UserFriendHabitInviteDto.builder()
-                        .id(tuple.get("id", Long.class))
-                        .name(tuple.get("name", String.class))
-                        .email(tuple.get("email", String.class))
-                        .profilePicturePath(tuple.get("profile_picture", String.class))
-                        .hasInvitation(tuple.get("has_invitation", Boolean.class))
-                        .build())
-                .collect(Collectors.toList());
+            .map(tuple -> UserFriendHabitInviteDto.builder()
+                .id(tuple.get("id", Long.class))
+                .name(tuple.get("name", String.class))
+                .email(tuple.get("email", String.class))
+                .profilePicturePath(tuple.get("profile_picture", String.class))
+                .hasInvitation(tuple.get("has_invitation", Boolean.class))
+                .build())
+            .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 }

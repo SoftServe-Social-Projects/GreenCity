@@ -1592,7 +1592,7 @@ class HabitServiceImplTest {
         Long habitId = 100L;
         UserVO userVO = getUserVO();
 
-        List<Tuple> tuples  = getUserFriendInviteHabitDtoTuple2();
+        List<Tuple> tuples = getUserFriendInviteHabitDtoTuple2();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(tuples);
