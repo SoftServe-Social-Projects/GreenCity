@@ -48,11 +48,6 @@ import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
 import jakarta.persistence.Tuple;
-import jakarta.persistence.TupleElement;
-import org.hibernate.sql.results.internal.TupleElementImpl;
-import org.hibernate.sql.results.internal.TupleImpl;
-import org.hibernate.sql.results.internal.TupleMetadata;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -1612,8 +1607,7 @@ class HabitServiceImplTest {
         assertEquals(3L, result.getPage().get(1).getId());
         assertEquals("/image/path/john.png", result.getPage().get(0).getProfilePicturePath());
         assertEquals("/image/path/ivan.png", result.getPage().get(1).getProfilePicturePath());
-        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(eq(1L), eq(""), eq(habitId),
-            eq(pageable));
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(1L, "", habitId, pageable);
     }
 
     @Test
