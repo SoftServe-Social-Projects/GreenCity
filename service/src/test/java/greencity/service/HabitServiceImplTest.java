@@ -48,6 +48,7 @@ import greencity.repository.TagsRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
+import jakarta.persistence.Tuple;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -61,6 +62,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
@@ -1590,10 +1592,23 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
+        Tuple tuple = mock(Tuple.class);
         List<UserFriendHabitInviteDto> friendHabitInviteDtos = List.of(
-            UserFriendHabitInviteDto.builder().id(2L).name("John").hasInvitation(true).build());
+            UserFriendHabitInviteDto.builder()
+                .id(2L)
+                .email("john@example.com")
+                .name("John")
+                .profilePicturePath("/image/path/john.png")
+                .hasInvitation(true).build());
         Page<UserFriendHabitInviteDto> friendPage = new PageImpl<>(friendHabitInviteDtos);
 
+        when(tuple.get(0, Long.class)).thenReturn(2L);
+        when(tuple.get(1, String.class)).thenReturn("John");
+        when(tuple.get(2, String.class)).thenReturn("john@example.com");
+        when(tuple.get(3, String.class)).thenReturn("/image/path/john.png");
+        when(tuple.get(4, Boolean.class)).thenReturn(true);
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
+            .thenReturn(List.of(tuple));
         when(habitInvitationRepo.findUserFriendsWithHabitInvitesMapped(1L, "Jo", habitId, pageable))
             .thenReturn(friendPage);
         PageableDto<UserFriendHabitInviteDto> result =
@@ -1601,6 +1616,11 @@ class HabitServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1, result.getPage().size());
+        assertTrue(result.getPage().getFirst().getHasInvitation());
+        assertEquals(2L, result.getPage().getFirst().getId());
+        assertEquals("John", result.getPage().getFirst().getName());
+        assertEquals("john@example.com", result.getPage().getFirst().getEmail());
+        assertEquals("/image/path/john.png", result.getPage().getFirst().getProfilePicturePath());
         assertTrue(result.getPage().getFirst().getHasInvitation());
         verify(habitInvitationRepo).findUserFriendsWithHabitInvitesMapped(userVO.getId(), "Jo", habitId, pageable);
     }
