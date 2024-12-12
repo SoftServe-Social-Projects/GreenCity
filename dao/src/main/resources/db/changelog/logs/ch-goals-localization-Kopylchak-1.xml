@@ -19,12 +19,6 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="0lezhka-6" author="Kopylchak O.">
-        <dropColumn tableName="goals">
-            <column name="text"/>
-        </dropColumn>
-    </changeSet>
-
     <changeSet id="0lezhka-7" author="Kopylchak O.">
         <addForeignKeyConstraint baseColumnNames="goal_id" baseTableName="goal_translations"
                                  constraintName="FK_goal_goal_translations"

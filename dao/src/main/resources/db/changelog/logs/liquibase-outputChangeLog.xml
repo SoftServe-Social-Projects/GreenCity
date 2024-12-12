@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <property name="deferrable" value="true" dbms="postgresql"/>
+    <property name="deferrable" value="false" dbms="h2"/>
+
     <changeSet author="Marian (generated)" id="1571227598316-1">
         <createTable tableName="break_time">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -14,7 +17,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-2">
-        <createTable tableName="category">
+        <createTable tableName="categories">
             <column autoIncrement="true" startWith="11" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -25,7 +28,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-3">
-        <createTable tableName="comment">
+        <createTable tableName="comments">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -45,7 +48,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-4">
-        <createTable tableName="discount_value">
+        <createTable tableName="discount_values">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -57,7 +60,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-5">
-        <createTable tableName="estimate">
+        <createTable tableName="estimates">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -68,7 +71,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-6">
-        <createTable tableName="favorite_place">
+        <createTable tableName="favorite_places">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -80,7 +83,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-7">
-        <createTable tableName="location">
+        <createTable tableName="locations">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -123,7 +126,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-10">
-        <createTable tableName="photo">
+        <createTable tableName="photos">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -136,7 +139,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-11">
-        <createTable tableName="place">
+        <createTable tableName="places">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -164,7 +167,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-13">
-        <createTable tableName="specification">
+        <createTable tableName="specifications">
             <column autoIncrement="true" startWith="7" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -174,7 +177,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-14">
-        <createTable tableName="user">
+        <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -198,10 +201,13 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_status" type="INT"/>
+            <column name="refresh_token_key" type="varchar(255)" defaultValue="secret">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-15">
-        <createTable tableName="verify_email">
+        <createTable tableName="verify_emails">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -231,48 +237,48 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-18">
-        <addUniqueConstraint columnNames="phone" constraintName="UK_1c8hn389trq38f63p3r4mpy33" tableName="place"/>
+        <addUniqueConstraint columnNames="phone" constraintName="UK_1c8hn389trq38f63p3r4mpy33" tableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-19">
-        <addUniqueConstraint columnNames="name" constraintName="UK_46ccwnsi9409t36lurvtyljak" tableName="category"/>
+        <addUniqueConstraint columnNames="name" constraintName="UK_46ccwnsi9409t36lurvtyljak" tableName="categories"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-20">
         <addUniqueConstraint columnNames="web_page" constraintName="UK_663ftdbracrebppaa1smemex8" tableName="web_pages"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-21">
-        <addUniqueConstraint columnNames="name" constraintName="UK_88inhvpybxm6bqnsthcolx838" tableName="photo"/>
+        <addUniqueConstraint columnNames="name" constraintName="UK_88inhvpybxm6bqnsthcolx838" tableName="photos"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-22">
-        <addUniqueConstraint columnNames="email" constraintName="UK_9cbyl8faff3immm5ehnelt18n" tableName="place"/>
+        <addUniqueConstraint columnNames="email" constraintName="UK_9cbyl8faff3immm5ehnelt18n" tableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-23">
-        <addUniqueConstraint columnNames="name" constraintName="UK_bdpr10axwx0a7ogp5ax531n9f" tableName="specification"/>
+        <addUniqueConstraint columnNames="name" constraintName="UK_bdpr10axwx0a7ogp5ax531n9f" tableName="specifications"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-24">
-        <addUniqueConstraint columnNames="email" constraintName="UK_ob8kqyqqgmefl0aco34akdtpe" tableName="user"/>
+        <addUniqueConstraint columnNames="email" constraintName="UK_ob8kqyqqgmefl0aco34akdtpe" tableName="users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-25">
-        <createIndex indexName="FK1faffy1p9x95n6v18m5urdkfc" tableName="verify_email">
+        <createIndex indexName="FK1faffy1p9x95n6v18m5urdkfc" tableName="verify_emails">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-26">
-        <createIndex indexName="FK3297dq7rblawjc9n4kx9htui4" tableName="place">
+        <createIndex indexName="FK3297dq7rblawjc9n4kx9htui4" tableName="places">
             <column name="category_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-27">
-        <createIndex indexName="FK4ybp1p4b8005qrgccsrookt9p" tableName="estimate">
+        <createIndex indexName="FK4ybp1p4b8005qrgccsrookt9p" tableName="estimates">
             <column name="comment_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-28">
-        <createIndex indexName="FK6n25a2qft5y6fb21karg1obh5" tableName="estimate">
+        <createIndex indexName="FK6n25a2qft5y6fb21karg1obh5" tableName="estimates">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-29">
-        <createIndex indexName="FK74l2uk5a5nrjvi94rd9qaviu1" tableName="place">
+        <createIndex indexName="FK74l2uk5a5nrjvi94rd9qaviu1" tableName="places">
             <column name="author_id"/>
         </createIndex>
     </changeSet>
@@ -282,7 +288,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-31">
-        <createIndex indexName="FK8kcum44fvpupyw6f5baccx25c" tableName="comment">
+        <createIndex indexName="FK8kcum44fvpupyw6f5baccx25c" tableName="comments">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
@@ -292,17 +298,17 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-33">
-        <createIndex indexName="FKaxtbydhvr0oeed7oruruf0hn" tableName="place">
+        <createIndex indexName="FKaxtbydhvr0oeed7oruruf0hn" tableName="places">
             <column name="location_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-34">
-        <createIndex indexName="FKch8bkgqt3v8yjo230lysj668h" tableName="comment">
+        <createIndex indexName="FKch8bkgqt3v8yjo230lysj668h" tableName="comments">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-35">
-        <createIndex indexName="FKhvh0e2ybgg16bpu229a5teje7" tableName="comment">
+        <createIndex indexName="FKhvh0e2ybgg16bpu229a5teje7" tableName="comments">
             <column name="parent_comment_id"/>
         </createIndex>
     </changeSet>
@@ -312,12 +318,12 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-37">
-        <createIndex indexName="FKmon8uughpdrxt7vskx5k2prji" tableName="favorite_place">
+        <createIndex indexName="FKmon8uughpdrxt7vskx5k2prji" tableName="favorite_places">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-38">
-        <createIndex indexName="FKmpd2wxnn6fldh4pilqnkpaqv9" tableName="discount_value">
+        <createIndex indexName="FKmpd2wxnn6fldh4pilqnkpaqv9" tableName="discount_values">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
@@ -327,22 +333,22 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-40">
-        <createIndex indexName="FKn3innaybpdkeovqui6o4dsxb0" tableName="estimate">
+        <createIndex indexName="FKn3innaybpdkeovqui6o4dsxb0" tableName="estimates">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-41">
-        <createIndex indexName="FKncp190mcvd1kd21cmnibcm19s" tableName="photo">
+        <createIndex indexName="FKncp190mcvd1kd21cmnibcm19s" tableName="photos">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-42">
-        <createIndex indexName="FKnj78c83w4xmw23jp8etxgcqc5" tableName="discount_value">
+        <createIndex indexName="FKnj78c83w4xmw23jp8etxgcqc5" tableName="discount_values">
             <column name="specification_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-43">
-        <createIndex indexName="FKpeyqdepr1vru2tsghm3sxwhrr" tableName="comment">
+        <createIndex indexName="FKpeyqdepr1vru2tsghm3sxwhrr" tableName="comments">
             <column name="estimate_id"/>
         </createIndex>
     </changeSet>
@@ -352,7 +358,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-45">
-        <createIndex indexName="FKrtlnhb40rfqhkna5ijgoykgyl" tableName="favorite_place">
+        <createIndex indexName="FKrtlnhb40rfqhkna5ijgoykgyl" tableName="favorite_places">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
@@ -362,93 +368,132 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-47">
-        <createIndex indexName="FKs2ride9gvilxy2tcuv7witnxc" tableName="category">
+        <createIndex indexName="FKs2ride9gvilxy2tcuv7witnxc" tableName="categories">
             <column name="parent_category_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-48">
-        <createIndex indexName="FKsm3nsiqunp5ke6cmkundcw4a1" tableName="photo">
+        <createIndex indexName="FKsm3nsiqunp5ke6cmkundcw4a1" tableName="photos">
             <column name="comment_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-49">
-        <createIndex indexName="FKsv2aa83c398y2xp3j01yi92rh" tableName="photo">
+        <createIndex indexName="FKsv2aa83c398y2xp3j01yi92rh" tableName="photos">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-50">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="verify_email" constraintName="FK1faffy1p9x95n6v18m5urdkfc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    <changeSet author="Yurii Koval"
+               id="Yurii-4">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="verify_emails"
+                                 constraintName="user_should_verify_email"
+                                 deferrable="${deferrable}"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Yurii Koval"
+               id="Yurii-5">
+        <addNotNullConstraint columnName="token"
+                              constraintName="email_verification_token_cannot_be_null"
+                              tableName="verify_emails"/>
+    </changeSet>
+    <changeSet author="Yurii Koval"
+               id="Yurii-6">
+        <addNotNullConstraint columnName="expiry_date"
+                              constraintName="token_expiry_date_cannot_be_null"
+                              tableName="verify_emails"/>
+    </changeSet>
+    <changeSet author="Yurii Koval"
+               id="Yurii-7">
+        <addUniqueConstraint columnNames="user_id"
+                             constraintName="one_user_one_email_verification_token"
+                             tableName="verify_emails"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-51">
-        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="place" constraintName="FK3297dq7rblawjc9n4kx9htui4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="category"/>
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="places" constraintName="FK3297dq7rblawjc9n4kx9htui4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="categories"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-52">
-        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimate" constraintName="FK4ybp1p4b8005qrgccsrookt9p" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comment"/>
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimates" constraintName="FK4ybp1p4b8005qrgccsrookt9p" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comments"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-53">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="estimate" constraintName="FK6n25a2qft5y6fb21karg1obh5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="estimates" constraintName="FK6n25a2qft5y6fb21karg1obh5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-54">
-        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="place" constraintName="FK74l2uk5a5nrjvi94rd9qaviu1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="places" constraintName="FK74l2uk5a5nrjvi94rd9qaviu1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-55">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="restore_password_email" constraintName="FK84jlf1nvnb2duww5bi10j5kwy" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="restore_password_email" constraintName="FK84jlf1nvnb2duww5bi10j5kwy" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-56">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comment" constraintName="FK8kcum44fvpupyw6f5baccx25c" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comments" constraintName="FK8kcum44fvpupyw6f5baccx25c" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-57">
         <addForeignKeyConstraint baseColumnNames="break_time_id" baseTableName="opening_hours" constraintName="FK9ygkma6mdptstvup90n9ewptc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="break_time"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-58">
-        <addForeignKeyConstraint baseColumnNames="location_id" baseTableName="place" constraintName="FKaxtbydhvr0oeed7oruruf0hn" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="location"/>
+        <addForeignKeyConstraint baseColumnNames="location_id" baseTableName="places" constraintName="FKaxtbydhvr0oeed7oruruf0hn" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="locations"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-59">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="comment" constraintName="FKch8bkgqt3v8yjo230lysj668h" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="comments" constraintName="FKch8bkgqt3v8yjo230lysj668h" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-60">
-        <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="comment" constraintName="FKhvh0e2ybgg16bpu229a5teje7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comment"/>
+        <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="comments" constraintName="FKhvh0e2ybgg16bpu229a5teje7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comments"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-61">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="opening_hours" constraintName="FKio191h2kf8y7k7mumqjn1fn1v" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="opening_hours" constraintName="FKio191h2kf8y7k7mumqjn1fn1v" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-62">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="favorite_place" constraintName="FKmon8uughpdrxt7vskx5k2prji" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="favorite_places" constraintName="FKmon8uughpdrxt7vskx5k2prji" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-63">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="discount_value" constraintName="FKmpd2wxnn6fldh4pilqnkpaqv9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="discount_values" constraintName="FKmpd2wxnn6fldh4pilqnkpaqv9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-64">
-        <addForeignKeyConstraint baseColumnNames="places_id" baseTableName="web_pages_places" constraintName="FKmrghmp8nq6diqqcjxtq3nudfs" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="places_id" baseTableName="web_pages_places" constraintName="FKmrghmp8nq6diqqcjxtq3nudfs" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-65">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="estimate" constraintName="FKn3innaybpdkeovqui6o4dsxb0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="estimates" constraintName="FKn3innaybpdkeovqui6o4dsxb0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-66">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="photo" constraintName="FKncp190mcvd1kd21cmnibcm19s" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="photos" constraintName="FKncp190mcvd1kd21cmnibcm19s" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-67">
-        <addForeignKeyConstraint baseColumnNames="specification_id" baseTableName="discount_value" constraintName="FKnj78c83w4xmw23jp8etxgcqc5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="specification"/>
+        <addForeignKeyConstraint baseColumnNames="specification_id" baseTableName="discount_values" constraintName="FKnj78c83w4xmw23jp8etxgcqc5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="specifications"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-68">
-        <addForeignKeyConstraint baseColumnNames="estimate_id" baseTableName="comment" constraintName="FKpeyqdepr1vru2tsghm3sxwhrr" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="estimate"/>
+        <addForeignKeyConstraint baseColumnNames="estimate_id" baseTableName="comments" constraintName="FKpeyqdepr1vru2tsghm3sxwhrr" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="estimates"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-69">
         <addForeignKeyConstraint baseColumnNames="web_pages_id" baseTableName="web_pages_places" constraintName="FKrm26v5rrc5t54lhcd04dcwkw8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="web_pages"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-70">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="favorite_place" constraintName="FKrtlnhb40rfqhkna5ijgoykgyl" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="favorite_places" constraintName="FKrtlnhb40rfqhkna5ijgoykgyl" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-71">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="own_security" constraintName="FKs084ey5e475cqp4w0hsgisjpd" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    <changeSet author="Yurii Koval" id="Yurii-10">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="own_security"
+                                 constraintName="password_exists_with_user"
+                                 deferrable="${deferrable}"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Yurii Koval"
+               id="Yurii-11">
+        <addUniqueConstraint columnNames="user_id"
+                             constraintName="one_user_one_password"
+                             tableName="own_security"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-72">
-        <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="category" constraintName="FKs2ride9gvilxy2tcuv7witnxc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="category"/>
+        <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="categories" constraintName="FKs2ride9gvilxy2tcuv7witnxc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="categories"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-73">
-        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photo" constraintName="FKsm3nsiqunp5ke6cmkundcw4a1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comment"/>
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photos" constraintName="FKsm3nsiqunp5ke6cmkundcw4a1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comments"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-74">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="photo" constraintName="FKsv2aa83c398y2xp3j01yi92rh" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="photos" constraintName="FKsv2aa83c398y2xp3j01yi92rh" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
 </databaseChangeLog>

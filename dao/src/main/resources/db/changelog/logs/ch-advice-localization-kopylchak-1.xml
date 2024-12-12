@@ -28,12 +28,6 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="0lezhka-3" author="Kopylchak O.">
-        <dropColumn tableName="advices">
-            <column name="name"/>
-        </dropColumn>
-    </changeSet>
-
     <changeSet id="0lezhka-4" author="Kopylchak O.">
         <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="advice_translations"
                                  constraintName="FK_advice_translation_language"

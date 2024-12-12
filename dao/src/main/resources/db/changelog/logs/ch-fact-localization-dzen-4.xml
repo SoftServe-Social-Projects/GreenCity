@@ -18,12 +18,6 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="Vitaliy Dzen" id="4651326844-9">
-        <dropColumn tableName="habit_facts">
-            <column name="name"/>
-        </dropColumn>
-    </changeSet>
-
     <changeSet author="Vitaliy Dzen" id="4651326844-10">
         <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="fact_translations"
                                  constraintName="FK_fact_translations_language"

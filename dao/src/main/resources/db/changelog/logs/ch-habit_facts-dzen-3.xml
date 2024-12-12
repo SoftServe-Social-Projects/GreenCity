@@ -13,10 +13,6 @@
             <column name="habit_dictionary_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(300)">
-                <constraints nullable="false"/>
-            </column>
-
         </createTable>
     </changeSet>
 

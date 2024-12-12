@@ -16,6 +16,9 @@
             <column name="description" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="habit_item" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

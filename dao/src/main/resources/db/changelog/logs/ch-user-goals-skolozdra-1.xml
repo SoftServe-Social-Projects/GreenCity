@@ -7,9 +7,6 @@
             <column name="id" autoIncrement="true" startWith="145" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="text" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
     </changeSet>
     <changeSet id="1571227598316-101" author="Vitalii S.">
@@ -22,6 +19,7 @@
             </column>
             <column name="goal_id" type="BIGINT">
             </column>
+            <column name="custom_goal_id" type="BIGINT"/>
             <column name="status" type="varchar(12)">
                 <constraints nullable="false"/>
             </column>
@@ -33,5 +31,18 @@
                                  constraintName="FK_user_user_goals" deferrable="false" initiallyDeferred="false"
                                  onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
                                  referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1571227598316-152" author="Kuzenko B.">
+        <addForeignKeyConstraint baseTableName="user_goals" baseColumnNames="custom_goal_id"
+                                 constraintName="user_custom_goals"
+                                 referencedTableName="custom_goals"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet author="Bogdan"
+               id="1571227598316-151">
+        <sql>
+            ALTER TABLE user_goals ADD CONSTRAINT id_check CHECK ((goal_id IS NULL AND custom_goal_id IS NOT NULL) OR
+                                                                  (goal_id IS NOT NULL AND custom_goal_id IS NULL));
+        </sql>
     </changeSet>
 </databaseChangeLog>
