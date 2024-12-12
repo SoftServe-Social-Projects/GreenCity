@@ -7,35 +7,29 @@
 
     <changeSet author="Olkhovskyi Y." id="13">
         <createTable tableName="habit_statistics">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="rate" type="VARCHAR(10)">
-            </column>
-
-            <column name="date" type="TIMESTAMPTZ">
+            <column name="rate" type="varchar(10)">
                 <constraints nullable="false"/>
             </column>
-
-            <column name="amount_of_items" type="INT">
+            <column name="create_date" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
             </column>
-
-            <column name="habit_id" type="BIGINT">
+            <column name="habit_assign_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_items" type="integer">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="15" author="Olkhovskyi Y.">
-        <addForeignKeyConstraint baseColumnNames="habit_id"
-                                 baseTableName="habit_statistics"
-                                 constraintName="FK_habit_habit_statistics"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="RESTRICT"
-                                 onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habits"/>
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_statistics"
+                                 constraintName="fk_habit_statistics_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
     </changeSet>
 </databaseChangeLog>

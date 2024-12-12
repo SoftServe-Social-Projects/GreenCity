@@ -6,29 +6,9 @@
             <column autoIncrement="true" startWith="32" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="habit_dictionary_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="create_date" type="TIMESTAMPTZ">
+            <column name="image" type="varchar(255)" defaultValue="bag">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet author="Volodymyr" id="1571227598316-77">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habits" constraintName="fk_habits_user"
-                                 deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="users"/>
-    </changeSet>
-    <changeSet author="Volodymyr" id="1571227598316-78">
-        <addForeignKeyConstraint baseColumnNames="habit_dictionary_id" baseTableName="habits"
-                                 constraintName="fk_habits_habits_dictionary" deferrable="false" initiallyDeferred="false"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="habit_dictionary"/>
     </changeSet>
 </databaseChangeLog>

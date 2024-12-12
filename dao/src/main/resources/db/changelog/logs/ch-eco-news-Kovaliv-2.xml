@@ -35,4 +35,11 @@
                                  referencedTableName="tags"/>
     </changeSet>
 
+    <changeSet id="lehkyi-4" author="Mykola Lehkyi">
+        <addPrimaryKey
+                columnNames="eco_news_id, tags_id"
+                constraintName="eco_news_tags_pkey"
+                tableName="eco_news_tags"
+        />
+    </changeSet>
 </databaseChangeLog>

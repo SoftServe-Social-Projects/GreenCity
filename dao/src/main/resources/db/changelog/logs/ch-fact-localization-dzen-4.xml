@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="Vitaliy Dzen" id="4651326844-8">
-        <createTable tableName="fact_translations">
+        <createTable tableName="habit_fact_translations">
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -22,12 +22,12 @@
     </changeSet>
 
     <changeSet author="Vitaliy Dzen" id="4651326844-10">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="fact_translations"
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="habit_fact_translations"
                                  constraintName="FK_fact_translations_language"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="languages"/>
 
-        <addForeignKeyConstraint baseColumnNames="habit_fact_id" baseTableName="fact_translations"
+        <addForeignKeyConstraint baseColumnNames="habit_fact_id" baseTableName="habit_fact_translations"
                                  constraintName="FK_fact_translation_fact"
                                  onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
                                  referencedTableName="habit_facts"/>

@@ -5,9 +5,9 @@
     <changeSet id="Beshlei-1" author="Taras Beshlei">
         <createTable tableName="habit_status_calendar">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="enroll_date" type="timestamp with time zone">
+            <column name="enroll_date" type="date">
                 <constraints nullable="false"/>
             </column>
             <column name="habit_status_id" type="BIGINT">
@@ -16,19 +16,9 @@
         </createTable>
     </changeSet>
     <changeSet id="Beshlei-2" author="Taras Beshlei">
-        <addForeignKeyConstraint baseTableName="habit_status_calendar"
-                                 baseColumnNames="habit_status_id"
-                                 constraintName="fk_habit_status_id"
-                                 referencedTableName="habit_status"
-                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseColumnNames="habit_status_id" baseTableName="habit_status_calendar"
+                                 constraintName="fk_habit_status_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habit_status"/>
     </changeSet>
-    <changeSet id="Beshlei-7" author="Taras Beshlei">
-        <modifyDataType tableName="habit_status_calendar" columnName="enroll_date" newDataType="timestamp with time zone"/>
-    </changeSet>
-
-    <changeSet id="Beshlei-8" author="Taras Beshlei">
-        <modifyDataType tableName="habit_status_calendar" columnName="enroll_date" newDataType="date"/>
-    </changeSet>
-
-
 </databaseChangeLog>

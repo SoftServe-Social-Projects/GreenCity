@@ -16,10 +16,10 @@
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="points_changed" type="real">
+            <column name="points_changed" type="double">
                 <constraints nullable="false"/>
             </column>
-            <column name="current_rating" type="real">
+            <column name="current_rating" type="double">
                 <constraints nullable="false"/>
             </column>
 
@@ -29,10 +29,5 @@
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="rating_statistics"
                                  constraintName="rating_statistics_users_id_fk" referencedColumnNames="id"
                                  referencedTableName="users"/>
-    </changeSet>
-
-    <changeSet id="23.09.20.Lehkyi-8_Dovganyuk-1" author="Mykola Lehkyi">
-        <modifyDataType tableName="rating_statistics" columnName="points_changed" newDataType="double"/>
-        <modifyDataType tableName="rating_statistics" columnName="current_rating" newDataType="double"/>
     </changeSet>
 </databaseChangeLog>

@@ -20,6 +20,8 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="deleted" type="BOOLEAN" defaultValue="false"/>
+
             <column name="parent_comment_id" type="BIGINT"/>
 
             <column name="user_id" type="BIGINT">
@@ -35,45 +37,17 @@
     <changeSet id="Beshlei-2" author="Taras Beshlei">
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
                                  baseColumnNames="parent_comment_id"
-                                 constraintName="fk_comment_parent"
-                                 onDelete="CASCADE"
-                                 referencedTableName="tipsandtricks_comment"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_comment_user"
-                                 referencedTableName="users"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
-                                 baseColumnNames="tips_and_tricks_id"
-                                 constraintName="fk_comment_tipsandtricks"
-                                 onDelete="CASCADE"
-                                 referencedTableName="tips_and_tricks"
-                                 referencedColumnNames="id"/>
-    </changeSet>
-
-    <changeSet id="23.09.20.Lehkyi-2_Beshlei-2" author="Mykola Lehkyi">
-        <dropForeignKeyConstraint baseTableName="tipsandtricks_comment"
-                                  constraintName="fk_comment_parent" />
-        <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
-                                 baseColumnNames="parent_comment_id"
                                  constraintName="fk_tipsandtricks_comment_parent"
                                  onDelete="CASCADE"
                                  referencedTableName="tipsandtricks_comment"
                                  referencedColumnNames="id"/>
 
-        <dropForeignKeyConstraint baseTableName="tipsandtricks_comment"
-                                  constraintName="fk_comment_user" />
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_tipsandtricks_comment_user"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
 
-        <dropForeignKeyConstraint baseTableName="tipsandtricks_comment"
-                                  constraintName="fk_comment_tipsandtricks" />
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
                                  baseColumnNames="tips_and_tricks_id"
                                  constraintName="fk_tipsandtricks_comment_tipsandtricks"
@@ -96,41 +70,15 @@
     <changeSet id="Beshlei-4" author="Taras Beshlei">
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
                                  baseColumnNames="tipsandtricks_comment_id"
-                                 constraintName="fk_tipsandtricks_comment"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="tipsandtricks_comment"/>
-        <addForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
-                                 baseColumnNames="users_liked_id"
-                                 constraintName="fk_users_liked"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="users"/>
-    </changeSet>
-
-    <changeSet id="23.09.20.Lehkyi-4_Beshlei-4" author="Mykola Lehkyi">
-        <dropForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
-                                  constraintName="fk_tipsandtricks_comment" />
-        <addForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
-                                 baseColumnNames="tipsandtricks_comment_id"
                                  constraintName="fk_tipsandtricks_comment_users_liked_tipsandtricks_comment"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="tipsandtricks_comment"/>
-
-        <dropForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
-                                  constraintName="fk_users_liked" />
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
                                  baseColumnNames="users_liked_id"
                                  constraintName="fk_tipsandtricks_comment_users_liked_users"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
-    </changeSet>
-
-    <changeSet id="Beshlei-5" author="Taras Beshlei">
-        <addColumn tableName="tipsandtricks_comment">
-            <column name="deleted" type="BOOLEAN" defaultValue="false"/>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>

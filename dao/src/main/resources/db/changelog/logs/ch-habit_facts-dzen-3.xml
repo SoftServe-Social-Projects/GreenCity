@@ -10,36 +10,16 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="habit_dictionary_id" type="BIGINT">
+            <column name="habit_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet author="Vitaliy Dzen" id="4651326844-7">
-        <addForeignKeyConstraint baseColumnNames="habit_dictionary_id"
-                                 baseTableName="habit_facts"
-                                 constraintName="FK_habit_advices"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="RESTRICT"
-                                 onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habit_dictionary"/>
+    <changeSet id="4" author="Kravchenko">
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_facts"
+                                 constraintName="fk_habit_facts_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
     </changeSet>
-
-    <changeSet id="23.09.20.Lehkyi-9_4651326844-7" author="Mykola Lehkyi">
-        <dropForeignKeyConstraint baseTableName="habit_facts"
-                                  constraintName="FK_habit_advices" />
-        <addForeignKeyConstraint baseColumnNames="habit_dictionary_id"
-                                 baseTableName="habit_facts"
-                                 constraintName="FK_habit_facts_habit_dictionary"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="RESTRICT"
-                                 onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habit_dictionary"/>
-    </changeSet>
-
 </databaseChangeLog>

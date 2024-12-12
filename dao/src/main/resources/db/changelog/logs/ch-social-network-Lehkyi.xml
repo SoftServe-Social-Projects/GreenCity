@@ -55,11 +55,6 @@
         />
     </changeSet>
 
-    <changeSet id="Lehkyi-18" author="Mykola Lehkyi">
-        <preConditions onFail="MARK_RAN"><tableExists tableName="user_social_networks"/></preConditions>
-        <dropTable cascadeConstraints="true" tableName="user_social_networks"/>
-    </changeSet>
-
     <changeSet id="Lehkyi-19" author="Mykola Lehkyi">
         <insert tableName="social_network_images">
             <column name="image_path" value="img/default_social_network_icon.png"/>

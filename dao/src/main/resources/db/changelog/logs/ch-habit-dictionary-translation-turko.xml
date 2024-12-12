@@ -6,7 +6,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="Volodymyr Turko" id="46513268344-2012222">
-        <createTable tableName="habit_dictionary_translation">
+        <createTable tableName="habit_translation">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -24,21 +24,21 @@
             <column name="language_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="habit_dictionary_id" type="BIGINT">
+            <column name="habit_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet author="Volodymyr Turko" id="465132699844-271222">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="habit_dictionary_translation"
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="habit_translation"
                                  constraintName="FK_habit_dictionary_translation"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="languages"/>
 
-        <addForeignKeyConstraint baseColumnNames="habit_dictionary_id" baseTableName="habit_dictionary_translation"
-                                 constraintName="FK_habit_dictionary_translation1"
-                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
-                                 referencedTableName="habit_dictionary"/>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_translation"
+                                 constraintName="fk_habit_translation_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
     </changeSet>
 </databaseChangeLog>

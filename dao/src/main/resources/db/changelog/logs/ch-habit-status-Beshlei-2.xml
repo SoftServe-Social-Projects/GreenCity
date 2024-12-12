@@ -4,101 +4,30 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Beshlei-8" author="Taras Beshlei">
         <createTable tableName="habit_status">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="working_days" type="INTEGER">
+            <column name="working_days" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="habit_streak" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="habit_assign_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="habit_streak" type="INTEGER">
+            <column name="last_enrollment" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-
-            <column name="suspended" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="habit_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-
         </createTable>
     </changeSet>
 
     <changeSet id="Beshlei-7" author="Taras Beshlei">
-        <addForeignKeyConstraint baseTableName="habit_status"
-                                 baseColumnNames="habit_id"
-                                 constraintName="fk_habit_id"
-                                 onDelete="CASCADE"
-                                 referencedTableName="habits"
-                                 referencedColumnNames="id"/>
-    </changeSet>
-
-    <changeSet id="23.09.20.Lehkyi-7_Beshlei-7" author="Mykola Lehkyi">
-        <dropForeignKeyConstraint baseTableName="habit_status"
-                                  constraintName="fk_habit_id" />
-        <addForeignKeyConstraint baseTableName="habit_status"
-                                 baseColumnNames="habit_id"
-                                 constraintName="fk_habit_status_habits"
-                                 onDelete="CASCADE"
-                                 referencedTableName="habits"
-                                 referencedColumnNames="id"/>
-    </changeSet>
-
-    <changeSet id="Beshlei-14" author="Taras Beshlei">
-        <createTable tableName="habits_habit_statuses">
-            <column name="habit_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="habit_status_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="Beshlei-16" author="Taras Beshlei">
-        <renameColumn tableName="habits_habit_statuses" oldColumnName="habit_status_id" newColumnName="habit_statuses_id"/>
-    </changeSet>
-
-    <changeSet id="Beshlei-17" author="Taras Beshlei">
-        <addForeignKeyConstraint baseTableName="habits_habit_statuses"
-                                 baseColumnNames="habit_statuses_id"
-                                 constraintName="fk_habit_statuses_id"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habit_status"/>
-        <addForeignKeyConstraint baseTableName="habits_habit_statuses"
-                                 baseColumnNames="habit_id"
-                                 constraintName="fk_habit_id"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habits"/>
-    </changeSet>
-
-    <changeSet id="Beshlei-18" author="Taras Beshlei">
-        <addColumn tableName="habit_status">
-            <column name="last_enrollment" type="timestamp with time zone"/>
-        </addColumn>
-    </changeSet>
-    <changeSet id="Beshlei-19" author="Taras Beshlei">
-        <addColumn tableName="habit_status">
-            <column name="user_id" type="BIGINT"/>
-        </addColumn>
-        <addForeignKeyConstraint baseTableName="habit_status"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_user_id"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="users"/>
-    </changeSet>
-    <changeSet id="Beshlei-20" author="Taras Beshlei">
-        <dropTable tableName="habits_habit_statuses"/>
-    </changeSet>
-    <changeSet id="Beshlei-23" author="Taras Beshlei">
-        <addColumn tableName="habit_status">
-            <column name="create_date" type="timestamp with time zone"/>
-        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_status"
+                                 constraintName="fk_habit_status_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
     </changeSet>
 </databaseChangeLog>

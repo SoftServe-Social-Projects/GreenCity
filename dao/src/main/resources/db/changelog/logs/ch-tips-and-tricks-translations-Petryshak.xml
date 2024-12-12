@@ -71,12 +71,4 @@
                                  referencedTableName="languages"
         />
     </changeSet>
-    <changeSet id="Petryshak-5" author="Olena Petryshak">
-        <dropColumn tableName="tips_and_tricks"
-                    columnName="title"
-                    schemaName="public"/>
-        <dropColumn tableName="tips_and_tricks"
-                    columnName="text"
-                    schemaName="public"/>
-    </changeSet>
 </databaseChangeLog>

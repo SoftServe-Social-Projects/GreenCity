@@ -7,12 +7,6 @@
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="title" type="varchar(170)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="text" type="varchar(63206)">
-                <constraints nullable="false"/>
-            </column>
             <column name="creation_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
@@ -24,45 +18,38 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="olesyaostriychuk2" author="Olesya Ostriychuk">
-        <createTable tableName="tips_and_tricks_tags">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="name" type="VARCHAR(20)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
     <changeSet id="olesyaostriychuk3" author="Olesya Ostriychuk">
-        <createTable tableName="tips_and_tricks_tips_and_tricks_tags">
+        <createTable tableName="tips_and_tricks_tags">
             <column name="tips_and_tricks_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="tips_and_tricks_tags_id" type="BIGINT">
+            <column name="tags_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="olesyaostriychuk4" author="Olesya Ostriychuk">
-        <addUniqueConstraint columnNames="name"
-                             constraintName="tips_and_tricks_tag_unique_name"
-                             tableName="tips_and_tricks_tags"/>
         <addForeignKeyConstraint baseColumnNames="tips_and_tricks_id"
-                                 baseTableName="tips_and_tricks_tips_and_tricks_tags"
+                                 baseTableName="tips_and_tricks_tags"
                                  constraintName="FK_tt_tags_and_related_tips_and_tricks"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="tips_and_tricks"/>
-        <addForeignKeyConstraint baseColumnNames="tips_and_tricks_tags_id"
-                                 baseTableName="tips_and_tricks_tips_and_tricks_tags"
-                                 constraintName="FK_tips_and_tricks_and_related_tt_tags"
+        <addForeignKeyConstraint baseColumnNames="tags_id" baseTableName="tips_and_tricks_tags"
+                                 constraintName="FK_tips_and_tricks_and_related_tags"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="tips_and_tricks_tags"/>
+                                 referencedTableName="tags"/>
         <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="tips_and_tricks"
                                  constraintName="FK_tips_and_tricks_author" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="lehkyi-3" author="Mykola Lehkyi">
+        <addPrimaryKey
+                columnNames="tips_and_tricks_id, tags_id"
+                constraintName="tips_and_tricks_tags_pkey"
+                tableName="tips_and_tricks_tags"
+        />
     </changeSet>
 </databaseChangeLog>

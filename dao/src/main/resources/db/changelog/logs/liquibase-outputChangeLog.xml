@@ -188,7 +188,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="email_notification" type="INT"/>
-            <column name="name" type="VARCHAR(20)">
+            <column name="name" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
             <column name="last_visit" type="datetime(6)">
@@ -204,6 +204,12 @@
             <column name="refresh_token_key" type="varchar(255)" defaultValue="secret">
                 <constraints nullable="false"/>
             </column>
+            <column name="first_name" type="varchar(255)"/>
+            <column name="city" type="varchar(255)"/>
+            <column name="user_credo" type="varchar(255)"/>
+            <column name="show_location" type="boolean"/>
+            <column name="show_eco_place" type="boolean"/>
+            <column name="show_shopping_list" type="boolean"/>
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-15">
