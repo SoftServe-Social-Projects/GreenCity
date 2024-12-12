@@ -21,4 +21,14 @@ public interface AIService {
      * @return The advice as a string in the specified language.
      */
     String getAdvice(Long userId, String language);
+
+    /**
+     * Generates news content based on the specified language and topic.
+     *
+     * @param language The preferred language for the news content.
+     * @param query    The topic for the news. If the query is empty, generates news
+     *                 on a random eco-friendly topic.
+     * @return The generated news as a string in the specified language.
+     */
+    String getNews(String language, String query);
 }
