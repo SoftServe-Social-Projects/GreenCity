@@ -57,8 +57,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-
-import static greencity.ModelUtils.*;
+import static greencity.ModelUtils.getAddCommentDtoResponse;
+import static greencity.ModelUtils.getAmountCommentLikesDto;
+import static greencity.ModelUtils.getComment;
+import static greencity.ModelUtils.getCommentDto;
+import static greencity.ModelUtils.getCommentVO;
+import static greencity.ModelUtils.getEcoNews;
+import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getHabit;
+import static greencity.ModelUtils.getHabitTranslation;
+import static greencity.ModelUtils.getMultipartImageFiles;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserNotCommentOwner;
+import static greencity.ModelUtils.getUserSearchDto;
+import static greencity.ModelUtils.getUserTagDto;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getUserVONotCommentOwner;
 import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1057,6 +1071,18 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void testLikeOwn() {
+        UserVO userVO = getUserVO();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        commentVO.setUsersLiked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+
+        assertThrows(BadRequestException.class, () -> commentService.like(1L, userVO, Locale.ENGLISH));
+    }
+
+    @Test
     void likeTest_OwnerUserLikesTheirComment_ShouldNotLike() {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
@@ -1079,12 +1105,7 @@ class CommentServiceImplTest {
             any(UserVO.class), any(UserVO.class), any(NotificationType.class),
             anyLong(), anyString(), anyLong(), anyString());
 
-        commentService.like(commentId, userVO, Locale.ENGLISH);
-
-        assertFalse(comment.getUsersLiked().contains(user));
-
-        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
-        verify(modelMapper).map(userVO, User.class);
+        assertThrows(BadRequestException.class, () -> commentService.like(1L, userVO, Locale.ENGLISH));
     }
 
     @Test
@@ -1151,6 +1172,7 @@ class CommentServiceImplTest {
         Comment comment = getComment();
         comment.setCurrentUserLiked(true);
         comment.getUsersLiked().add(user);
+        comment.getUser().setId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
@@ -1213,6 +1235,7 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        comment.getUser().setId(2L);
         comment.setUsersDisliked(new HashSet<>());
 
         when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
@@ -1225,10 +1248,23 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void testDislikeOwn() {
+        UserVO userVO = getUserVO();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        commentVO.setUsersLiked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+
+        assertThrows(BadRequestException.class, () -> commentService.dislike(1L, userVO, Locale.ENGLISH));
+    }
+
+    @Test
     void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        comment.getUser().setId(2L);
         comment.setUsersLiked(new HashSet<>(Set.of(user)));
         comment.setUsersDisliked(new HashSet<>());
 

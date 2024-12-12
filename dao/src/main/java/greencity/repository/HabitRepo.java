@@ -70,4 +70,34 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
         + "WHERE ha.habit_id =:habitId "
         + "AND ha.user_id =:userId", nativeQuery = true)
     List<Long> findHabitAssignByHabitIdAndHabitOwnerId(@Param("habitId") Long habitId, @Param("userId") Long userId);
+
+    /**
+     * Finds a random habit that is not marked as deleted.
+     *
+     * @return a random {@link Habit} entity that is not deleted, or {@code null} if
+     *         no such habit exists.
+     */
+    @Query(nativeQuery = true,
+        value = """
+                WITH sampled_habits AS (
+                   SELECT *
+                   FROM habits
+                            TABLESAMPLE SYSTEM(15)
+                   WHERE is_deleted = false
+                   LIMIT 1
+               ),
+                fallback_habit AS (
+                    SELECT *
+                    FROM habits
+                    WHERE is_deleted = false
+                    LIMIT 1
+                )
+               SELECT *
+               FROM sampled_habits
+               UNION ALL
+               SELECT *
+               FROM fallback_habit
+               LIMIT 1;
+            """)
+    Habit findRandomHabit();
 }

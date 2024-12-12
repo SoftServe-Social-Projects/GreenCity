@@ -28,13 +28,13 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
-import greencity.entity.event.EventGrade;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
@@ -104,6 +104,9 @@ class EventServiceImplTest {
     ModelMapper modelMapper;
 
     @Mock
+    EventDateLocationDtoMapper eventDateLocationDtoMapper;
+
+    @Mock
     EventRepo eventRepo;
 
     @Mock
@@ -165,6 +168,8 @@ class EventServiceImplTest {
         when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations()))
+            .thenReturn(event.getDates());
 
         EventDto resultEventDto = eventService.save(addEventDtoRequest, user.getEmail(), null);
         assertEquals(eventDto, resultEventDto);
@@ -200,6 +205,37 @@ class EventServiceImplTest {
             () -> eventService.save(addEventDtoWithoutCoordinates, email, null));
         assertEquals(ErrorMessage.INVALID_COORDINATES, exception.getMessage());
         verify(eventRepo, times(0)).save(eventWithoutCoordinates);
+    }
+
+    @Test
+    void saveOnlineEventSuccessTest() {
+        User user = ModelUtils.getUser();
+        AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoWithoutAddressRequest;
+        Event event = ModelUtils.getEventWithoutAddress();
+        List<Tag> tags = ModelUtils.getEventTags();
+        AddressDto addressDto = ModelUtils.getLongitudeAndLatitude();
+        EventDto eventDto = ModelUtils.getEventDtoWithoutAddress();
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations()))
+            .thenReturn(event.getDates());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
+        when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(addressDto);
+        when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
+        when(eventRepo.save(event)).thenReturn(event);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+
+        assertEquals(eventDto,
+            eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
     }
 
     @Test
@@ -1225,8 +1261,8 @@ class EventServiceImplTest {
         UserVO userVO = getUserVO();
         UserVO eventAuthorVO = getAuthorVO();
         User user = getUser();
-        User eventAuthor = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_EVENT").points(1).build();
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
@@ -1247,16 +1283,29 @@ class EventServiceImplTest {
     }
 
     @Test
-    void removeLikeTest() {
+    void testLikeOwn() {
         UserVO userVO = getUserVO();
         User user = getUser();
         Event event = getEvent();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+
+        assertThrows(BadRequestException.class, () -> eventService.like(1L, userVO));
+    }
+
+    @Test
+    void removeLikeTest() {
+        UserVO userVO = getUserVO();
+        User eventAuthor = getUser().setId(2L);
+        User user = getUser();
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.getUsersLikedEvents().add(user);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_EVENT").points(-1).build();
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        when(modelMapper.map(userVO, User.class)).thenReturn(event.getOrganizer());
+        when(userRepo.findById(2L)).thenReturn(Optional.of(eventAuthor));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT")).thenReturn(ratingPoints);
 
         eventService.like(event.getId(), userVO);
@@ -1265,7 +1314,7 @@ class EventServiceImplTest {
         verify(userNotificationService, times(1)).removeActionUserFromNotification(
             modelMapper.map(user, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
         verify(eventRepo).findById(event.getId());
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(eventAuthor.getId());
     }
 
     @Test
@@ -1342,15 +1391,16 @@ class EventServiceImplTest {
     }
 
     @Test
-    void givenEventDislikedByUser_whenLikedByUser_shouldRemoveDislikeAndAddLike() {
+    void givenEventDislikedByUser_whenLikedByUser_shouldRemoveDislikeAddLike() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.setUsersLikedEvents(new HashSet<>());
         event.setUsersDislikedEvents(new HashSet<>(Set.of(user)));
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
 
         eventService.like(1L, userVO);
 
@@ -1361,12 +1411,12 @@ class EventServiceImplTest {
     @Test
     void dislikeTest() {
         UserVO userVO = getUserVO();
-        User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.setUsersDislikedEvents(new HashSet<>());
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
 
         eventService.dislike(userVO, event.getId());
 
@@ -1375,16 +1425,29 @@ class EventServiceImplTest {
     }
 
     @Test
-    void testDislikeIfWasAlreadyPlaced() {
+    void testDislikeOwn() {
         UserVO userVO = getUserVO();
         User user = getUser();
         Event event = getEvent();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+
+        assertThrows(BadRequestException.class, () -> eventService.dislike(userVO, 1L));
+    }
+
+    @Test
+    void testDislikeIfWasAlreadyPlaced() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         Set<User> usersDisliked = new HashSet<>();
         usersDisliked.add(user);
         event.setUsersDislikedEvents(usersDisliked);
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
         eventService.dislike(userVO, event.getId());
 
         verify(eventRepo).save(event);
@@ -1395,12 +1458,13 @@ class EventServiceImplTest {
     void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Event event = getEvent();
+        User eventAuthor = getUser().setId(2L);
+        Event event = getEvent().setOrganizer(eventAuthor);
         event.setUsersLikedEvents(new HashSet<>(Set.of(user)));
         event.setUsersDislikedEvents(new HashSet<>());
 
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(event.getOrganizer().getId())).thenReturn(Optional.of(eventAuthor));
 
         eventService.dislike(userVO, 1L);
 

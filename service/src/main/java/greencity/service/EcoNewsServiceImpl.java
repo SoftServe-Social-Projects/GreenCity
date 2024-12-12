@@ -428,29 +428,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void like(UserVO userVO, Long id) {
         EcoNews ecoNews = findEcoNewsById(id);
+        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
-        ecoNews.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        if (removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor())) {
+            return;
+        }
+
+        removeDislikeIfExists(ecoNews, userVO);
+
+        ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
 
         boolean isLiked = ecoNews.getUsersLikedNews().stream()
             .anyMatch(u -> u.getId().equals(userVO.getId()));
-
-        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
-
-        if (isLiked) {
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_NEWS, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_NEWS"),
-                userVO);
-            ecoNews.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-        } else {
-            if (isAuthor) {
-                throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-            }
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
-            ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
-        }
 
         sendNotification(ecoNews, userVO, !isLiked);
         ecoNewsRepo.save(modelMapper.map(ecoNews, EcoNews.class));
@@ -483,16 +478,21 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void dislike(UserVO userVO, Long id) {
         EcoNews ecoNews = findEcoNewsById(id);
-        if (ecoNews.getUsersLikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            ecoNews.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-            userNotificationService.removeActionUserFromNotification(modelMapper.map(ecoNews.getAuthor(), UserVO.class),
-                userVO, id, NotificationType.ECONEWS_LIKE);
+        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        if (ecoNews.getUsersDislikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            ecoNews.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-        } else {
-            ecoNews.getUsersDislikedNews().add(modelMapper.map(userVO, User.class));
+
+        removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor());
+
+        if (removeDislikeIfExists(ecoNews, userVO)) {
+            ecoNewsRepo.save(ecoNews);
+            return;
         }
+
+        ecoNews.getUsersDislikedNews().add(modelMapper.map(userVO, User.class));
+
         ecoNewsRepo.save(ecoNews);
     }
 
@@ -777,5 +777,43 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getThreeInterestingEcoNews() {
         return mapEcoNewsListToEcoNewsDtoList(ecoNewsRepo.findThreeInterestingEcoNews());
+    }
+
+    /**
+     * Removes a like from the eco news if the user has already liked it. Returns
+     * true if a like was removed, false otherwise.
+     */
+    private boolean removeLikeIfExists(EcoNews ecoNews, UserVO userVO, User econewsAuthor) {
+        boolean userLiked = ecoNews.getUsersLikedNews().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userLiked) {
+            ecoNews.getUsersLikedNews().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_NEWS,
+                AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_NEWS"), userVO);
+
+            if (econewsAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(
+                    modelMapper.map(econewsAuthor, UserVO.class), userVO, ecoNews.getId(), NotificationType.EVENT_LIKE);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a dislike from the eco news if the user has already disliked it.
+     * Returns true if a dislike was removed, false otherwise.
+     */
+    private boolean removeDislikeIfExists(EcoNews ecoNews, UserVO userVO) {
+        boolean userDisliked = ecoNews.getUsersDislikedNews().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()));
+
+        if (userDisliked) {
+            ecoNews.getUsersDislikedNews().removeIf(user -> user.getId().equals(userVO.getId()));
+            return true;
+        }
+        return false;
     }
 }

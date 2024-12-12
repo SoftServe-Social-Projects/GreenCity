@@ -39,6 +39,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.RatingPointsRepo;
@@ -116,6 +117,7 @@ public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final EventRepo eventRepo;
     private final ModelMapper modelMapper;
+    private final EventDateLocationDtoMapper eventDateLocationDtoMapper;
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
@@ -627,7 +629,11 @@ public class EventServiceImpl implements EventService {
     public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
         for (EventDateLocationDto eventDateLocationDto : eventDateLocationDtos) {
             AddressDto coordinates = eventDateLocationDto.getCoordinates();
+            EventType eventType = getEventType(eventDateLocationDtoMapper.mapAllToList(eventDateLocationDtos));
 
+            if (EventType.ONLINE == eventType) {
+                return true;
+            }
             if (Objects.isNull(coordinates) || Objects.isNull(coordinates.getLatitude())
                 || Objects.isNull(coordinates.getLongitude())) {
                 return false;
@@ -775,6 +781,11 @@ public class EventServiceImpl implements EventService {
     public void like(Long eventId, UserVO userVO) {
         Event event = findEventId(eventId);
         User eventAuthor = getEventAuthor(event);
+        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         if (removeLikeIfExists(event, userVO, eventAuthor)) {
             return;
@@ -787,9 +798,7 @@ public class EventServiceImpl implements EventService {
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), userVO);
 
-        if (eventAuthor != null) {
-            sendEventLikeNotification(eventAuthor, userVO, eventId, event);
-        }
+        sendEventLikeNotification(eventAuthor, userVO, eventId, event);
 
         eventRepo.save(event);
     }
@@ -797,6 +806,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public void dislike(UserVO userVO, Long eventId) {
         Event event = findEventId(eventId);
+        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         removeLikeIfExists(event, userVO, getEventAuthor(event));
 
@@ -806,9 +820,6 @@ public class EventServiceImpl implements EventService {
         }
 
         event.getUsersDislikedEvents().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
-            AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
 
         eventRepo.save(event);
     }
@@ -860,6 +871,7 @@ public class EventServiceImpl implements EventService {
             .newsId(eventId)
             .newsTitle(event.getTitle())
             .notificationType(NotificationType.EVENT_LIKE)
+            .secondMessageText(event.getTitle())
             .isLike(true)
             .build();
         userNotificationService.createOrUpdateLikeNotification(likeNotificationDto);

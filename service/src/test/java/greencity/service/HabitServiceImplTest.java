@@ -1226,13 +1226,14 @@ class HabitServiceImplTest {
     void likeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit().setUserId(user.getId());
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
         habitService.like(habit.getId(), userVO);
 
@@ -1240,32 +1241,33 @@ class HabitServiceImplTest {
 
         verify(modelMapper).map(userVO, User.class);
         verify(habitRepo).findById(habit.getId());
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(habitAuthor.getId());
     }
 
     @Test
     void removeLikeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit().setUserId(user.getId());
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
         habit.getUsersLiked().add(user);
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_HABIT").points(-1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT")).thenReturn(ratingPoints);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
 
         habitService.like(habit.getId(), userVO);
         assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
 
         verify(habitRepo).findById(habit.getId());
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(habitAuthor.getId());
     }
 
     @Test
     void removeLikeRemoveIfTest() {
         User user = getUser();
-        Habit habit = getHabit();
+        Habit habit = getHabit().setUserId(2L);
         habit.getUsersLiked().add(user);
 
         UserVO userVO = getUserVO();
@@ -1299,7 +1301,7 @@ class HabitServiceImplTest {
         Habit habit = getHabit();
         Long habitId = habit.getId();
         User user = getUser();
-        habit.setUserId(user.getId());
+        habit.setUserId(3L);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(userRepo.findById(habit.getUserId())).thenReturn(Optional.empty());
@@ -1316,11 +1318,12 @@ class HabitServiceImplTest {
     void dislikeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit().setUserId(user.getId());
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
 
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
         habitService.dislike(habit.getId(), userVO);
 
@@ -1328,37 +1331,52 @@ class HabitServiceImplTest {
 
         verify(modelMapper).map(userVO, User.class);
         verify(habitRepo).findById(habit.getId());
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(habitAuthor.getId());
+    }
+
+    @Test
+    void dislikeOwnTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit().setUserId(user.getId());
+        Long habitId = habit.getId();
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> habitService.dislike(habitId, userVO));
     }
 
     @Test
     void removeDislikeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit().setUserId(user.getId());
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
         habit.getUsersDisliked().add(user);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
 
         habitService.dislike(habit.getId(), userVO);
         assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
 
         verify(habitRepo).findById(habit.getId());
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(habitAuthor.getId());
     }
 
     @Test
     void removeDislikeRemoveIfTest() {
         User user = getUser();
-        Habit habit = getHabit();
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
         habit.getUsersDisliked().add(user);
 
         UserVO userVO = getUserVO();
         userVO.setName("New Name");
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
         habitService.dislike(habit.getId(), userVO);
         assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
         verify(habitRepo).findById(habit.getId());
@@ -1385,7 +1403,7 @@ class HabitServiceImplTest {
         Habit habit = getHabit();
         Long habitId = habit.getId();
         User user = getUser();
-        habit.setUserId(user.getId());
+        habit.setUserId(3L);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(userRepo.findById(habit.getUserId())).thenReturn(Optional.empty());
@@ -1402,12 +1420,13 @@ class HabitServiceImplTest {
     void givenHabitLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit();
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
         habit.setUsersLiked(new HashSet<>(Set.of(user)));
         habit.setUsersDisliked(new HashSet<>());
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
 
         habitService.dislike(1L, userVO);
 
@@ -1419,12 +1438,13 @@ class HabitServiceImplTest {
     void givenHabitDislikedByUser_whenLikedByUser_shouldRemoveDislikeAndAddLike() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit();
+        User habitAuthor = getUser().setId(2L);
+        Habit habit = getHabit().setUserId(2L);
         habit.setUsersLiked(new HashSet<>());
         habit.setUsersDisliked(new HashSet<>(Set.of(user)));
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.of(habitAuthor));
 
         habitService.like(1L, userVO);
 

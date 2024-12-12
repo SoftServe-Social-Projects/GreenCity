@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link Event} into
@@ -38,5 +40,17 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
             eventDateLocation.setAddress(mapper.convert(eventDateLocationDto.getCoordinates()));
         }
         return eventDateLocation;
+    }
+
+    /**
+     * Method that build {@link List} of {@link EventDateLocation} from {@link List}
+     * of {@link EventDateLocationDto}.
+     *
+     * @param eventDateLocationDtoList {@link List} of {@link EventDateLocationDto}
+     *
+     * @return {@link List} of {@link EventDateLocation}
+     */
+    public List<EventDateLocation> mapAllToList(List<EventDateLocationDto> eventDateLocationDtoList) {
+        return eventDateLocationDtoList.stream().map(this::convert).collect(Collectors.toList());
     }
 }

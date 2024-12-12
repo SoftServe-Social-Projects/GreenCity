@@ -528,6 +528,12 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
+        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
         if (removeLikeIfExists(comment, userVO)) {
             return;
         }
@@ -556,11 +562,17 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
-        if (removeDislikeIfExists(comment, userVO)) {
-            return;
+        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
         removeLikeIfExists(comment, userVO);
+
+        if (removeDislikeIfExists(comment, userVO)) {
+            return;
+        }
 
         comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
 
