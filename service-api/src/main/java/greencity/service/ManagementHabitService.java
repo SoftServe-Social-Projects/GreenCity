@@ -68,4 +68,15 @@ public interface ManagementHabitService {
      * @param newStatus the new `isDeleted` status, {@code true} or {@code false}.
      */
     void switchIsDeletedStatus(Long id, Boolean newStatus);
+
+    /**
+     * Updates the `isCustom` status of a {@code Habit}. If `isCustom` is
+     * {@code null}, it is set to the provided {@code newIsCustomStatus}. Otherwise,
+     * it is updated directly to {@code newIsCustomStatus}.
+     *
+     * @param id                the ID of the {@code Habit} to update.
+     * @param newIsCustomStatus the new `isCustom` status, {@code true} or
+     *                          {@code false}.
+     */
+    void switchIsCustomStatus(Long id, Boolean newIsCustomStatus);
 }
