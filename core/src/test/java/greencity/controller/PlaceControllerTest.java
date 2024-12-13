@@ -644,7 +644,7 @@ class PlaceControllerTest {
     }
 
     @Test
-    void updateStatusDoesNotSendNotificationButSavesDataWhenStatusIsOther() throws Exception {
+    void updateStatusDoesNotSendNotificationButSavesDataWhenStatusIsPROPOSED() throws Exception {
         UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
         dto.setPlaceName("testPlace");
         dto.setNewStatus(PlaceStatus.PROPOSED);
@@ -674,4 +674,34 @@ class PlaceControllerTest {
             .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 
+    @Test
+    void updateStatusDoesNotSendNotificationButSavesDataWhenStatusIsDELETED() throws Exception {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("testPlace");
+        dto.setNewStatus(PlaceStatus.DELETED);
+        dto.setUserName("testUser");
+        dto.setEmail("user@example.com");
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("testPlace");
+        place.setStatus(PlaceStatus.PROPOSED);
+        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(dto);
+        String json = """
+                {
+                    "placeName": "testPlace",
+                    "newStatus": "PROPOSED",
+                    "userName": "testUser",
+                    "email": "user@example.com"
+                }
+            """;
+
+        mockMvc.perform(patch(placeLink + "/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Status updated successfully for place: testPlace"));
+        verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+        verify(restClient, times(0))
+                .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+    }
 }
