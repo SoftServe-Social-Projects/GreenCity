@@ -314,4 +314,30 @@ class ManagementHabitServiceImplTest {
         assertThrows(NotFoundException.class, () -> managementHabitService.switchIsDeletedStatus(habitId, newStatus));
         verify(habitRepo).findById(habitId);
     }
+
+    @Test
+    void switchIsCustomStatusTest() {
+        Habit habit = getHabit();
+        habit.setIsCustomHabit(false);
+        Boolean newIsCustomStatus = true;
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+
+        managementHabitService.switchIsCustomStatus(1L, newIsCustomStatus);
+
+        assertTrue(habit.getIsCustomHabit());
+        verify(habitRepo).save(habit);
+    }
+
+    @Test
+    void switchIsCustomStatusWhenHabitIsNotFoundTest() {
+        Long habitId = 1L;
+        Boolean newIsCustomStatus = false;
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> managementHabitService.switchIsCustomStatus(habitId, newIsCustomStatus));
+        verify(habitRepo).findById(habitId);
+    }
 }
