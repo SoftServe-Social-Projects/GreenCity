@@ -295,11 +295,11 @@ public class PlaceController {
     })
     @PatchMapping("/status")
     public String updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
-        placeService.updatePlaceStatus(dto);
+        String a=placeService.updatePlaceStatus(dto);
         if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
             restClient.sendEmailNotificationChangesPlaceStatus(dto);
         }
-        return "OK";
+        return a;
     }
 
     /**
