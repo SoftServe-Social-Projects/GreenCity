@@ -230,6 +230,17 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         habitRepo.save(habit);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void switchIsCustomStatus(Long id, Boolean newIsCustomStatus) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        habit.setIsCustomHabit(newIsCustomStatus);
+        habitRepo.save(habit);
+    }
+
     private String getSortModel(Pageable pageable) {
         return pageable.getSort().stream()
             .map(order -> order.getProperty() + "," + order.getDirection())
