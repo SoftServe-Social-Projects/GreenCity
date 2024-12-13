@@ -2,25 +2,23 @@ package greencity.dto.place;
 
 import greencity.enums.PlaceStatus;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 public class UpdatePlaceStatusWithUserEmailDto {
-    @NotNull
+    @NotBlank
     private String placeName;
 
     @NotNull
     private PlaceStatus newStatus;
 
-    @NotNull
+    @NotBlank
     private String userName;
 
-    @NotNull
     @Email
     private String email;
 }

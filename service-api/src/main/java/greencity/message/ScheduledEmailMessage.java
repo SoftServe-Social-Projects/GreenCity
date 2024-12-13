@@ -1,12 +1,14 @@
 package greencity.message;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Getter
 public class ScheduledEmailMessage implements EmailMessage {
     private String username;
     private String email;
