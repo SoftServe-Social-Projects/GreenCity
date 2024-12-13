@@ -9,18 +9,7 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
-import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.FilterAdminPlaceDto;
-import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceResponse;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.*;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
@@ -867,4 +856,35 @@ class PlaceServiceImplTest {
 
         assertEquals(List.of(searchPlacesDto, searchPlacesDto), result.getPage());
     }
+
+    @Test
+    void updatePlaceStatusWithUserEmailTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("test1");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test1");
+        place.setStatus(PlaceStatus.PROPOSED);
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
+        when(placeRepo.save(any(Place.class))).thenReturn(place);
+        String result = placeService.updatePlaceStatus(dto);
+        assertEquals("Status updated successfully for place: test1", result);
+        assertEquals(PlaceStatus.APPROVED, place.getStatus());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(placeRepo).save(place);
+    }
+
+    @Test
+    void updatePlaceStatusWithPlaceNotFoundTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("nonexistentPlace");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.empty());
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeService.updatePlaceStatus(dto));
+        assertEquals("Place not found with name: nonexistentPlace", exception.getMessage());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(placeRepo, times(0)).save(any(Place.class));
+    }
+
 }

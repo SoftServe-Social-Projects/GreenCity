@@ -628,7 +628,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public String updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto) {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
-                .orElseThrow(() -> new NotFoundException("Place not found with name: " + dto.getPlaceName()));
+            .orElseThrow(() -> new NotFoundException("Place not found with name: " + dto.getPlaceName()));
 
         place.setStatus(dto.getNewStatus());
         placeRepo.save(place);

@@ -3,14 +3,12 @@ package greencity.dto.place;
 import greencity.enums.PlaceStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @ToString
 public class UpdatePlaceStatusWithUserEmailDto {
     @NotNull

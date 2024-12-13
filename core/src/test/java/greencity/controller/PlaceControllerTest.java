@@ -1,6 +1,9 @@
 package greencity.controller;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.place.*;
+import greencity.entity.Place;
+import greencity.enums.PlaceStatus;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.DayOfWeek;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -38,13 +42,6 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.PlaceWithUserDto;
-import greencity.dto.place.UpdatePlaceStatusDto;
-import greencity.dto.place.AddPlaceDto;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.UserVO;
@@ -63,6 +60,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.enums.PlaceStatus.APPROVED;
@@ -429,28 +427,6 @@ class PlaceControllerTest {
     }
 
     @Test
-    void updateStatus() throws Exception {
-        UpdatePlaceStatusDto updatePlaceStatusDto = new UpdatePlaceStatusDto();
-        updatePlaceStatusDto.setId(1L);
-        updatePlaceStatusDto.setStatus(PROPOSED);
-        String json = """
-            {
-              "id": 1,
-              "status": "PROPOSED"
-            }
-            """;
-
-        this.mockMvc.perform(patch(placeLink + "/status")
-            .content(json)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-
-        verify(placeService).updateStatus(updatePlaceStatusDto.getId(), updatePlaceStatusDto.getStatus());
-
-    }
-
-    @Test
     void filterPlaceBySearchPredicate() throws Exception {
         int pageNumber = 5;
         int pageSize = 20;
@@ -605,5 +581,35 @@ class PlaceControllerTest {
 
         verify(placeService, times(1))
             .findAll(pageable, principal);
+    }
+
+    @Test
+    void updateStatusWithApprovedStatus() throws Exception {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("testPlace");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        dto.setUserName("testUser");
+        dto.setEmail("user@example.com");
+        String expectedResponse = "Status updated successfully for place: testPlace";
+        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class)))
+            .thenReturn(expectedResponse);
+        doNothing().when(restClient)
+            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+        String json = """
+            {
+                "placeName": "testPlace",
+                "newStatus": "APPROVED",
+                "userName": "testUser",
+                "email": "user@example.com"
+            }
+            """;
+        mockMvc.perform(patch(placeLink + "/status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isOk())
+            .andExpect(content().string(expectedResponse));
+        verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+        verify(restClient, times(1))
+            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 }

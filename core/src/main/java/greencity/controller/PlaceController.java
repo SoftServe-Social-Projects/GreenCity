@@ -294,12 +294,12 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @PatchMapping("/status")
-    public String updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
-        String a=placeService.updatePlaceStatus(dto);
+    public ResponseEntity<String> updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
+        String response = placeService.updatePlaceStatus(dto);
         if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
             restClient.sendEmailNotificationChangesPlaceStatus(dto);
         }
-        return a;
+        return ResponseEntity.ok(response);
     }
 
     /**
