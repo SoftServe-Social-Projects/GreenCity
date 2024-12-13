@@ -626,7 +626,7 @@ class PlaceControllerTest {
         String json = """
                 {
                     "placeName": "testPlace",
-                    "newStatus": "APPROVED",
+                    "newStatus": "DECLINED",
                     "userName": "testUser",
                     "email": "user@example.com"
                 }
@@ -682,12 +682,12 @@ class PlaceControllerTest {
         Place place = new Place();
         place.setId(1L);
         place.setName("testPlace");
-        place.setStatus(PlaceStatus.PROPOSED);
+        place.setStatus(PlaceStatus.DELETED);
         when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(dto);
         String json = """
                 {
                     "placeName": "testPlace",
-                    "newStatus": "PROPOSED",
+                    "newStatus": "DELETED",
                     "userName": "testUser",
                     "email": "user@example.com"
                 }
