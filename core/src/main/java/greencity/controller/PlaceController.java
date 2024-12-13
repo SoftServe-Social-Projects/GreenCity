@@ -291,10 +291,11 @@ public class PlaceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @PatchMapping("/status")
     public String updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
+        placeService.updatePlaceStatus(dto);
         if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
             restClient.sendEmailNotificationChangesPlaceStatus(dto);
         }

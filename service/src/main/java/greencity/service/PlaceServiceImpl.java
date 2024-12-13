@@ -13,18 +13,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.FilterAdminPlaceDto;
-import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceResponse;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.*;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
@@ -634,5 +623,16 @@ public class PlaceServiceImpl implements PlaceService {
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
             page.getTotalPages());
+    }
+
+    @Override
+    public String updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto) {
+        Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
+                .orElseThrow(() -> new RuntimeException("Place not found with name: " + dto.getPlaceName()));
+
+        place.setStatus(dto.getNewStatus());
+        placeRepo.save(place);
+
+        return "Status updated successfully for place: " + dto.getPlaceName();
     }
 }
