@@ -244,14 +244,10 @@
                                     <td>
                                         <div class="pr" style="width: 27em">[[${translation.description}]]</div>
                                     </td>
-<!--                                    <td class="habit_isCustomHabit" th:text="${habit.isCustomHabit}"></td>-->
                                     <td class="habit_isCustomHabit">
                                         <select th:id="'status-isCustom-'+${habit.id}"
                                                 th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-custom-status/'+${habit.id}+'\');'"
                                                 class="form-control">
-<!--                                        <select th:id="'status-'+${habit.id}"-->
-<!--                                                th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-custom-status/'+${habit.id}+'\');'"-->
-<!--                                                class="form-control">-->
                                             <option th:if="${habit.isCustomHabit == null}" th:value="null" th:selected="true">Not Set</option>
                                             <option th:value="true" th:selected="${habit.isCustomHabit == true}">True</option>
                                             <option th:value="false" th:selected="${habit.isCustomHabit == false}">False</option>
@@ -262,9 +258,6 @@
                                         <select th:id="'status-isDeleted-'+${habit.id}"
                                                 th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-deleted-status/'+${habit.id}+'\');'"
                                                 class="form-control">
-<!--                                        <select th:id="'status-'+${habit.id}"-->
-<!--                                                th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-deleted-status/'+${habit.id}+'\');'"-->
-<!--                                                class="form-control">-->
                                             <option th:if="${habit.isDeleted == null}" th:value="null" th:selected="true">Not Set</option>
                                             <option th:value="true" th:selected="${habit.isDeleted == true}">True</option>
                                             <option th:value="false" th:selected="${habit.isDeleted == false}">False</option>
