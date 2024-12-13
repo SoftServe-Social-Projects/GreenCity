@@ -629,7 +629,7 @@ public class PlaceServiceImpl implements PlaceService {
     public UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto) {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
-        userRepo.findByEmail(dto.getEmail())
+        User user = userRepo.findByEmail(dto.getEmail())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
         place.setStatus(dto.getNewStatus());
         placeRepo.save(place);
