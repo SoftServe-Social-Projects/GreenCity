@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
+import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -55,6 +56,7 @@ public class PlaceController {
      */
     private final PlaceService placeService;
     private final ModelMapper modelMapper;
+    private final RestClient restClient;
 
     /**
      * The controller which returns new proposed {@code Place} from user.
@@ -292,13 +294,11 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @PatchMapping("/status")
-    public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
-        if(dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
-
+    public String updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
+        if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
+            restClient.sendEmailNotificationChangesPlaceStatus(dto);
         }
-
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.updateStatus(dto.getId(), dto.getNewStatus()));
+        return "OK";
     }
 
     /**
