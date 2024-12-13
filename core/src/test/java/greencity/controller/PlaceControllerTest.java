@@ -696,12 +696,12 @@ class PlaceControllerTest {
             """;
 
         mockMvc.perform(patch(placeLink + "/status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Status updated successfully for place: testPlace"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Status updated successfully for place: testPlace"));
         verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
         verify(restClient, times(0))
-                .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 }
