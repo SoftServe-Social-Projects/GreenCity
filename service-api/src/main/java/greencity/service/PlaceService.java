@@ -241,5 +241,5 @@ public interface PlaceService {
      */
     PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
-    String updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto);
+    UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto);
 }

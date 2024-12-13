@@ -592,16 +592,16 @@ class PlaceControllerTest {
         dto.setEmail("user@example.com");
         String expectedResponse = "Status updated successfully for place: testPlace";
         when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class)))
-            .thenReturn(expectedResponse);
+            .thenReturn(dto);
         doNothing().when(restClient)
             .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
         String json = """
-            {
-                "placeName": "testPlace",
-                "newStatus": "APPROVED",
-                "userName": "testUser",
-                "email": "user@example.com"
-            }
+                {
+                    "placeName": "testPlace",
+                    "newStatus": "APPROVED",
+                    "userName": "testUser",
+                    "email": "user@example.com"
+                }
             """;
         mockMvc.perform(patch(placeLink + "/status")
             .contentType(MediaType.APPLICATION_JSON)
