@@ -3,46 +3,35 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="1571227598316-100" author="Vitalii S.">
-        <createTable tableName="goals">
+        <createTable tableName="to_do_list_items">
             <column name="id" autoIncrement="true" startWith="145" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet id="1571227598316-101" author="Vitalii S.">
-        <createTable tableName="user_goals">
+        <createTable tableName="user_to_do_list">
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="user_id" type="BIGINT">
+            <column name="habit_assign_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="goal_id" type="BIGINT">
+            <column name="to_do_list_item_id" type="BIGINT">
             </column>
-            <column name="custom_goal_id" type="BIGINT"/>
             <column name="status" type="varchar(12)">
                 <constraints nullable="false"/>
             </column>
             <column name="date_completed" type="datetime(6)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1571227598316-103" author="Vitalii S.">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_goals"
-                                 constraintName="FK_user_user_goals" deferrable="false" initiallyDeferred="false"
-                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
-                                 referencedTableName="users"/>
-    </changeSet>
-    <changeSet id="1571227598316-152" author="Kuzenko B.">
-        <addForeignKeyConstraint baseTableName="user_goals" baseColumnNames="custom_goal_id"
-                                 constraintName="user_custom_goals"
-                                 referencedTableName="custom_goals"
-                                 referencedColumnNames="id"/>
-    </changeSet>
-    <changeSet author="Bogdan"
-               id="1571227598316-151">
-        <sql>
-            ALTER TABLE user_goals ADD CONSTRAINT id_check CHECK ((goal_id IS NULL AND custom_goal_id IS NOT NULL) OR
-                                                                  (goal_id IS NOT NULL AND custom_goal_id IS NULL));
-        </sql>
+    <changeSet id="dmytrokhonko9" author="Dmytro Khonko">
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="user_to_do_list"
+                                 constraintName="FK_user_goal_habit_assign" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
+
+        <addForeignKeyConstraint baseColumnNames="to_do_list_item_id" baseTableName="user_to_do_list"
+                                 constraintName="FK_user_shopping_list_item" referencedColumnNames="id"
+                                 referencedTableName="to_do_list_items"/>
     </changeSet>
 </databaseChangeLog>

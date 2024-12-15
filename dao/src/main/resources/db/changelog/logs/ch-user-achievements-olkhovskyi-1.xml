@@ -32,6 +32,7 @@
             <column name="achievement_status" type="varchar(12)">
                 <constraints nullable="false" />
             </column>
+            <column name="notified" type="BOOLEAN" defaultValue="false"/>
         </createTable>
     </changeSet>
     <changeSet id="18" author="Yuriy O.">

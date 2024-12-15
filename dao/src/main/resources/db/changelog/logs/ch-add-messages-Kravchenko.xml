@@ -10,6 +10,8 @@
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="logo" type="varchar(255)"/>
+            <column name="participant_id" type="BIGINT"/>
         </createTable>
     </changeSet>
 
@@ -30,6 +32,9 @@
             <column name="create_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
+            <column name="file_name" type="VARCHAR"/>
+            <column name="file_type" type="VARCHAR"/>
+            <column name="file_url" type="varchar"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="chat_messages"

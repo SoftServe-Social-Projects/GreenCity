@@ -10,27 +10,10 @@
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="eco_news_likes" type="int">
+            <column name="achievement_category_id" type="BIGINT">
             </column>
-            <column name="tips_and_tricks_likes" type="int">
+            <column name="count" type="INTEGER">
             </column>
-            <column name="published_eco_news" type="int">
-            </column>
-            <column name="eco_news_comment" type="int">
-            </column>
-            <column name="tips_and_tricks_comment" type="int">
-            </column>
-            <column name="acquired_habit" type="int">
-            </column>
-            <column name="habit_streak" type="int">
-            </column>
-            <column name="social_networks" type="int">
-            </column>
-            <column name="rating" type="double">
-            </column>
-            <column name="achievements" type="int">
-            </column>
-
 
         </createTable>
     </changeSet>
@@ -38,6 +21,11 @@
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_actions"
                                  constraintName="user_actions_users_id_fk" referencedColumnNames="id"
                                  referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Orest Mamchuk" id="Mamchuk-8">
+        <addForeignKeyConstraint baseColumnNames="achievement_category_id" baseTableName="user_actions"
+                                 constraintName="achievement_category_id_fk" referencedColumnNames="id"
+                                 referencedTableName="achievement_categories"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -29,6 +29,8 @@
             </column>
 
             <column name="image_path" type="varchar(255)"/>
+
+            <column name="short_info" type="VARCHAR"/>
         </createTable>
     </changeSet>
 

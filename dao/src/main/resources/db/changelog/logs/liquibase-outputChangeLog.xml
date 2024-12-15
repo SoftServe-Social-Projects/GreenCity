@@ -191,9 +191,6 @@
             <column name="name" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_visit" type="datetime(6)">
-                <constraints nullable="false"/>
-            </column>
             <column name="role" type="INT">
                 <constraints nullable="false"/>
             </column>
@@ -210,6 +207,9 @@
             <column name="show_location" type="boolean"/>
             <column name="show_eco_place" type="boolean"/>
             <column name="show_shopping_list" type="boolean"/>
+            <column name="phone_number" type="VARCHAR"/>
+            <column name="uuid" type="varchar(60)"/>
+            <column name="language_id" defaultValue="2" type="BIGINT"/>
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-15">
@@ -492,6 +492,11 @@
         <addUniqueConstraint columnNames="user_id"
                              constraintName="one_user_one_password"
                              tableName="own_security"/>
+    </changeSet>
+    <changeSet id="addForeignKey" author="MarianDiakiv">
+        <addForeignKeyConstraint baseTableName="users" baseColumnNames="language_id" constraintName="user_language_id"
+                                 referencedTableName="languages"
+                                 referencedColumnNames="id"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-72">
         <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="categories" constraintName="FKs2ride9gvilxy2tcuv7witnxc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="categories"/>

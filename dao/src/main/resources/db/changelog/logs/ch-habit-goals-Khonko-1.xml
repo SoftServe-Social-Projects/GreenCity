@@ -2,25 +2,26 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="Dmytro Khonko" id="dmytrokhonko5">
-        <createTable tableName="habit_goals">
-            <column name="id" type="BIGINT">
+        <createTable tableName="habit_to_do_list_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="habit_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="goal_id" type="BIGINT">
+            <column name="to-do-list_item_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="VARCHAR" defaultValue="ACTUAL"/>
         </createTable>
     </changeSet>
 
     <changeSet id="dmytrokhonko6" author="Dmytro Khonko">
-        <addForeignKeyConstraint baseColumnNames="goal_id" baseTableName="habit_goals"
+        <addForeignKeyConstraint baseColumnNames="goal_id" baseTableName="habit_to_do_list_items"
                                  constraintName="FK_habit_goal_goal" referencedColumnNames="id"
-                                 referencedTableName="goals"/>
+                                 referencedTableName="to_do_list_items"/>
 
-        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_goals"
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_to_do_list_items"
                                  constraintName="FK_habit_goal_habit" referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>

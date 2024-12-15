@@ -6,53 +6,53 @@
         <dropForeignKeyConstraint baseTableName="user_goals" constraintName="FK_user_goal_goal"/>
     </changeSet>
 
-    <changeSet id="goal-rename" author="MarianDiakiv">
-        <renameTable oldTableName="goals" newTableName="shopping_list_items"/>
-    </changeSet>
+<!--    <changeSet id="goal-rename" author="MarianDiakiv">-->
+<!--        <renameTable oldTableName="goals" newTableName="shopping_list_items"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="rename_column_in_goal_translations" author="MarianDiakiv">
-        <renameColumn tableName="goal_translations" oldColumnName="goal_id" newColumnName="shopping_list_item_id"
-                      columnDataType="bigint"/>
-    </changeSet>
-    <changeSet id="rename_table_goal_translations" author="MarianDiakiv">
-        <renameTable oldTableName="goal_translations" newTableName="shopping_list_item_translations"/>
-    </changeSet>
+<!--    <changeSet id="rename_column_in_goal_translations" author="MarianDiakiv">-->
+<!--        <renameColumn tableName="goal_translations" oldColumnName="goal_id" newColumnName="shopping_list_item_id"-->
+<!--                      columnDataType="bigint"/>-->
+<!--    </changeSet>-->
+<!--    <changeSet id="rename_table_goal_translations" author="MarianDiakiv">-->
+<!--        <renameTable oldTableName="goal_translations" newTableName="shopping_list_item_translations"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="rename_column_in_habit_goals" author="MarianDiakiv">
-        <renameColumn tableName="habit_goals" oldColumnName="goal_id" newColumnName="shopping_list_item_id"
-                      columnDataType="bigint"/>
-    </changeSet>
-    <changeSet id="rename_table_habit_goals" author="MarianDiakiv">
-        <renameTable oldTableName="habit_goals" newTableName="habit_shopping_list_items"/>
-    </changeSet>
+<!--    <changeSet id="rename_column_in_habit_goals" author="MarianDiakiv">-->
+<!--        <renameColumn tableName="habit_goals" oldColumnName="goal_id" newColumnName="shopping_list_item_id"-->
+<!--                      columnDataType="bigint"/>-->
+<!--    </changeSet>-->
+<!--    <changeSet id="rename_table_habit_goals" author="MarianDiakiv">-->
+<!--        <renameTable oldTableName="habit_goals" newTableName="habit_shopping_list_items"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="rename_column_in_user_goals" author="MarianDiakiv">
-        <renameColumn tableName="user_goals" oldColumnName="goal_id" newColumnName="shopping_list_item_id"
-                      columnDataType="bigint"/>
-    </changeSet>
-    <changeSet id="rename_table_user_goals" author="MarianDiakiv">
-        <renameTable oldTableName="user_goals" newTableName="user_shopping_list"/>
-    </changeSet>
+<!--    <changeSet id="rename_column_in_user_goals" author="MarianDiakiv">-->
+<!--        <renameColumn tableName="user_goals" oldColumnName="goal_id" newColumnName="shopping_list_item_id"-->
+<!--                      columnDataType="bigint"/>-->
+<!--    </changeSet>-->
+<!--    <changeSet id="rename_table_user_goals" author="MarianDiakiv">-->
+<!--        <renameTable oldTableName="user_goals" newTableName="user_shopping_list"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="renameCustom-goal" author="MarianDiakiv">
-        <renameTable oldTableName="custom_goals" newTableName="custom_shopping_list_items"/>
-    </changeSet>
+<!--    <changeSet id="renameCustom-goal" author="MarianDiakiv">-->
+<!--        <renameTable oldTableName="custom_goals" newTableName="custom_shopping_list_items"/>-->
+<!--    </changeSet>-->
 
 
-    <changeSet id="addForeignForeignKey" author="MarianDiakiv">
+<!--    <changeSet id="addForeignForeignKey" author="MarianDiakiv">-->
 
-        <addForeignKeyConstraint baseTableName="habit_shopping_list_items" baseColumnNames="shopping_list_item_id"
-                                 constraintName="FK_habit_shopping_list_item"
-                                 referencedTableName="shopping_list_items"
-                                 referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="shopping_list_item_translations" baseColumnNames="shopping_list_item_id"
-                                 constraintName="FK_translations_shopping_list_item"
-                                 referencedTableName="shopping_list_items"
-                                 referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="user_shopping_list" baseColumnNames="shopping_list_item_id"
-                                 constraintName="FK_user_shopping_list_item" referencedTableName="shopping_list_items"
-                                 referencedColumnNames="id"/>
-    </changeSet>
+<!--        <addForeignKeyConstraint baseTableName="habit_shopping_list_items" baseColumnNames="shopping_list_item_id"-->
+<!--                                 constraintName="FK_habit_shopping_list_item"-->
+<!--                                 referencedTableName="shopping_list_items"-->
+<!--                                 referencedColumnNames="id"/>-->
+<!--        <addForeignKeyConstraint baseTableName="shopping_list_item_translations" baseColumnNames="shopping_list_item_id"-->
+<!--                                 constraintName="FK_translations_shopping_list_item"-->
+<!--                                 referencedTableName="shopping_list_items"-->
+<!--                                 referencedColumnNames="id"/>-->
+<!--        <addForeignKeyConstraint baseTableName="user_shopping_list" baseColumnNames="shopping_list_item_id"-->
+<!--                                 constraintName="FK_user_shopping_list_item" referencedTableName="shopping_list_items"-->
+<!--                                 referencedColumnNames="id"/>-->
+<!--    </changeSet>-->
 
 
 </databaseChangeLog>

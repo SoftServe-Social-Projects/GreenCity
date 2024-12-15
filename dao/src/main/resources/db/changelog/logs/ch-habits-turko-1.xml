@@ -9,6 +9,19 @@
             <column name="image" type="varchar(255)" defaultValue="bag">
                 <constraints nullable="false"/>
             </column>
+            <column name="default_duration" type="integer" defaultValue="14">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complexity" type="INT" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="Levko3" author="Olha Levko">
+        <sql>
+            alter table habits add constraint complexity_size
+                CHECK (complexity between 1 and 3);
+        </sql>
     </changeSet>
 </databaseChangeLog>

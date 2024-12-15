@@ -16,9 +16,27 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="suspended" type="boolean" defaultValueBoolean="false">
+            <column name="duration" type="integer" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="habit_streak" type="integer" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="working_days" type="integer" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="last_enrollment" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="varchar(12)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="acquired" type="boolean"/>
 
             <column name="user_id" type="bigint" autoIncrement="false"/>
             <column name="habit_id" type="bigint" autoIncrement="false"/>

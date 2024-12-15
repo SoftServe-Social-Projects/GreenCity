@@ -6,7 +6,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="Kuzenko B." id="1571227598316-153">
-        <createTable tableName="custom_goals">
+        <createTable tableName="custom_to_do_list_items">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -15,7 +15,17 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="status" type="varchar(12)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_completed" type="datetime(6)"/>
+
             <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="habit_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -23,9 +33,20 @@
 
     <changeSet id="1571227598316-154" author="Kuzenko B.">
         <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="custom_goals"
+                                 baseTableName="custom_to_do_list_items"
                                  constraintName="FK_users"
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="Hutei-xx1" author="Volodymyr Hutei">
+        <addForeignKeyConstraint baseColumnNames="habit_id"
+                                 baseTableName="custom_to_do_list_items"
+                                 constraintName="fk5s2hfx1xsgdsipw5kdyd5bhfx"
+                                 deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
     </changeSet>
 </databaseChangeLog>

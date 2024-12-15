@@ -10,15 +10,18 @@
             <column name="enroll_date" type="date">
                 <constraints nullable="false"/>
             </column>
-            <column name="habit_status_id" type="BIGINT">
+            <column name="habit_assign_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet id="Beshlei-2" author="Taras Beshlei">
-        <addForeignKeyConstraint baseColumnNames="habit_status_id" baseTableName="habit_status_calendar"
-                                 constraintName="fk_habit_status_id" deferrable="false" initiallyDeferred="false"
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_status_calendar"
+                                 constraintName="fk_habit_status_calendar_habit_assign" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="habit_status"/>
+                                 referencedTableName="habit_assign"/>
+    </changeSet>
+    <changeSet id="zakhar123" author="ZakharVeremchuk" >
+        <addUniqueConstraint columnNames="enroll_date, habit_assign_id" constraintName="UK_eroll_date_and_habie_assign_id" tableName="habit_status_calendar"/>
     </changeSet>
 </databaseChangeLog>

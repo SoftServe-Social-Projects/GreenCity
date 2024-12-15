@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="0lezhka-5" author="Kopylchak O.">
+        <createTable tableName="to_do_list_item_translations">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="content" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_do_list_item_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0lezhka-7" author="Kopylchak O.">
+        <addForeignKeyConstraint baseColumnNames="to_do_list_item_id" baseTableName="to_do_list_item_translations"
+                                 constraintName="FK_translations_shopping_list_item"
+                                 referencedColumnNames="id"
+                                 referencedTableName="to_do_list_items"/>
+
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="to_do_list_item_translations"
+                                 constraintName="FK_language_goal_translations"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="languages"/>
+    </changeSet>
+</databaseChangeLog>
