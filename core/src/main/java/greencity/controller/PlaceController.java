@@ -21,7 +21,6 @@ import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -306,12 +305,8 @@ public class PlaceController {
     })
     @PatchMapping("/status")
     public ResponseEntity<String> updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
-        try {
-            placeService.updatePlaceStatus(dto);
-            return ResponseEntity.ok("Status updated successfully for place: " + dto.getPlaceName());
-        } catch (NotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
+        placeService.updatePlaceStatus(dto);
+        return ResponseEntity.ok("Status updated successfully for place: " + dto.getPlaceName());
     }
 
     /**

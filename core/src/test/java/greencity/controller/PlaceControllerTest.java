@@ -9,7 +9,6 @@ import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceWithUserDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.enums.PlaceStatus;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.DayOfWeek;
@@ -57,7 +56,6 @@ import static greencity.ModelUtils.getFilterPlaceDto;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -627,45 +625,5 @@ class PlaceControllerTest {
             .content(json))
             .andExpect(status().isBadRequest());
         verify(placeService, times(0)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-    }
-
-    @Test
-    void updateStatusPlaceNotFoundTest() throws Exception {
-        String json = """
-            {
-              "placeName": "Nonexistent Place",
-              "newStatus": "DECLINED",
-              "userName": "Test User",
-              "email": "test@example.com"
-            }
-            """;
-        doThrow(new NotFoundException("Place not found"))
-            .when(placeService).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-        mockMvc.perform(patch("/place/status")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isNotFound())
-            .andExpect(content().string("Place not found"));
-        verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-    }
-
-    @Test
-    void updateStatusUserNotFoundTest() throws Exception {
-        String json = """
-            {
-              "placeName": "Test Place",
-              "newStatus": "DECLINED",
-              "userName": "Test User",
-              "email": "nonexistent@example.com"
-            }
-            """;
-        doThrow(new NotFoundException("User not found"))
-            .when(placeService).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-        mockMvc.perform(patch("/place/status")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isNotFound())
-            .andExpect(content().string("User not found"));
-        verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 }
