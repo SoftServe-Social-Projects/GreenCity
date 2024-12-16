@@ -11,9 +11,5 @@
             <column name="id">2</column>
             <column name="code">en</column>
         </insert>
-        <insert tableName="languages">
-            <column name="id">3</column>
-            <column name="code">ru</column>
-        </insert>
     </changeSet>
 </databaseChangeLog>

@@ -3,37 +3,47 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet author="Danylo Hlynskyi" id="events-event-dates-Hlynskyi">
-        <createTable tableName="event_dates">
+        <createTable tableName="events_dates_locations">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="event_dates_pkey"/>
             </column>
             <column name="event_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="start_date" type="datetime(6)">
+            <column name="start_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
-            <column name="finish_date" type="datetime(6)">
+            <column name="finish_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
+            </column>
+            <column name="online_link" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="latitude" type="float8">
+                <constraints nullable="true"/>
+            </column>
+            <column name="longitude" type="float8">
+                <constraints nullable="true"/>
+            </column>
+            <column name="street_en" type="varchar"/>
+            <column name="street_ua" type="varchar"/>
+            <column name="house_number" type="varchar(5)"/>
+            <column name="city_en" type="varchar(30)"/>
+            <column name="city_ua" type="varchar(30)"/>
+            <column name="region_en" type="varchar"/>
+            <column name="region_ua" type="varchar"/>
+            <column name="country_en" type="varchar(50)"/>
+            <column name="country_ua" type="varchar(50)"/>
+            <column name="formatted_address_en"  type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="formatted_address_ua"  type="varchar(255)">
+                <constraints nullable="true"/>
             </column>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_dates"
                                  constraintName="events_date_event_id_fk" referencedColumnNames="id"
                                  referencedTableName="events"/>
-
-        <addColumn tableName="events">
-            <column name="online_link" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-        <addColumn tableName="events">
-            <column name="is_open" type="boolean">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-        <dropColumn tableName="events">
-            <column name="date_time"/>
-        </dropColumn>
     </changeSet>
 </databaseChangeLog>

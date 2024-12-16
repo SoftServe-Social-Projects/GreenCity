@@ -9,14 +9,16 @@
             </column>
             <column name ="title" type="VARCHAR"/>
             <column name="description" type="VARCHAR"/>
-            <column name="date_time" type="TIMESTAMP WITH TIME ZONE" />
-            <column name="location" type="VARCHAR"/>
             <column name="organizer_id"  type="BIGINT">
                 <constraints foreignKeyName="FK_events_users" references="users (id)"/>
             </column>
-            <column name="latitude"  type="DOUBLE"/>
-            <column name="longitude"  type="DOUBLE"/>
             <column name="title_image" type="VARCHAR"/>
+            <column name="is_open" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+            <column name="creation_date" type="date">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <rollback>
             <dropTable tableName="events"/>

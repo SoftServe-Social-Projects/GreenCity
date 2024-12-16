@@ -228,24 +228,10 @@
             <column name="habit_id">1</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Используйте полотенце вместо бумажных полотенец и салфеток</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">1</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Використовуйте багаторазову пляшку з водою</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">2</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Используйте многоразовую бутылку с водой</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">2</column>
         </insert>
         <insert tableName="habit_translation">
@@ -256,13 +242,6 @@
             <column name="habit_id">3</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Используйте электронную книгу вместо бумажной книги</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">3</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Використовуйте сонячні панелі для виробництва електроенергії</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
@@ -270,24 +249,10 @@
             <column name="habit_id">4</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Используйте солнечные батареи для выработки электроэнергии</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">4</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Використовуйте електромобілем</column>
+            <column name="name">Використовуйте електромобіль</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">5</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Используйте электромобилем</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">5</column>
         </insert>
         <insert tableName="habit_translation">
@@ -298,24 +263,10 @@
             <column name="habit_id">6</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Покупайте подержанные вещи</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">6</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Використовуйте багаторазову сумку для покупок</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">7</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Используйте многоразовую сумку для покупок</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">7</column>
         </insert>
         <insert tableName="habit_translation">
@@ -326,24 +277,10 @@
             <column name="habit_id">8</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Используйте свою кофейную чашку вместо одноразовых чашек</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">8</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Використовуйте багаторазові акумулятори</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">9</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Используйте многоразовые батареи</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">9</column>
         </insert>
         <insert tableName="habit_translation">
@@ -354,24 +291,10 @@
             <column name="habit_id">10</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Оплачивайте счета онлайн</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">10</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Купуйте товари без упаковки</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">11</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Покуапйте товары без упаковки</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">11</column>
         </insert>
         <insert tableName="habit_translation">
@@ -382,24 +305,10 @@
             <column name="habit_id">12</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Купите \ сделайте натуральные средства для уборки</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">12</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Купуйте місцеві продукти</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">13</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Покупайте местные продукты</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">13</column>
         </insert>
         <insert tableName="habit_translation">
@@ -410,24 +319,10 @@
             <column name="habit_id">14</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Ходите вместо того, чтобы пользоваться общественным транспортом или автомобилем</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">14</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Використовуйте велосипед</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">15</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Используйте велосипед</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">15</column>
         </insert>
         <insert tableName="habit_translation">
@@ -438,24 +333,10 @@
             <column name="habit_id">16</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">При чистке зубов используйте воду экономно</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">16</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Приймайте душ замість ванни</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">17</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Принимайте душ вместо ванны</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">17</column>
         </insert>
         <insert tableName="habit_translation">
@@ -466,24 +347,10 @@
             <column name="habit_id">18</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Утилизируйте аккумуляторы</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">18</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Вимикайте світло, виходячи з кімнати</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">19</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Выключайте свет, когда выходите из комнаты</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">19</column>
         </insert>
         <insert tableName="habit_translation">
@@ -494,24 +361,10 @@
             <column name="habit_id">20</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Не ешьте мясо</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">20</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Купуйте продукти \ товари в упаковці, що переробляється</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">21</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Покупайте продукты \ товары в перерабатываемой упаковке</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">21</column>
         </insert>
         <insert tableName="habit_translation">
@@ -522,24 +375,10 @@
             <column name="habit_id">22</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Не используйте пластиковую соломинку</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">22</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Несіть їжу на роботу у ланч-боксі</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">23</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Носите еду на работу в коробке для завтрака</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">23</column>
         </insert>
         <insert tableName="habit_translation">
@@ -550,24 +389,10 @@
             <column name="habit_id">24</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Используйте светодиодные лампы</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">24</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Сортуйте сміття</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">25</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Сортируйте мусор</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">25</column>
         </insert>
         <insert tableName="habit_translation">
@@ -578,24 +403,10 @@
             <column name="habit_id">26</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Используйте обе стороны листа для заметок или рисования.</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">26</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Їжте сезонні овочі та фрукти</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">27</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Ешьте сезонные овощи и фрукты</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">27</column>
         </insert>
         <insert tableName="habit_translation">
@@ -606,24 +417,10 @@
             <column name="habit_id">28</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Не используйте одноразовые упаковки</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">28</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Компостуйте органічні відходи</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">29</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Компостируйте органические отходы</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">29</column>
         </insert>
         <insert tableName="habit_translation">
@@ -634,24 +431,10 @@
             <column name="habit_id">30</column>
         </insert>
         <insert tableName="habit_translation">
-            <column name="name">Не используйте одноразовые средства личной гигиены</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
-            <column name="habit_id">30</column>
-        </insert>
-        <insert tableName="habit_translation">
             <column name="name">Товари для жіночої гігієни</column>
             <column name="description">Description</column>
             <column name="habit_item">Item</column>
             <column name="language_id">1</column>
-            <column name="habit_id">31</column>
-        </insert>
-        <insert tableName="habit_translation">
-            <column name="name">Товары женской гигиены</column>
-            <column name="description">Description</column>
-            <column name="habit_item">Item</column>
-            <column name="language_id">3</column>
             <column name="habit_id">31</column>
         </insert>
     </changeSet>

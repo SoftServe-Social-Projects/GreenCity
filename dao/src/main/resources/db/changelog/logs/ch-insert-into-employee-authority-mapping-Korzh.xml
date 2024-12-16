@@ -96,10 +96,6 @@
             <column name="user_id" value="2"/>
         </insert>
         <insert tableName="employee_authorities_mapping">
-            <column name="authority_id" value="24"/>
-            <column name="user_id" value="2"/>
-        </insert>
-        <insert tableName="employee_authorities_mapping">
             <column name="authority_id" value="25"/>
             <column name="user_id" value="2"/>
         </insert>

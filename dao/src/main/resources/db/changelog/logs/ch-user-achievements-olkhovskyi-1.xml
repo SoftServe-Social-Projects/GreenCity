@@ -7,17 +7,29 @@
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="title" type="varchar(255)">
-                <constraints nullable="false"/>
+            <column name="achievement_category_id" type="BIGINT"/>
+            <column name="condition" type="INTEGER"/>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
-            <column name="description" type="varchar(255)">
-                <constraints nullable="false"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
-            <column name="message" type="varchar(255)">
-                <constraints nullable="false"/>
+            <column name="name_eng" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="score" type="INT">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="Orest Mamchuk" id="Mamchuk-4">
+        <addForeignKeyConstraint baseColumnNames="achievement_category_id" baseTableName="achievements"
+                                 constraintName="achievements_category_id_fk" referencedColumnNames="id"
+                                 referencedTableName="achievement_categories"/>
+    </changeSet>
+
     <changeSet id="17" author="Yuriy O.">
         <createTable tableName="user_achievements">
             <column name="id" autoIncrement="true" type="BIGINT">
@@ -27,9 +39,6 @@
                 <constraints nullable="false" />
             </column>
             <column name="achievement_id" type="BIGINT">
-                <constraints nullable="false" />
-            </column>
-            <column name="achievement_status" type="varchar(12)">
                 <constraints nullable="false" />
             </column>
             <column name="notified" type="BOOLEAN" defaultValue="false"/>

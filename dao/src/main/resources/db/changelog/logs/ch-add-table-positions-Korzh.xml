@@ -8,28 +8,38 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar(60)"/>
+            <column name="name_eng" type="varchar(30)" defaultValue="name_eng">
+                <constraints nullable="false" />
+            </column>
         </createTable>
 
         <insert tableName="positions">
             <column name="name" value="Менеджер послуги"/>
+            <column name="name_eng" value="Service Manager"/>
         </insert>
         <insert tableName="positions">
             <column name="name" value="Менеджер обдзвону"/>
+            <column name="name_eng" value="Call Manager"/>
         </insert>
         <insert tableName="positions">
             <column name="name" value="Логіст"/>
+            <column name="name_eng" value="Logistician"/>
         </insert>
         <insert tableName="positions">
             <column name="name" value="Штурман"/>
+            <column name="name_eng" value="Navigator"/>
         </insert>
         <insert tableName="positions">
             <column name="name" value="Водій"/>
+            <column name="name_eng" value="Driver"/>
         </insert>
         <insert tableName="positions">
             <column name="name" value="Супер адмін"/>
+            <column name="name_eng" value="Super Admin"/>
         </insert>
         <insert tableName="positions">
             <column name="name" value="Адмін"/>
+            <column name="name_eng" value="Admin"/>
         </insert>
 
 

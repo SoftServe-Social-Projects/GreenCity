@@ -38,11 +38,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="name">Магазины</column>
-            <column name="tag_id">15</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="name">Ресторани</column>
             <column name="tag_id">16</column>
             <column name="language_id">1</column>
@@ -51,11 +46,6 @@
             <column name="name">Restaurants</column>
             <column name="tag_id">16</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="name">Рестораны</column>
-            <column name="tag_id">16</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="tag_translations">
             <column name="name">Пункти приймання</column>
@@ -68,11 +58,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="name">Пункты приема</column>
-            <column name="tag_id">17</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="name">Події</column>
             <column name="tag_id">18</column>
             <column name="language_id">1</column>
@@ -83,11 +68,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="name">События</column>
-            <column name="tag_id">18</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="name">Збереженні місця</column>
             <column name="tag_id">19</column>
             <column name="language_id">1</column>
@@ -96,11 +76,6 @@
             <column name="name">Saved places</column>
             <column name="tag_id">19</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="name">Сохраненные места</column>
-            <column name="tag_id">19</column>
-            <column name="language_id">3</column>
         </insert>
     </changeSet>
     <changeSet id="Categories change" author="">

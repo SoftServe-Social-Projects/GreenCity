@@ -12,25 +12,4 @@
             </column>
         </createTable>
     </changeSet>
-
-    <changeSet author="Orest Mamchuk" id="Mamchuk-2">
-        <addColumn tableName="achievements">
-            <column name="achievement_category_id" type="BIGINT">
-            </column>
-            <column name="condition" type="INTEGER">
-            </column>
-        </addColumn>
-        <dropColumn tableName="achievements">
-            <column name="title"/>
-            <column name="description"/>
-            <column name="message"/>
-        </dropColumn>
-    </changeSet>
-
-    <changeSet author="Orest Mamchuk" id="Mamchuk-4">
-        <addForeignKeyConstraint baseColumnNames="achievement_category_id" baseTableName="achievements"
-                                 constraintName="achievements_category_id_fk" referencedColumnNames="id"
-                                 referencedTableName="achievement_categories"/>
-    </changeSet>
-
 </databaseChangeLog>

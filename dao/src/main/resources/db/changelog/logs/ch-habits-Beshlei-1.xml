@@ -38,6 +38,8 @@
 
             <column name="acquired" type="boolean"/>
 
+            <column name="progress_notification_has_displayed" type="boolean" defaultValue="false"/>
+
             <column name="user_id" type="bigint" autoIncrement="false"/>
             <column name="habit_id" type="bigint" autoIncrement="false"/>
         </createTable>

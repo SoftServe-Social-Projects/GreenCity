@@ -3,854 +3,854 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Natalia-9" author="Kozak">
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">1</column>
+            <column name="to_do_list_item_id">1</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">2</column>
+            <column name="to_do_list_item_id">2</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">3</column>
+            <column name="to_do_list_item_id">3</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">4</column>
+            <column name="to_do_list_item_id">4</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">5</column>
+            <column name="to_do_list_item_id">5</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">6</column>
+            <column name="to_do_list_item_id">6</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">7</column>
+            <column name="to_do_list_item_id">7</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">8</column>
+            <column name="to_do_list_item_id">8</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">9</column>
+            <column name="to_do_list_item_id">9</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">1</column>
-            <column name="shopping_list_item_id">10</column>
+            <column name="to_do_list_item_id">10</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">2</column>
-            <column name="shopping_list_item_id">11</column>
+            <column name="to_do_list_item_id">11</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">2</column>
-            <column name="shopping_list_item_id">12</column>
+            <column name="to_do_list_item_id">12</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">2</column>
-            <column name="shopping_list_item_id">13</column>
+            <column name="to_do_list_item_id">13</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">2</column>
-            <column name="shopping_list_item_id">14</column>
+            <column name="to_do_list_item_id">14</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">2</column>
-            <column name="shopping_list_item_id">15</column>
+            <column name="to_do_list_item_id">15</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">2</column>
-            <column name="shopping_list_item_id">16</column>
+            <column name="to_do_list_item_id">16</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">3</column>
-            <column name="shopping_list_item_id">17</column>
+            <column name="to_do_list_item_id">17</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">4</column>
-            <column name="shopping_list_item_id">18</column>
+            <column name="to_do_list_item_id">18</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">5</column>
-            <column name="shopping_list_item_id">19</column>
+            <column name="to_do_list_item_id">19</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">5</column>
-            <column name="shopping_list_item_id">20</column>
+            <column name="to_do_list_item_id">20</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">6</column>
-            <column name="shopping_list_item_id">21</column>
+            <column name="to_do_list_item_id">21</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">22</column>
+            <column name="to_do_list_item_id">22</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">23</column>
+            <column name="to_do_list_item_id">23</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">24</column>
+            <column name="to_do_list_item_id">24</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">25</column>
+            <column name="to_do_list_item_id">25</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">26</column>
+            <column name="to_do_list_item_id">26</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">27</column>
+            <column name="to_do_list_item_id">27</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">28</column>
+            <column name="to_do_list_item_id">28</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
-            <column name="shopping_list_item_id">29</column>
+            <column name="to_do_list_item_id">29</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">8</column>
-            <column name="shopping_list_item_id">30</column>
+            <column name="to_do_list_item_id">30</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">8</column>
-            <column name="shopping_list_item_id">31</column>
+            <column name="to_do_list_item_id">31</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">8</column>
-            <column name="shopping_list_item_id">32</column>
+            <column name="to_do_list_item_id">32</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">8</column>
-            <column name="shopping_list_item_id">33</column>
+            <column name="to_do_list_item_id">33</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">8</column>
-            <column name="shopping_list_item_id">34</column>
+            <column name="to_do_list_item_id">34</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">8</column>
-            <column name="shopping_list_item_id">35</column>
+            <column name="to_do_list_item_id">35</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">9</column>
-            <column name="shopping_list_item_id">36</column>
+            <column name="to_do_list_item_id">36</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">9</column>
-            <column name="shopping_list_item_id">37</column>
+            <column name="to_do_list_item_id">37</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">9</column>
-            <column name="shopping_list_item_id">38</column>
+            <column name="to_do_list_item_id">38</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">9</column>
-            <column name="shopping_list_item_id">39</column>
+            <column name="to_do_list_item_id">39</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">10</column>
-            <column name="shopping_list_item_id">40</column>
+            <column name="to_do_list_item_id">40</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">11</column>
-            <column name="shopping_list_item_id">41</column>
+            <column name="to_do_list_item_id">41</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">11</column>
-            <column name="shopping_list_item_id">42</column>
+            <column name="to_do_list_item_id">42</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">11</column>
-            <column name="shopping_list_item_id">43</column>
+            <column name="to_do_list_item_id">43</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">11</column>
-            <column name="shopping_list_item_id">44</column>
+            <column name="to_do_list_item_id">44</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">11</column>
-            <column name="shopping_list_item_id">45</column>
+            <column name="to_do_list_item_id">45</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">46</column>
+            <column name="to_do_list_item_id">46</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">47</column>
+            <column name="to_do_list_item_id">47</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">48</column>
+            <column name="to_do_list_item_id">48</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">49</column>
+            <column name="to_do_list_item_id">49</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">50</column>
+            <column name="to_do_list_item_id">50</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">51</column>
+            <column name="to_do_list_item_id">51</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">52</column>
+            <column name="to_do_list_item_id">52</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">53</column>
+            <column name="to_do_list_item_id">53</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">54</column>
+            <column name="to_do_list_item_id">54</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">55</column>
+            <column name="to_do_list_item_id">55</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">56</column>
+            <column name="to_do_list_item_id">56</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">57</column>
+            <column name="to_do_list_item_id">57</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">58</column>
+            <column name="to_do_list_item_id">58</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
-            <column name="shopping_list_item_id">59</column>
+            <column name="to_do_list_item_id">59</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">13</column>
-            <column name="shopping_list_item_id">21</column>
+            <column name="to_do_list_item_id">21</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">60</column>
+            <column name="to_do_list_item_id">60</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">61</column>
+            <column name="to_do_list_item_id">61</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">62</column>
+            <column name="to_do_list_item_id">62</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">63</column>
+            <column name="to_do_list_item_id">63</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">64</column>
+            <column name="to_do_list_item_id">64</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">65</column>
+            <column name="to_do_list_item_id">65</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">14</column>
-            <column name="shopping_list_item_id">66</column>
+            <column name="to_do_list_item_id">66</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">15</column>
-            <column name="shopping_list_item_id">67</column>
+            <column name="to_do_list_item_id">67</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">15</column>
-            <column name="shopping_list_item_id">68</column>
+            <column name="to_do_list_item_id">68</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">15</column>
-            <column name="shopping_list_item_id">69</column>
+            <column name="to_do_list_item_id">69</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">15</column>
-            <column name="shopping_list_item_id">70</column>
+            <column name="to_do_list_item_id">70</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">15</column>
-            <column name="shopping_list_item_id">71</column>
+            <column name="to_do_list_item_id">71</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">15</column>
-            <column name="shopping_list_item_id">72</column>
+            <column name="to_do_list_item_id">72</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">16</column>
-            <column name="shopping_list_item_id">73</column>
+            <column name="to_do_list_item_id">73</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">16</column>
-            <column name="shopping_list_item_id">74</column>
+            <column name="to_do_list_item_id">74</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">16</column>
-            <column name="shopping_list_item_id">75</column>
+            <column name="to_do_list_item_id">75</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">17</column>
-            <column name="shopping_list_item_id">76</column>
+            <column name="to_do_list_item_id">76</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">17</column>
-            <column name="shopping_list_item_id">77</column>
+            <column name="to_do_list_item_id">77</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">17</column>
-            <column name="shopping_list_item_id">78</column>
+            <column name="to_do_list_item_id">78</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">18</column>
-            <column name="shopping_list_item_id">79</column>
+            <column name="to_do_list_item_id">79</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">18</column>
-            <column name="shopping_list_item_id">80</column>
+            <column name="to_do_list_item_id">80</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">19</column>
-            <column name="shopping_list_item_id">81</column>
+            <column name="to_do_list_item_id">81</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">19</column>
-            <column name="shopping_list_item_id">82</column>
+            <column name="to_do_list_item_id">82</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">19</column>
-            <column name="shopping_list_item_id">83</column>
+            <column name="to_do_list_item_id">83</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">19</column>
-            <column name="shopping_list_item_id">84</column>
+            <column name="to_do_list_item_id">84</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">19</column>
-            <column name="shopping_list_item_id">85</column>
+            <column name="to_do_list_item_id">85</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">86</column>
+            <column name="to_do_list_item_id">86</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">87</column>
+            <column name="to_do_list_item_id">87</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">88</column>
+            <column name="to_do_list_item_id">88</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">89</column>
+            <column name="to_do_list_item_id">89</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">90</column>
+            <column name="to_do_list_item_id">90</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">91</column>
+            <column name="to_do_list_item_id">91</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">92</column>
+            <column name="to_do_list_item_id">92</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">93</column>
+            <column name="to_do_list_item_id">93</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">94</column>
+            <column name="to_do_list_item_id">94</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">95</column>
+            <column name="to_do_list_item_id">95</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">96</column>
+            <column name="to_do_list_item_id">96</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">20</column>
-            <column name="shopping_list_item_id">97</column>
+            <column name="to_do_list_item_id">97</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">21</column>
-            <column name="shopping_list_item_id">41</column>
+            <column name="to_do_list_item_id">41</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">21</column>
-            <column name="shopping_list_item_id">42</column>
+            <column name="to_do_list_item_id">42</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">21</column>
-            <column name="shopping_list_item_id">43</column>
+            <column name="to_do_list_item_id">43</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">21</column>
-            <column name="shopping_list_item_id">44</column>
+            <column name="to_do_list_item_id">44</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">21</column>
-            <column name="shopping_list_item_id">45</column>
+            <column name="to_do_list_item_id">45</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">21</column>
-            <column name="shopping_list_item_id">29</column>
+            <column name="to_do_list_item_id">29</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">98</column>
+            <column name="to_do_list_item_id">98</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">99</column>
+            <column name="to_do_list_item_id">99</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">100</column>
+            <column name="to_do_list_item_id">100</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">101</column>
+            <column name="to_do_list_item_id">101</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">102</column>
+            <column name="to_do_list_item_id">102</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">103</column>
+            <column name="to_do_list_item_id">103</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">104</column>
+            <column name="to_do_list_item_id">104</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">105</column>
+            <column name="to_do_list_item_id">105</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">22</column>
-            <column name="shopping_list_item_id">35</column>
+            <column name="to_do_list_item_id">35</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">106</column>
+            <column name="to_do_list_item_id">106</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">107</column>
+            <column name="to_do_list_item_id">107</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">108</column>
+            <column name="to_do_list_item_id">108</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">109</column>
+            <column name="to_do_list_item_id">109</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">110</column>
+            <column name="to_do_list_item_id">110</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">111</column>
+            <column name="to_do_list_item_id">111</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">112</column>
+            <column name="to_do_list_item_id">112</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">113</column>
+            <column name="to_do_list_item_id">113</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">114</column>
+            <column name="to_do_list_item_id">114</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">115</column>
+            <column name="to_do_list_item_id">115</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">23</column>
-            <column name="shopping_list_item_id">116</column>
+            <column name="to_do_list_item_id">116</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">24</column>
-            <column name="shopping_list_item_id">117</column>
+            <column name="to_do_list_item_id">117</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
-            <column name="shopping_list_item_id">118</column>
+            <column name="to_do_list_item_id">118</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
-            <column name="shopping_list_item_id">119</column>
+            <column name="to_do_list_item_id">119</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
-            <column name="shopping_list_item_id">120</column>
+            <column name="to_do_list_item_id">120</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
-            <column name="shopping_list_item_id">121</column>
+            <column name="to_do_list_item_id">121</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
-            <column name="shopping_list_item_id">122</column>
+            <column name="to_do_list_item_id">122</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
-            <column name="shopping_list_item_id">123</column>
+            <column name="to_do_list_item_id">123</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">26</column>
-            <column name="shopping_list_item_id">21</column>
+            <column name="to_do_list_item_id">21</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">27</column>
-            <column name="shopping_list_item_id">21</column>
+            <column name="to_do_list_item_id">21</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">22</column>
+            <column name="to_do_list_item_id">22</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">24</column>
+            <column name="to_do_list_item_id">24</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">25</column>
+            <column name="to_do_list_item_id">25</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">41</column>
+            <column name="to_do_list_item_id">41</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">42</column>
+            <column name="to_do_list_item_id">42</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">43</column>
+            <column name="to_do_list_item_id">43</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">44</column>
+            <column name="to_do_list_item_id">44</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">29</column>
+            <column name="to_do_list_item_id">29</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">45</column>
+            <column name="to_do_list_item_id">45</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">115</column>
+            <column name="to_do_list_item_id">115</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">11</column>
+            <column name="to_do_list_item_id">11</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">12</column>
+            <column name="to_do_list_item_id">12</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">13</column>
+            <column name="to_do_list_item_id">13</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">14</column>
+            <column name="to_do_list_item_id">14</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">15</column>
+            <column name="to_do_list_item_id">15</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">28</column>
-            <column name="shopping_list_item_id">16</column>
+            <column name="to_do_list_item_id">16</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">29</column>
-            <column name="shopping_list_item_id">124</column>
+            <column name="to_do_list_item_id">124</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">29</column>
-            <column name="shopping_list_item_id">125</column>
+            <column name="to_do_list_item_id">125</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">29</column>
-            <column name="shopping_list_item_id">126</column>
+            <column name="to_do_list_item_id">126</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">29</column>
-            <column name="shopping_list_item_id">127</column>
+            <column name="to_do_list_item_id">127</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">29</column>
-            <column name="shopping_list_item_id">128</column>
+            <column name="to_do_list_item_id">128</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">129</column>
+            <column name="to_do_list_item_id">129</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">130</column>
+            <column name="to_do_list_item_id">130</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">131</column>
+            <column name="to_do_list_item_id">131</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">132</column>
+            <column name="to_do_list_item_id">132</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">133</column>
+            <column name="to_do_list_item_id">133</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">134</column>
+            <column name="to_do_list_item_id">134</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">135</column>
+            <column name="to_do_list_item_id">135</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">136</column>
+            <column name="to_do_list_item_id">136</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">137</column>
+            <column name="to_do_list_item_id">137</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">138</column>
+            <column name="to_do_list_item_id">138</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">139</column>
+            <column name="to_do_list_item_id">139</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">30</column>
-            <column name="shopping_list_item_id">140</column>
+            <column name="to_do_list_item_id">140</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">31</column>
-            <column name="shopping_list_item_id">141</column>
+            <column name="to_do_list_item_id">141</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">31</column>
-            <column name="shopping_list_item_id">142</column>
+            <column name="to_do_list_item_id">142</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">31</column>
-            <column name="shopping_list_item_id">143</column>
+            <column name="to_do_list_item_id">143</column>
             <column name="status">ACTUAL</column>
         </insert>
-        <insert tableName="habit_shopping_list_items">
+        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">31</column>
-            <column name="shopping_list_item_id">144</column>
+            <column name="to_do_list_item_id">144</column>
             <column name="status">ACTUAL</column>
         </insert>
     </changeSet>

@@ -14,7 +14,7 @@
             <column name="name" type="VARCHAR(255)">
             </column>
 
-            <column  name="description" type="VARCHAR(255)">
+            <column  name="description" type="text">
                 <constraints nullable="false"/>
             </column>
 

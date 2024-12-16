@@ -15,6 +15,8 @@
             <column name="complexity" type="INT" defaultValue="1">
                 <constraints nullable="false"/>
             </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="is_custom_habit" type="boolean" defaultValue="false"/>
         </createTable>
     </changeSet>
 

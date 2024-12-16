@@ -81,7 +81,5 @@
         <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="events_tags"
                                  constraintName="event_tag_id_to_tag_fk" referencedColumnNames="id"
                                  referencedTableName="tags"/>
-
-        <renameTable oldTableName="event_dates_locations" newTableName="events_dates_locations" />
     </changeSet>
 </databaseChangeLog>

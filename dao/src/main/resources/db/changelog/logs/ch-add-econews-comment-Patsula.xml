@@ -16,7 +16,12 @@
             <column name="created_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
+
             <column name="modified_date" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="varchar(30)" defaultValue="ORIGINAL">
                 <constraints nullable="false"/>
             </column>
 
@@ -127,11 +132,5 @@
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
-    </changeSet>
-
-    <changeSet id="Patsula-10" author="Yurii Patsula">
-        <addColumn tableName="econews_comment">
-            <column name="deleted" type="BOOLEAN" defaultValue="false"/>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>

@@ -3,2165 +3,1445 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Natalia-8" author="Kozak">
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Серветки целюлозні</column>
-            <column name="shopping_list_item_id">1</column>
+            <column name="to_do_list_item_id">1</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Swedish cellulose dish cloths</column>
-            <column name="shopping_list_item_id">1</column>
+            <column name="to_do_list_item_id">1</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Салфетки целлюлозные влоговпитывающие</column>
-            <column name="shopping_list_item_id">1</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові бамбукові рушники </column>
-            <column name="shopping_list_item_id">2</column>
+            <column name="to_do_list_item_id">2</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable bamboo paper towels</column>
-            <column name="shopping_list_item_id">2</column>
+            <column name="to_do_list_item_id">2</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовые бамбуковые полотенца</column>
-            <column name="shopping_list_item_id">2</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові біорозкладні паперові рушники</column>
-            <column name="shopping_list_item_id">3</column>
+            <column name="to_do_list_item_id">3</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Wowables reusable &amp; biodegradable paper towel</column>
-            <column name="shopping_list_item_id">3</column>
+            <column name="to_do_list_item_id">3</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовые биоразлагаемые бумажные полотенца</column>
-            <column name="shopping_list_item_id">3</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Серветки з мікрофібри</column>
-            <column name="shopping_list_item_id">4</column>
+            <column name="to_do_list_item_id">4</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Microfiber cloths</column>
-            <column name="shopping_list_item_id">4</column>
+            <column name="to_do_list_item_id">4</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Салфетки из микрофибры</column>
-            <column name="shopping_list_item_id">4</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бамбукові кухонні серветки</column>
-            <column name="shopping_list_item_id">5</column>
+            <column name="to_do_list_item_id">5</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo kitchen dish cloths</column>
-            <column name="shopping_list_item_id">5</column>
+            <column name="to_do_list_item_id">5</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бамбуковые полотенца для кухни</column>
-            <column name="shopping_list_item_id">5</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бавовняні серветки / скатертини</column>
-            <column name="shopping_list_item_id">6</column>
+            <column name="to_do_list_item_id">6</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Cotton napkins</column>
-            <column name="shopping_list_item_id">6</column>
+            <column name="to_do_list_item_id">6</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Хлопковые салфетки и скатерти</column>
-            <column name="shopping_list_item_id">6</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові вощені обгортки (серветки)</column>
-            <column name="shopping_list_item_id">7</column>
+            <column name="to_do_list_item_id">7</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable beeswax wrap</column>
-            <column name="shopping_list_item_id">7</column>
+            <column name="to_do_list_item_id">7</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовая пищевая обертка из пчелиного воска</column>
-            <column name="shopping_list_item_id">7</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Ллянні коктейльні серветки</column>
-            <column name="shopping_list_item_id">8</column>
+            <column name="to_do_list_item_id">8</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Linen cocktail napkins</column>
-            <column name="shopping_list_item_id">8</column>
+            <column name="to_do_list_item_id">8</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Коктейльные льняные салфетки</column>
-            <column name="shopping_list_item_id">8</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Повсякденні бавовняні серветки</column>
-            <column name="shopping_list_item_id">9</column>
+            <column name="to_do_list_item_id">9</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Everyday cotton napkins</column>
-            <column name="shopping_list_item_id">9</column>
+            <column name="to_do_list_item_id">9</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Повседневные хлопковые салфетки</column>
-            <column name="shopping_list_item_id">9</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Кухонні рушники з органічної бавовни</column>
-            <column name="shopping_list_item_id">10</column>
+            <column name="to_do_list_item_id">10</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Organic Cotton Dish Towels</column>
-            <column name="shopping_list_item_id">10</column>
+            <column name="to_do_list_item_id">10</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Кухонные полотенца из органического хлопка</column>
-            <column name="shopping_list_item_id">10</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пляшка для води з нержавіючої сталі</column>
-            <column name="shopping_list_item_id">11</column>
+            <column name="to_do_list_item_id">11</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable stainless steel water bottle</column>
-            <column name="shopping_list_item_id">11</column>
+            <column name="to_do_list_item_id">11</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бутылка для воды из нержавеющей стали</column>
-            <column name="shopping_list_item_id">11</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Скляна пляшка для води</column>
-            <column name="shopping_list_item_id">12</column>
+            <column name="to_do_list_item_id">12</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable glass water bottle</column>
-            <column name="shopping_list_item_id">12</column>
+            <column name="to_do_list_item_id">12</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Стеклянная бутылка для воды</column>
-            <column name="shopping_list_item_id">12</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Складна силіконова пляшка для води</column>
-            <column name="shopping_list_item_id">13</column>
+            <column name="to_do_list_item_id">13</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Collapsible Silicone Water Bottle</column>
-            <column name="shopping_list_item_id">13</column>
+            <column name="to_do_list_item_id">13</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Складная силиконовая бутылка для воды</column>
-            <column name="shopping_list_item_id">13</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пляшка для води з фільтром (фільтр-пляшка для води)</column>
-            <column name="shopping_list_item_id">14</column>
+            <column name="to_do_list_item_id">14</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Water Filter Bottle</column>
-            <column name="shopping_list_item_id">14</column>
+            <column name="to_do_list_item_id">14</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бутылка для воды с фильтром</column>
-            <column name="shopping_list_item_id">14</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Плоска пляшка для води</column>
-            <column name="shopping_list_item_id">15</column>
+            <column name="to_do_list_item_id">15</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Flat reusable bottle</column>
-            <column name="shopping_list_item_id">15</column>
+            <column name="to_do_list_item_id">15</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Плоская бутылка для воды</column>
-            <column name="shopping_list_item_id">15</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пляшка для води з соломинкою</column>
-            <column name="shopping_list_item_id">16</column>
+            <column name="to_do_list_item_id">16</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Watter bottle with a straw</column>
-            <column name="shopping_list_item_id">16</column>
+            <column name="to_do_list_item_id">16</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бутылка для воды с трубочкой</column>
-            <column name="shopping_list_item_id">16</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Електронна книга</column>
-            <column name="shopping_list_item_id">17</column>
+            <column name="to_do_list_item_id">17</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">E-reader</column>
-            <column name="shopping_list_item_id">17</column>
+            <column name="to_do_list_item_id">17</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Электронная книга</column>
-            <column name="shopping_list_item_id">17</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сонячна батарея</column>
-            <column name="shopping_list_item_id">18</column>
+            <column name="to_do_list_item_id">18</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Solar panels</column>
-            <column name="shopping_list_item_id">18</column>
+            <column name="to_do_list_item_id">18</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Солнечная батарея</column>
-            <column name="shopping_list_item_id">18</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Купити електрокар</column>
-            <column name="shopping_list_item_id">19</column>
+            <column name="to_do_list_item_id">19</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Buy an electric car</column>
-            <column name="shopping_list_item_id">19</column>
+            <column name="to_do_list_item_id">19</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Купить электрокар</column>
-            <column name="shopping_list_item_id">19</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Взяти в оренду електрокар</column>
-            <column name="shopping_list_item_id">20</column>
+            <column name="to_do_list_item_id">20</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Rent an electric car</column>
-            <column name="shopping_list_item_id">20</column>
+            <column name="to_do_list_item_id">20</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Взять электрокар на прокат</column>
-            <column name="shopping_list_item_id">20</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Немає товарів для рекомендації</column>
-            <column name="shopping_list_item_id">21</column>
+            <column name="to_do_list_item_id">21</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">No items to recommend</column>
-            <column name="shopping_list_item_id">21</column>
+            <column name="to_do_list_item_id">21</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Нет товаров для рекомендации</column>
-            <column name="shopping_list_item_id">21</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бавовняна сумка для покупок</column>
-            <column name="shopping_list_item_id">22</column>
+            <column name="to_do_list_item_id">22</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Cotton shopping bag</column>
-            <column name="shopping_list_item_id">22</column>
+        <insert tableName="to_do_list_item_translations">
+            <column name="content">Cotton to_do bag</column>
+            <column name="to_do_list_item_id">22</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Сумка для покупок из хлопка</column>
-            <column name="shopping_list_item_id">22</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Нейлонова сумка для покупок</column>
-            <column name="shopping_list_item_id">23</column>
+            <column name="to_do_list_item_id">23</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Nylon shopping bag</column>
-            <column name="shopping_list_item_id">23</column>
+        <insert tableName="to_do_list_item_translations">
+            <column name="content">Nylon to_do bag</column>
+            <column name="to_do_list_item_id">23</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Нейлоновая сумка для покупок</column>
-            <column name="shopping_list_item_id">23</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Термосумка для покупок</column>
-            <column name="shopping_list_item_id">24</column>
+            <column name="to_do_list_item_id">24</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Insulated hot&amp;cold bag</column>
-            <column name="shopping_list_item_id">24</column>
+            <column name="to_do_list_item_id">24</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Термосумка для покупок</column>
-            <column name="shopping_list_item_id">24</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Плетена сумка</column>
-            <column name="shopping_list_item_id">25</column>
+            <column name="to_do_list_item_id">25</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Mesh string bag</column>
-            <column name="shopping_list_item_id">25</column>
+            <column name="to_do_list_item_id">25</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Сетчаная сумка</column>
-            <column name="shopping_list_item_id">25</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Ламінована сумка-шопер</column>
-            <column name="shopping_list_item_id">26</column>
+            <column name="to_do_list_item_id">26</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bag from laminated material</column>
-            <column name="shopping_list_item_id">26</column>
+            <column name="to_do_list_item_id">26</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Ламинированная сумка-шопер</column>
-            <column name="shopping_list_item_id">26</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сумка для продуктового візка</column>
-            <column name="shopping_list_item_id">27</column>
+            <column name="to_do_list_item_id">27</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bag for grocery cart</column>
-            <column name="shopping_list_item_id">27</column>
+            <column name="to_do_list_item_id">27</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Сумка для продуктовой тележки</column>
-            <column name="shopping_list_item_id">27</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сумка візок</column>
-            <column name="shopping_list_item_id">28</column>
+            <column name="to_do_list_item_id">28</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Shopping trolley bag</column>
-            <column name="shopping_list_item_id">28</column>
+        <insert tableName="to_do_list_item_translations">
+            <column name="content">to_do trolley bag</column>
+            <column name="to_do_list_item_id">28</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Сумка тележка</column>
-            <column name="shopping_list_item_id">28</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Лляний мішечок для хліба</column>
-            <column name="shopping_list_item_id">29</column>
+            <column name="to_do_list_item_id">29</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Linen bread bags</column>
-            <column name="shopping_list_item_id">29</column>
+            <column name="to_do_list_item_id">29</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Льняной мешочек для хранения хлеба</column>
-            <column name="shopping_list_item_id">29</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазова чашка із нержавіючої сталі</column>
-            <column name="shopping_list_item_id">30</column>
+            <column name="to_do_list_item_id">30</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable stainless steel cup</column>
-            <column name="shopping_list_item_id">30</column>
+            <column name="to_do_list_item_id">30</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовая чашка из нержавеющей стали</column>
-            <column name="shopping_list_item_id">30</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазова скляна чашка</column>
-            <column name="shopping_list_item_id">31</column>
+            <column name="to_do_list_item_id">31</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable glass cup</column>
-            <column name="shopping_list_item_id">31</column>
+            <column name="to_do_list_item_id">31</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовая стеклянная чашка</column>
-            <column name="shopping_list_item_id">31</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Складна силіконова чашка</column>
-            <column name="shopping_list_item_id">32</column>
+            <column name="to_do_list_item_id">32</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Collapsible Silicone cup</column>
-            <column name="shopping_list_item_id">32</column>
+            <column name="to_do_list_item_id">32</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Складная силиконовая чашка</column>
-            <column name="shopping_list_item_id">32</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Керамічна чашка</column>
-            <column name="shopping_list_item_id">33</column>
+            <column name="to_do_list_item_id">33</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Ceramic coffee cup</column>
-            <column name="shopping_list_item_id">33</column>
+            <column name="to_do_list_item_id">33</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Керамическая чашка</column>
-            <column name="shopping_list_item_id">33</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазова бамбукова чашка</column>
-            <column name="shopping_list_item_id">34</column>
+            <column name="to_do_list_item_id">34</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo reusable cup</column>
-            <column name="shopping_list_item_id">34</column>
+            <column name="to_do_list_item_id">34</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовая бамбуковая чашка</column>
-            <column name="shopping_list_item_id">34</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Чашка із соломинкою</column>
-            <column name="shopping_list_item_id">35</column>
+            <column name="to_do_list_item_id">35</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Cup with a straw</column>
-            <column name="shopping_list_item_id">35</column>
+            <column name="to_do_list_item_id">35</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Чашка с трубочкой</column>
-            <column name="shopping_list_item_id">35</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Нікель-кадмієві акумулятори</column>
-            <column name="shopping_list_item_id">36</column>
+            <column name="to_do_list_item_id">36</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Nickel cadmium batteries</column>
-            <column name="shopping_list_item_id">36</column>
+            <column name="to_do_list_item_id">36</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Никель-кадмиевые аккумуляторы</column>
-            <column name="shopping_list_item_id">36</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Нікель-метал-гідридний акумулятор</column>
-            <column name="shopping_list_item_id">37</column>
+            <column name="to_do_list_item_id">37</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Nickel metal hydride batteries</column>
-            <column name="shopping_list_item_id">37</column>
+            <column name="to_do_list_item_id">37</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Никель-металлогидридный аккумулятор</column>
-            <column name="shopping_list_item_id">37</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Літій-іонний акумулятор</column>
-            <column name="shopping_list_item_id">38</column>
+            <column name="to_do_list_item_id">38</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Lithium ion batteries</column>
-            <column name="shopping_list_item_id">38</column>
+            <column name="to_do_list_item_id">38</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Литий-ионный аккумулятор</column>
-            <column name="shopping_list_item_id">38</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Свинцево-кислотний акумулятор</column>
-            <column name="shopping_list_item_id">39</column>
+            <column name="to_do_list_item_id">39</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Sealed lead acid batteries</column>
-            <column name="shopping_list_item_id">39</column>
+            <column name="to_do_list_item_id">39</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Свинцово-кислотный аккумулятор</column>
-            <column name="shopping_list_item_id">39</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Додаток (програма) для здійснення оплати онлайн</column>
-            <column name="shopping_list_item_id">40</column>
+            <column name="to_do_list_item_id">40</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Application for payment (buy / download)</column>
-            <column name="shopping_list_item_id">40</column>
+            <column name="to_do_list_item_id">40</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Приложение для проведения онлайн оплат</column>
-            <column name="shopping_list_item_id">40</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Мішечки для фруктів та овочів</column>
-            <column name="shopping_list_item_id">41</column>
+            <column name="to_do_list_item_id">41</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Cotton bags for fruits and vegetables</column>
-            <column name="shopping_list_item_id">41</column>
+            <column name="to_do_list_item_id">41</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Мешочки для фруктов и овощей</column>
-            <column name="shopping_list_item_id">41</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Харчові контейнери з нержавійки</column>
-            <column name="shopping_list_item_id">42</column>
+            <column name="to_do_list_item_id">42</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reuse stainless steel containers</column>
-            <column name="shopping_list_item_id">42</column>
+            <column name="to_do_list_item_id">42</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Пищевые контейнеры из нержавейки</column>
-            <column name="shopping_list_item_id">42</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Скляні харчові контейнери</column>
-            <column name="shopping_list_item_id">43</column>
+            <column name="to_do_list_item_id">43</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reuse glass containers</column>
-            <column name="shopping_list_item_id">43</column>
+            <column name="to_do_list_item_id">43</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Стеклянные пищевые контейнеры</column>
-            <column name="shopping_list_item_id">43</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Силіконові харчові контейнери</column>
-            <column name="shopping_list_item_id">44</column>
+            <column name="to_do_list_item_id">44</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reuse silicone containers</column>
-            <column name="shopping_list_item_id">44</column>
+            <column name="to_do_list_item_id">44</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Силиконовые пищевые контейнеры</column>
-            <column name="shopping_list_item_id">44</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові пакети для бутербродів</column>
-            <column name="shopping_list_item_id">45</column>
+            <column name="to_do_list_item_id">45</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable sandwich and snack bags</column>
-            <column name="shopping_list_item_id">45</column>
+            <column name="to_do_list_item_id">45</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовые пакеты для бутербродов</column>
-            <column name="shopping_list_item_id">45</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Харчова сода</column>
-            <column name="shopping_list_item_id">46</column>
+            <column name="to_do_list_item_id">46</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Baking Soda</column>
-            <column name="shopping_list_item_id">46</column>
+            <column name="to_do_list_item_id">46</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Пищевая сода</column>
-            <column name="shopping_list_item_id">46</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Білий дистильований оцет</column>
-            <column name="shopping_list_item_id">47</column>
+            <column name="to_do_list_item_id">47</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Distilled White Vinegar</column>
-            <column name="shopping_list_item_id">47</column>
+            <column name="to_do_list_item_id">47</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Дистиллированный белый уксус</column>
-            <column name="shopping_list_item_id">47</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Перекис водню</column>
-            <column name="shopping_list_item_id">48</column>
+            <column name="to_do_list_item_id">48</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Hydrogen Peroxide</column>
-            <column name="shopping_list_item_id">48</column>
+            <column name="to_do_list_item_id">48</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Пероксид водорода</column>
-            <column name="shopping_list_item_id">48</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бавовняні кульки</column>
-            <column name="shopping_list_item_id">49</column>
+            <column name="to_do_list_item_id">49</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Cotton Balls</column>
-            <column name="shopping_list_item_id">49</column>
+            <column name="to_do_list_item_id">49</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Хлопковые шарики</column>
-            <column name="shopping_list_item_id">49</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Рідке мило</column>
-            <column name="shopping_list_item_id">50</column>
+            <column name="to_do_list_item_id">50</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Liquid Dish Soap</column>
-            <column name="shopping_list_item_id">50</column>
+            <column name="to_do_list_item_id">50</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Жидкое мыло</column>
-            <column name="shopping_list_item_id">50</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сіль</column>
-            <column name="shopping_list_item_id">51</column>
+            <column name="to_do_list_item_id">51</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Salt</column>
-            <column name="shopping_list_item_id">51</column>
+            <column name="to_do_list_item_id">51</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Соль</column>
-            <column name="shopping_list_item_id">51</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Лимон</column>
-            <column name="shopping_list_item_id">52</column>
+            <column name="to_do_list_item_id">52</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Lemon</column>
-            <column name="shopping_list_item_id">52</column>
+            <column name="to_do_list_item_id">52</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Лимон</column>
-            <column name="shopping_list_item_id">52</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Кукурудзяний крохмаль</column>
-            <column name="shopping_list_item_id">53</column>
+            <column name="to_do_list_item_id">53</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Corn Starch</column>
-            <column name="shopping_list_item_id">53</column>
+            <column name="to_do_list_item_id">53</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Кукурузный крахмал</column>
-            <column name="shopping_list_item_id">53</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Олія чайного дерева</column>
-            <column name="shopping_list_item_id">54</column>
+            <column name="to_do_list_item_id">54</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Tea Tree Oil</column>
-            <column name="shopping_list_item_id">54</column>
+            <column name="to_do_list_item_id">54</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Масло чайного дерева</column>
-            <column name="shopping_list_item_id">54</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Найлонова щітка</column>
-            <column name="shopping_list_item_id">55</column>
+            <column name="to_do_list_item_id">55</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Nylon Scrub Brush</column>
-            <column name="shopping_list_item_id">55</column>
+            <column name="to_do_list_item_id">55</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Нейлоновая щетка</column>
-            <column name="shopping_list_item_id">55</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Обприскувач</column>
-            <column name="shopping_list_item_id">56</column>
+            <column name="to_do_list_item_id">56</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Spray Bottles</column>
-            <column name="shopping_list_item_id">56</column>
+            <column name="to_do_list_item_id">56</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Опрыскиватель</column>
-            <column name="shopping_list_item_id">56</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пемза</column>
-            <column name="shopping_list_item_id">57</column>
+            <column name="to_do_list_item_id">57</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Pumice Stone</column>
-            <column name="shopping_list_item_id">57</column>
+            <column name="to_do_list_item_id">57</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Пемза</column>
-            <column name="shopping_list_item_id">57</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Серветки з мікрофібри</column>
-            <column name="shopping_list_item_id">58</column>
+            <column name="to_do_list_item_id">58</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Microfiber Cleaning Cloths and other cloths</column>
-            <column name="shopping_list_item_id">58</column>
+            <column name="to_do_list_item_id">58</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Салфетки из микрофибры</column>
-            <column name="shopping_list_item_id">58</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Меламінова губка</column>
-            <column name="shopping_list_item_id">59</column>
+            <column name="to_do_list_item_id">59</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Melamine sponge</column>
-            <column name="shopping_list_item_id">59</column>
+            <column name="to_do_list_item_id">59</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Меламиновая губка</column>
-            <column name="shopping_list_item_id">59</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Одяг з відбивачами</column>
-            <column name="shopping_list_item_id">60</column>
+            <column name="to_do_list_item_id">60</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Clothes with reflectors</column>
-            <column name="shopping_list_item_id">60</column>
+            <column name="to_do_list_item_id">60</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Одежда со светоотражателями</column>
-            <column name="shopping_list_item_id">60</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Взуття для прогулянок</column>
-            <column name="shopping_list_item_id">61</column>
+            <column name="to_do_list_item_id">61</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Shoes for walking</column>
-            <column name="shopping_list_item_id">61</column>
+            <column name="to_do_list_item_id">61</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Обувь для прогулок</column>
-            <column name="shopping_list_item_id">61</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Дихаючі шкарпетки</column>
-            <column name="shopping_list_item_id">62</column>
+            <column name="to_do_list_item_id">62</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Breathable socks</column>
-            <column name="shopping_list_item_id">62</column>
+            <column name="to_do_list_item_id">62</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Дышащие носки</column>
-            <column name="shopping_list_item_id">62</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Дощовик</column>
-            <column name="shopping_list_item_id">63</column>
+            <column name="to_do_list_item_id">63</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Rain coat</column>
-            <column name="shopping_list_item_id">63</column>
+            <column name="to_do_list_item_id">63</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Дождевик</column>
-            <column name="shopping_list_item_id">63</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Наплічник складаний</column>
-            <column name="shopping_list_item_id">64</column>
+            <column name="to_do_list_item_id">64</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Backpack / convertible backpack</column>
-            <column name="shopping_list_item_id">64</column>
+            <column name="to_do_list_item_id">64</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Рюкзак (трансформируемый рюкзак)</column>
-            <column name="shopping_list_item_id">64</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пристрій або додаток для фітнесу</column>
-            <column name="shopping_list_item_id">65</column>
+            <column name="to_do_list_item_id">65</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Fitness tracking device or application</column>
-            <column name="shopping_list_item_id">65</column>
+            <column name="to_do_list_item_id">65</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Фитнес устройство или приложение</column>
-            <column name="shopping_list_item_id">65</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Устілки для ходьби</column>
-            <column name="shopping_list_item_id">66</column>
+            <column name="to_do_list_item_id">66</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Walking insoles</column>
-            <column name="shopping_list_item_id">66</column>
+            <column name="to_do_list_item_id">66</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Стельки для ходьбы</column>
-            <column name="shopping_list_item_id">66</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Велосипедний шолом</column>
-            <column name="shopping_list_item_id">67</column>
+            <column name="to_do_list_item_id">67</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bicycle helmet</column>
-            <column name="shopping_list_item_id">67</column>
+            <column name="to_do_list_item_id">67</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Велосипедный шлем</column>
-            <column name="shopping_list_item_id">67</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Чохол-дощовик для сідла</column>
-            <column name="shopping_list_item_id">68</column>
+            <column name="to_do_list_item_id">68</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Saddle rain cover</column>
-            <column name="shopping_list_item_id">68</column>
+            <column name="to_do_list_item_id">68</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Чехол-дождевик для седла</column>
-            <column name="shopping_list_item_id">68</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Чохол для велосипеда</column>
-            <column name="shopping_list_item_id">69</column>
+            <column name="to_do_list_item_id">69</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bicycle cover</column>
-            <column name="shopping_list_item_id">69</column>
+            <column name="to_do_list_item_id">69</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Чехол для велосипеда</column>
-            <column name="shopping_list_item_id">69</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Велокорзина</column>
-            <column name="shopping_list_item_id">70</column>
+            <column name="to_do_list_item_id">70</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bag / cart for baggage</column>
-            <column name="shopping_list_item_id">70</column>
+            <column name="to_do_list_item_id">70</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Велокорзина</column>
-            <column name="shopping_list_item_id">70</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Світловідбивачі</column>
-            <column name="shopping_list_item_id">71</column>
+            <column name="to_do_list_item_id">71</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reflectors</column>
-            <column name="shopping_list_item_id">71</column>
+            <column name="to_do_list_item_id">71</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Светоотражатели</column>
-            <column name="shopping_list_item_id">71</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Велофари, мигалки</column>
-            <column name="shopping_list_item_id">72</column>
+            <column name="to_do_list_item_id">72</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bike lights</column>
-            <column name="shopping_list_item_id">72</column>
+            <column name="to_do_list_item_id">72</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Велосипедные фары, мигалки</column>
-            <column name="shopping_list_item_id">72</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Чашка</column>
-            <column name="shopping_list_item_id">73</column>
+            <column name="to_do_list_item_id">73</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable cup</column>
-            <column name="shopping_list_item_id">73</column>
+            <column name="to_do_list_item_id">73</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Чашка</column>
-            <column name="shopping_list_item_id">73</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Клапан для зниження тиску</column>
-            <column name="shopping_list_item_id">74</column>
+            <column name="to_do_list_item_id">74</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Pressure-reducing valve</column>
-            <column name="shopping_list_item_id">74</column>
+            <column name="to_do_list_item_id">74</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Клапан для снижения давления</column>
-            <column name="shopping_list_item_id">74</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Змішувач для зниження тиску</column>
-            <column name="shopping_list_item_id">75</column>
+            <column name="to_do_list_item_id">75</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Water-saving faucets</column>
-            <column name="shopping_list_item_id">75</column>
+            <column name="to_do_list_item_id">75</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Смеситель для снижения давления</column>
-            <column name="shopping_list_item_id">75</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Водозберігаюча насадка для душу</column>
-            <column name="shopping_list_item_id">76</column>
+            <column name="to_do_list_item_id">76</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Water saving shower head</column>
-            <column name="shopping_list_item_id">76</column>
+            <column name="to_do_list_item_id">76</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Водосберегающая насадка для душа</column>
-            <column name="shopping_list_item_id">76</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Еко гель для душу</column>
-            <column name="shopping_list_item_id">77</column>
+            <column name="to_do_list_item_id">77</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Eco shovel gel</column>
-            <column name="shopping_list_item_id">77</column>
+            <column name="to_do_list_item_id">77</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Эко гель для душа</column>
-            <column name="shopping_list_item_id">77</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Рушник для ванни</column>
-            <column name="shopping_list_item_id">78</column>
+            <column name="to_do_list_item_id">78</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bath towel</column>
-            <column name="shopping_list_item_id">78</column>
+            <column name="to_do_list_item_id">78</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Банное полотенце</column>
-            <column name="shopping_list_item_id">78</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Додаток із пунктами прийому або утилізації батарейок</column>
-            <column name="shopping_list_item_id">79</column>
+            <column name="to_do_list_item_id">79</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Application with recycle places</column>
-            <column name="shopping_list_item_id">79</column>
+            <column name="to_do_list_item_id">79</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Приложение с пунктами приема или утилизации батареек</column>
-            <column name="shopping_list_item_id">79</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Контейнери для батарейок</column>
-            <column name="shopping_list_item_id">80</column>
+            <column name="to_do_list_item_id">80</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Containers for batteries</column>
-            <column name="shopping_list_item_id">80</column>
+            <column name="to_do_list_item_id">80</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Контейнеры для батареек</column>
-            <column name="shopping_list_item_id">80</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Додаток для контролю за світлом</column>
-            <column name="shopping_list_item_id">81</column>
+            <column name="to_do_list_item_id">81</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Home app to control lights</column>
-            <column name="shopping_list_item_id">81</column>
+            <column name="to_do_list_item_id">81</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Приложение по управлению света</column>
-            <column name="shopping_list_item_id">81</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Акустичний вимикач світла</column>
-            <column name="shopping_list_item_id">82</column>
+            <column name="to_do_list_item_id">82</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Clapper (lights switcher on claps)</column>
-            <column name="shopping_list_item_id">82</column>
+            <column name="to_do_list_item_id">82</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Аккустический выключатель света по хлопку</column>
-            <column name="shopping_list_item_id">82</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Енергоощадні лампочки</column>
-            <column name="shopping_list_item_id">83</column>
+            <column name="to_do_list_item_id">83</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Energy saving light bulb - diff.types</column>
-            <column name="shopping_list_item_id">83</column>
+            <column name="to_do_list_item_id">83</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Энергоосберегающие лампочки</column>
-            <column name="shopping_list_item_id">83</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Розумний сенсорний вимикач</column>
-            <column name="shopping_list_item_id">84</column>
+            <column name="to_do_list_item_id">84</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Smart touch switcher</column>
-            <column name="shopping_list_item_id">84</column>
+            <column name="to_do_list_item_id">84</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Умный сенсорный выключатель</column>
-            <column name="shopping_list_item_id">84</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Контролер розумного будинку</column>
-            <column name="shopping_list_item_id">85</column>
+            <column name="to_do_list_item_id">85</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Smart home controller</column>
-            <column name="shopping_list_item_id">85</column>
+            <column name="to_do_list_item_id">85</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Контроллер умного дома</column>
-            <column name="shopping_list_item_id">85</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Зернобобові: боби, горошок і тд</column>
-            <column name="shopping_list_item_id">86</column>
+            <column name="to_do_list_item_id">86</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Pulses: beans and peas</column>
-            <column name="shopping_list_item_id">86</column>
+            <column name="to_do_list_item_id">86</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Зернобобовые: бобы, горошок и др.</column>
-            <column name="shopping_list_item_id">86</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Яйця</column>
-            <column name="shopping_list_item_id">87</column>
+            <column name="to_do_list_item_id">87</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Eggs</column>
-            <column name="shopping_list_item_id">87</column>
+            <column name="to_do_list_item_id">87</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Яйца</column>
-            <column name="shopping_list_item_id">87</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Кіноа</column>
-            <column name="shopping_list_item_id">88</column>
+            <column name="to_do_list_item_id">88</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Quinoa</column>
-            <column name="shopping_list_item_id">88</column>
+            <column name="to_do_list_item_id">88</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Киноа</column>
-            <column name="shopping_list_item_id">88</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Знежирені молочні продукти</column>
-            <column name="shopping_list_item_id">89</column>
+            <column name="to_do_list_item_id">89</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Low fat dairy products</column>
-            <column name="shopping_list_item_id">89</column>
+            <column name="to_do_list_item_id">89</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Снежиренные молочные продукты</column>
-            <column name="shopping_list_item_id">89</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Соєві продукти</column>
-            <column name="shopping_list_item_id">90</column>
+            <column name="to_do_list_item_id">90</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Soy products</column>
-            <column name="shopping_list_item_id">90</column>
+            <column name="to_do_list_item_id">90</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Продукты из сои</column>
-            <column name="shopping_list_item_id">90</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Горіхи та насіння</column>
-            <column name="shopping_list_item_id">91</column>
+            <column name="to_do_list_item_id">91</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Nuts and seeds</column>
-            <column name="shopping_list_item_id">91</column>
+            <column name="to_do_list_item_id">91</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Орехи и семена</column>
-            <column name="shopping_list_item_id">91</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Тофу</column>
-            <column name="shopping_list_item_id">92</column>
+            <column name="to_do_list_item_id">92</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Tofu</column>
-            <column name="shopping_list_item_id">92</column>
+            <column name="to_do_list_item_id">92</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Тофу</column>
-            <column name="shopping_list_item_id">92</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Темпе - ферментований соєвий продукт</column>
-            <column name="shopping_list_item_id">93</column>
+            <column name="to_do_list_item_id">93</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Tempeh</column>
-            <column name="shopping_list_item_id">93</column>
+            <column name="to_do_list_item_id">93</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Темпе - ферментированный соевый продукт</column>
-            <column name="shopping_list_item_id">93</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сейтан - пшенична клейковина</column>
-            <column name="shopping_list_item_id">94</column>
+            <column name="to_do_list_item_id">94</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Seitan - пшенична клейковина</column>
-            <column name="shopping_list_item_id">94</column>
+            <column name="to_do_list_item_id">94</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Сейтан - пшеничная клейковина</column>
-            <column name="shopping_list_item_id">94</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Кворн - замінник м'яса</column>
-            <column name="shopping_list_item_id">95</column>
+            <column name="to_do_list_item_id">95</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Quorn</column>
-            <column name="shopping_list_item_id">95</column>
+            <column name="to_do_list_item_id">95</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Кворн</column>
-            <column name="shopping_list_item_id">95</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Риба</column>
-            <column name="shopping_list_item_id">96</column>
+            <column name="to_do_list_item_id">96</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Fish</column>
-            <column name="shopping_list_item_id">96</column>
+            <column name="to_do_list_item_id">96</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Рыба</column>
-            <column name="shopping_list_item_id">96</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Рослинні замінники м'яса</column>
-            <column name="shopping_list_item_id">97</column>
+            <column name="to_do_list_item_id">97</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Beyond meat</column>
-            <column name="shopping_list_item_id">97</column>
+            <column name="to_do_list_item_id">97</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Растительные заменители мяса</column>
-            <column name="shopping_list_item_id">97</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бамбукові соломинки</column>
-            <column name="shopping_list_item_id">98</column>
+            <column name="to_do_list_item_id">98</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo Straw</column>
-            <column name="shopping_list_item_id">98</column>
+            <column name="to_do_list_item_id">98</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бамбуковые трубочки</column>
-            <column name="shopping_list_item_id">98</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Солом'яні соломинки</column>
-            <column name="shopping_list_item_id">99</column>
+            <column name="to_do_list_item_id">99</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Straw by Straw</column>
-            <column name="shopping_list_item_id">99</column>
+            <column name="to_do_list_item_id">99</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Соломенные трубочки</column>
-            <column name="shopping_list_item_id">99</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Паперові соломинки</column>
-            <column name="shopping_list_item_id">100</column>
+            <column name="to_do_list_item_id">100</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Paper Straws</column>
-            <column name="shopping_list_item_id">100</column>
+            <column name="to_do_list_item_id">100</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бумажные трубочки</column>
-            <column name="shopping_list_item_id">100</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Металеві соломинки</column>
-            <column name="shopping_list_item_id">101</column>
+            <column name="to_do_list_item_id">101</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Steel Straws</column>
-            <column name="shopping_list_item_id">101</column>
+            <column name="to_do_list_item_id">101</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Металические трубочки</column>
-            <column name="shopping_list_item_id">101</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Скляні соломинки</column>
-            <column name="shopping_list_item_id">102</column>
+            <column name="to_do_list_item_id">102</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Glass Straws</column>
-            <column name="shopping_list_item_id">102</column>
+            <column name="to_do_list_item_id">102</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Стеклянные трубочки</column>
-            <column name="shopping_list_item_id">102</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Їстівна соломинки</column>
-            <column name="shopping_list_item_id">103</column>
+            <column name="to_do_list_item_id">103</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Edible straw</column>
-            <column name="shopping_list_item_id">103</column>
+            <column name="to_do_list_item_id">103</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Съедобные трубочки</column>
-            <column name="shopping_list_item_id">103</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Силіконові соломинки</column>
-            <column name="shopping_list_item_id">104</column>
+            <column name="to_do_list_item_id">104</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Silicone straw</column>
-            <column name="shopping_list_item_id">104</column>
+            <column name="to_do_list_item_id">104</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Силиконовые трубочки</column>
-            <column name="shopping_list_item_id">104</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пляшка із соломинкою</column>
-            <column name="shopping_list_item_id">105</column>
+            <column name="to_do_list_item_id">105</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Water Bottle</column>
-            <column name="shopping_list_item_id">105</column>
+            <column name="to_do_list_item_id">105</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бутылка с трубочкой</column>
-            <column name="shopping_list_item_id">105</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові пакети для сендвічів</column>
-            <column name="shopping_list_item_id">106</column>
+            <column name="to_do_list_item_id">106</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable Cup With Straw</column>
-            <column name="shopping_list_item_id">106</column>
+            <column name="to_do_list_item_id">106</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовые пакети для сендвичей</column>
-            <column name="shopping_list_item_id">106</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Скляні банки</column>
-            <column name="shopping_list_item_id">107</column>
+            <column name="to_do_list_item_id">107</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Glass Canning Jars</column>
-            <column name="shopping_list_item_id">107</column>
+            <column name="to_do_list_item_id">107</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Стеклянные банки</column>
-            <column name="shopping_list_item_id">107</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Скляні контейнери</column>
-            <column name="shopping_list_item_id">108</column>
+            <column name="to_do_list_item_id">108</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Glass Storage Containers</column>
-            <column name="shopping_list_item_id">108</column>
+            <column name="to_do_list_item_id">108</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Стеклянные контейнери</column>
-            <column name="shopping_list_item_id">108</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Силіконові контейнери</column>
-            <column name="shopping_list_item_id">109</column>
+            <column name="to_do_list_item_id">109</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Silicone Containers</column>
-            <column name="shopping_list_item_id">109</column>
+            <column name="to_do_list_item_id">109</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Силиконовые контейнеры</column>
-            <column name="shopping_list_item_id">109</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Тканинні мішечки для їжі</column>
-            <column name="shopping_list_item_id">110</column>
+            <column name="to_do_list_item_id">110</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Cloth Food Sacks</column>
-            <column name="shopping_list_item_id">110</column>
+            <column name="to_do_list_item_id">110</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Тканевые мешки для еды</column>
-            <column name="shopping_list_item_id">110</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Металеві контейнери з нержавіючої сталі</column>
-            <column name="shopping_list_item_id">111</column>
+            <column name="to_do_list_item_id">111</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Stainless Steel containers</column>
-            <column name="shopping_list_item_id">111</column>
+            <column name="to_do_list_item_id">111</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Металические контейнеры из нержавеющей стали</column>
-            <column name="shopping_list_item_id">111</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Вощені багаторазові серветки</column>
-            <column name="shopping_list_item_id">112</column>
+            <column name="to_do_list_item_id">112</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Beeswax food wrap</column>
-            <column name="shopping_list_item_id">112</column>
+            <column name="to_do_list_item_id">112</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Пищевая пленка из пчелиного воска</column>
-            <column name="shopping_list_item_id">112</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазова сумка для обідів</column>
-            <column name="shopping_list_item_id">113</column>
+            <column name="to_do_list_item_id">113</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Lunch bag</column>
-            <column name="shopping_list_item_id">113</column>
+            <column name="to_do_list_item_id">113</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовая сумка для обедов</column>
-            <column name="shopping_list_item_id">113</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Пляшка для води</column>
-            <column name="shopping_list_item_id">114</column>
+            <column name="to_do_list_item_id">114</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Water bottle</column>
-            <column name="shopping_list_item_id">114</column>
+            <column name="to_do_list_item_id">114</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бутылка для воды</column>
-            <column name="shopping_list_item_id">114</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бамбуковий контейнер для обідів</column>
-            <column name="shopping_list_item_id">115</column>
+            <column name="to_do_list_item_id">115</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo lunch pot</column>
-            <column name="shopping_list_item_id">115</column>
+            <column name="to_do_list_item_id">115</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бамбуковый контейнер для обедов</column>
-            <column name="shopping_list_item_id">115</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Набір столових приборів із бамбуку</column>
-            <column name="shopping_list_item_id">116</column>
+            <column name="to_do_list_item_id">116</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo utensils set</column>
-            <column name="shopping_list_item_id">116</column>
+            <column name="to_do_list_item_id">116</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Набор столовых приборов из бамбука</column>
-            <column name="shopping_list_item_id">116</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Світлодіодна лампа</column>
-            <column name="shopping_list_item_id">117</column>
+            <column name="to_do_list_item_id">117</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">LED lamp</column>
-            <column name="shopping_list_item_id">117</column>
+            <column name="to_do_list_item_id">117</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Светодиодная лампа</column>
-            <column name="shopping_list_item_id">117</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сміттєзбірник для висувних поверхонь</column>
-            <column name="shopping_list_item_id">118</column>
+            <column name="to_do_list_item_id">118</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Waste systems for pull-out fronts</column>
-            <column name="shopping_list_item_id">118</column>
+            <column name="to_do_list_item_id">118</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Мусоросборник для выдвижных поверхностей</column>
-            <column name="shopping_list_item_id">118</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сміттєзбірник для відкидних поверхонь</column>
-            <column name="shopping_list_item_id">119</column>
+            <column name="to_do_list_item_id">119</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Waste systems for hinged doors</column>
-            <column name="shopping_list_item_id">119</column>
+            <column name="to_do_list_item_id">119</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Мусоросборник для откидных поверхностей</column>
-            <column name="shopping_list_item_id">119</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сміттєзбірник двосекційний з педаллю</column>
-            <column name="shopping_list_item_id">120</column>
+            <column name="to_do_list_item_id">120</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Double Recycling Pedal Bin</column>
-            <column name="shopping_list_item_id">120</column>
+            <column name="to_do_list_item_id">120</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Мусоросборник двухсекционный с педалью</column>
-            <column name="shopping_list_item_id">120</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Сміттєзбірник трьохсекційний з педаллю</column>
-            <column name="shopping_list_item_id">121</column>
+            <column name="to_do_list_item_id">121</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">3 Section Recycling Pedal Bin</column>
-            <column name="shopping_list_item_id">121</column>
+            <column name="to_do_list_item_id">121</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Мусоросборник трехсекционный с педалью</column>
-            <column name="shopping_list_item_id">121</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Контейнер для сміття з 2 баками</column>
-            <column name="shopping_list_item_id">122</column>
+            <column name="to_do_list_item_id">122</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Totem Waste &amp; Recycling Bins</column>
-            <column name="shopping_list_item_id">122</column>
+            <column name="to_do_list_item_id">122</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Контейнер для мусора с 2 баками</column>
-            <column name="shopping_list_item_id">122</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Контейнер для харчових відходів</column>
-            <column name="shopping_list_item_id">123</column>
+            <column name="to_do_list_item_id">123</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Food Waste Caddy</column>
-            <column name="shopping_list_item_id">123</column>
+            <column name="to_do_list_item_id">123</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Контейнер для пищевых отходов</column>
-            <column name="shopping_list_item_id">123</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Відро для компосту</column>
-            <column name="shopping_list_item_id">124</column>
+            <column name="to_do_list_item_id">124</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Compost bin</column>
-            <column name="shopping_list_item_id">124</column>
+            <column name="to_do_list_item_id">124</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Ведро для компоста</column>
-            <column name="shopping_list_item_id">124</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Контейнер для компосту</column>
-            <column name="shopping_list_item_id">125</column>
+            <column name="to_do_list_item_id">125</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Compost container</column>
-            <column name="shopping_list_item_id">125</column>
+            <column name="to_do_list_item_id">125</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Контейнер для компоста</column>
-            <column name="shopping_list_item_id">125</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Відро для компосту із нержавіючої сталі з вбудованим вугільним фільтром</column>
-            <column name="shopping_list_item_id">126</column>
+            <column name="to_do_list_item_id">126</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Stainless steel compost pail with an carbon filter</column>
-            <column name="shopping_list_item_id">126</column>
+            <column name="to_do_list_item_id">126</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Ведро для компоста из нержавеющей стали с угольным фильтром</column>
-            <column name="shopping_list_item_id">126</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Компостер для саду</column>
-            <column name="shopping_list_item_id">127</column>
+            <column name="to_do_list_item_id">127</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Garden compost bin</column>
-            <column name="shopping_list_item_id">127</column>
+            <column name="to_do_list_item_id">127</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Компостер садовый</column>
-            <column name="shopping_list_item_id">127</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Екологічні пакети для сміття, що компостуються</column>
-            <column name="shopping_list_item_id">128</column>
+            <column name="to_do_list_item_id">128</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Compostable bags</column>
-            <column name="shopping_list_item_id">128</column>
+            <column name="to_do_list_item_id">128</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Компостированные мешки для муссора</column>
-            <column name="shopping_list_item_id">128</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазова серветка для зняття макіяжу</column>
-            <column name="shopping_list_item_id">129</column>
+            <column name="to_do_list_item_id">129</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Microfiber face and makeup remover cloth</column>
-            <column name="shopping_list_item_id">129</column>
+            <column name="to_do_list_item_id">129</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовая салфетка для снятия макияжа</column>
-            <column name="shopping_list_item_id">129</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові бавовняні диски для очищення обличчя</column>
-            <column name="shopping_list_item_id">130</column>
+            <column name="to_do_list_item_id">130</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable cotton rounds</column>
-            <column name="shopping_list_item_id">130</column>
+            <column name="to_do_list_item_id">130</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовые хлопковые диски для очищения лица</column>
-            <column name="shopping_list_item_id">130</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бамбукові ватні палички</column>
-            <column name="shopping_list_item_id">131</column>
+            <column name="to_do_list_item_id">131</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo cotton swabs</column>
-            <column name="shopping_list_item_id">131</column>
+            <column name="to_do_list_item_id">131</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бамбуковые ватные палочки</column>
-            <column name="shopping_list_item_id">131</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бавовняні носові хустинки</column>
-            <column name="shopping_list_item_id">132</column>
+            <column name="to_do_list_item_id">132</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Cotton Handkerchiefs</column>
-            <column name="shopping_list_item_id">132</column>
+            <column name="to_do_list_item_id">132</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Хлопковые носовые платки</column>
-            <column name="shopping_list_item_id">132</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Натуральна морська губка для душу</column>
-            <column name="shopping_list_item_id">133</column>
+            <column name="to_do_list_item_id">133</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Natural sea sponge for a shower</column>
-            <column name="shopping_list_item_id">133</column>
+            <column name="to_do_list_item_id">133</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Натуральная морская мочалка для душа</column>
-            <column name="shopping_list_item_id">133</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Металева бритва</column>
-            <column name="shopping_list_item_id">134</column>
+            <column name="to_do_list_item_id">134</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Metal razors</column>
-            <column name="shopping_list_item_id">134</column>
+            <column name="to_do_list_item_id">134</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Металлическая бритва</column>
-            <column name="shopping_list_item_id">134</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Засоби для догляду власного виробництва (скраб, крем для лиця..)</column>
-            <column name="shopping_list_item_id">135</column>
+            <column name="to_do_list_item_id">135</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Homemade treatments (scrab, face cream..)</column>
-            <column name="shopping_list_item_id">135</column>
+            <column name="to_do_list_item_id">135</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Средства для ухода собственного производства (скраб, крем для лица)</column>
-            <column name="shopping_list_item_id">135</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Бамбукова зубна щітка</column>
-            <column name="shopping_list_item_id">136</column>
+            <column name="to_do_list_item_id">136</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Bamboo toothbrush</column>
-            <column name="shopping_list_item_id">136</column>
+            <column name="to_do_list_item_id">136</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Бамбуковая зубная щетка</column>
-            <column name="shopping_list_item_id">136</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Замінники зубної пасти</column>
-            <column name="shopping_list_item_id">137</column>
+            <column name="to_do_list_item_id">137</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Toothpaste replacement</column>
-            <column name="shopping_list_item_id">137</column>
+            <column name="to_do_list_item_id">137</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Заменители зубной пасты</column>
-            <column name="shopping_list_item_id">137</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Натуральна зубна нитка</column>
-            <column name="shopping_list_item_id">138</column>
+            <column name="to_do_list_item_id">138</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Eco floss</column>
-            <column name="shopping_list_item_id">138</column>
+            <column name="to_do_list_item_id">138</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Натуральная зубная нить</column>
-            <column name="shopping_list_item_id">138</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Натуральний дезодорант</column>
-            <column name="shopping_list_item_id">139</column>
+            <column name="to_do_list_item_id">139</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Natural deodorant</column>
-            <column name="shopping_list_item_id">139</column>
+            <column name="to_do_list_item_id">139</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Натуральный дезодорант</column>
-            <column name="shopping_list_item_id">139</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Ефірні олії замість парфумів</column>
-            <column name="shopping_list_item_id">140</column>
+            <column name="to_do_list_item_id">140</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Essential oils instead of perfumes and frangrances</column>
-            <column name="shopping_list_item_id">140</column>
+            <column name="to_do_list_item_id">140</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Эфирные масла вместо духов</column>
-            <column name="shopping_list_item_id">140</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Менструальна чаша / диск</column>
-            <column name="shopping_list_item_id">141</column>
+            <column name="to_do_list_item_id">141</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Menstrual cup / disk</column>
-            <column name="shopping_list_item_id">141</column>
+            <column name="to_do_list_item_id">141</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Ментсруальная чаша / диск</column>
-            <column name="shopping_list_item_id">141</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Менструальна білизна</column>
-            <column name="shopping_list_item_id">142</column>
+            <column name="to_do_list_item_id">142</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable period panties</column>
-            <column name="shopping_list_item_id">142</column>
+            <column name="to_do_list_item_id">142</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Менструальное белье</column>
-            <column name="shopping_list_item_id">142</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Органічні тампони</column>
-            <column name="shopping_list_item_id">143</column>
+            <column name="to_do_list_item_id">143</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Organic tampons</column>
-            <column name="shopping_list_item_id">143</column>
+            <column name="to_do_list_item_id">143</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Органические тампоны</column>
-            <column name="shopping_list_item_id">143</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Багаторазові прокладки</column>
-            <column name="shopping_list_item_id">144</column>
+            <column name="to_do_list_item_id">144</column>
             <column name="language_id">1</column>
         </insert>
-        <insert tableName="shopping_list_item_translations">
+        <insert tableName="to_do_list_item_translations">
             <column name="content">Reusable period pads</column>
-            <column name="shopping_list_item_id">144</column>
+            <column name="to_do_list_item_id">144</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
-            <column name="content">Многоразовые прокладки</column>
-            <column name="shopping_list_item_id">144</column>
-            <column name="language_id">3</column>
         </insert>
     </changeSet>
 </databaseChangeLog>

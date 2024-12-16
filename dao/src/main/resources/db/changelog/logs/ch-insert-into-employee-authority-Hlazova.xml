@@ -77,7 +77,7 @@
         </insert>
         <insert tableName="employee_authorities">
             <column name="id">19</column>
-            <column name="name">CREATE_NEW_RECEIVING_STATION</column>
+            <column name="name">CREATE_NEW_STATION</column>
         </insert>
         <insert tableName="employee_authorities">
             <column name="id">20</column>
@@ -89,15 +89,11 @@
         </insert>
         <insert tableName="employee_authorities">
             <column name="id">22</column>
-            <column name="name">EDIT_RECEIVING_STATION</column>
+            <column name="name">EDIT_STATION</column>
         </insert>
         <insert tableName="employee_authorities">
             <column name="id">23</column>
-            <column name="name">CREATE_NEW_LOCATION_CARD</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">24</column>
-            <column name="name">EDIT_LOCATION_CARD</column>
+            <column name="name">DELETE_LOCATION"</column>
         </insert>
         <insert tableName="employee_authorities">
             <column name="id">25</column>
@@ -109,7 +105,19 @@
         </insert>
         <insert tableName="employee_authorities">
             <column name="id">27</column>
-            <column name="name">EDIT_PRICING_CARD</column>
+            <column name="name">EDIT_DELETE_DEACTIVATE_PRICING_CARD</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">28</column>
+            <column name="name">CREATE_PRICING_CARD</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id" value="29"/>
+            <column name="name" value="DELETE_DEACTIVATE_COURIER"/>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id" value="30"/>
+            <column name="name" value="DELETE_DEACTIVATE_STATION"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

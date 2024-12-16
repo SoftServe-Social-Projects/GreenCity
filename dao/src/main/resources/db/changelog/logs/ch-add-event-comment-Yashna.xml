@@ -18,6 +18,14 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="status" type="varchar(30)" defaultValue="ORIGINAL">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified_date" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -25,32 +33,19 @@
             <column name="event_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="parent_comment_id" type="BIGINT"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="events_comment"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_comment_user"
-                                 referencedTableName="users"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint baseTableName="events_comment"
-                                 baseColumnNames="event_id"
-                                 constraintName="fk_comment_events"
-                                 onDelete="CASCADE"
-                                 referencedTableName="events"
-                                 referencedColumnNames="id"/>
-
-        <dropForeignKeyConstraint baseTableName="events_comment"
-                                  constraintName="fk_comment_user" />
+        <update tableName="events_comment">
+            <column name="modified_date" valueComputed="created_date"/>
+        </update>
 
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_events_comment_user"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
-
-        <dropForeignKeyConstraint baseTableName="events_comment"
-                                  constraintName="fk_comment_events" />
 
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="event_id"

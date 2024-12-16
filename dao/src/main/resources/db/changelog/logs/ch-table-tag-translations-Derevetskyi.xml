@@ -3,7 +3,7 @@
     <changeSet author="Markiyan Derevetskyi" id="Derevetskyi-4">
         <createTable tableName="tag_translations">
             <column name="id" type="bigint" autoIncrement="true" startWith="34"/>
-            <column name="name" type="varchar(20)">
+            <column name="name" type="varchar(30)">
                 <constraints nullable="false"/>
             </column>
             <column name="tag_id" type="bigint">

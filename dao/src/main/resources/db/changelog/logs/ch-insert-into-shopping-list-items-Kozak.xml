@@ -3,436 +3,436 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Natalia-7" author="Kozak">
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">1</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">2</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">3</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">4</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">5</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">6</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">7</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">8</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">9</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">10</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">11</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">12</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">13</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">14</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">15</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">16</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">17</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">18</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">19</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">20</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">21</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">22</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">23</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">24</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">25</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">26</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">27</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">28</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">29</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">30</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">31</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">32</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">33</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">34</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">35</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">36</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">37</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">38</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">39</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">40</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">41</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">42</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">43</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">44</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">45</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">46</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">47</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">48</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">49</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">50</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">51</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">52</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">53</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">54</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">55</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">56</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">57</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">58</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">59</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">60</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">61</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">62</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">63</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">64</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">65</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">66</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">67</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">68</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">69</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">70</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">71</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">72</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">73</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">74</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">75</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">76</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">77</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">78</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">79</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">80</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">81</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">82</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">83</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">84</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">85</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">86</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">87</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">88</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">89</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">90</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">91</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">92</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">93</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">94</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">95</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">96</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">97</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">98</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">99</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">100</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">101</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">102</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">103</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">104</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">105</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">106</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">107</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">108</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">109</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">110</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">111</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">112</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">113</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">114</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">115</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">116</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">117</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">118</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">119</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">120</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">121</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">122</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">123</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">124</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">125</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">126</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">127</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">128</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">129</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">130</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">131</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">132</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">133</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">134</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">135</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">136</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">137</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">138</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">139</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">140</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">141</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">142</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">143</column>
         </insert>
-        <insert tableName="shopping_list_items">
+        <insert tableName="to_do_list_items">
             <column name="id">144</column>
         </insert>
     </changeSet>
