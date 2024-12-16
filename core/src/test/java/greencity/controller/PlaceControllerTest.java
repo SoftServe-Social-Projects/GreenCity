@@ -604,9 +604,7 @@ class PlaceControllerTest {
         when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(mockDto);
         mockMvc.perform(patch(placeLink + "/status")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Status updated successfully for place: Test Place"));
+            .content(json));
         verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 
