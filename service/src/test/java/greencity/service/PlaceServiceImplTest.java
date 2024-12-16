@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
@@ -195,13 +196,15 @@ class PlaceServiceImplTest {
     private FileService fileService;
     @Mock
     private UserNotificationService userNotificationService;
+    @Mock
+    private RestClient restClient;
 
     @BeforeEach
     void init() {
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
-            userNotificationService);
+            userNotificationService, restClient);
     }
 
     @Test

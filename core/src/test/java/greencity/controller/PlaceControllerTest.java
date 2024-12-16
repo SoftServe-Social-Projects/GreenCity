@@ -4,12 +4,12 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceWithUserDto;
-import greencity.entity.Place;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.enums.PlaceStatus;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.DayOfWeek;
@@ -57,10 +57,10 @@ import static greencity.ModelUtils.getFilterPlaceDto;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -589,124 +589,83 @@ class PlaceControllerTest {
     }
 
     @Test
-    void updateStatusWithApprovedStatusAPPROVED() throws Exception {
-        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
-        dto.setPlaceName("testPlace");
-        dto.setNewStatus(PlaceStatus.APPROVED);
-        dto.setUserName("testUser");
-        dto.setEmail("user@example.com");
-        String expectedResponse = "Status updated successfully for place: testPlace";
-        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class)))
-            .thenReturn(dto);
-        doNothing().when(restClient)
-            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+    void updateStatusSuccessfulTest() throws Exception {
         String json = """
-                {
-                    "placeName": "testPlace",
-                    "newStatus": "APPROVED",
-                    "userName": "testUser",
-                    "email": "user@example.com"
-                }
+            {
+              "placeName": "Test Place",
+              "newStatus": "APPROVED",
+              "userName": "Test User",
+              "email": "test@example.com"
+            }
             """;
+        UpdatePlaceStatusWithUserEmailDto mockDto = new UpdatePlaceStatusWithUserEmailDto();
+        mockDto.setPlaceName("Test Place");
+        mockDto.setNewStatus(PlaceStatus.APPROVED);
+        mockDto.setUserName("Test User");
+        mockDto.setEmail("test@example.com");
+        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(mockDto);
         mockMvc.perform(patch(placeLink + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
             .andExpect(status().isOk())
-            .andExpect(content().string(expectedResponse));
+            .andExpect(content().string("Status updated successfully for place: Test Place"));
         verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-        verify(restClient, times(1))
-            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 
     @Test
-    void updateStatusWithApprovedStatusDECLINED() throws Exception {
-        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
-        dto.setPlaceName("testPlace");
-        dto.setNewStatus(PlaceStatus.DECLINED);
-        dto.setUserName("testUser");
-        dto.setEmail("user@example.com");
-        String expectedResponse = "Status updated successfully for place: testPlace";
-        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class)))
-            .thenReturn(dto);
-        doNothing().when(restClient)
-            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+    void updateStatusInvalidInputTest() throws Exception {
         String json = """
-                {
-                    "placeName": "testPlace",
-                    "newStatus": "DECLINED",
-                    "userName": "testUser",
-                    "email": "user@example.com"
-                }
+            {
+              "placeName": "",
+              "newStatus": "APPROVED",
+              "userName": "Test User",
+              "email": "invalid-email"
+            }
             """;
         mockMvc.perform(patch(placeLink + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-            .andExpect(status().isOk())
-            .andExpect(content().string(expectedResponse));
-        verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-        verify(restClient, times(1))
-            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+            .andExpect(status().isBadRequest());
+        verify(placeService, times(0)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 
     @Test
-    void updateStatusDoesNotSendNotificationButSavesDataWhenStatusIsPROPOSED() throws Exception {
-        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
-        dto.setPlaceName("testPlace");
-        dto.setNewStatus(PlaceStatus.PROPOSED);
-        dto.setUserName("testUser");
-        dto.setEmail("user@example.com");
-        Place place = new Place();
-        place.setId(1L);
-        place.setName("testPlace");
-        place.setStatus(PlaceStatus.PROPOSED);
-        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(dto);
+    void updateStatusPlaceNotFoundTest() throws Exception {
         String json = """
-                {
-                    "placeName": "testPlace",
-                    "newStatus": "PROPOSED",
-                    "userName": "testUser",
-                    "email": "user@example.com"
-                }
+            {
+              "placeName": "Nonexistent Place",
+              "newStatus": "DECLINED",
+              "userName": "Test User",
+              "email": "test@example.com"
+            }
             """;
-
-        mockMvc.perform(patch(placeLink + "/status")
+        doThrow(new NotFoundException("Place not found"))
+            .when(placeService).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+        mockMvc.perform(patch("/place/status")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Status updated successfully for place: testPlace"));
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("Place not found"));
         verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-        verify(restClient, times(0))
-            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 
     @Test
-    void updateStatusDoesNotSendNotificationButSavesDataWhenStatusIsDELETED() throws Exception {
-        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
-        dto.setPlaceName("testPlace");
-        dto.setNewStatus(PlaceStatus.DELETED);
-        dto.setUserName("testUser");
-        dto.setEmail("user@example.com");
-        Place place = new Place();
-        place.setId(1L);
-        place.setName("testPlace");
-        place.setStatus(PlaceStatus.DELETED);
-        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(dto);
+    void updateStatusUserNotFoundTest() throws Exception {
         String json = """
-                {
-                    "placeName": "testPlace",
-                    "newStatus": "DELETED",
-                    "userName": "testUser",
-                    "email": "user@example.com"
-                }
+            {
+              "placeName": "Test Place",
+              "newStatus": "DECLINED",
+              "userName": "Test User",
+              "email": "nonexistent@example.com"
+            }
             """;
-
-        mockMvc.perform(patch(placeLink + "/status")
+        doThrow(new NotFoundException("User not found"))
+            .when(placeService).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+        mockMvc.perform(patch("/place/status")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Status updated successfully for place: testPlace"));
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("User not found"));
         verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
-        verify(restClient, times(0))
-            .sendEmailNotificationChangesPlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 }

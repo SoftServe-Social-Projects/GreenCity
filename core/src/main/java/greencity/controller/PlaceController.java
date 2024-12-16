@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
-import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -22,6 +21,7 @@ import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,7 +68,6 @@ public class PlaceController {
      */
     private final PlaceService placeService;
     private final ModelMapper modelMapper;
-    private final RestClient restClient;
 
     /**
      * The controller which returns new proposed {@code Place} from user.
@@ -307,11 +306,12 @@ public class PlaceController {
     })
     @PatchMapping("/status")
     public ResponseEntity<String> updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
-        if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
-            restClient.sendEmailNotificationChangesPlaceStatus(dto);
+        try {
+            placeService.updatePlaceStatus(dto);
+            return ResponseEntity.ok("Status updated successfully for place: " + dto.getPlaceName());
+        } catch (NotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
-        placeService.updatePlaceStatus(dto);
-        return ResponseEntity.ok("Status updated successfully for place: " + dto.getPlaceName());
     }
 
     /**

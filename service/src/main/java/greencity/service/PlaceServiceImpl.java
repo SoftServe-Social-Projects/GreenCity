@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.google.maps.model.GeocodingResult;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -100,6 +101,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final FavoritePlaceRepo favoritePlaceRepo;
     private final FileService fileService;
     private final UserNotificationService userNotificationService;
+    private final RestClient restClient;
 
     /**
      * {@inheritDoc}
@@ -637,6 +639,15 @@ public class PlaceServiceImpl implements PlaceService {
             page.getTotalPages());
     }
 
+    /**
+     * Updates the status of a place, validates the user's existence, and sends a
+     * notification if the status changes to APPROVED or DECLINED.
+     *
+     * @param dto The data transfer object containing place name, user email, and
+     *            the new status.
+     * @return The updated UpdatePlaceStatusWithUserEmailDto.
+     * @throws NotFoundException If the place or user is not found.
+     */
     @Override
     public UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto) {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
@@ -648,6 +659,10 @@ public class PlaceServiceImpl implements PlaceService {
 
         place.setStatus(dto.getNewStatus());
         placeRepo.save(place);
+
+        if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
+            restClient.sendEmailNotificationChangesPlaceStatus(dto);
+        }
         return dto;
     }
 }
