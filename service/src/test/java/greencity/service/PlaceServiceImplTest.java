@@ -879,9 +879,6 @@ class PlaceServiceImplTest {
         place.setId(1L);
         place.setName("test1");
         place.setStatus(PlaceStatus.PROPOSED);
-        User user = new User();
-        user.setEmail("user@example.com");
-        user.setName("testUser");
         when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
         when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.of(user));
         when(placeRepo.save(any(Place.class))).thenReturn(place);

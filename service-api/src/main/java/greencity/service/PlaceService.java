@@ -2,10 +2,23 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.*;
+import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterAdminPlaceDto;
+import greencity.dto.place.FilterPlaceCategory;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
+import greencity.exception.exceptions.NotFoundException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -241,5 +254,13 @@ public interface PlaceService {
      */
     PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
+    /**
+     * Updates the status of a place and ensures the user with the given email
+     * exists.
+     *
+     * @param dto Contains the place name, user email, and the new status.
+     * @return The same UpdatePlaceStatusWithUserEmailDto.
+     * @throws NotFoundException If the place or user is not found.
+     */
     UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto);
 }

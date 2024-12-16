@@ -692,7 +692,6 @@ class RestClientTest {
         message.setEmail("test@example.com");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UpdatePlaceStatusWithUserEmailDto> entity = new HttpEntity<>(message, headers);
         String expectedUrl = GREEN_CITY_USER_ADDRESS + RestTemplateLinks.SEND_NOTIFICATION_STATUS_PLACE;
         when(restTemplate.exchange(eq(expectedUrl), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
             .thenReturn(ResponseEntity.ok().build());
