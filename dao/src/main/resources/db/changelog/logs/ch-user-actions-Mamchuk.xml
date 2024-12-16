@@ -12,6 +12,9 @@
             </column>
             <column name="achievement_category_id" type="BIGINT">
             </column>
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
             <column name="count" type="INTEGER">
             </column>
 
@@ -28,4 +31,18 @@
                                  referencedTableName="achievement_categories"/>
     </changeSet>
 
+    <changeSet id="Spodaryk-28" author="Oksana Spodaryk">
+        <addForeignKeyConstraint baseColumnNames="habit_id"
+                                 baseTableName="user_actions"
+                                 constraintName="fk_user_actions_habit"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+
+    <changeSet id="ch-add-unique-constraint-to-userId-and-achievement_category_id" author="Denys Ryhal">
+        <addUniqueConstraint tableName="user_actions"
+                             columnNames="user_id, achievement_category_id, habit_id"/>
+    </changeSet>
 </databaseChangeLog>

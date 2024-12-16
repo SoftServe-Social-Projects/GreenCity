@@ -104,11 +104,6 @@
             <column name="status">ACTUAL</column>
         </insert>
         <insert tableName="habit_to_do_list_items">
-            <column name="habit_id">6</column>
-            <column name="to_do_list_item_id">21</column>
-            <column name="status">ACTUAL</column>
-        </insert>
-        <insert tableName="habit_to_do_list_items">
             <column name="habit_id">7</column>
             <column name="to_do_list_item_id">22</column>
             <column name="status">ACTUAL</column>
@@ -296,11 +291,6 @@
         <insert tableName="habit_to_do_list_items">
             <column name="habit_id">12</column>
             <column name="to_do_list_item_id">59</column>
-            <column name="status">ACTUAL</column>
-        </insert>
-        <insert tableName="habit_to_do_list_items">
-            <column name="habit_id">13</column>
-            <column name="to_do_list_item_id">21</column>
             <column name="status">ACTUAL</column>
         </insert>
         <insert tableName="habit_to_do_list_items">
@@ -656,16 +646,6 @@
         <insert tableName="habit_to_do_list_items">
             <column name="habit_id">25</column>
             <column name="to_do_list_item_id">123</column>
-            <column name="status">ACTUAL</column>
-        </insert>
-        <insert tableName="habit_to_do_list_items">
-            <column name="habit_id">26</column>
-            <column name="to_do_list_item_id">21</column>
-            <column name="status">ACTUAL</column>
-        </insert>
-        <insert tableName="habit_to_do_list_items">
-            <column name="habit_id">27</column>
-            <column name="to_do_list_item_id">21</column>
             <column name="status">ACTUAL</column>
         </insert>
         <insert tableName="habit_to_do_list_items">

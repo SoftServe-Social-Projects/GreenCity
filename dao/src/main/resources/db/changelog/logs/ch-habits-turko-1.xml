@@ -17,6 +17,7 @@
             </column>
             <column name="user_id" type="BIGINT"/>
             <column name="is_custom_habit" type="boolean" defaultValue="false"/>
+            <column name="is_deleted" type="boolean" defaultValue="false"/>
         </createTable>
     </changeSet>
 

@@ -204,16 +204,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="to_do_list_item_translations">
-            <column name="content">Немає товарів для рекомендації</column>
-            <column name="to_do_list_item_id">21</column>
-            <column name="language_id">1</column>
-        </insert>
-        <insert tableName="to_do_list_item_translations">
-            <column name="content">No items to recommend</column>
-            <column name="to_do_list_item_id">21</column>
-            <column name="language_id">2</column>
-        </insert>
-        <insert tableName="to_do_list_item_translations">
             <column name="content">Бавовняна сумка для покупок</column>
             <column name="to_do_list_item_id">22</column>
             <column name="language_id">1</column>

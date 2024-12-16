@@ -4,10 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="changeContentField2" author="ChekhovskaMaryna">
-        <dropNotNullConstraint tableName="chat_messages" columnName="content" columnDataType="TEXT"/>
-    </changeSet>
-
     <changeSet id="createTriggerAndFunctionForContentCheck" author="ChekhovskaMaryna">
         <createProcedure>
             <![CDATA[

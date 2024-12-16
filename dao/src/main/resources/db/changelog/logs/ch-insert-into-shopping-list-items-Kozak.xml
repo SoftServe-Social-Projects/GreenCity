@@ -64,9 +64,6 @@
             <column name="id">20</column>
         </insert>
         <insert tableName="to_do_list_items">
-            <column name="id">21</column>
-        </insert>
-        <insert tableName="to_do_list_items">
             <column name="id">22</column>
         </insert>
         <insert tableName="to_do_list_items">

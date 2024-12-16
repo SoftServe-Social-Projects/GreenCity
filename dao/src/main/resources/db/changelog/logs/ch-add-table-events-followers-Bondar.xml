@@ -26,5 +26,13 @@
                                  constraintName="fk_events_followers_user_id"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
+
+        <createIndex indexName="events_followers_event_id_index" tableName="events_followers">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex indexName="events_followers_user_id_index" tableName="events_followers">
+            <column name="user_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

@@ -17,6 +17,9 @@
             <column name="second_message_id" type="BIGINT" />
             <column name="time" type="TIMESTAMP" />
             <column name="viewed" type="BOOLEAN" />
+            <column name="email_sent" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
             <column name="target_user_id" type="BIGINT">
                 <constraints foreignKeyName="FK_notification_target_user" references="users (id)" />
             </column>

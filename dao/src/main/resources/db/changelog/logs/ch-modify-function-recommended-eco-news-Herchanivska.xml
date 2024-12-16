@@ -7,7 +7,6 @@
 
     <changeSet id="Herchanivska-3" author="Viktoriia Herchanivska">
         <sql endDelimiter="/">
-            DROP FUNCTION fn_recommended_econews_by_opened_eco_news(bigint);
             CREATE OR REPLACE function fn_recommended_econews_by_opened_eco_news(current_eco_news_id bigint)
     returns TABLE(id bigint, title character varying, text character varying, creation_date timestamp with time zone, image_path character varying, author_id bigint, source character varying, news_rating bigint, short_info character varying, hidden boolean)
     language plpgsql

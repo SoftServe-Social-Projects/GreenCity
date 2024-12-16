@@ -19,10 +19,18 @@
             <column name="creation_date" type="date">
                 <constraints nullable="false"/>
             </column>
+            <column name="type" type="VARCHAR(15)" defaultValue="CHANGE_IT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <rollback>
             <dropTable tableName="events"/>
         </rollback>
+    </changeSet>
+    <changeSet id="Rozhko-01" author="Ilia Rozhko">
+        <createIndex indexName="events_organizer_id_index" tableName="events">
+            <column name="organizer_id"/>
+        </createIndex>
     </changeSet>
     <changeSet id="changeSetEventImagesMax5" author="Max Bohonko">
         <createTable tableName="events_images">
@@ -50,5 +58,14 @@
         <rollback>
             <dropTable tableName="events_attenders"/>
         </rollback>
+    </changeSet>
+    <changeSet id="Rozhko-1" author="Ilia Rozhko">
+        <createIndex indexName="events_attenders_event_id_index" tableName="events_attenders">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex indexName="events_attenders_user_id_index" tableName="events_attenders">
+            <column name="user_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

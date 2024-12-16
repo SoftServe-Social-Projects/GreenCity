@@ -136,11 +136,6 @@
             <column name="authorities_id">27</column>
         </insert>
         <insert tableName="positions_authorities_mapping">
-            <column name="position_id">1</column>
-            <column name="authorities_id">28</column>
-        </insert>
-
-        <insert tableName="positions_authorities_mapping">
             <column name="position_id">6</column>
             <column name="authorities_id">1</column>
         </insert>
@@ -301,10 +296,6 @@
         <insert tableName="positions_authorities_mapping">
             <column name="position_id">7</column>
             <column name="authorities_id">17</column>
-        </insert>
-        <insert tableName="positions_authorities_mapping">
-            <column name="position_id">7</column>
-            <column name="authorities_id">18</column>
         </insert>
         <insert tableName="positions_authorities_mapping">
             <column name="position_id">7</column>

@@ -16,7 +16,7 @@
             <column name="finish_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
-            <column name="online_link" type="varchar(255)">
+            <column name="online_link" type="varchar(2056)">
                 <constraints nullable="true"/>
             </column>
             <column name="latitude" type="float8">

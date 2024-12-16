@@ -10,6 +10,16 @@
             <column name="name" type="varchar">
                 <constraints nullable="false"/>
             </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title_en" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="Herchanivska-7" author="Viktoriia Herchanivska" >
+        <addUniqueConstraint columnNames="title, title_en" constraintName="UK_title_and_title_en_achievement_categories" tableName="achievement_categories"/>
     </changeSet>
 </databaseChangeLog>

@@ -31,6 +31,8 @@
             <column name="image_path" type="varchar(255)"/>
 
             <column name="short_info" type="VARCHAR"/>
+
+            <column name="hidden" type="BOOLEAN" defaultValueBoolean="false" />
         </createTable>
     </changeSet>
 

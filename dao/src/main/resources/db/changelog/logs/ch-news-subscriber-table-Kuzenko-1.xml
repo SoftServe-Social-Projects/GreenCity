@@ -6,14 +6,17 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet author="Bogdan"
                id="1571227598316-154">
-        <createTable tableName="news_subscribers">
+        <createTable tableName="subscriptions">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="email_address" type="varchar(255)">
+            <column name="email" type="varchar(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="unsubscribe_token" type="varchar(255)">
+            <column name="unsubscribe_token" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subscription_type" type="varchar(8)" defaultValue="ECO_NEWS">
                 <constraints nullable="false"/>
             </column>
         </createTable>

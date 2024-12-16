@@ -40,7 +40,10 @@
 
             <column name="progress_notification_has_displayed" type="boolean" defaultValue="false"/>
 
+            <column name="is_private" type="BOOLEAN" defaultValueBoolean="false" />
+
             <column name="user_id" type="bigint" autoIncrement="false"/>
+
             <column name="habit_id" type="bigint" autoIncrement="false"/>
         </createTable>
     </changeSet>

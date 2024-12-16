@@ -15,39 +15,63 @@
         <insert tableName="achievement_categories">
             <column name="id" value="1"/>
             <column name="name" value="CREATE_NEWS"/>
+            <column name="title">Створи Еко Новини.</column>
+            <column name="title_en">Create Eco News.</column>
         </insert>
 
         <insert tableName="achievement_categories">
             <column name="id" value="2"/>
             <column name="name" value="COMMENT_OR_REPLY"/>
+            <column name="title">Коментуй або відповідай.</column>
+            <column name="title_en">Comment or reply.</column>
         </insert>
 
         <insert tableName="achievement_categories">
             <column name="id" value="3"/>
             <column name="name" value="LIKE_COMMENT_OR_REPLY"/>
+            <column name="title">Лайкай коментарі або відповіді.</column>
+            <column name="title_en">Like comment or reply.</column>
         </insert>
 
         <insert tableName="achievement_categories">
             <column name="id" value="4"/>
             <column name="name" value="SHARE_NEWS"/>
+            <column name="title">Поширюй Еко Новини.</column>
+            <column name="title_en">Share Eco News.</column>
         </insert>
 
         <insert tableName="achievement_categories">
             <column name="id" value="5"/>
             <column name="name" value="HABIT"/>
+            <column name="title">Набувай Звички.</column>
+            <column name="title_en">Acquire Habit.</column>
         </insert>
 
         <insert tableName="achievement_categories">
             <column name="id" value="6"/>
             <column name="name" value="ACHIEVEMENT"/>
+            <column name="title">Отримуй Досягнення.</column>
+            <column name="title_en">Get Achievements.</column>
         </insert>
+
         <insert tableName="achievement_categories">
             <column name="id" value="7"/>
             <column name="name" value="CREATE_EVENT"/>
+            <column name="title">Створи Події.</column>
+            <column name="title_en">Create Events.</column>
         </insert>
+
         <insert tableName="achievement_categories">
             <column name="id" value="8"/>
             <column name="name" value="JOIN_EVENT"/>
+            <column name="title">Приєднюйся до Подій.</column>
+            <column name="title_en">Join Events.</column>
+        </insert>
+        <insert tableName="achievement_categories">
+            <column name="id" value="9"/>
+            <column name="name" value="LIKE_HABIT"/>
+            <column name="title">Лайкай Звички.</column>
+            <column name="title_en">Like Habits.</column>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -30,23 +30,4 @@
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
-
-    <changeSet id="Spodaryk-11" author="Oksana Spodaryk">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="events" columnName="events_comments_id"/>
-            </not>
-        </preConditions>
-        <addColumn tableName="events">
-            <column name="events_comments_id" type="BIGINT"/>
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="Spodaryk-12" author="Oksana Spodaryk">
-        <addForeignKeyConstraint baseTableName="events"
-                                 baseColumnNames="events_comments_id"
-                                 constraintName="fk_events_comments_id"
-                                 referencedTableName="events_comment"
-                                 referencedColumnNames="id"/>
-    </changeSet>
 </databaseChangeLog>

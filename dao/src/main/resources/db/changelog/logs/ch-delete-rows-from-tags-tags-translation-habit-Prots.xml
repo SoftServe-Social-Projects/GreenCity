@@ -4,12 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="nazarprots3" author="Nazar Prots">
-        <sql>
-            DELETE FROM tag_translations
-            WHERE name IN ('Приватна', 'Private');
-        </sql>
-    </changeSet>
     <changeSet id="nazarprots4" author="Nazar Prots">
         <sql>
             DELETE FROM habits_tags WHERE tag_id = 26;
