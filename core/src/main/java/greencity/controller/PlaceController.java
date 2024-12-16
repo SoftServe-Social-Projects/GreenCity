@@ -301,7 +301,7 @@ public class PlaceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @PatchMapping("/status")
     public ResponseEntity<UpdatePlaceStatusWithUserEmailDto> updateStatus(
