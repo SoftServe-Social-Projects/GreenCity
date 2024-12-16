@@ -304,9 +304,9 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @PatchMapping("/status")
-    public ResponseEntity<String> updateStatus(@Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
-        placeService.updatePlaceStatus(dto);
-        return ResponseEntity.ok("Status updated successfully for place: " + dto.getPlaceName());
+    public ResponseEntity<UpdatePlaceStatusWithUserEmailDto> updateStatus(
+        @Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
+        return ResponseEntity.ok(placeService.updatePlaceStatus(dto));
     }
 
     /**
