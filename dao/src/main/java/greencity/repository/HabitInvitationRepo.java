@@ -82,14 +82,22 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
               AND i.inviter_habit_assign_id IN (
                   SELECT ha.id FROM habit_assign ha WHERE ha.habit_id = :habitId
               )
+        ),
+        habit_assignments AS (
+            SELECT DISTINCT ha.user_id AS friend_id
+            FROM habit_assign ha
+            WHERE ha.habit_id = :habitId
+            AND ha.status = 'INPROGRESS'
+            AND ha.user_id IN (SELECT id FROM friends)
         )
         SELECT f.id,
                f.name,
                f.email,
                f.profile_picture,
-               COALESCE(inv.has_invitation, FALSE) AS has_invitation
+               COALESCE(inv.friend_id, ha.friend_id) IS NOT NULL AS has_invitation
         FROM filtered_friends f
         LEFT JOIN invitations inv ON f.id = inv.friend_id
+        LEFT JOIN habit_assignments ha ON f.id = ha.friend_id
         """)
     List<Tuple> findUserFriendsWithHabitInvites(
         Long userId, String name, Long habitId, Pageable pageable);

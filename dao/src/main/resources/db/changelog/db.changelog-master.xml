@@ -255,4 +255,5 @@
     <include file="db/changelog/logs/ch-habits-users-dislikes-table.xml"/>
     <include file="db/changelog/logs/сh-update-habit-invitation-statuses.xml"/>
     <include file="db/changelog/logs/ch-remove-duplicates-from-habit-invitations.xml"/>
+    <include file="db/changelog/logs/ch-add-invitee-id-and-inviter-id-to-habit-invite-table.xml"/>
 </databaseChangeLog>
