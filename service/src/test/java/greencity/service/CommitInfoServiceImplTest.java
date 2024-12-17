@@ -6,7 +6,6 @@ import greencity.dto.commitinfo.CommitInfoErrorDto;
 import greencity.dto.commitinfo.CommitInfoSuccessDto;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -23,11 +22,10 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +49,7 @@ class CommitInfoServiceImplTest {
     private static final String COMMIT_HASH = "abc123";
 
     @Test
-    void postConstructInitSuccessTest() throws Exception {
+    void constructorInitializationSuccessTest() throws NoSuchFieldException, IllegalAccessException {
         try (MockedConstruction<FileRepositoryBuilder> ignored = mockConstruction(FileRepositoryBuilder.class,
             (builderMock, context) -> {
                 when(builderMock.setGitDir(new File(".git"))).thenReturn(builderMock);
@@ -59,22 +57,18 @@ class CommitInfoServiceImplTest {
                 when(builderMock.findGitDir()).thenReturn(builderMock);
                 when(builderMock.build()).thenReturn(repository);
             })) {
-
-            var initMethod = CommitInfoServiceImpl.class.getDeclaredMethod("init");
-            initMethod.setAccessible(true);
-
-            assertDoesNotThrow(() -> initMethod.invoke(commitInfoService));
+            CommitInfoServiceImpl service = new CommitInfoServiceImpl();
 
             var repositoryField = CommitInfoServiceImpl.class.getDeclaredField("repository");
             repositoryField.setAccessible(true);
-            Repository initializedRepository = (Repository) repositoryField.get(commitInfoService);
+            Repository initializedRepository = (Repository) repositoryField.get(service);
 
             assertNotNull(initializedRepository);
         }
     }
 
     @Test
-    void postConstructInitFailureThrowsExceptionTest() {
+    void constructorInitializationFailureTest() throws NoSuchFieldException, IllegalAccessException {
         try (MockedConstruction<FileRepositoryBuilder> ignored = mockConstruction(FileRepositoryBuilder.class,
             (builderMock, context) -> {
                 when(builderMock.setGitDir(new File(".git"))).thenReturn(builderMock);
@@ -82,15 +76,32 @@ class CommitInfoServiceImplTest {
                 when(builderMock.findGitDir()).thenReturn(builderMock);
                 when(builderMock.build()).thenThrow(new IOException("Repository not found"));
             })) {
-            InvocationTargetException exception = assertThrows(InvocationTargetException.class, () -> {
-                var initMethod = CommitInfoServiceImpl.class.getDeclaredMethod("init");
-                initMethod.setAccessible(true);
-                initMethod.invoke(commitInfoService);
-            });
+            CommitInfoServiceImpl service = new CommitInfoServiceImpl();
 
-            Throwable cause = exception.getCause();
-            assertInstanceOf(IllegalStateException.class, cause);
-            assertEquals("Failed to initialize repository", cause.getMessage());
+            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField("repository");
+            repositoryField.setAccessible(true);
+            Repository initializedRepository = (Repository) repositoryField.get(service);
+
+            assertNull(initializedRepository);
+        }
+    }
+
+    @Test
+    void getLatestCommitInfoWhenRepositoryNotInitializedReturnsErrorDtoTest() {
+        try (MockedConstruction<FileRepositoryBuilder> ignored = mockConstruction(FileRepositoryBuilder.class,
+            (builderMock, context) -> {
+                when(builderMock.setGitDir(new File(".git"))).thenReturn(builderMock);
+                when(builderMock.readEnvironment()).thenReturn(builderMock);
+                when(builderMock.findGitDir()).thenReturn(builderMock);
+                when(builderMock.build()).thenThrow(new IOException("Repository not found"));
+            })) {
+            CommitInfoServiceImpl service = new CommitInfoServiceImpl();
+            CommitInfoDto actualDto = service.getLatestCommitInfo();
+
+            assertInstanceOf(CommitInfoErrorDto.class, actualDto);
+
+            CommitInfoErrorDto errorDto = (CommitInfoErrorDto) actualDto;
+            assertEquals("Git repository not initialized. Commit info is unavailable.", errorDto.getError());
         }
     }
 

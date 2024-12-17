@@ -4,7 +4,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.commitinfo.CommitInfoDto;
 import greencity.dto.commitinfo.CommitInfoErrorDto;
 import greencity.dto.commitinfo.CommitInfoSuccessDto;
-import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.time.ZoneId;
@@ -13,6 +12,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,8 +25,9 @@ public class CommitInfoServiceImpl implements CommitInfoService {
 
     private static final String COMMIT_REF = "HEAD";
 
-    @PostConstruct
-    private void init() {
+    private static final Logger log = LoggerFactory.getLogger(CommitInfoServiceImpl.class);
+
+    public CommitInfoServiceImpl() {
         try {
             repository = new FileRepositoryBuilder()
                 .setGitDir(new File(".git"))
@@ -33,7 +35,8 @@ public class CommitInfoServiceImpl implements CommitInfoService {
                 .findGitDir()
                 .build();
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to initialize repository", e);
+            repository = null;
+            log.warn("WARNING: .git directory not found. Git commit info will be unavailable.");
         }
     }
 
@@ -42,6 +45,10 @@ public class CommitInfoServiceImpl implements CommitInfoService {
      */
     @Override
     public CommitInfoDto getLatestCommitInfo() {
+        if (repository == null) {
+            return new CommitInfoErrorDto("Git repository not initialized. Commit info is unavailable.");
+        }
+
         try (RevWalk revWalk = new RevWalk(repository)) {
             RevCommit latestCommit = revWalk.parseCommit(repository.resolve(COMMIT_REF));
             String latestCommitHash = latestCommit.name();
