@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,20 +42,20 @@ public class CommitInfoController {
                         "commitDate": "16/12/2024 10:55:00"
                     }""")))
     @ApiResponse(
-        responseCode = "500",
-        description = HttpStatuses.INTERNAL_SERVER_ERROR,
+        responseCode = "404",
+        description = HttpStatuses.NOT_FOUND,
         content = @Content(
             mediaType = "application/json",
             examples = @ExampleObject(
                 value = """
                     {
-                        "error": "Failed to fetch commit info: Repository not found"
+                        "error": "Git repository not initialized. Commit info is unavailable."
                     }""")))
     @GetMapping
     public ResponseEntity<CommitInfoDto> getCommitInfo() {
         CommitInfoDto commitInfo = commitInfoService.getLatestCommitInfo();
         if (commitInfo instanceof CommitInfoErrorDto) {
-            return ResponseEntity.internalServerError().body(commitInfo);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(commitInfo);
         }
         return ResponseEntity.ok(commitInfo);
     }

@@ -61,7 +61,7 @@ class CommitInfoControllerTest {
         when(commitInfoService.getLatestCommitInfo()).thenReturn(commitInfoDto);
 
         mockMvc.perform(get(COMMIT_INFO_URL).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isInternalServerError())
+            .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.error").value(ERROR_MESSAGE));
 
         verify(commitInfoService, times(1)).getLatestCommitInfo();
