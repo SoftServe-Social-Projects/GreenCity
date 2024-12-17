@@ -1,6 +1,14 @@
 package greencity.controller;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceWithUserDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.enums.PlaceStatus;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.DayOfWeek;
@@ -38,13 +46,6 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.PlaceWithUserDto;
-import greencity.dto.place.UpdatePlaceStatusDto;
-import greencity.dto.place.AddPlaceDto;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.UserVO;
@@ -56,17 +57,17 @@ import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.enums.PlaceStatus.APPROVED;
 import static greencity.enums.PlaceStatus.PROPOSED;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -429,28 +430,6 @@ class PlaceControllerTest {
     }
 
     @Test
-    void updateStatus() throws Exception {
-        UpdatePlaceStatusDto updatePlaceStatusDto = new UpdatePlaceStatusDto();
-        updatePlaceStatusDto.setId(1L);
-        updatePlaceStatusDto.setStatus(PROPOSED);
-        String json = """
-            {
-              "id": 1,
-              "status": "PROPOSED"
-            }
-            """;
-
-        this.mockMvc.perform(patch(placeLink + "/status")
-            .content(json)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-
-        verify(placeService).updateStatus(updatePlaceStatusDto.getId(), updatePlaceStatusDto.getStatus());
-
-    }
-
-    @Test
     void filterPlaceBySearchPredicate() throws Exception {
         int pageNumber = 5;
         int pageSize = 20;
@@ -605,5 +584,44 @@ class PlaceControllerTest {
 
         verify(placeService, times(1))
             .findAll(pageable, principal);
+    }
+
+    @Test
+    void updateStatusSuccessfulTest() throws Exception {
+        String json = """
+            {
+              "placeName": "Test Place",
+              "newStatus": "APPROVED",
+              "userName": "Test User",
+              "email": "test@example.com"
+            }
+            """;
+        UpdatePlaceStatusWithUserEmailDto mockDto = new UpdatePlaceStatusWithUserEmailDto();
+        mockDto.setPlaceName("Test Place");
+        mockDto.setNewStatus(PlaceStatus.APPROVED);
+        mockDto.setUserName("Test User");
+        mockDto.setEmail("test@example.com");
+        when(placeService.updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class))).thenReturn(mockDto);
+        mockMvc.perform(patch(placeLink + "/status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json));
+        verify(placeService, times(1)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
+    }
+
+    @Test
+    void updateStatusInvalidInputTest() throws Exception {
+        String json = """
+            {
+              "placeName": "",
+              "newStatus": "APPROVED",
+              "userName": "Test User",
+              "email": "invalid-email"
+            }
+            """;
+        mockMvc.perform(patch(placeLink + "/status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest());
+        verify(placeService, times(0)).updatePlaceStatus(any(UpdatePlaceStatusWithUserEmailDto.class));
     }
 }
