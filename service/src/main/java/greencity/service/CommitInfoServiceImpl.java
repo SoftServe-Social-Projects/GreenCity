@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 public class CommitInfoServiceImpl implements CommitInfoService {
     private Repository repository;
 
+    private static final String COMMIT_REF = "HEAD";
+
     @PostConstruct
     private void init() {
         try {
@@ -41,7 +43,7 @@ public class CommitInfoServiceImpl implements CommitInfoService {
     @Override
     public CommitInfoDto getLatestCommitInfo() {
         try (RevWalk revWalk = new RevWalk(repository)) {
-            RevCommit latestCommit = revWalk.parseCommit(repository.resolve("HEAD"));
+            RevCommit latestCommit = revWalk.parseCommit(repository.resolve(COMMIT_REF));
             String latestCommitHash = latestCommit.name();
             String latestCommitDate = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
                 .withZone(ZoneId.of(AppConstant.UKRAINE_TIMEZONE))
