@@ -16,6 +16,9 @@
             <column name="email_preference" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="periodicity" type="varchar(255)" defaultValue="IMMEDIATELY">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addForeignKeyConstraint

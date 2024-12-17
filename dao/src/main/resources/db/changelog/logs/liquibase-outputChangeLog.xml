@@ -205,7 +205,6 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="expiry_date" type="datetime(6)"/>
             <column name="token" type="VARCHAR(255)"/>
             <column name="user_id" type="BIGINT"/>
         </createTable>
@@ -250,11 +249,6 @@
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-24">
         <addUniqueConstraint columnNames="email" constraintName="UK_ob8kqyqqgmefl0aco34akdtpe" tableName="users"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-25">
-        <createIndex indexName="FK1faffy1p9x95n6v18m5urdkfc" tableName="verify_emails">
-            <column name="user_id"/>
-        </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-26">
         <createIndex indexName="FK3297dq7rblawjc9n4kx9htui4" tableName="places">

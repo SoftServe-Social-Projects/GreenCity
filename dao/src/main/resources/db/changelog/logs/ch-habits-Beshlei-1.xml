@@ -8,10 +8,6 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="acquired" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-
             <column name="create_date" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
@@ -35,8 +31,6 @@
             <column name="status" type="varchar(12)" defaultValue="ACTIVE">
                 <constraints nullable="false"/>
             </column>
-
-            <column name="acquired" type="boolean"/>
 
             <column name="progress_notification_has_displayed" type="boolean" defaultValue="false"/>
 

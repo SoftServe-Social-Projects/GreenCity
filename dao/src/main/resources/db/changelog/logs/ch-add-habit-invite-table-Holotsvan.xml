@@ -9,6 +9,7 @@
             <column name="id" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="status" type="VARCHAR(255)"/>
             <column name="inviter_habit_assign_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -30,5 +31,12 @@
                 referencedTableName="habit_assign"
         referencedColumnNames="id"
         constraintName="fk_habit_invitation_invitee_habit_assign_id"/>
+    </changeSet>
+
+    <changeSet id="unique-inviter-invitee_assigns" author="Ivan Holotsvan">
+        <addUniqueConstraint
+                tableName="habit_invitations"
+                columnNames="inviter_habit_assign_id, invitee_habit_assign_id"
+                constraintName="unique_inviter_invitee_assigns" />
     </changeSet>
 </databaseChangeLog>

@@ -15,7 +15,7 @@
             <column name="project_name" type="VARCHAR(255)" />
             <column name="target_id" type="BIGINT" />
             <column name="second_message_id" type="BIGINT" />
-            <column name="time" type="TIMESTAMP" />
+            <column name="time" type="timestamptz" />
             <column name="viewed" type="BOOLEAN" />
             <column name="email_sent" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>
