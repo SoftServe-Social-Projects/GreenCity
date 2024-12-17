@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 /**
  * DTO for error response.
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommitInfoErrorDto extends CommitInfoDto {
+public class CommitInfoErrorDto implements CommitInfoDto {
     private String error;
 }

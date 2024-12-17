@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 /**
  * DTO for successful commit information response.
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommitInfoSuccessDto extends CommitInfoDto {
+public class CommitInfoSuccessDto implements CommitInfoDto {
     private String commitHash;
     private String commitDate;
 }
