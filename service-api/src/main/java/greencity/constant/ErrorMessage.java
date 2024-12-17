@@ -120,6 +120,7 @@ public class ErrorMessage {
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
         "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
+    public static final String PLACE_NOT_FOUND_BY_NAME = "The place does not exist by this name: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION =
         "The comment with entered id or other params doesn't exist";
