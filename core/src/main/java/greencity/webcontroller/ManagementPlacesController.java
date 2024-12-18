@@ -56,8 +56,8 @@ public class ManagementPlacesController {
      */
     @GetMapping
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable,
-        FilterAdminPlaceDto filterAdminPlaceDto) {
+                               @Parameter(hidden = true) Pageable pageable,
+                               FilterAdminPlaceDto filterAdminPlaceDto) {
         if (!filterAdminPlaceDto.isEmpty()) {
             model.addAttribute("fields", filterAdminPlaceDto);
         } else {
@@ -67,13 +67,13 @@ public class ManagementPlacesController {
             model.addAttribute("query", query);
         }
         PageableDto<AdminPlaceDto> allPlaces =
-            query == null || query.isEmpty() ? placeService.getFilteredPlacesForAdmin(filterAdminPlaceDto, pageable)
-                : placeService.searchBy(pageable, query);
+                query == null || query.isEmpty() ? placeService.getFilteredPlacesForAdmin(filterAdminPlaceDto, pageable)
+                        : placeService.searchBy(pageable, query);
         model.addAttribute("pageable", allPlaces);
         model.addAttribute("categoryList", categoryService.findAllCategoryDto());
         List<String> discountSpecifications = specificationService.findAllSpecificationDto().stream()
-            .map(SpecificationNameDto::getName)
-            .collect(Collectors.toList());
+                .map(SpecificationNameDto::getName)
+                .collect(Collectors.toList());
         model.addAttribute("discountSpecifications", discountSpecifications);
         return "core/management_places";
     }
@@ -98,10 +98,10 @@ public class ManagementPlacesController {
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public GenericResponseDto savePlace(
-        @RequestPart("addPlaceDto") AddPlaceDto addPlaceDto,
-        @Parameter(hidden = true) Principal principal,
-        @RequestPart(required = false) @Nullable MultipartFile[] images,
-        BindingResult bindingResult) {
+            @RequestPart("addPlaceDto") @Valid AddPlaceDto addPlaceDto,
+            BindingResult bindingResult,
+            @Parameter(hidden = true) Principal principal,
+            @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
             placeService.addPlaceFromUi(addPlaceDto, principal.getName(), images);
         }
@@ -117,7 +117,7 @@ public class ManagementPlacesController {
     @ResponseBody
     @PutMapping
     public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto,
-        BindingResult bindingResult) {
+                                          BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             placeService.update(placeUpdateDto);
         }
