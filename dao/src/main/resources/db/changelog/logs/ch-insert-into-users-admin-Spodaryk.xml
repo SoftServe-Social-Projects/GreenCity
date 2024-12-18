@@ -23,7 +23,7 @@
             <column name="first_name" value="ADMIN"/>
             <column name="show_location" value="true"/>
             <column name="show_eco_place" value="true"/>
-            <column name="show_shopping_list" value="true"/>
+            <column name="show_to_do_list" value="true"/>
             <column name="language_id" value="2"/>
             <column name="uuid" value="550e8400-e29b-41d4-a716-446655440000"/>
             <column name="phone_number" value="+380979797979"/>

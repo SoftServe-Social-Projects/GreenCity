@@ -42,7 +42,7 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_dates"
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="events_dates_locations"
                                  constraintName="events_date_event_id_fk" referencedColumnNames="id"
                                  referencedTableName="events"/>
     </changeSet>

@@ -26,11 +26,6 @@
             <column name="tag_id">12</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="tag_translations">
-            <column name="name">Социальный</column>
-            <column name="tag_id">12</column>
-            <column name="language_id">3</column>
-        </insert>
 
 
         <insert tableName="tag_translations">
@@ -43,11 +38,6 @@
             <column name="tag_id">13</column>
             <column name="language_id">2</column>
         </insert>
-        <insert tableName="tag_translations">
-            <column name="name">Экологический</column>
-            <column name="tag_id">13</column>
-            <column name="language_id">3</column>
-        </insert>
 
         <insert tableName="tag_translations">
             <column name="name">Економічний</column>
@@ -58,11 +48,6 @@
             <column name="name">Economic</column>
             <column name="tag_id">14</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="name">Экономический</column>
-            <column name="tag_id">14</column>
-            <column name="language_id">3</column>
         </insert>
 
 

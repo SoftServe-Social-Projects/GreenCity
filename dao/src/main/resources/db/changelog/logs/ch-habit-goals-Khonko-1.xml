@@ -9,7 +9,7 @@
             <column name="habit_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="to-do-list_item_id" type="BIGINT">
+            <column name="to_do_list_item_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="VARCHAR" defaultValue="ACTUAL"/>

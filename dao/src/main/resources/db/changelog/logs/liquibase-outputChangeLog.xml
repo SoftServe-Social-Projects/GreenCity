@@ -194,7 +194,7 @@
             <column name="user_credo" type="varchar(255)"/>
             <column name="show_location" type="boolean"/>
             <column name="show_eco_place" type="boolean"/>
-            <column name="show_shopping_list" type="boolean"/>
+            <column name="show_to_do_list" type="boolean"/>
             <column name="phone_number" type="VARCHAR"/>
             <column name="uuid" type="varchar(60)"/>
             <column name="language_id" defaultValue="2" type="BIGINT"/>
@@ -365,12 +365,6 @@
                id="Yurii-5">
         <addNotNullConstraint columnName="token"
                               constraintName="email_verification_token_cannot_be_null"
-                              tableName="verify_emails"/>
-    </changeSet>
-    <changeSet author="Yurii Koval"
-               id="Yurii-6">
-        <addNotNullConstraint columnName="expiry_date"
-                              constraintName="token_expiry_date_cannot_be_null"
                               tableName="verify_emails"/>
     </changeSet>
     <changeSet author="Yurii Koval"

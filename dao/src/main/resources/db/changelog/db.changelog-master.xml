@@ -28,7 +28,7 @@
     <!--    <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/> modified-->
     <!--    <include file="db/changelog/logs/ch-update-habit-dictionary-turko.xml"/  updated>-->
     <include file="db/changelog/logs/ch-habit-dictionary-translation-turko.xml"/>
-    <include file="db/changelog/logs/ch-eco-news-localization-Kopylchak-1.xml"/>
+<!--    <include file="db/changelog/logs/ch-eco-news-localization-Kopylchak-1.xml"/>-->
     <!--    <include file="db/changelog/logs/ch-eco-news-Kovaliv-1.xml"/> changed-->
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-2.xml"/>
     <!--    <include file="db/changelog/logs/ch-change-table-users-Yurchuk-1.xml"/ changed liquibase-outputChangelog>-->

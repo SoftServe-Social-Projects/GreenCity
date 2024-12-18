@@ -26,9 +26,7 @@
             <column name="room_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="content" type="TEXT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="content" type="varchar(170)"/>
             <column name="create_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
