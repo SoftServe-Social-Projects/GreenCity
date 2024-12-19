@@ -1,9 +1,9 @@
 package greencity.service;
 
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.commitinfo.CommitInfoDto;
-import greencity.dto.commitinfo.CommitInfoErrorDto;
-import greencity.dto.commitinfo.CommitInfoSuccessDto;
+import greencity.exception.exceptions.ResourceNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -23,9 +23,9 @@ import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
@@ -47,19 +47,26 @@ class CommitInfoServiceImplTest {
     private PersonIdent personIdent;
 
     private static final String COMMIT_HASH = "abc123";
+    private static final String COMMIT_REF = "HEAD";
+    private static final String GIT_PATH = ".git";
+    private static final String REPOSITORY_FIELD = "repository";
+
+    private void configureFileRepositoryBuilderMock(FileRepositoryBuilder builderMock) {
+        when(builderMock.setGitDir(new File(GIT_PATH))).thenReturn(builderMock);
+        when(builderMock.readEnvironment()).thenReturn(builderMock);
+        when(builderMock.findGitDir()).thenReturn(builderMock);
+    }
 
     @Test
     void constructorInitializationSuccessTest() throws NoSuchFieldException, IllegalAccessException {
         try (MockedConstruction<FileRepositoryBuilder> ignored = mockConstruction(FileRepositoryBuilder.class,
             (builderMock, context) -> {
-                when(builderMock.setGitDir(new File(".git"))).thenReturn(builderMock);
-                when(builderMock.readEnvironment()).thenReturn(builderMock);
-                when(builderMock.findGitDir()).thenReturn(builderMock);
+                configureFileRepositoryBuilderMock(builderMock);
                 when(builderMock.build()).thenReturn(repository);
             })) {
             CommitInfoServiceImpl service = new CommitInfoServiceImpl();
 
-            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField("repository");
+            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField(REPOSITORY_FIELD);
             repositoryField.setAccessible(true);
             Repository initializedRepository = (Repository) repositoryField.get(service);
 
@@ -71,14 +78,12 @@ class CommitInfoServiceImplTest {
     void constructorInitializationFailureTest() throws NoSuchFieldException, IllegalAccessException {
         try (MockedConstruction<FileRepositoryBuilder> ignored = mockConstruction(FileRepositoryBuilder.class,
             (builderMock, context) -> {
-                when(builderMock.setGitDir(new File(".git"))).thenReturn(builderMock);
-                when(builderMock.readEnvironment()).thenReturn(builderMock);
-                when(builderMock.findGitDir()).thenReturn(builderMock);
-                when(builderMock.build()).thenThrow(new IOException("Repository not found"));
+                configureFileRepositoryBuilderMock(builderMock);
+                when(builderMock.build()).thenThrow(new IOException());
             })) {
             CommitInfoServiceImpl service = new CommitInfoServiceImpl();
 
-            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField("repository");
+            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField(REPOSITORY_FIELD);
             repositoryField.setAccessible(true);
             Repository initializedRepository = (Repository) repositoryField.get(service);
 
@@ -87,27 +92,23 @@ class CommitInfoServiceImplTest {
     }
 
     @Test
-    void getLatestCommitInfoWhenRepositoryNotInitializedReturnsErrorDtoTest() {
+    void getLatestCommitInfoWhenRepositoryNotInitializedThrowsNotFoundExceptionTest() {
         try (MockedConstruction<FileRepositoryBuilder> ignored = mockConstruction(FileRepositoryBuilder.class,
             (builderMock, context) -> {
-                when(builderMock.setGitDir(new File(".git"))).thenReturn(builderMock);
-                when(builderMock.readEnvironment()).thenReturn(builderMock);
-                when(builderMock.findGitDir()).thenReturn(builderMock);
-                when(builderMock.build()).thenThrow(new IOException("Repository not found"));
+                configureFileRepositoryBuilderMock(builderMock);
+                when(builderMock.build()).thenThrow(new IOException());
             })) {
             CommitInfoServiceImpl service = new CommitInfoServiceImpl();
-            CommitInfoDto actualDto = service.getLatestCommitInfo();
+            ResourceNotFoundException notFoundException =
+                assertThrows(ResourceNotFoundException.class, service::getLatestCommitInfo);
 
-            assertInstanceOf(CommitInfoErrorDto.class, actualDto);
-
-            CommitInfoErrorDto errorDto = (CommitInfoErrorDto) actualDto;
-            assertEquals("Git repository not initialized. Commit info is unavailable.", errorDto.getError());
+            assertEquals(ErrorMessage.GIT_REPOSITORY_NOT_INITIALIZED, notFoundException.getMessage());
         }
     }
 
     @Test
     void getLatestCommitInfoWithValidDataReturnsSuccessDtoTest() throws IOException {
-        when(repository.resolve("HEAD")).thenReturn(objectId);
+        when(repository.resolve(COMMIT_REF)).thenReturn(objectId);
         when(revCommit.name()).thenReturn(COMMIT_HASH);
         when(revCommit.getAuthorIdent()).thenReturn(personIdent);
 
@@ -119,41 +120,40 @@ class CommitInfoServiceImplTest {
                 (revWalkMock, context) -> when(revWalkMock.parseCommit(objectId)).thenReturn(revCommit))) {
             CommitInfoDto actualDto = commitInfoService.getLatestCommitInfo();
 
-            assertInstanceOf(CommitInfoSuccessDto.class, actualDto);
-            CommitInfoSuccessDto successDto = (CommitInfoSuccessDto) actualDto;
-            assertEquals(COMMIT_HASH, successDto.getCommitHash());
+            assertEquals(COMMIT_HASH, actualDto.getCommitHash());
 
             String latestCommitDate = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
                 .withZone(ZoneId.of(AppConstant.UKRAINE_TIMEZONE))
                 .format(expectedDate);
-            assertEquals(latestCommitDate, successDto.getCommitDate());
+            assertEquals(latestCommitDate, actualDto.getCommitDate());
         }
     }
 
     @Test
     void getLatestCommitInfoWhenRepositoryResolveThrowsIOExceptionReturnsErrorDtoTest() throws IOException {
-        when(repository.resolve("HEAD")).thenThrow(new IOException("Test I/O exception"));
+        String testExceptionMessage = "Test I/O exception";
+        when(repository.resolve(COMMIT_REF)).thenThrow(new IOException(testExceptionMessage));
 
-        CommitInfoDto actualDto = commitInfoService.getLatestCommitInfo();
-        assertInstanceOf(CommitInfoErrorDto.class, actualDto);
+        ResourceNotFoundException notFoundException =
+            assertThrows(ResourceNotFoundException.class, () -> commitInfoService.getLatestCommitInfo());
 
-        CommitInfoErrorDto errorDto = (CommitInfoErrorDto) actualDto;
-        assertEquals("Failed to fetch commit info due to I/O error: Test I/O exception", errorDto.getError());
+        assertEquals(ErrorMessage.FAILED_TO_FETCH_COMMIT_INFO + testExceptionMessage, notFoundException.getMessage());
     }
 
     @Test
     void getLatestCommitInfoWhenRevWalkParseCommitThrowsIOExceptionReturnsErrorDtoTest() throws IOException {
-        when(repository.resolve("HEAD")).thenReturn(objectId);
+        String missingObjectMessage = "Missing object";
+        when(repository.resolve(COMMIT_REF)).thenReturn(objectId);
 
         try (
             MockedConstruction<RevWalk> ignored = mockConstruction(RevWalk.class,
                 (revWalkMock, context) -> when(revWalkMock.parseCommit(objectId)).thenThrow(
-                    new IOException("Missing object")))) {
-            CommitInfoDto actualDto = commitInfoService.getLatestCommitInfo();
-            assertInstanceOf(CommitInfoErrorDto.class, actualDto);
+                    new IOException(missingObjectMessage)))) {
+            ResourceNotFoundException notFoundException =
+                assertThrows(ResourceNotFoundException.class, () -> commitInfoService.getLatestCommitInfo());
 
-            CommitInfoErrorDto errorDto = (CommitInfoErrorDto) actualDto;
-            assertEquals("Failed to fetch commit info due to I/O error: Missing object", errorDto.getError());
+            assertEquals(ErrorMessage.FAILED_TO_FETCH_COMMIT_INFO + missingObjectMessage,
+                notFoundException.getMessage());
         }
     }
 }

@@ -1,31 +1,29 @@
 package greencity.service;
 
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.commitinfo.CommitInfoDto;
-import greencity.dto.commitinfo.CommitInfoErrorDto;
-import greencity.dto.commitinfo.CommitInfoSuccessDto;
+import greencity.exception.exceptions.ResourceNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
  * Service implementation for fetching Git commit information.
  */
 @Service
+@Slf4j
 public class CommitInfoServiceImpl implements CommitInfoService {
     private Repository repository;
 
     private static final String COMMIT_REF = "HEAD";
-
-    private static final Logger log = LoggerFactory.getLogger(CommitInfoServiceImpl.class);
 
     public CommitInfoServiceImpl() {
         try {
@@ -36,7 +34,7 @@ public class CommitInfoServiceImpl implements CommitInfoService {
                 .build();
         } catch (IOException e) {
             repository = null;
-            log.warn("WARNING: .git directory not found. Git commit info will be unavailable.");
+            log.warn(ErrorMessage.WARNING_GIT_DIRECTORY_NOT_FOUND);
         }
     }
 
@@ -46,7 +44,7 @@ public class CommitInfoServiceImpl implements CommitInfoService {
     @Override
     public CommitInfoDto getLatestCommitInfo() {
         if (repository == null) {
-            return new CommitInfoErrorDto("Git repository not initialized. Commit info is unavailable.");
+            throw new ResourceNotFoundException(ErrorMessage.GIT_REPOSITORY_NOT_INITIALIZED);
         }
 
         try (RevWalk revWalk = new RevWalk(repository)) {
@@ -56,9 +54,9 @@ public class CommitInfoServiceImpl implements CommitInfoService {
                 .withZone(ZoneId.of(AppConstant.UKRAINE_TIMEZONE))
                 .format(latestCommit.getAuthorIdent().getWhenAsInstant());
 
-            return new CommitInfoSuccessDto(latestCommitHash, latestCommitDate);
+            return new CommitInfoDto(latestCommitHash, latestCommitDate);
         } catch (IOException e) {
-            return new CommitInfoErrorDto("Failed to fetch commit info due to I/O error: " + e.getMessage());
+            throw new ResourceNotFoundException(ErrorMessage.FAILED_TO_FETCH_COMMIT_INFO + e.getMessage());
         }
     }
 }

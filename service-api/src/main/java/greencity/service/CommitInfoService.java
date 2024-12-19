@@ -9,7 +9,7 @@ public interface CommitInfoService {
     /**
      * Fetches the latest Git commit hash and date.
      *
-     * @return {@link CommitInfoDto}, either success or error
+     * @return {@link CommitInfoDto}
      */
     CommitInfoDto getLatestCommitInfo();
 }
