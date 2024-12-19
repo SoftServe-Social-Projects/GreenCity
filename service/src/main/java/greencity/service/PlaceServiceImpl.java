@@ -557,9 +557,10 @@ public class PlaceServiceImpl implements PlaceService {
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
-        List<GeocodingResult> geocodingResults = Optional.ofNullable(googleApiService.getResultFromGeoCode(dto.getLocationName()))
-                .filter(results -> !results.isEmpty())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + dto.getLocationName()));
+        List<GeocodingResult> geocodingResults = Optional
+            .ofNullable(googleApiService.getResultFromGeoCode(dto.getLocationName()))
+            .filter(results -> !results.isEmpty())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + dto.getLocationName()));
         placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
