@@ -125,6 +125,11 @@ $(document).ready(function () {
         event.preventDefault();
         clearAllErrorsSpan();
 
+        let isValid = validateForm();
+        if (!isValid) {
+            return;
+        }
+
         let formData = new FormData(document.getElementById('addPlaceForm'));
 
         let place;
@@ -152,8 +157,8 @@ $(document).ready(function () {
 
         formData.append('addPlaceDto', JSON.stringify(place));
         var file = document.getElementById("creationFile").files[0];
-        console.log(file);
         formData.append("images", file);
+
         $.ajax({
             url: '/management/places',
             type: type,
@@ -163,24 +168,86 @@ $(document).ready(function () {
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
-                        $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError);
+                        $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError).show();
                     });
                 } else {
                     location.reload();
                 }
             },
             error: function (xhr, status, error) {
-                console.error(error);
-                alert('Error');
+                console.error('XHR Status: ' + xhr.status);
+                console.error('Error: ' + error);
+                console.error('Response Text: ' + xhr.responseText);
+
+                let errorMessage = `Error status: ${xhr.status} - ${error}`;
+                if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMessage += `\nMessage: ${response.message || 'Unknown error'}`;
+                    } catch (e) {
+                        errorMessage += `\nMessage: ${xhr.responseText}`;
+                    }
+                }
+
+                alert(errorMessage);
             }
         });
     });
 
-    function getErrorSpanId(fieldName) {
-        if (fieldName.includes('openingHoursList[].')) {
-            fieldName = 'openingHoursList';
+    function validateForm() {
+        let isValid = true;
+
+        const requiredFields = [
+            { id: 'address', errorId: 'errorModalSavelocation', message: messages["greenCity.places.page.add.address"] },
+            { id: 'placeName', errorId: 'errorModalSavename', message: messages["greenCity.places.page.add.place.name"] },
+            { id: 'category', errorId: 'errorModalSavecategory', message: messages["greenCity.places.page.add.category"] },
+        ];
+
+        requiredFields.forEach(field => {
+            let value = $(`#${field.id}`).val();
+            if (!value) {
+                $(`#${field.errorId}`).text(field.message).show();
+                isValid = false;
+            }
+        });
+
+
+        let openingHoursChecked = false;
+        $('input[name="day"]:checked').each(function () {
+            let row = $(this).closest('.form-row');
+            let openTime = row.find('input[name="openTime"]').val();
+            let closeTime = row.find('input[name="closeTime"]').val();
+
+            if (!openTime || !closeTime) {
+                $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.working.hovers"]).show();
+                isValid = false;
+            } else {
+                let openTimeMinutes = timeToMinutes(openTime);
+                let closeTimeMinutes = timeToMinutes(closeTime);
+
+                if (closeTimeMinutes - openTimeMinutes < 30) {
+                    $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.hovers.is.incorrect"]).show();
+                    isValid = false;
+                }
+            }
+            openingHoursChecked = true;
+        });
+
+        if (!openingHoursChecked) {
+            $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.day.hovers"]).show();
+            isValid = false;
         }
-        return 'errorModalSave' + fieldName;
+
+        return isValid;
+    }
+
+    function timeToMinutes(time) {
+        let [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function clearAllErrorsSpan() {
+        $('.errorSpan').text('').hide();
     }
 
     function getDiscountValues() {
@@ -243,6 +310,7 @@ $(document).ready(function () {
             },
         });
     });
+
     //delete в deleteAllSelectedModal
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();

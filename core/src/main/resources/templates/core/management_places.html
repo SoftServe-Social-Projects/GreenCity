@@ -36,9 +36,11 @@
         .displayNone {
             display: none;
         }
-
         table {
             table-layout: auto;
+        }
+        .no-wrap {
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -333,7 +335,7 @@
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.address}]]</label>
                             <input class="form-control" id="address" name="address" type="text">
-                            <span class="errorSpan" th:id="errorModalSavelocation.address"></span>
+                            <span class="errorSpan" th:id="errorModalSavelocation"></span>
                         </div>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.place.name}]]</label>
@@ -356,7 +358,7 @@
                                     </tr>
                                 </th:block>
                             </select>
-                            <span class="errorSpan" th:id="errorModalSavecategory.name"></span>
+                            <span class="errorSpan" th:id="errorModalSavecategory"></span>
                         </div>
 
                         <div class="form-group">
@@ -376,7 +378,7 @@
                                                 <input class="form-control-sm" name="openTime" type="time">
                                             </div>
                                             <div class="form-group col-6">
-                                                <label>[[#{greenCity.pages.table.end.time}]]</label>
+                                                <label class="no-wrap">[[#{greenCity.pages.table.end.time}]]</label>
                                                 <input class="form-control-sm" name="closeTime" type="time">
                                             </div>
                                         </div>
@@ -388,11 +390,11 @@
                                         <div class="form-row break-hours displayNone">
                                             <div class="form-group">
                                                 <div class="form-row">
-                                                    <div class="form-group col-5">
+                                                    <div class="form-group col-6">
                                                         <label>[[#{greenCity.pages.table.break.start.p}]]</label>
                                                         <input class="form-control-sm" name="startTime" type="time">
                                                     </div>
-                                                    <div class="form-group col-5">
+                                                    <div class="form-group col-6">
                                                         <label>[[#{greenCity.pages.table.break.end.p}]]</label>
                                                         <input class="form-control-sm" name="endTime" type="time">
                                                     </div>
@@ -485,6 +487,17 @@
 <script defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3xs7Kczo46LFcQRFKPMdrE0lU4qsR_S4&callback=initMap">
 </script>
+<script th:inline="javascript">
+    const messages = {
+        "greenCity.places.page.add.address": [[#{greenCity.places.page.add.address}]],
+        "greenCity.places.page.add.place.name": [[#{greenCity.places.page.add.place.name}]],
+        "greenCity.places.page.add.category": [[#{greenCity.places.page.add.category}]],
+        "greenCity.places.page.add.working.hovers": [[#{greenCity.places.page.add.working.hovers}]],
+        "greenCity.places.page.add.day.hovers": [[#{greenCity.places.page.add.day.hovers}]],
+        "greenCity.places.page.hovers.is.incorrect": [[#{greenCity.places.page.hovers.is.incorrect}]]
+    };
+</script>
+
 <script th:inline="javascript">
     let discountSpecifications = /*[[${discountSpecifications}]]*/ [];
 </script>

@@ -553,11 +553,13 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException("User with email " + email + " doesn't exist"));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
-        List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
+        List<GeocodingResult> geocodingResults = Optional.ofNullable(googleApiService.getResultFromGeoCode(dto.getLocationName()))
+                .filter(results -> !results.isEmpty())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + dto.getLocationName()));
         placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
