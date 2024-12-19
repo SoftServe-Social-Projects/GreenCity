@@ -1,6 +1,6 @@
 
 function clearAllErrorsSpan() {
-    $('.errorSpan').text('');
+    $('.errorSpan').text('').hide();
 }
 
 let map;
@@ -59,25 +59,33 @@ $(document).ready(function () {
     // Activate tooltip
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Select/Deselect checkboxes
     let checkbox = $('table tbody input[type="checkbox"]');
-    $("#selectAll").on('click', function () {
-        if (this.checked) {
-            checkbox.each(function () {
-                if (!this.disabled) {
-                    this.checked = true;
-                }
-            });
+    let actionButtons = $('#btnDelete');
+
+    function toggleActionButtons() {
+        let anyChecked = checkbox.filter(':checked').length > 0;
+        if (anyChecked) {
+            actionButtons.removeClass('disabled').attr('href', '#deleteAllSelectedModal');
         } else {
-            checkbox.each(function () {
-                this.checked = false;
-            });
+            actionButtons.addClass('disabled').removeAttr('href');
         }
+    }
+
+    $("#selectAll").on('click', function () {
+        let isChecked = this.checked;
+        checkbox.each(function () {
+            if (!this.disabled) {
+                this.checked = isChecked;
+            }
+        });
+        toggleActionButtons();
     });
+
     checkbox.on('click', function () {
         if (!this.checked) {
             $("#selectAll").prop("checked", false);
         }
+        toggleActionButtons();
     });
 
     // Add place button (popup)
@@ -246,10 +254,6 @@ $(document).ready(function () {
         return hours * 60 + minutes;
     }
 
-    function clearAllErrorsSpan() {
-        $('.errorSpan').text('').hide();
-    }
-
     function getDiscountValues() {
         let discounts = [];
         $('#discounts').find('.discount').each(function () {
@@ -310,7 +314,6 @@ $(document).ready(function () {
             },
         });
     });
-
     //delete в deleteAllSelectedModal
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
