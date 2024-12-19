@@ -2,14 +2,12 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.commitinfo.CommitInfoDto;
-import greencity.dto.commitinfo.CommitInfoErrorDto;
 import greencity.service.CommitInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +25,7 @@ public class CommitInfoController {
     /**
      * Endpoint to fetch the latest Git commit hash and date.
      *
-     * @return {@link CommitInfoDto}, either success or error
+     * @return {@link CommitInfoDto}
      */
     @Operation(summary = "Get the latest commit hash and date.")
     @ApiResponse(
@@ -49,14 +47,15 @@ public class CommitInfoController {
             examples = @ExampleObject(
                 value = """
                     {
-                        "error": "Git repository not initialized. Commit info is unavailable."
-                    }""")))
+                       "timestamp": "2024-12-19T14:42:06.469+00:00",
+                       "status": 404,
+                       "error": "Not Found",
+                       "trace": "greencity.exception.exceptions.ResourceNotFoundException: Git repository not initialized. Commit info is unavailable.",
+                       "message": "Git repository not initialized. Commit info is unavailable.",
+                       "path": "/commit-info"
+                     }""")))
     @GetMapping
     public ResponseEntity<CommitInfoDto> getCommitInfo() {
-        CommitInfoDto commitInfo = commitInfoService.getLatestCommitInfo();
-        if (commitInfo instanceof CommitInfoErrorDto) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(commitInfo);
-        }
-        return ResponseEntity.ok(commitInfo);
+        return ResponseEntity.ok(commitInfoService.getLatestCommitInfo());
     }
 }
