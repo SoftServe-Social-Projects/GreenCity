@@ -34,7 +34,7 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
             }
 
             for (var eventDateLocationDto : eventDateLocationDtos) {
-                if (!validateEventDateLocation(eventDateLocationDto, context)) {
+                if (!isValidEventDateLocation(eventDateLocationDto, context)) {
                     return false;
                 }
 
@@ -63,7 +63,7 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
             List<EventDateLocationDto> eventDateLocationDtos = updateEventDto.getDatesLocations();
 
             for (var eventDateLocationDto : eventDateLocationDtos) {
-                if (!validateEventDateLocation(eventDateLocationDto, context)) {
+                if (!isValidEventDateLocation(eventDateLocationDto, context)) {
                     return false;
                 }
             }
@@ -74,7 +74,7 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
         return false;
     }
 
-    private boolean validateEventDateLocation(EventDateLocationDto eventDateLocationDto,
+    private boolean isValidEventDateLocation(EventDateLocationDto eventDateLocationDto,
         ConstraintValidatorContext context) {
         if (eventDateLocationDto.getStartDate() == null) {
             context.buildConstraintViolationWithTemplate(ErrorMessage.EMPTY_START_DATE)
