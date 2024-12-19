@@ -50,7 +50,7 @@ public class CommitInfoController {
                        "timestamp": "2024-12-19T14:42:06.469+00:00",
                        "status": 404,
                        "error": "Not Found",
-                       "trace": "greencity.exception.exceptions.ResourceNotFoundException: Git repository not initialized. Commit info is unavailable.",
+                       "trace": "greencity.exception.exceptions.ResourceNotFoundException",
                        "message": "Git repository not initialized. Commit info is unavailable.",
                        "path": "/commit-info"
                      }""")))
