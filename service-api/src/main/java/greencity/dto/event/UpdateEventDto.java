@@ -19,7 +19,7 @@ public class UpdateEventDto {
     @Size(min = 20, max = 63206)
     private String description;
 
-    @Max(7)
+    @Size(max = 7)
     private List<EventDateLocationDto> datesLocations;
 
     private String titleImage;

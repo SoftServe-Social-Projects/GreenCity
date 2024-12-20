@@ -156,6 +156,8 @@ public final class ErrorMessage {
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String WRONG_DATE_TIME_FORMAT =
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
+    public static final String EMPTY_START_DATE = "Start date can't be empty";
+    public static final String EMPTY_FINISH_DATE = "Finish date can't be empty";
     public static final String INVALID_DATE_RANGE = "The 'From' date must be earlier than the 'To' date";
     public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en' or 'ua'";
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
