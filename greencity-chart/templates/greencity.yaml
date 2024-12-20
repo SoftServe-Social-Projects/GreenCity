@@ -19,19 +19,20 @@ spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-      - name: {{ .Release.Name }}-greencity
-        image: {{ .Values.deployment.image }}
-        resources:
-          requests:
-            cpu: {{ .Values.deployment.requests.cpu }}
-            memory: {{ .Values.deployment.requests.memory }}
-          limits:
-            cpu: {{ .Values.deployment.limits.cpu }}
-            memory: {{ .Values.deployment.limits.memory }}
-        startupProbe:
-          httpGet:
+        - name: {{ .Release.Name }}-greencity
+          image: {{ .Values.deployment.image }}
+          resources:
+            requests:
+              cpu: {{ .Values.deployment.requests.cpu }}
+              memory: {{ .Values.deployment.requests.memory }}
+            limits:
+              cpu: {{ .Values.deployment.limits.cpu }}
+              memory: {{ .Values.deployment.limits.memory }}
+          startupProbe:
+            httpGet:
               path: /swagger-ui.html
               port: 8080
+
           periodSeconds: 10
           failureThreshold: 20
         env:
