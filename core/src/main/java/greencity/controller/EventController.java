@@ -12,6 +12,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.user.UserVO;
@@ -157,7 +158,7 @@ public class EventController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventDto> getEvent(
+    public ResponseEntity<EventResponseDto> getEvent(
         @PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.ok().body(eventService.getEvent(eventId, principal));

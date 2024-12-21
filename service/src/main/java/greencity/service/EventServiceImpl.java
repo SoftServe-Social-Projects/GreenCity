@@ -13,6 +13,7 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
@@ -223,18 +224,33 @@ public class EventServiceImpl implements EventService {
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_EVENT"), userVO);
     }
 
+    // /**
+    // * {@inheritDoc}
+    // */
+    // @Override
+    // public EventDto getEvent(Long eventId, Principal principal) {
+    // Event event = eventRepo.findById(eventId)
+    // .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+    // if (principal != null) {
+    // User currentUser =
+    // modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+    // return buildEventDto(event, currentUser.getId());
+    // }
+    // return buildEventDto(event);
+    // }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public EventDto getEvent(Long eventId, Principal principal) {
+    public EventResponseDto getEvent(Long eventId, Principal principal) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         if (principal != null) {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            return buildEventDto(event, currentUser.getId());
+            return buildEventResponseDto(event, currentUser.getId());
         }
-        return buildEventDto(event);
+        return modelMapper.map(event, EventResponseDto.class);
     }
 
     /**
@@ -711,6 +727,20 @@ public class EventServiceImpl implements EventService {
             .map(Event::getId)
             .toList();
         eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
+    }
+
+    private EventResponseDto buildEventResponseDto(Event event, Long userId) {
+        EventResponseDto eventResponseDto = modelMapper.map(event, EventResponseDto.class);
+        Integer currentUserGrade = event.getEventGrades()
+            .stream()
+            .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
+            .map(EventGrade::getGrade)
+            .findFirst()
+            .orElse(null);
+        setFollowers(List.of(), userId);
+        setSubscribes(List.of(), userId);
+
+        return eventResponseDto;
     }
 
     private EventDto buildEventDto(Event event, Long userId) {
