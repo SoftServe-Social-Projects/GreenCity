@@ -182,19 +182,6 @@ class ManagementHabitServiceImplTest {
         ht.setName(htDto.getName());
     }
 
-//    @Test
-//    void deleteTest() {
-//        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).build()));
-//        Habit habit = habitRepo.findById(1L).orElse(null);
-//        when(modelMapper.map(habit, HabitVO.class)).thenReturn(HabitVO.builder().id(1L).build());
-//        userActionRepo.deleteAllByHabitId(1L);
-//        managementHabitService.delete(1L);
-//        verify(habitTranslationRepo, times(1)).deleteAllByHabit(habit);
-//        verify(habitAssignService, times(1)).deleteAllHabitAssignsByHabit(modelMapper.map(habit, HabitVO.class));
-//        verify(habitRepo, times(1)).delete(habit);
-//
-//    }
-
     @Test
     void deleteTest() {
         Habit habit = Habit.builder().id(1L).build();

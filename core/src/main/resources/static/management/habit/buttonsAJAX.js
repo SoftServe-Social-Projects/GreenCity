@@ -121,7 +121,7 @@ function deleteHabit(deleteUrl) {
     }
 
     $.ajax({
-        url: deleteUrl, // Use the full URL from the `href` attribute
+        url: deleteUrl,
         type: 'DELETE',
         success: function () {
             alert('Habit deleted successfully!');
@@ -137,8 +137,8 @@ function deleteHabit(deleteUrl) {
 
 $(document).ready(function () {
     $(document).on('click', '.eDelBtn', function (event) {
-        event.preventDefault(); // Prevent the default link behavior
-        const deleteUrl = $(this).attr('href'); // Get the `href` attribute value
+        event.preventDefault();
+        const deleteUrl = $(this).attr('href');
         deleteHabit(deleteUrl);
     });
 })
