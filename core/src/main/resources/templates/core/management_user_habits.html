@@ -268,6 +268,11 @@
                                         <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
                                             <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                         </a>
+                                        <a class="delete eDelBtn" data-toggle="modal"
+                                           th:href="@{/management/habits/delete(id=${habit.id})}">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.delete}">&#xE872;</i>
+                                        </a>
                                     </td>
 
                                 </tr>

@@ -115,6 +115,35 @@ function unlinkToDo(habitId) {
     });
 }
 
+function deleteHabit(deleteUrl) {
+    if (!confirm('Are you sure you want to delete this habit?')) {
+        return;
+    }
+
+    $.ajax({
+        url: deleteUrl, // Use the full URL from the `href` attribute
+        type: 'DELETE',
+        success: function () {
+            alert('Habit deleted successfully!');
+            console.log('Habit successfully deleted');
+            location.reload();
+        },
+        error: function (xhr) {
+            console.error('Error deleting habit:', xhr.responseText);
+            alert('Failed to delete habit. Please try again.');
+        }
+    });
+}
+
+$(document).ready(function () {
+    $(document).on('click', '.eDelBtn', function (event) {
+        event.preventDefault(); // Prevent the default link behavior
+        const deleteUrl = $(this).attr('href'); // Get the `href` attribute value
+        deleteHabit(deleteUrl);
+    });
+})
+
+
 function linknew() {
     // TODO: create request
 }
