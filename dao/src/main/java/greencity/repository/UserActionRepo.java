@@ -23,8 +23,8 @@ public interface UserActionRepo extends JpaRepository<UserAction, Long> {
      * @author Orest Mamchuk
      */
     @Query(value = "SELECT ua FROM UserAction ua "
-            + "WHERE ua.achievementCategory.id = :achievementCategoryId "
-            + "AND ua.user.id = :userId")
+        + "WHERE ua.achievementCategory.id = :achievementCategoryId "
+        + "AND ua.user.id = :userId")
     UserAction findByUserIdAndAchievementCategoryId(Long userId, Long achievementCategoryId);
 
     /**
@@ -38,9 +38,9 @@ public interface UserActionRepo extends JpaRepository<UserAction, Long> {
      * @author Oksana Spodaryk
      */
     @Query(value = "SELECT ua FROM UserAction ua "
-            + "WHERE ua.achievementCategory.id = :achievementCategoryId "
-            + "AND ua.user.id = :userId "
-            + "AND ua.habit.id = :habitId")
+        + "WHERE ua.achievementCategory.id = :achievementCategoryId "
+        + "AND ua.user.id = :userId "
+        + "AND ua.habit.id = :habitId")
     UserAction findByUserIdAndAchievementCategoryIdAndHabitId(Long userId, Long achievementCategoryId, Long habitId);
 
     /**
