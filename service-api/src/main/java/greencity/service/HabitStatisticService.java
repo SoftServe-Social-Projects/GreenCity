@@ -1,14 +1,18 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.*;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitInterestStatisticsDto;
 import java.util.List;
-import java.util.Map;
 
 public interface HabitStatisticService {
     /**
      * Method for creating {@code HabitStatistic} by {@code Habit}, {@code User}
-     * id's and {@link AddHabitStatisticDto} instance.
+     * id's and {@link greencity.dto.habitstatistic.AddHabitStatisticDto} instance.
      *
      * @param habitId              {@code Habit} id.
      * @param userId               {@code User} id.
@@ -94,7 +98,7 @@ public interface HabitStatisticService {
     /**
      * Calculate user interest statistics.
      *
-     * @return {@link HabitInterestStatisticsDto}
+     * @return {@link HabitInterestStatisticsDto}.
      */
     HabitInterestStatisticsDto calculateUserInterest();
 

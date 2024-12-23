@@ -1,4 +1,5 @@
 package greencity.webcontroller;
+
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatistic.HabitInterestStatisticsDto;
 import greencity.service.HabitStatisticService;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @AllArgsConstructor
 @RequestMapping("/management/habit/statistics")
 public class ManagementHabitStatisticController {
-
     HabitStatisticService habitStatisticService;
 
     @GetMapping
@@ -27,13 +27,13 @@ public class ManagementHabitStatisticController {
      * Endpoint to retrieve user interest statistics.
      *
      * @return A ResponseEntity containing user interest statistics.
-     * */
+     */
     @Operation(summary = "Retrieve user interest statistics.")
-    @ApiResponses(value={
-            @ApiResponse(responseCode="200", description= HttpStatuses.OK)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
     })
     @GetMapping("/interest")
-    public ResponseEntity<HabitInterestStatisticsDto> getUserInterestStatistics(){
+    public ResponseEntity<HabitInterestStatisticsDto> getUserInterestStatistics() {
         return ResponseEntity.ok(habitStatisticService.calculateUserInterest());
     }
 
