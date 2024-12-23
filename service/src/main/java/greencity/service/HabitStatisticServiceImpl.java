@@ -14,11 +14,17 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,6 +45,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitRepo habitRepo;
     private final DateService dateService;
     private final ModelMapper modelMapper;
+    private final UserRepo userRepo;
 
     /**
      * {@inheritDoc}
@@ -54,9 +61,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         if (isProceed(dto)) {
             HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
             HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
-                        + userId + ", " + habitId));
+                    .orElseThrow(
+                            () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+                                                        + userId + ", " + habitId));
             habitStatistic.setHabitAssign(habitAssign);
             return modelMapper.map(habitStatisticRepo.save(habitStatistic), HabitStatisticDto.class);
         }
@@ -65,9 +72,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
     private boolean isProceed(AddHabitStatisticDto dto) {
         return isTodayOrYesterday(
-            dateService
-                .convertToDatasourceTimezone(dto.getCreateDate())
-                .toLocalDate());
+                dateService
+                        .convertToDatasourceTimezone(dto.getCreateDate())
+                        .toLocalDate());
     }
 
     private boolean isTodayOrYesterday(LocalDate date) {
@@ -85,12 +92,12 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public UpdateHabitStatisticDto update(Long habitStatisticId, Long userId, UpdateHabitStatisticDto dto) {
         HabitStatistic updatable = habitStatisticRepo.findById(habitStatisticId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + habitStatisticId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + habitStatisticId));
 
         if (updatable.getHabitAssign().getUser().getId().equals(userId)) {
             enhanceHabitStatWithDto(dto, updatable);
             return modelMapper.map(habitStatisticRepo.save(updatable),
-                UpdateHabitStatisticDto.class);
+                    UpdateHabitStatisticDto.class);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_STATISTIC_NOT_BELONGS_TO_USER + habitStatisticId);
         }
@@ -109,9 +116,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public HabitStatisticDto findById(Long id) {
         return modelMapper.map(habitStatisticRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + id)),
-            HabitStatisticDto.class);
+                        .findById(id)
+                        .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + id)),
+                HabitStatisticDto.class);
     }
 
     /**
@@ -120,10 +127,10 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitAssignId(Long habitAssignId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
         return modelMapper.map(habitStatisticRepo.findAllByHabitAssignId(habitAssign.getId()),
-            new TypeToken<List<HabitStatisticDto>>() {
-            }.getType());
+                new TypeToken<List<HabitStatisticDto>>() {
+                }.getType());
     }
 
     /**
@@ -134,15 +141,15 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public GetHabitStatisticDto findAllStatsByHabitId(Long habitId) {
         Habit habit = habitRepo.findById(habitId).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+                () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         Long amountOfUsersAcquired = habitAssignRepo.findAmountOfUsersAcquired(habit.getId());
         List<HabitStatisticDto> habitStatisticDtoList = habitStatisticRepo.findAllByHabitId(habit.getId()).stream()
-            .map(o -> modelMapper.map(o, HabitStatisticDto.class))
-            .collect(Collectors.toList());
+                .map(o -> modelMapper.map(o, HabitStatisticDto.class))
+                .collect(Collectors.toList());
         return GetHabitStatisticDto.builder()
-            .amountOfUsersAcquired(amountOfUsersAcquired)
-            .habitStatisticDtoList(habitStatisticDtoList)
-            .build();
+                .amountOfUsersAcquired(amountOfUsersAcquired)
+                .habitStatisticDtoList(habitStatisticDtoList)
+                .build();
     }
 
     /**
@@ -152,11 +159,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
         return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), language).stream()
-            .map(it -> HabitItemsAmountStatisticDto.builder()
-                .habitItem((String) it.get(0))
-                .notTakenItems((long) it.get(1))
-                .build())
-            .collect(Collectors.toList());
+                .map(it -> HabitItemsAmountStatisticDto.builder()
+                        .habitItem((String) it.get(0))
+                        .notTakenItems((long) it.get(1))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -182,4 +189,23 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public void deleteAllStatsByHabitAssign(HabitAssignVO habitAssignVO) {
         habitStatisticRepo.deleteAll(habitStatisticRepo.findAllByHabitAssignId(habitAssignVO.getId()));
     }
+
+    @Override
+    public HabitInterestStatisticsDto calculateUserInterest() {
+        Long totalActiveUsers = userRepo.countActiveUsers();
+        List<Long> creators = habitRepo.countActiveHabitCreators();
+        List<Long> followers = habitRepo.countActiveHabitFollowers();
+        Set<Long> participatingUsers = new HashSet<>(followers);
+        participatingUsers.addAll(creators);
+
+        Long nonParticipatingUsers = totalActiveUsers - participatingUsers.size();
+
+        return new HabitInterestStatisticsDto((long) followers.size(),
+                (long) creators.size(),
+                nonParticipatingUsers);
+    }
+
+    // todo method for user activity statistic
+
+    // todo method for user activity statistic
 }

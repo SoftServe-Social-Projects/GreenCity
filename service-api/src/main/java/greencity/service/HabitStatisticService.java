@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.*;
 import java.util.List;
+import java.util.Map;
 
 public interface HabitStatisticService {
     /**
@@ -89,4 +90,15 @@ public interface HabitStatisticService {
      * @param habitAssign {HabitAssign} instance.
      */
     void deleteAllStatsByHabitAssign(HabitAssignVO habitAssign);
+
+    /**
+     * Calculate user interest statistics.
+     *
+     * @return {@link HabitInterestStatisticsDto}
+     */
+    HabitInterestStatisticsDto calculateUserInterest();
+
+    // todo method for user activity statistic
+
+    // todo method for user activity statistic
 }

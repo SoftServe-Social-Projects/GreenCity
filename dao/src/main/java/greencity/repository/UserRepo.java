@@ -642,4 +642,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
              GROUP BY uep.emailPreference, uep.periodicity
         """)
     List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
+
+    /**
+     * Count total active users in the system.
+     */
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userStatus IN (greencity.enums.UserStatus.ACTIVATED) ")
+    Long countActiveUsers();
 }
