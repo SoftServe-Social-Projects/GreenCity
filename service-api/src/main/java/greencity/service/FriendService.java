@@ -84,8 +84,10 @@ public interface FriendService {
      * @author Stepan Omeliukh
      */
     PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
-        @Nullable String name,
-        Pageable pageable);
+                                                                                               String name,
+                                                                                               boolean filterByFriendsOfFriends,
+                                                                                               boolean filterByCity,
+                                                                                               Pageable pageable);
 
     /**
      * Method to find {@link UserFriendDto}s which sent request to user with userId.
@@ -107,7 +109,11 @@ public interface FriendService {
      *
      * @return {@link PageableDto} of {@link UserFriendDto} instances.
      */
-    PageableDto<UserFriendDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable);
+    PageableDto<UserFriendDto> findAllFriendsOfUser(long userId,
+                                                    String name,
+                                                    boolean filterByFriendsOfFriends,
+                                                    boolean filterByCity,
+                                                    Pageable pageable);
 
     /**
      * Method find recommended friends for user by recommendation type.

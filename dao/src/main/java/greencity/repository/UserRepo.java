@@ -354,7 +354,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                     '_', '\\_'),
                                     '#', '\\#'), '%')
                       )
-                  )
                   OR EXISTS (
                       SELECT 1
                       FROM user_location ul
@@ -368,7 +367,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                           '#', '\\#'), '%')
                             )
                   )
-              )
             """)
 
     Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
@@ -383,58 +381,99 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true,
-        value = """
-            SELECT *
-            FROM users u
-            WHERE u.id != :userId
-              AND u.id NOT IN (
-                  SELECT user_id AS id
-                  FROM users_friends
-                  WHERE friend_id = :userId
-                    AND status = 'FRIEND'
-                  UNION
-                  SELECT friend_id AS id
-                  FROM users_friends
-                  WHERE user_id = :userId
-                    AND status = 'FRIEND'
-              )
-              AND (
-                  LOWER(u.name) LIKE LOWER(
-                      CONCAT('%',
-                             REPLACE(REPLACE(
-                                 REPLACE(REPLACE(:filteringName, '&', '\\&'),
-                                         '%', '\\%'),
-                                         '_', '\\_'),
-                                 '#', '\\#'), '%')
-                      )
-                  )
-                  OR LOWER(u.user_credo) LIKE LOWER(
-                      CONCAT('%',
-                             REPLACE(REPLACE(
-                                 REPLACE(REPLACE(:filteringName, '&', '\\&'),
-                                         '%', '\\%'),
-                                         '_', '\\_'),
-                                 '#', '\\#'), '%')
-                      )
-                  )
-                  OR EXISTS (
-                      SELECT 1
-                      FROM user_location ul
-                      WHERE ul.id = u.user_location
-                        AND LOWER(ul.city_en) LIKE LOWER(
-                            CONCAT('%',
-                                   REPLACE(REPLACE(
+            value = """
+                    SELECT *
+FROM users u
+WHERE u.id != :userId
+  AND u.id NOT IN (
+    SELECT user_id AS id
+    FROM users_friends
+    WHERE friend_id = :userId
+      AND status = 'FRIEND'
+    UNION
+    SELECT friend_id AS id
+    FROM users_friends
+    WHERE user_id = :userId
+      AND status = 'FRIEND'
+)
+  AND (
+    LOWER(u.name) LIKE LOWER(
+            CONCAT('%',
+                   REPLACE(REPLACE(
+                                   REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                           '%', '\\%'),
+                                   '_', '\\_'),
+                           '#', '\\#'), '%')
+                       )
+        OR LOWER(u.user_credo) LIKE LOWER(
+            CONCAT('%',
+                   REPLACE(REPLACE(
+                                   REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                           '%', '\\%'),
+                                   '_', '\\_'),
+                           '#', '\\#'), '%')
+                                    )
+        OR EXISTS (
+        SELECT 1
+        FROM user_location ul
+        WHERE ul.id = u.user_location
+          AND LOWER(ul.city_en) LIKE LOWER(
+                CONCAT('%',
+                       REPLACE(REPLACE(
                                        REPLACE(REPLACE(:filteringName, '&', '\\&'),
                                                '%', '\\%'),
-                                               '_', '\\_'),
-                                       '#', '\\#'), '%')
-                            )
-                  )
-              )
-            """)
-
-    Page<User> getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(Long userId, String filteringName,
-        Pageable pageable);
+                                       '_', '\\_'),
+                               '#', '\\#'), '%')
+                                     )
+    )
+    )
+  AND (
+    :filterByFriendsOfFriends = FALSE
+        OR u.id IN (
+        SELECT user_id
+        FROM users_friends
+        WHERE (friend_id IN (
+            SELECT friend_id
+            FROM users_friends
+            WHERE user_id = :userId
+        )
+            OR friend_id IN (
+                SELECT user_id
+                FROM users_friends
+                WHERE friend_id = :userId
+            ))
+          AND status = 'FRIEND'
+        UNION
+        SELECT friend_id
+        FROM users_friends
+        WHERE user_id IN (
+            SELECT friend_id
+            FROM users_friends
+            WHERE user_id = :userId
+        )
+          AND status = 'FRIEND'
+    )
+    )
+  AND (
+    :filterByCity = FALSE
+        OR EXISTS (
+        SELECT 1
+        FROM user_location ul
+        WHERE ul.id = u.user_location
+          AND ul.city_ua IN (
+            SELECT ul2.city_ua FROM user_location ul2
+                                        JOIN users u2 ON ul2.id = u2.user_location
+            WHERE u2.id = :userId
+        )
+    )
+    )
+        """
+    )
+    Page<User> getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(Long userId,
+                                                                          String filteringName,
+                                                                          boolean filterByFriendsOfFriends,
+                                                                          boolean filterByCity,
+                                                                          Pageable pageable);
 
     /**
      * Method that finds recommended friends of friends.
@@ -508,7 +547,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                          '_', '\\_'),
                                  '#', '\\#'), '%')
                       )
-                  )
                   OR EXISTS (
                       SELECT 1
                       FROM user_location ul
@@ -522,7 +560,46 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                        '#', '\\#'), '%')
                             )
                   )
-              )
+            AND (
+    :filterByFriendsOfFriends = FALSE
+        OR u.id IN (
+        SELECT user_id
+        FROM users_friends
+        WHERE (friend_id IN (
+            SELECT friend_id
+            FROM users_friends
+            WHERE user_id = :userId
+        )
+            OR friend_id IN (
+                SELECT user_id
+                FROM users_friends
+                WHERE friend_id = :userId
+            ))
+          AND status = 'FRIEND'
+        UNION
+        SELECT friend_id
+        FROM users_friends
+        WHERE user_id IN (
+            SELECT friend_id
+            FROM users_friends
+            WHERE user_id = :userId
+        )
+          AND status = 'FRIEND'
+    )
+    )
+  AND (
+    :filterByCity = FALSE
+        OR EXISTS (
+        SELECT 1
+        FROM user_location ul
+        WHERE ul.id = u.user_location
+          AND ul.city_ua IN (
+            SELECT ul2.city_ua FROM user_location ul2
+                                        JOIN users u2 ON ul2.id = u2.user_location
+            WHERE u2.id = :userId
+        )
+    )
+    )
             """)
 
     Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);

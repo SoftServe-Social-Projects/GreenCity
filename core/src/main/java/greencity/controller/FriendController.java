@@ -231,11 +231,16 @@ public class FriendController {
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @RequestParam(required = false) @Nullable String name) {
+        @RequestParam(required = false, defaultValue = "") String name,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByFriendsOfFriends,
+        @RequestParam(required = false, defaultValue = "true") boolean filterByCity) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), name,
-                page));
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(),
+                    name,
+                    filterByFriendsOfFriends,
+                    filterByCity,
+                    page));
     }
 
     /**
@@ -299,6 +304,7 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
+    //TODO: do the same
     @Operation(summary = "Find all friends")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
@@ -310,12 +316,18 @@ public class FriendController {
     @GetMapping
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
+        @RequestParam(required = false, defaultValue = "") String name,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByFriendsOfFriends,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
-        @RequestParam(required = false) @Nullable String name,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
+            .body(friendService.findAllFriendsOfUser(userVO.getId(),
+                    name,
+                    filterByFriendsOfFriends,
+                    filterByCity,
+                    page));
     }
 
     /**
