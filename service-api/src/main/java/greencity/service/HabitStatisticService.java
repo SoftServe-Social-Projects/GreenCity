@@ -6,8 +6,8 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitInterestStatisticsDto;
 import java.util.List;
+import java.util.Map;
 
 public interface HabitStatisticService {
     /**
@@ -98,11 +98,16 @@ public interface HabitStatisticService {
     /**
      * Calculate user interest statistics.
      *
-     * @return {@link HabitInterestStatisticsDto}.
+     * @return {@code Map<String, Long>}.
      */
-    HabitInterestStatisticsDto calculateUserInterest();
+    Map<String, Long> calculateUserInterest();
 
-    // todo method for user activity statistic
+    /**
+     * Calculate how users behave with habits.
+     *
+     * @return {@code Map<String, Long>}.
+     */
+    Map<String, Long> calculateHabitBehaviorStatistic();
 
     // todo method for user activity statistic
 }

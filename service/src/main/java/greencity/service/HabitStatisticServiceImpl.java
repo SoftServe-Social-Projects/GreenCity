@@ -4,9 +4,11 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatistic.HabitStatusCount;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -18,12 +20,13 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitInterestStatisticsDto;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import greencity.repository.UserRepo;
@@ -192,8 +195,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         habitStatisticRepo.deleteAll(habitStatisticRepo.findAllByHabitAssignId(habitAssignVO.getId()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public HabitInterestStatisticsDto calculateUserInterest() {
+    public Map<String, Long> calculateUserInterest() {
         Long totalActiveUsers = userRepo.countActiveUsers();
         List<Long> creators = habitRepo.countActiveHabitCreators();
         List<Long> followers = habitRepo.countActiveHabitFollowers();
@@ -202,12 +208,30 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
         Long nonParticipatingUsers = totalActiveUsers - participatingUsers.size();
 
-        return new HabitInterestStatisticsDto((long) followers.size(),
-            (long) creators.size(),
-            nonParticipatingUsers);
+        return Map.of("subscribed", (long) followers.size(),
+            "creators", (long) creators.size(),
+            "nonParticipants", nonParticipatingUsers);
     }
 
-    // todo method for user activity statistic
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Long> calculateHabitBehaviorStatistic() {
+        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus();
+        Map<HabitAssignStatus, Long> counts = habitStatusCounts.stream()
+            .collect(Collectors.toMap(
+                HabitStatusCount::status,
+                HabitStatusCount::count));
 
-    // todo method for user activity statistic
+        Arrays.stream(HabitAssignStatus.values())
+            .forEach(status -> counts.putIfAbsent(status, 0L));
+
+        return Map.of(
+            "giveUp", counts.getOrDefault(HabitAssignStatus.CANCELLED, 0L)
+                + counts.getOrDefault(HabitAssignStatus.EXPIRED, 0L),
+            "successfullyComplete", counts.getOrDefault(HabitAssignStatus.ACQUIRED, 0L),
+            "stayWithHabit", counts.getOrDefault(HabitAssignStatus.INPROGRESS, 0L));
+    }
+    // todo method for Statistics of users' interaction
 }

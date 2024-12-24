@@ -169,7 +169,7 @@
                 </div>
                 <div class="form-group">
                     <h3>User activity</h3>
-                    <button class="generate-btn" onclick="fetchUserData()">Generate User Activity Statistics</button>
+                    <button class="generate-btn" onclick="fetchHabitBehaviorStatistics()">Generate User Activity Statistics</button>
                 </div>
                 <div class="form-group">
                     <h3>User interaction</h3>
@@ -246,20 +246,8 @@
         selector: '#ecoNewsContent'
     });
 
-    async function fetchUserData(page = 0) {
-        const response = await fetch(`statistics/user/activity?page=${page}`);
-        if (response.ok) {
-            const table = await response.text();
-            const innerHTML = `
-                    ${table}
-            `
-            const chartId = "userActivityStatisticTable";
 
-            addTableToGrid(innerHTML, chartId);
-        }
-    }
-
-    // Interest statistic
+    // Part 1 Interest of Users
     async function fetchUserInterestStatistics() {
         const chartId = 'userInterestChart';
 
@@ -307,6 +295,66 @@
                             callbacks: {
                                 label: function(tooltipItem) {
                                     return tooltipItem.label + ': ' + tooltipItem.raw + ' users';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Part 2 User activity
+    async function fetchHabitBehaviorStatistics() {
+        const chartId = 'habitBehaviorChart';
+
+        if (Chart.getChart(chartId)) {
+            Chart.getChart(chartId)?.destroy();
+        }
+
+        const response = await fetch('statistics/habit-behavior');
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            const rawCounts = [data.giveUp, data.successfullyComplete, data.stayWithHabit];
+            console.log(rawCounts);
+            const total = rawCounts.reduce((sum, count) => sum + count, 0);
+            const percentages = rawCounts.map(count => ((count / total) * 100).toFixed(1));
+
+            const labels = ['Give Up', 'Successfully Complete', 'Stay With Habit'];
+            const randomColors = getRandomColors(labels.length);
+
+            const innerHTML = `
+        <div class="grid-stack-item-content">
+            <button class="delete-btn" onclick="removeWidget(this)">×</button>
+            <canvas id="${chartId}" role="img" aria-label="Habit Behavior Statistics">
+                Your browser does not support the canvas element.
+            </canvas>
+        </div>`;
+            addChartToGrid(innerHTML, chartId);
+
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Habit Behavior Statistics',
+                        data: percentages,
+                        backgroundColor: randomColors,
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.label}: ${tooltipItem.raw}% (${rawCounts[tooltipItem.dataIndex]} users)`;
                                 }
                             }
                         }
