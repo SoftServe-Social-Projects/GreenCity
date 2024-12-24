@@ -9,6 +9,7 @@ import greencity.enums.RecommendedFriendsType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface FriendService {
     /**
@@ -84,10 +85,10 @@ public interface FriendService {
      * @author Stepan Omeliukh
      */
     PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
-                                                                                               String name,
-                                                                                               boolean filterByFriendsOfFriends,
-                                                                                               boolean filterByCity,
-                                                                                               Pageable pageable);
+        String name,
+        boolean filterByFriendsOfFriends,
+        boolean filterByCity,
+        Pageable pageable);
 
     /**
      * Method to find {@link UserFriendDto}s which sent request to user with userId.
@@ -98,7 +99,7 @@ public interface FriendService {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, Pageable pageable);
+    PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity, Pageable pageable);
 
     /**
      * Method that finds all user's friends.
@@ -110,10 +111,9 @@ public interface FriendService {
      * @return {@link PageableDto} of {@link UserFriendDto} instances.
      */
     PageableDto<UserFriendDto> findAllFriendsOfUser(long userId,
-                                                    String name,
-                                                    boolean filterByFriendsOfFriends,
-                                                    boolean filterByCity,
-                                                    Pageable pageable);
+        String name,
+        boolean filterByCity,
+        Pageable pageable);
 
     /**
      * Method find recommended friends for user by recommendation type.

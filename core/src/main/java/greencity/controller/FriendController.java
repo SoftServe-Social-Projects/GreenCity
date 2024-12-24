@@ -236,7 +236,8 @@ public class FriendController {
         @RequestParam(required = false, defaultValue = "true") boolean filterByCity) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(),
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
+                    userVO.getId(),
                     name,
                     filterByFriendsOfFriends,
                     filterByCity,
@@ -289,11 +290,13 @@ public class FriendController {
     @GetMapping("/friendRequests")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> getAllUserFriendsRequests(
+        @RequestParam(required = false, defaultValue = "") String name,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.getAllUserFriendRequests(userVO.getId(), page));
+            .body(friendService.getAllUserFriendRequests(userVO.getId(), name, filterByCity, page));
     }
 
     /**
@@ -304,7 +307,7 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    //TODO: do the same
+    // TODO: do the same
     @Operation(summary = "Find all friends")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
@@ -317,17 +320,15 @@ public class FriendController {
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
         @RequestParam(required = false, defaultValue = "") String name,
-        @RequestParam(required = false, defaultValue = "false") boolean filterByFriendsOfFriends,
         @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllFriendsOfUser(userVO.getId(),
-                    name,
-                    filterByFriendsOfFriends,
-                    filterByCity,
-                    page));
+                name,
+                filterByCity,
+                page));
     }
 
     /**

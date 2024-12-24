@@ -151,21 +151,18 @@ public class FriendServiceImpl implements FriendService {
      */
     @Override
     public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
-                                                                                                      @Nullable String name,
-                                                                                                      boolean filterByFriendsOfFriends,
-                                                                                                      boolean filterByCity,
-                                                                                                      Pageable pageable) {
+        @Nullable String name,
+        boolean filterByFriendsOfFriends,
+        boolean filterByCity,
+        Pageable pageable) {
         Objects.requireNonNull(pageable);
 
         validateUserExistence(userId);
-        //name = name == null ? "" : name;
-        /*if (name.isEmpty()) {
-            return new PageableDto<>(List.of(), 0, 0, 0);
-        }*/
         Page<User> users;
         System.out.println(pageable.getSort());
         if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, filterByFriendsOfFriends, filterByCity, pageable);
+            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
+                filterByFriendsOfFriends, filterByCity, pageable);
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
@@ -225,11 +222,11 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, Pageable pageable) {
+    public PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity, Pageable pageable) {
         Objects.requireNonNull(pageable);
 
         validateUserExistence(userId);
-        Page<User> users = userRepo.getAllUserFriendRequests(userId, pageable);
+        Page<User> users = userRepo.getAllUserFriendRequests(userId, name, filterByCity, pageable);
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
@@ -244,17 +241,16 @@ public class FriendServiceImpl implements FriendService {
      */
     @Override
     public PageableDto<UserFriendDto> findAllFriendsOfUser(long userId,
-                                                           @Nullable String name,
-                                                           boolean filterByFriendsOfFriends,
-                                                           boolean filterByCity,
-                                                           Pageable pageable) {
+        String name,
+        boolean filterByCity,
+        Pageable pageable) {
         Objects.requireNonNull(pageable);
-
         validateUserExistence(userId);
-        //name = name == null ? "" : name;
+
+
         Page<User> users;
         if (pageable.getSort().isEmpty()) {
-            users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+            users = userRepo.findAllFriendsOfUser(userId, name, filterByCity, pageable);
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
