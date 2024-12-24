@@ -1,0 +1,66 @@
+.form-inline.searching {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-40%);
+    color: #9CA7B0;
+}
+
+.dropdown-btn {
+    background-color: #f1f1f1;
+    color: #333;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-btn:after {
+    content: '\25BC';
+    float: right;
+}
+
+.dropdown-btn.active:after {
+    content: '\25B2';
+}
+
+.dropdown-container {
+    display: none;
+    padding-left: 10px;
+}
+
+.dropdown-container input {
+    margin-right: 5px;
+}
+
+.select-all-container {
+    display: flex;
+    align-items: baseline;
+    margin: 8px 0px;
+}
+
+.select-all-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #4CAF50;
+    border-radius: 2px;
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+    margin-right: 8px;
+}
+
+.select-all-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+}

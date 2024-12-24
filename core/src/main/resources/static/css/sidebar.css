@@ -149,14 +149,14 @@
     margin-left: 5px;
     transition: .3s;
 }
-block {
-    display: block;
-    width: 100%;
-    position: relative;
-    background: #444E55;
-    cursor: pointer;
-    justify-content: end;
-}
+/*block {*/
+/*    display: block;*/
+/*    width: 100%;*/
+/*    position: relative;*/
+/*    background: #444E55;*/
+/*    cursor: pointer;*/
+/*    justify-content: end;*/
+/*}*/
 .img_blc{
     padding-left: 235px;
     z-index: 4;
@@ -171,10 +171,10 @@ block {
     -o-transform: rotate(180deg);
     transform: rotate(180deg);
 }
-block:hover img{
-    transition: .3s;
-    background: #444E55;
-}
+/*block:hover img{*/
+/*    transition: .3s;*/
+/*    background: #444E55;*/
+/*}*/
 
 
 .narrow{

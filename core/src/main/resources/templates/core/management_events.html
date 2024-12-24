@@ -5,11 +5,8 @@
     <meta charset="utf-8"/>
     <title>Events management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/events.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -30,81 +27,14 @@
     <script th:src="@{/management/events/buttonsAJAX.js}"></script>
     <script th:src="@{/management/events/confirmationModal.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-    <style>
-        .form-inline.searching {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-40%);
-            color: #9CA7B0;
-        }
-
-        .dropdown-btn {
-            background-color: #f1f1f1;
-            color: #333;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-        }
-
-        .dropdown-btn:after {
-            content: '\25BC';
-            float: right;
-        }
-
-        .dropdown-btn.active:after {
-            content: '\25B2';
-        }
-
-        .dropdown-container {
-            display: none;
-            padding-left: 10px;
-        }
-
-        .dropdown-container input {
-            margin-right: 5px;
-        }
-
-        .select-all-container {
-            display: flex;
-            align-items: baseline;
-            margin: 8px 0px;
-        }
-
-        .select-all-checkbox {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #4CAF50;
-            border-radius: 2px;
-            background-color: #fff;
-            cursor: pointer;
-            position: relative;
-            margin-right: 8px;
-        }
-
-        .select-all-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: #333;
-            cursor: pointer;
-        }
-    </style>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
 <div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="container-xl">
-        <div class="row" id="events-content" style="margin:auto">
+        <div class="table-title" id="events-content" style="margin:auto">
             <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
                 <div id="eco-news" class="row " style="margin-top: 3%; ">
                     <div class="col-sm-8">
@@ -250,10 +180,10 @@
             </div>
         </div>
 
-        <div class="row" style="margin-top: 3%">
+        <div class="row">
             <div class="col-sm-12">
                 <table class="table table-bordered">
-                    <thead class="table-primary">
+                    <thead>
                     <tr>
                         <th style="width: 40px;">
                             <div class="custom-checkbox">
