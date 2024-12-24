@@ -120,6 +120,7 @@ public class ErrorMessage {
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
         "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
+    public static final String PLACE_NOT_FOUND_BY_NAME = "The place does not exist by this name: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION =
         "The comment with entered id or other params doesn't exist";
@@ -216,4 +217,9 @@ public class ErrorMessage {
     public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
     public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
     public static final String OPEN_AI_IS_NOT_RESPONDING = "Could not get a response from OpenAI.";
+    public static final String WARNING_GIT_DIRECTORY_NOT_FOUND =
+        "WARNING: .git directory not found. Git commit info will be unavailable.";
+    public static final String GIT_REPOSITORY_NOT_INITIALIZED =
+        "Git repository not initialized. Commit info is unavailable.";
+    public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
 }

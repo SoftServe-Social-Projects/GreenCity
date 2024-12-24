@@ -276,9 +276,12 @@ public class ModelUtils {
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
     public static String habitTranslationName = "use shopper";
+    public static String habitTranslationNameUa = "Назва звички українською";
     public static String habitTranslationDescription = "Description";
+    public static String habitTranslationDescriptionUa = "Опис звички українською";
     public static String toDoListText = "buy a shopper";
     public static String habitItem = "Item";
+    public static String habitItemUa = "Айтем звички українською";
     public static String habitDefaultImage = "img/habit-default.png";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
@@ -2577,6 +2580,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitTranslationDto getHabitTranslationDtoEnAndUa() {
+        return HabitTranslationDto.builder()
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
+            .languageCode("en")
+            .nameUa(habitTranslationNameUa)
+            .descriptionUa(habitTranslationDescriptionUa)
+            .habitItemUa(habitItemUa)
+            .build();
+    }
+
     public static HabitTranslation getHabitTranslationForServiceTest() {
         return HabitTranslation.builder()
             .id(1L)
@@ -3244,5 +3259,48 @@ public class ModelUtils {
                 .latitude(30.1234)
                 .build())
             .build();
+    }
+
+    public static List<Tuple> getUserFriendInviteHabitDtoTuple1() {
+        Tuple tuple = new TupleImpl(
+            new TupleMetadata(
+                new TupleElement<?>[] {
+                    new TupleElementImpl<>(Long.class, "id"),
+                    new TupleElementImpl<>(String.class, "email"),
+                    new TupleElementImpl<>(String.class, "name"),
+                    new TupleElementImpl<>(String.class, "profile_picture"),
+                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                },
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", true});
+
+        return List.of(tuple);
+    }
+
+    public static List<Tuple> getUserFriendInviteHabitDtoTuple2() {
+        Tuple tuple1 = new TupleImpl(
+            new TupleMetadata(
+                new TupleElement<?>[] {
+                    new TupleElementImpl<>(Long.class, "id"),
+                    new TupleElementImpl<>(String.class, "email"),
+                    new TupleElementImpl<>(String.class, "name"),
+                    new TupleElementImpl<>(String.class, "profile_picture"),
+                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                },
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", false});
+
+        Tuple tuple2 = new TupleImpl(
+            new TupleMetadata(
+                new TupleElement<?>[] {
+                    new TupleElementImpl<>(Long.class, "id"),
+                    new TupleElementImpl<>(String.class, "email"),
+                    new TupleElementImpl<>(String.class, "name"),
+                    new TupleElementImpl<>(String.class, "profile_picture"),
+                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                },
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
+            new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false});
+        return List.of(tuple1, tuple2);
     }
 }

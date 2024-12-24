@@ -5,6 +5,7 @@ import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
@@ -37,6 +38,7 @@ import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.LanguageRepo;
@@ -45,6 +47,7 @@ import greencity.repository.TagsRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
+import jakarta.persistence.Tuple;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -69,13 +72,17 @@ import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitDto;
 import static greencity.ModelUtils.getHabitTranslation;
+import static greencity.ModelUtils.getHabitTranslationDto;
 import static greencity.ModelUtils.getHabitTranslationUa;
 import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserFriendInviteHabitDtoTuple1;
+import static greencity.ModelUtils.getUserFriendInviteHabitDtoTuple2;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -83,6 +90,7 @@ import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.times;
@@ -152,6 +160,12 @@ class HabitServiceImplTest {
     private AchievementCalculation achievementCalculation;
     @Mock
     private UserNotificationServiceImpl userNotificationService;
+
+    @Mock
+    private HabitInvitationRepo habitInvitationRepo;
+
+    @Mock
+    private FriendService friendService;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -619,7 +633,9 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "ua"))
+            .thenReturn(List.of(habitTranslationUa));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "en"))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
@@ -641,7 +657,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
@@ -692,8 +709,10 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
         when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
-        when(customToDoListMapper.mapAllToList(List.of(customToDoListItemResponseDto)))
-            .thenReturn(List.of(customToDoListItem));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "ua"))
+            .thenReturn(List.of(habitTranslationUa));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "en"))
+            .thenReturn(List.of(habitTranslationUa));
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
         when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
             .thenReturn(List.of(customToDoListItemResponseDto));
@@ -709,7 +728,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
@@ -755,7 +775,9 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "ua"))
+            .thenReturn(List.of(habitTranslationUa));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "en"))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
@@ -777,7 +799,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
@@ -807,7 +830,9 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(addCustomHabitDtoRequest.getHabitTranslations(), "ua"))
+            .thenReturn(List.of(habitTranslation));
+        when(habitTranslationMapper.mapAllToList(addCustomHabitDtoRequest.getHabitTranslations(), "en"))
             .thenReturn(List.of(habitTranslation));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.empty());
 
@@ -818,7 +843,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper).mapAllToList(addCustomHabitDtoRequest.getHabitTranslations());
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
+        verify(habitTranslationMapper, times(0)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo).findByCode(anyString());
     }
 
@@ -842,7 +868,9 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(addCustomHabitDtoRequest.getHabitTranslations(), "ua"))
+            .thenReturn(List.of(habitTranslationUa));
+        when(habitTranslationMapper.mapAllToList(addCustomHabitDtoRequest.getHabitTranslations(), "en"))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.empty());
@@ -855,7 +883,8 @@ class HabitServiceImplTest {
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
 
-        verify(habitTranslationMapper, times(2)).mapAllToList(addCustomHabitDtoRequest.getHabitTranslations());
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo, times(2)).findByCode(anyString());
     }
 
@@ -1520,5 +1549,135 @@ class HabitServiceImplTest {
 
         verify(habitRepo).findById(any());
         verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void testGetAllFavoriteHabitsByLanguageCode() {
+        UserVO userVO = new UserVO();
+        userVO.setId(1L);
+
+        Pageable pageable = PageRequest.of(0, 1);
+        String languageCode = "en";
+
+        HabitDto habitDto = getHabitDto().setHabitTranslation(getHabitTranslationDto());
+        Habit habit = getHabit().setIsCustomHabit(false);
+        HabitTranslation habitTranslation = getHabitTranslation().setHabit(habit);
+
+        Page<HabitTranslation> habitTranslationPage = new PageImpl<>(List.of(habitTranslation), pageable, 1);
+
+        when(habitTranslationRepo.findMyFavoriteHabits(pageable, 1L, languageCode))
+            .thenReturn(habitTranslationPage);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habitTranslation.getHabit().getId()))
+            .thenReturn(habitTranslation);
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+
+        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+
+        assertNotNull(result);
+        assertEquals(1, result.getPage().size());
+        verify(habitTranslationRepo, times(1)).findMyFavoriteHabits(pageable, 1L, languageCode);
+    }
+
+    @Test
+    void testGetAllFavoriteHabitsByLanguageCodeEmptyPage() {
+        UserVO userVO = getUserVO();
+        Pageable pageable = PageRequest.of(0, 1);
+        String languageCode = "en";
+
+        Page<HabitTranslation> habitTranslationPage = Page.empty(pageable);
+        when(habitTranslationRepo.findMyFavoriteHabits(pageable, 1L, languageCode)).thenReturn(habitTranslationPage);
+
+        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        verify(habitTranslationRepo, times(1)).findMyFavoriteHabits(pageable, 1L, languageCode);
+    }
+
+    @Test
+    void testFindAllFriendsOfUserNoNameProvidedNoInvitations() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+
+        List<Tuple> tuples = getUserFriendInviteHabitDtoTuple2();
+
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
+            .thenReturn(tuples);
+
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+
+        assertNotNull(result);
+        assertEquals(2, result.getPage().size());
+        assertFalse(result.getPage().get(0).getHasInvitation());
+        assertFalse(result.getPage().get(1).getHasInvitation());
+        assertEquals("John", result.getPage().get(0).getName());
+        assertEquals("Ivan", result.getPage().get(1).getName());
+        assertEquals("john@example.com", result.getPage().get(0).getEmail());
+        assertEquals("ivan@example.com", result.getPage().get(1).getEmail());
+        assertEquals(2L, result.getPage().get(0).getId());
+        assertEquals(3L, result.getPage().get(1).getId());
+        assertEquals("/image/path/john.png", result.getPage().get(0).getProfilePicturePath());
+        assertEquals("/image/path/ivan.png", result.getPage().get(1).getProfilePicturePath());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(1L, "", habitId, pageable);
+    }
+
+    @Test
+    void testFindAllFriendsOfUserNameProvidedWithInvitations() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+        List<Tuple> tuples = getUserFriendInviteHabitDtoTuple1();
+
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
+            .thenReturn(tuples);
+
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO, "Jo", pageable, habitId);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().getFirst().getHasInvitation());
+        assertEquals("John", result.getPage().getFirst().getName());
+        assertEquals("john@example.com", result.getPage().getFirst().getEmail());
+        assertEquals(2L, result.getPage().getFirst().getId());
+        assertEquals("/image/path/john.png", result.getPage().getFirst().getProfilePicturePath());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(userVO.getId(), "Jo", habitId, pageable);
+    }
+
+    @Test
+    void testFindAllFriendsOfUserNoFriendsFound() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
+            .thenReturn(List.of());
+
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        assertEquals(0, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(userVO.getId(), "", habitId, pageable);
+    }
+
+    @Test
+    void testFindAllFriendsOfUserWithEmptyNameAndPageable() {
+        Pageable pageable = mock(Pageable.class);
+        Long habitId = 100L;
+        UserVO userVO = getUserVO();
+        when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
+            .thenReturn(List.of());
+        PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO, "", pageable, habitId);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        assertEquals(0, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        verify(habitInvitationRepo).findUserFriendsWithHabitInvites(userVO.getId(), "", habitId, pageable);
     }
 }

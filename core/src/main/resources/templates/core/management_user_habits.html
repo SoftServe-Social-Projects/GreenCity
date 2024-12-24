@@ -211,6 +211,33 @@
                                     </div>
                                 </td>
 
+                                    <td class="habit_complexity" th:text="${habit.getComplexity()}"></td>
+                                    <td class="habit_defaultDuration" th:text="${habit.getDefaultDuration()}"></td>
+                                    <td>
+                                        <div>[[${translation.name}]]</div>
+                                    </td>
+                                    <td>
+                                        <div>[[${translation.description}]]</div>
+                                    </td>
+                                    <td class="habit_isCustomHabit">
+                                        <select th:id="'status-isCustom-'+${habit.id}"
+                                                th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-custom-status/'+${habit.id}+'\');'"
+                                                class="form-control">
+                                            <option th:if="${habit.isCustomHabit == null}" th:value="null" th:selected="true">Not Set</option>
+                                            <option th:value="true" th:selected="${habit.isCustomHabit == true}">True</option>
+                                            <option th:value="false" th:selected="${habit.isCustomHabit == false}">False</option>
+                                        </select>
+                                    </td>
+
+                                    <td class="habit_isDeleted">
+                                        <select th:id="'status-isDeleted-'+${habit.id}"
+                                                th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-deleted-status/'+${habit.id}+'\');'"
+                                                class="form-control">
+                                            <option th:if="${habit.isDeleted == null}" th:value="null" th:selected="true">Not Set</option>
+                                            <option th:value="true" th:selected="${habit.isDeleted == true}">True</option>
+                                            <option th:value="false" th:selected="${habit.isDeleted == false}">False</option>
+                                        </select>
+                                    </td>
                                 <td class="habit_complexity" th:text="${habit.getComplexity()}"></td>
                                 <td class="habit_defaultDuration" th:text="${habit.getDefaultDuration()}"></td>
                                 <td>
@@ -228,11 +255,16 @@
                                     </select>
                                 </td>
 
-                                <td>
-                                    <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
-                                        <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
-                                    </a>
-                                </td>
+                                    <td>
+                                        <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
+                                            <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
+                                        </a>
+                                        <a class="delete eDelBtn" data-toggle="modal"
+                                           th:href="@{/management/habits/delete(id=${habit.id})}">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.delete}">&#xE872;</i>
+                                        </a>
+                                    </td>
 
                             </tr>
                             </tbody>
@@ -839,8 +871,8 @@
     });
 </script>
 <script th:inline="javascript">
-    function toggleStatus(habitId) {
-        const selectElement = document.getElementById('status-' + habitId);
+    function toggleStatus(habitId, endpointUrl) {
+        const selectElement = document.getElementById(event.target.id);
         const selectedValue = selectElement.value;
 
         if (selectedValue === "null") {
@@ -850,7 +882,7 @@
 
         const newStatus = selectedValue === 'true';
 
-        fetch(`/management/habits/switch-deleted-status/${habitId}`, {
+        fetch(endpointUrl, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -859,7 +891,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    updateDropdown(habitId, newStatus);
+                    updateDropdown(selectElement.id, newStatus);
                     alert('Status updated successfully');
                 } else {
                     alert('Failed to update status');
@@ -871,8 +903,8 @@
             });
     }
 
-    function updateDropdown(habitId, newStatus) {
-        const selectElement = document.getElementById('status-' + habitId);
+    function updateDropdown(selectElementId, newStatus) {
+        const selectElement = document.getElementById(selectElementId);
 
         selectElement.innerHTML = '';
 

@@ -17,9 +17,4 @@ public class ScheduledEmailMessage implements EmailMessage {
     private String body;
     private String language;
     private boolean isUbs;
-
-    @Override
-    public String getEmail() {
-        return email;
-    }
 }

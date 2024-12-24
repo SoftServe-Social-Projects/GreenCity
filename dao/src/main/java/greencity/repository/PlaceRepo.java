@@ -4,6 +4,7 @@ import greencity.entity.Place;
 import greencity.enums.PlaceStatus;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -79,4 +80,13 @@ public interface PlaceRepo extends PlaceSearchRepo, JpaRepository<Place, Long>, 
             + "WHERE c.name IN (:category) "
             + "or c.name_ua IN (:category)")
     List<Place> findPlaceByCategory(String[] category);
+
+    /**
+     * Finds a place by its name.
+     *
+     * @param name the name of the place.
+     * @return an optional containing the place if found, or empty otherwise.
+     */
+    @Query("SELECT p FROM Place p WHERE LOWER(p.name) = LOWER(:name)")
+    Optional<Place> findByNameIgnoreCase(@Param("name") String name);
 }
