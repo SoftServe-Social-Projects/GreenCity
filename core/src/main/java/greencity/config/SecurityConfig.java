@@ -131,7 +131,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
-                .requestMatchers("/management/**").permitAll()// .hasAnyRole(ADMIN)
+                .requestMatchers("/management/**").hasAnyRole(ADMIN)
                 .requestMatchers("/v2/api-docs/**",
                     "/v3/api-docs/**",
                     "/swagger.json",
@@ -207,7 +207,6 @@ public class SecurityConfig {
                     "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
                     "/database/backupFiles",
-                    "/ai/**",
                     COMMIT_INFO)
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
@@ -285,7 +284,8 @@ public class SecurityConfig {
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     NOTIFICATIONS,
-                    HABIT_ASSIGN_ID + "/friends/habit-duration-info")
+                    HABIT_ASSIGN_ID + "/friends/habit-duration-info",
+                    "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
