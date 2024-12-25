@@ -39,7 +39,8 @@
         <sonar.language>java</sonar.language>
         <test.containers.version>1.15.1</test.containers.version>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
-        <net.java.dev.jna.version>4.5.2</net.java.dev.jna.version>
+        <net.java.dev.jna.version>5.16.0</net.java.dev.jna.version>
+        <org.eclipse.jgit.version>5.13.3.202401111512-r</org.eclipse.jgit.version>
     </properties>
 
     <build>
