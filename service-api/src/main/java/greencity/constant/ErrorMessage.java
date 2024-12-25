@@ -202,6 +202,11 @@ public final class ErrorMessage {
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
     public static final String INVALID_EVENT_TYPE = "Invalid event type, please specify - online or offline.";
+    public static final String WARNING_GIT_DIRECTORY_NOT_FOUND =
+        "WARNING: .git directory not found. Git commit info will be unavailable.";
+    public static final String GIT_REPOSITORY_NOT_INITIALIZED =
+        "Git repository not initialized. Commit info is unavailable.";
+    public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
 
     private ErrorMessage() {
     }

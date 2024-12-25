@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
+    private static final String COMMIT_INFO = "/commit-info";
     private final JwtTool jwtTool;
     private final UserService userService;
 
@@ -163,7 +164,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit/assign",
                 "/token",
                 "/socket/**",
-                FRIENDS + "/user/{userId}")
+                FRIENDS + "/user/{userId}",
+                COMMIT_INFO)
             .permitAll()
             .antMatchers(HttpMethod.POST,
                 "/ownSecurity/signUp",
