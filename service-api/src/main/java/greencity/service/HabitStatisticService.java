@@ -97,24 +97,28 @@ public interface HabitStatisticService {
     void deleteAllStatsByHabitAssign(HabitAssignVO habitAssign);
 
     /**
-     * Calculates user interest statistics, returning the count of interactions or engagements for each interest type.
+     * Calculates user interest statistics, returning the count of interactions or
+     * engagements for each interest type.
      *
      * @return A {@link Map} of user interest types and their respective counts.
      */
     Map<String, Long> calculateUserInterest();
 
     /**
-     * Calculates statistics on how users interact with habits, such as creating or following habits.
+     * Calculates statistics on how users interact with habits, such as creating or
+     * following habits.
      *
      * @return A {@link Map} of habit behavior types and their respective counts.
      */
     Map<String, Long> calculateHabitBehaviorStatistic();
 
     /**
-     * Calculates user interactions (creations and subscriptions) within a specified date range.
+     * Calculates user interactions (creations and subscriptions) within a specified
+     * date range.
      *
      * @param range The date range (e.g., "weekly", "monthly", "yearly").
-     * @return A {@link Map} of interaction types ("creations", "subscriptions") and their respective counts by date.
+     * @return A {@link Map} of interaction types ("creations", "subscriptions") and
+     *         their respective counts by date.
      */
     Map<String, List<HabitDateCount>> calculateInteractions(String range);
 }
