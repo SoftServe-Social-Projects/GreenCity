@@ -322,9 +322,7 @@
         const response = await fetch('statistics/habit-behavior');
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
             const rawCounts = [data.giveUp, data.successfullyComplete, data.stayWithHabit];
-            console.log(rawCounts);
             const total = rawCounts.reduce((sum, count) => sum + count, 0);
             const percentages = rawCounts.map(count => ((count / total) * 100).toFixed(1));
 
@@ -383,8 +381,6 @@
         const response = await fetch(`statistics/user-interaction?range=${range}`);
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
-
             const allDates = generateDateRange(range, data);  // Generate all possible dates for the selected range
             const labels = allDates.map(date => date.format('YYYY-MM-DD'));
 

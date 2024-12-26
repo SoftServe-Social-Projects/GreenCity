@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
@@ -43,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @EnableCaching
 @AllArgsConstructor
 public class HabitStatisticServiceImpl implements HabitStatisticService {
@@ -244,9 +242,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         List<HabitDateCount> creationStats = habitRepo.countCreationsInRange(startDate, now);
         List<Object[]> subscriptionStatsRaw = habitRepo.countSubscriptionsInRangeRaw(startDate, now);
         List<HabitDateCount> subscriptionStats = mapToHabitDateCount(subscriptionStatsRaw);
-        log.info(range);
-        log.info(creationStats.toString());
-        log.info(subscriptionStats.toString());
 
         return Map.of(
             "creations", creationStats,
