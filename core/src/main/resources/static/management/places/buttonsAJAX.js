@@ -1,6 +1,12 @@
-
 function clearAllErrorsSpan() {
     $('.errorSpan').text('').hide();
+}
+
+function getErrorSpanId(fieldName) {
+    if (fieldName.includes('openingHoursList[].')) {
+        fieldName = 'openingHoursList';
+    }
+    return 'errorModalSave' + fieldName;
 }
 
 let map;
@@ -201,6 +207,8 @@ $(document).ready(function () {
             }
         });
     });
+
+
 
     function validateForm() {
         let isValid = true;

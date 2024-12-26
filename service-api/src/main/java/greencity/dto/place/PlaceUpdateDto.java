@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 @NoArgsConstructor
@@ -24,6 +25,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @EqualsAndHashCode
 @Builder
+@ToString
 public class PlaceUpdateDto {
     @NotNull
     private Long id;

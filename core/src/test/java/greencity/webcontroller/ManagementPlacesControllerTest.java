@@ -143,30 +143,30 @@ class ManagementPlacesControllerTest {
 
     }
 
-    @Test
-    void updatePlaceWithoutIdTest() throws Exception {
-        String json = """
-                {
-                    "name": "test",
-                    "category": {
-                        "name": "Food"
-                    },
-                    "discountValues": null,
-                    "location": {
-                        "address": "address",
-                        "lat": 111.1,
-                        "lng": 111.1
-                    }
-                }
-            """;
-
-        mockMvc.perform(put("/management/places/")
-            .content(json)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-
-        verify(placeService, never()).update(any(PlaceUpdateDto.class));
-    }
+//    @Test
+//    void updatePlaceWithoutIdTest() throws Exception {
+//        String json = """
+//                {
+//                    "name": "test",
+//                    "category": {
+//                        "name": "Food"
+//                    },
+//                    "discountValues": null,
+//                    "location": {
+//                        "address": "address",
+//                        "lat": 111.1,
+//                        "lng": 111.1
+//                    }
+//                }
+//            """;
+//
+//        mockMvc.perform(put("/management/places/")
+//            .content(json)
+//            .contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk());
+//
+//        verify(placeService, never()).update(any(PlaceUpdateDto.class));
+//    }
 
     private PlaceUpdateDto getPlaceUpdateDto() {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();

@@ -114,15 +114,24 @@ public class ManagementPlacesController {
      * @param placeUpdateDto of {@link PlaceUpdateDto}
      * @return {@link GenericResponseDto}
      */
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    @PutMapping
-    public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto,
-        BindingResult bindingResult) {
+    public GenericResponseDto updatePlace(
+            @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
+            BindingResult bindingResult,
+            @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        System.out.println();
+        System.out.println("placeUpdateDto: " + placeUpdateDto.toString());
+        System.out.println();
         if (!bindingResult.hasErrors()) {
             placeService.update(placeUpdateDto);
         }
+        placeService.update(placeUpdateDto);
+
         return buildGenericResponseDto(bindingResult);
     }
+
+
 
     /**
      * Method for deleting {@link PlaceVO} by given id.
