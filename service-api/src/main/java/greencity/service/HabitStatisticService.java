@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitDateCount;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.habitstatistic.GetHabitStatisticDto;
@@ -109,5 +110,6 @@ public interface HabitStatisticService {
      */
     Map<String, Long> calculateHabitBehaviorStatistic();
 
-    // todo method for user activity statistic
+    // todo add javadoc
+    Map<String, List<HabitDateCount>> calculateInteractions(String range);
 }

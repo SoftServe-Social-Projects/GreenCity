@@ -35,6 +35,7 @@
     <script th:src="@{/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
     <script src="https://cdn.jsdelivr.net/npm/randomcolor@0.6.2/randomColor.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/11.0.1/gridstack.min.css"
           integrity="sha512-GEMqAs1Ai2iirp6QhD4N5Qt7tDn1RGgF1CY2xp57LrX3vqTDehSC88IOFewV/L84htjbN7aazcK10FyzH+eXSA=="
@@ -173,7 +174,13 @@
                 </div>
                 <div class="form-group">
                     <h3>User interaction</h3>
-                    <button class="generate-btn" onclick="fetchTagStatisticData()">Generate User Interaction Statistics
+                    <label for="dateRange">Get statistic for last:</label>
+                    <select id="dateRange" style="display:block;">
+                        <option value="weekly">Week</option>
+                        <option value="monthly">Month</option>
+                        <option value="yearly">Year</option>
+                    </select>
+                    <button class="generate-btn" onclick="fetchUserInteractionStatistics()">Generate User Interaction Statistics
                     </button>
                 </div>
 
@@ -363,6 +370,120 @@
             });
         }
     }
+
+    // Part 3 User interaction
+    async function fetchUserInteractionStatistics() {
+        const chartId = 'interactionChart';
+        const range = document.getElementById('dateRange').value;
+
+        if (Chart.getChart(chartId)) {
+            Chart.getChart(chartId)?.destroy();
+        }
+
+        const response = await fetch(`statistics/user-interaction?range=${range}`);
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+
+            const allDates = generateDateRange(range, data);  // Generate all possible dates for the selected range
+            const labels = allDates.map(date => date.format('YYYY-MM-DD'));
+
+            // Fill missing data points with 0 count
+            const subscriptionCounts = allDates.map(date => {
+                const subscription = data.subscriptions.find(sub => sub.date === date.format('YYYY-MM-DD'));
+                return subscription ? subscription.count : 0;
+            });
+
+            const creationCounts = allDates.map(date => {
+                const creation = data.creations.find(crea => crea.date === date.format('YYYY-MM-DD'));
+                return creation ? creation.count : 0;
+            });
+
+            const randomColors = getRandomColors(2);
+
+            const innerHTML = `
+            <div class="grid-stack-item-content">
+                <button class="delete-btn" onclick="removeWidget(this)">×</button>
+                <canvas id="${chartId}" role="img" aria-label="User Interaction Statistics">
+                    Your browser does not support the canvas element.
+                </canvas>
+            </div>`;
+            addChartToGrid(innerHTML, chartId);
+
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Subscriptions',
+                            data: subscriptionCounts,
+                            fill: true,
+                            borderColor: randomColors[0],
+                            backgroundColor: randomColors[0] + '80',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Creations',
+                            data: creationCounts,
+                            fill: true,
+                            borderColor: randomColors[1],
+                            backgroundColor: randomColors[1] + '80',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'category',
+                            labels: labels
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error('Failed to fetch user interaction data');
+        }
+    }
+
+    // Utility function to generate a range of dates for the selected range (e.g., monthly, yearly)
+    function generateDateRange(range, data) {
+        const moment = window.moment;
+        const dateRange = [];
+
+        const creationDates = data.creations.map(item => moment(item.date));
+        const subscriptionDates = data.subscriptions.map(item => moment(item.date));
+        const allDates = [...creationDates, ...subscriptionDates];
+
+        let startDate = moment.min(allDates);
+        let endDate = moment();
+
+        while (startDate.isSameOrBefore(endDate, 'day')) {
+            dateRange.push(startDate.clone());
+            startDate.add(1, 'day');
+        }
+        return dateRange;
+    }
+
+
 
     document.getElementById('menuButton').addEventListener('click', function () {
         const modal = document.getElementById('settingsModal');

@@ -4,6 +4,7 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatistic.HabitDateCount;
 import greencity.dto.habitstatistic.HabitStatusCount;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -21,6 +22,7 @@ import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -233,5 +235,39 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             "successfullyComplete", counts.getOrDefault(HabitAssignStatus.ACQUIRED, 0L),
             "stayWithHabit", counts.getOrDefault(HabitAssignStatus.INPROGRESS, 0L));
     }
-    // todo method for Statistics of users' interaction
+
+    @Override
+    public Map<String, List<HabitDateCount>> calculateInteractions(String range) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDate = calculateStartDate(range);
+
+        List<HabitDateCount> creationStats = habitRepo.countCreationsInRange(startDate, now);
+        List<Object[]> subscriptionStatsRaw = habitRepo.countSubscriptionsInRangeRaw(startDate, now);
+        List<HabitDateCount> subscriptionStats = mapToHabitDateCount(subscriptionStatsRaw);
+        log.info(range);
+        log.info(creationStats.toString());
+        log.info(subscriptionStats.toString());
+
+        return Map.of(
+            "creations", creationStats,
+            "subscriptions", subscriptionStats);
+    }
+
+    /**
+     * Calculate the start date based on the range.
+     */
+    private LocalDateTime calculateStartDate(String range) {
+        return switch (range.toLowerCase()) {
+            case "weekly" -> LocalDateTime.now().minusWeeks(1);
+            case "monthly" -> LocalDateTime.now().minusMonths(1);
+            case "yearly" -> LocalDateTime.now().minusYears(1);
+            default -> LocalDateTime.now().minusMonths(1);
+        };
+    }
+
+    private List<HabitDateCount> mapToHabitDateCount(List<Object[]> results) {
+        return results.stream()
+            .map(result -> new HabitDateCount((java.sql.Date) result[0], (Long) result[1]))
+            .collect(Collectors.toList());
+    }
 }

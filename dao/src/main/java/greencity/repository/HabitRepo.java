@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.habitstatistic.HabitDateCount;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import jakarta.transaction.Transactional;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,4 +124,25 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
             WHERE h.isDeleted = false AND f.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
         """)
     List<Long> countActiveHabitFollowers();
+
+    // todo add javadoc
+    @Query("""
+            SELECT new greencity.dto.habitstatistic.HabitDateCount(CAST(h.createdAt AS DATE), COUNT(h))
+            FROM Habit h
+            WHERE h.createdAt BETWEEN :startDate AND :endDate AND h.createdAt IS NOT NULL
+            GROUP BY CAST(h.createdAt AS DATE)
+            ORDER BY CAST(h.createdAt AS DATE )
+        """)
+    List<HabitDateCount> countCreationsInRange(LocalDateTime startDate, LocalDateTime endDate);
+
+    // todo add javadoc
+    @Query(value = """
+            SELECT CAST(f.created_at AS DATE) AS date, CAST(COUNT(f) AS BIGINT) AS count
+            FROM habits_followers f
+            JOIN habits h ON f.habit_id = h.id
+            WHERE f.created_at BETWEEN :startDate AND :endDate AND f.created_at IS NOT NULL
+            GROUP BY CAST(f.created_at AS DATE)
+            ORDER BY CAST(f.created_at AS DATE)
+        """, nativeQuery = true)
+    List<Object[]> countSubscriptionsInRangeRaw(LocalDateTime startDate, LocalDateTime endDate);
 }
