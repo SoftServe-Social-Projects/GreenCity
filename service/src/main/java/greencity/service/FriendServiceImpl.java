@@ -151,13 +151,15 @@ public class FriendServiceImpl implements FriendService {
      */
     @Override
     public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
-        @Nullable String name,
+        String name,
         boolean filterByFriendsOfFriends,
         boolean filterByCity,
         Pageable pageable) {
-        Objects.requireNonNull(pageable);
 
+        Objects.requireNonNull(pageable);
         validateUserExistence(userId);
+        name = name != null ? name : "";
+
         Page<User> users;
         System.out.println(pageable.getSort());
         if (pageable.getSort().isEmpty()) {
@@ -222,7 +224,8 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity, Pageable pageable) {
+    public PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity,
+        Pageable pageable) {
         Objects.requireNonNull(pageable);
 
         validateUserExistence(userId);
@@ -246,7 +249,6 @@ public class FriendServiceImpl implements FriendService {
         Pageable pageable) {
         Objects.requireNonNull(pageable);
         validateUserExistence(userId);
-
 
         Page<User> users;
         if (pageable.getSort().isEmpty()) {

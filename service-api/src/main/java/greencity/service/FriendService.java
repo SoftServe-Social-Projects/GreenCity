@@ -8,8 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public interface FriendService {
     /**
@@ -99,7 +97,8 @@ public interface FriendService {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity, Pageable pageable);
+    PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity,
+        Pageable pageable);
 
     /**
      * Method that finds all user's friends.
@@ -110,10 +109,12 @@ public interface FriendService {
      *
      * @return {@link PageableDto} of {@link UserFriendDto} instances.
      */
-    PageableDto<UserFriendDto> findAllFriendsOfUser(long userId,
+    PageableDto<UserFriendDto> findAllFriendsOfUser(
+        long userId,
         String name,
         boolean filterByCity,
-        Pageable pageable);
+        Pageable pageable
+    );
 
     /**
      * Method find recommended friends for user by recommendation type.

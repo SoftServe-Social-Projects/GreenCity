@@ -2742,6 +2742,19 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserFriendDto getUserFriendDtoListFromUserPage() {
+        return UserFriendDto.builder()
+                .id(1L)
+                .name(TestConst.NAME)
+                .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                        "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
+                .rating(10.0)
+                .mutualFriends(3L)
+                .profilePicturePath("path-to-picture")
+                .chatId(4L)
+                .build();
+    }
+
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
             .time(PAST)

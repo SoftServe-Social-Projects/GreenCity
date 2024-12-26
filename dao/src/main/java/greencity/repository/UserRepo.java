@@ -518,67 +518,67 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true,
-            value = """
-               SELECT * 
-               FROM users u
-               INNER JOIN users_friends 
-               ON u.id = users_friends.user_id
-               WHERE users_friends.friend_id = :userId 
-                AND users_friends.status = 'REQUEST'
-                AND (
-                LOWER(u.name) LIKE LOWER(
-                        CONCAT('%',
-                               REPLACE(REPLACE(
-                                               REPLACE(REPLACE(:filteringName, '&', '\\&'),
-                                                       '%', '\\%'),
-                                               '_', '\\_'),
-                                       '#', '\\#'), '%')
-                                   )
-                    OR LOWER(u.user_credo) LIKE LOWER(
-                        CONCAT('%',
-                               REPLACE(REPLACE(
-                                               REPLACE(REPLACE(:filteringName, '&', '\\&'),
-                                                       '%', '\\%'),
-                                               '_', '\\_'),
-                                       '#', '\\#'), '%')
+        value = """
+                SELECT *
+                FROM users u
+                INNER JOIN users_friends
+                ON u.id = users_friends.user_id
+                WHERE users_friends.friend_id = :userId
+                 AND users_friends.status = 'REQUEST'
+                 AND (
+                 LOWER(u.name) LIKE LOWER(
+                         CONCAT('%',
+                                REPLACE(REPLACE(
+                                                REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                        '%', '\\%'),
+                                                '_', '\\_'),
+                                        '#', '\\#'), '%')
+                                    )
+                     OR LOWER(u.user_credo) LIKE LOWER(
+                         CONCAT('%',
+                                REPLACE(REPLACE(
+                                                REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                        '%', '\\%'),
+                                                '_', '\\_'),
+                                        '#', '\\#'), '%')
+                                                 )
+                     OR EXISTS (
+                     SELECT 1
+                     FROM user_location ul
+                     WHERE ul.id = u.user_location
+                       AND( LOWER(ul.city_en) LIKE LOWER(
+                           CONCAT('%',
+                                  REPLACE(REPLACE(
+                                                  REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                          '%', '\\%'),
+                                                  '_', '\\_'),
+                                          '#', '\\#'), '%')
                                                 )
-                    OR EXISTS (
-                    SELECT 1
-                    FROM user_location ul
-                    WHERE ul.id = u.user_location
-                      AND( LOWER(ul.city_en) LIKE LOWER(
-                          CONCAT('%',
-                                 REPLACE(REPLACE(
-                                                 REPLACE(REPLACE(:filteringName, '&', '\\&'),
-                                                         '%', '\\%'),
-                                                 '_', '\\_'),
-                                         '#', '\\#'), '%')
-                                               )
-                        OR LOWER(ul.city_ua) LIKE LOWER(
-                              CONCAT('%',
-                                     REPLACE(REPLACE(
-                                                     REPLACE(REPLACE(:filteringName, '&', '\\&'),
-                                                             '%', '\\%'),
-                                                     '_', '\\_'),
-                                             '#', '\\#'), '%')
-                                                  )
-                    )
-                )
-                )
-                             AND (
-                :filterByCity = FALSE
-                    OR EXISTS (
-                    SELECT 1
-                    FROM user_location ul
-                    WHERE ul.id = u.user_location
-                      AND ul.city_ua IN (
-                        SELECT ul2.city_ua FROM user_location ul2
-                                                    JOIN users u2 ON ul2.id = u2.user_location
-                        WHERE u2.id = :userId
-                    )
-                )
-                )
-           """)
+                         OR LOWER(ul.city_ua) LIKE LOWER(
+                               CONCAT('%',
+                                      REPLACE(REPLACE(
+                                                      REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                              '%', '\\%'),
+                                                      '_', '\\_'),
+                                              '#', '\\#'), '%')
+                                                   )
+                     )
+                 )
+                 )
+                              AND (
+                 :filterByCity = FALSE
+                     OR EXISTS (
+                     SELECT 1
+                     FROM user_location ul
+                     WHERE ul.id = u.user_location
+                       AND ul.city_ua IN (
+                         SELECT ul2.city_ua FROM user_location ul2
+                                                     JOIN users u2 ON ul2.id = u2.user_location
+                         WHERE u2.id = :userId
+                     )
+                 )
+                 )
+            """)
     Page<User> getAllUserFriendRequests(Long userId, String name, boolean filterByCity, Pageable pageable);
 
     /**
