@@ -267,7 +267,7 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-    public void testCalculateInteractionsWeekly() {
+    void testCalculateInteractionsWeekly() {
         LocalDateTime now = LocalDateTime.now();
 
         List<HabitDateCount> creationStats = List.of(new HabitDateCount(Date.valueOf(now.toLocalDate()), 5L));
