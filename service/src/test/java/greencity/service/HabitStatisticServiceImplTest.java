@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import greencity.repository.UserRepo;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -346,13 +347,10 @@ class HabitStatisticServiceImplTest {
         assertEquals(10L, second.count());
     }
 
+    @SneakyThrows
     private List<HabitDateCount> invokeMapToHabitDateCount(List<Object[]> results) {
-        try {
-            var method = HabitStatisticServiceImpl.class.getDeclaredMethod("mapToHabitDateCount", List.class);
-            method.setAccessible(true);
-            return (List<HabitDateCount>) method.invoke(habitStatisticService, results);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        var method = HabitStatisticServiceImpl.class.getDeclaredMethod("mapToHabitDateCount", List.class);
+        method.setAccessible(true);
+        return (List<HabitDateCount>) method.invoke(habitStatisticService, results);
     }
 }
