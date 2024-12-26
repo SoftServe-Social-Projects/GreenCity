@@ -306,7 +306,6 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    // TODO: do the same
     @Operation(summary = "Find all friends")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),

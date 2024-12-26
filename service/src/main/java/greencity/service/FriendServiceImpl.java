@@ -159,7 +159,6 @@ public class FriendServiceImpl implements FriendService {
         name = name != null ? name : "";
 
         Page<User> users;
-        System.out.println(pageable.getSort());
         if (pageable.getSort().isEmpty()) {
             users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
                 filterByFriendsOfFriends, filterByCity, pageable);
