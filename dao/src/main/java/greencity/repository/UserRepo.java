@@ -579,7 +579,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                  )
                  )
             """)
-    Page<User> getAllUserFriendRequests(Long userId, String name, boolean filterByCity, Pageable pageable);
+    Page<User> getAllUserFriendRequests(Long userId, String filteringName, boolean filterByCity, Pageable pageable);
 
     /**
      * Method to find users which are friends to user with userId.

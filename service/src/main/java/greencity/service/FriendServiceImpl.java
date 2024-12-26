@@ -20,7 +20,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -155,7 +154,6 @@ public class FriendServiceImpl implements FriendService {
         boolean filterByFriendsOfFriends,
         boolean filterByCity,
         Pageable pageable) {
-
         Objects.requireNonNull(pageable);
         validateUserExistence(userId);
         name = name != null ? name : "";

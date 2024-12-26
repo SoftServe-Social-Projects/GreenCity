@@ -113,8 +113,7 @@ public interface FriendService {
         long userId,
         String name,
         boolean filterByCity,
-        Pageable pageable
-    );
+        Pageable pageable);
 
     /**
      * Method find recommended friends for user by recommendation type.
