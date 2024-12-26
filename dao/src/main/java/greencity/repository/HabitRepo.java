@@ -125,7 +125,16 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
         """)
     List<Long> countActiveHabitFollowers();
 
-    // todo add javadoc
+    /**
+     * Counts the number of habit creations (habits) for a given date range. This
+     * method aggregates habit creation counts by date within the specified range.
+     *
+     * @param startDate The start date (inclusive) of the range.
+     * @param endDate   The end date (inclusive) of the range.
+     * @return A list of {@link HabitDateCount} objects, each containing a date and
+     *         the count of habit creations for that date. The list is ordered by
+     *         the creation date.
+     */
     @Query("""
             SELECT new greencity.dto.habitstatistic.HabitDateCount(CAST(h.createdAt AS DATE), COUNT(h))
             FROM Habit h
@@ -135,7 +144,19 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
         """)
     List<HabitDateCount> countCreationsInRange(LocalDateTime startDate, LocalDateTime endDate);
 
-    // todo add javadoc
+    /**
+     * Counts the number of habit subscriptions (followers) for a given date range.
+     * This method aggregates the count of habit subscriptions by date within the
+     * specified range.
+     *
+     * @param startDate The start date (inclusive) of the range.
+     * @param endDate   The end date (inclusive) of the range.
+     * @return A list of {@code Object[]} arrays where each element in the array
+     *         represents: - The first element is the date (as a
+     *         {@link java.sql.Date}). - The second element is the count of
+     *         subscriptions for that date (as a {@link Long}). The list is ordered
+     *         by the subscription date.
+     */
     @Query(value = """
             SELECT CAST(f.created_at AS DATE) AS date, CAST(COUNT(f) AS BIGINT) AS count
             FROM habits_followers f
