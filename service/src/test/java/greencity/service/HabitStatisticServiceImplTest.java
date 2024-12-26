@@ -317,14 +317,11 @@ class HabitStatisticServiceImplTest {
         assertEquals(expectedStartDate.toLocalDate(), startDate.toLocalDate());
     }
 
+    @SneakyThrows
     private LocalDateTime invokeCalculateStartDate(String range) {
-        try {
-            var method = HabitStatisticServiceImpl.class.getDeclaredMethod("calculateStartDate", String.class);
-            method.setAccessible(true);
-            return (LocalDateTime) method.invoke(habitStatisticService, range);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        var method = HabitStatisticServiceImpl.class.getDeclaredMethod("calculateStartDate", String.class);
+        method.setAccessible(true);
+        return (LocalDateTime) method.invoke(habitStatisticService, range);
     }
 
     @Test
