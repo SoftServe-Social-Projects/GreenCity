@@ -10,6 +10,7 @@ import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.AddPlaceLocation;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
@@ -111,7 +112,7 @@ public class PlaceServiceImpl implements PlaceService {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = createAdminPageableDtoList(places);
         return new PageableDto<>(list, places.getTotalElements(), places.getPageable().getPageNumber(),
-            places.getTotalPages());
+                places.getTotalPages());
     }
 
     /**
@@ -151,8 +152,8 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceVO> getAllCreatedPlacesByUserId(Long userId) {
         return placeRepo.findAllByUserId(userId).stream()
-            .map(place -> modelMapper.map(place, PlaceVO.class))
-            .collect(Collectors.toList());
+                .map(place -> modelMapper.map(place, PlaceVO.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -166,33 +167,10 @@ public class PlaceServiceImpl implements PlaceService {
         if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
             placeVO.setStatus(PlaceStatus.APPROVED);
             List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
-                EmailPreferencePeriodicity.IMMEDIATELY);
+                    EmailPreferencePeriodicity.IMMEDIATELY);
             userNotificationService.createNewNotificationForPlaceAdded(usersId, placeVO.getId(),
-                placeVO.getCategory().getName(), placeVO.getName());
+                    placeVO.getCategory().getName(), placeVO.getName());
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public PlaceVO update(PlaceUpdateDto dto) {
-        log.info(LogMessage.IN_UPDATE, dto.getName());
-
-        Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getName()), Category.class);
-        Place updatedPlace = findPlaceById(dto.getId());
-        locationService.update(updatedPlace.getLocation().getId(),
-            modelMapper.map(dto.getLocation(), LocationVO.class));
-        updatedPlace.setName(dto.getName());
-        updatedPlace.setCategory(updatedCategory);
-        placeRepo.save(updatedPlace);
-
-        updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscountValues(), updatedPlace);
-
-        return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 
     /**
@@ -207,15 +185,15 @@ public class PlaceServiceImpl implements PlaceService {
 
         Set<DiscountValueVO> discountValuesVO = discountService.findAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> discountsOld = modelMapper.map(discountValuesVO,
-            new TypeToken<Set<DiscountValue>>() {
-            }.getType());
+                new TypeToken<Set<DiscountValue>>() {
+                }.getType());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
         if (discounts != null) {
             discounts.forEach(d -> {
                 DiscountValue discount = modelMapper.map(d, DiscountValue.class);
                 discount.setSpecification(modelMapper
-                    .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
+                        .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
                 discount.setPlace(updatedPlace);
                 discountService.save(modelMapper.map(discount, DiscountValueVO.class));
                 newDiscounts.add(discount);
@@ -236,8 +214,8 @@ public class PlaceServiceImpl implements PlaceService {
         updatedPlace.setOpeningHoursList(null);
         Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> openingHoursSetOld = modelMapper.map(openingHoursVO,
-            new TypeToken<Set<OpeningHours>>() {
-            }.getType());
+                new TypeToken<Set<OpeningHours>>() {
+                }.getType());
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
         if (hoursUpdateDtoSet != null) {
@@ -270,7 +248,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_BULK_DELETE, ids);
 
         List<UpdatePlaceStatusDto> deletedPlaces =
-            updateStatuses(new BulkUpdatePlaceStatusDto(ids, PlaceStatus.DELETED));
+                updateStatuses(new BulkUpdatePlaceStatusDto(ids, PlaceStatus.DELETED));
 
         return (long) deletedPlaces.size();
     }
@@ -313,14 +291,14 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
             List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
-                EmailPreferencePeriodicity.IMMEDIATELY);
+                    EmailPreferencePeriodicity.IMMEDIATELY);
             userNotificationService.createNewNotificationForPlaceAdded(usersId, updatable.getId(),
-                updatable.getCategory().getName(), updatable.getName());
+                    updatable.getCategory().getName(), updatable.getName());
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             userNotificationService.createNewNotification(modelMapper.map(updatable.getAuthor(), UserVO.class),
-                NotificationType.PLACE_STATUS, updatable.getId(), updatable.getName(),
-                updatable.getStatus().name().toLowerCase());
+                    NotificationType.PLACE_STATUS, updatable.getId(), updatable.getName(),
+                    updatable.getStatus().name().toLowerCase());
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
@@ -348,7 +326,7 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceVO findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
         Place place = placeRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         return modelMapper.map(place, PlaceVO.class);
     }
 
@@ -358,7 +336,7 @@ public class PlaceServiceImpl implements PlaceService {
     private Place findPlaceById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
         return placeRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -367,7 +345,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Optional<PlaceVO> findByIdOptional(Long id) {
         return placeRepo.findById(id)
-            .map(place -> modelMapper.map(place, PlaceVO.class));
+                .map(place -> modelMapper.map(place, PlaceVO.class));
     }
 
     /**
@@ -376,7 +354,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PlaceInfoDto getInfoById(Long id) {
         Place place = placeRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         PlaceInfoDto placeInfoDto = modelMapper.map(place, PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.getAverageRate(id));
         return placeInfoDto;
@@ -388,7 +366,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PlaceUpdateDto getInfoForUpdatingById(Long id) {
         Place place = placeRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         return modelMapper.map(place, PlaceUpdateDto.class);
     }
 
@@ -400,10 +378,10 @@ public class PlaceServiceImpl implements PlaceService {
         Page<Place> pages = placeRepo.searchBy(pageable, searchQuery);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
         return new PageableDto<>(
-            placeDtos,
-            pages.getTotalElements(),
-            pageable.getPageNumber(),
-            pages.getTotalPages());
+                placeDtos,
+                pages.getTotalElements(),
+                pageable.getPageNumber(),
+                pages.getTotalPages());
     }
 
     /**
@@ -413,8 +391,8 @@ public class PlaceServiceImpl implements PlaceService {
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid FilterPlaceDto filterPlaceDto) {
         List<Place> list = placeRepo.findAll(new PlaceFilter(filterPlaceDto));
         return list.stream()
-            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-            .collect(Collectors.toList());
+                .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -442,12 +420,12 @@ public class PlaceServiceImpl implements PlaceService {
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO) {
         Long userId = userVO == null ? null : userVO.getId();
         List<Place> list =
-            ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
-                : placeRepo.findAll(new PlaceFilter(filterDto, userId));
+                ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
+                        : placeRepo.findAll(new PlaceFilter(filterDto, userId));
         list = getPlacesByDistanceFromUser(filterDto, list);
         return list.stream()
-            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-            .collect(Collectors.toList());
+                .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -460,9 +438,9 @@ public class PlaceServiceImpl implements PlaceService {
     private List<Place> getPlacesByDistanceFromUser(FilterPlaceDto filterDto, List<Place> placeList) {
         FilterDistanceDto distanceFromUserDto = filterDto.getDistanceFromUserDto();
         if (distanceFromUserDto != null
-            && distanceFromUserDto.getLat() != null
-            && distanceFromUserDto.getLng() != null
-            && distanceFromUserDto.getDistance() != null) {
+                && distanceFromUserDto.getLat() != null
+                && distanceFromUserDto.getLng() != null
+                && distanceFromUserDto.getDistance() != null) {
             placeList = placeList.stream().filter(place -> {
                 double userLatRad = Math.toRadians(distanceFromUserDto.getLat());
                 double userLngRad = Math.toRadians(distanceFromUserDto.getLng());
@@ -470,11 +448,11 @@ public class PlaceServiceImpl implements PlaceService {
                 double placeLngRad = Math.toRadians(place.getLocation().getLng());
 
                 double distance = CONSTANT_OF_FORMULA_HAVERSINE_KM * Math.acos(
-                    Math.cos(userLatRad)
-                        * Math.cos(placeLatRad)
-                        * Math.cos(placeLngRad - userLngRad)
-                        + Math.sin(userLatRad)
-                            * Math.sin(placeLatRad));
+                        Math.cos(userLatRad)
+                                * Math.cos(placeLatRad)
+                                * Math.cos(placeLngRad - userLngRad)
+                                + Math.sin(userLatRad)
+                                * Math.sin(placeLatRad));
                 return distance <= distanceFromUserDto.getDistance();
             }).collect(Collectors.toList());
         }
@@ -496,10 +474,10 @@ public class PlaceServiceImpl implements PlaceService {
         Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(list);
         return new PageableDto<>(
-            placeDtos,
-            list.getTotalElements(),
-            list.getPageable().getPageNumber(),
-            list.getTotalPages());
+                placeDtos,
+                list.getTotalElements(),
+                list.getPageable().getPageNumber(),
+                list.getTotalPages());
     }
 
     /**
@@ -510,29 +488,29 @@ public class PlaceServiceImpl implements PlaceService {
         Page<Place> list = placeRepo.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             Optional.ofNullable(filterDto.getId())
-                .filter(id -> !id.isEmpty())
-                .ifPresent(id -> predicates.add(cb.equal(root.get("id"), id)));
+                    .filter(id -> !id.isEmpty())
+                    .ifPresent(id -> predicates.add(cb.equal(root.get("id"), id)));
             Optional.ofNullable(filterDto.getName())
-                .filter(name -> !name.isEmpty())
-                .ifPresent(name -> predicates.add(cb.like(root.get("name"), "%" + name + "%")));
+                    .filter(name -> !name.isEmpty())
+                    .ifPresent(name -> predicates.add(cb.like(root.get("name"), "%" + name + "%")));
             Optional.ofNullable(filterDto.getStatus())
-                .filter(status -> !status.isEmpty())
-                .ifPresent(status -> predicates.add(cb.equal(root.get("status"), PlaceStatus.valueOf(status))));
+                    .filter(status -> !status.isEmpty())
+                    .ifPresent(status -> predicates.add(cb.equal(root.get("status"), PlaceStatus.valueOf(status))));
             Optional.ofNullable(filterDto.getAuthor())
-                .filter(author -> !author.isEmpty())
-                .ifPresent(author -> predicates.add(cb.like(root.join("author").get("name"), "%" + author + "%")));
+                    .filter(author -> !author.isEmpty())
+                    .ifPresent(author -> predicates.add(cb.like(root.join("author").get("name"), "%" + author + "%")));
             Optional.ofNullable(filterDto.getAddress())
-                .filter(address -> !address.isEmpty())
-                .ifPresent(
-                    address -> predicates.add(cb.like(root.join("location").get("address"), "%" + address + "%")));
+                    .filter(address -> !address.isEmpty())
+                    .ifPresent(
+                            address -> predicates.add(cb.like(root.join("location").get("address"), "%" + address + "%")));
             return cb.and(predicates.toArray(new Predicate[0]));
         }, pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(list);
         return new PageableDto<>(
-            placeDtos,
-            list.getTotalElements(),
-            list.getPageable().getPageNumber(),
-            list.getTotalPages());
+                placeDtos,
+                list.getTotalElements(),
+                list.getPageable().getPageNumber(),
+                list.getTotalPages());
     }
 
     /**
@@ -553,23 +531,45 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
-        List<GeocodingResult> geocodingResults = Optional
-            .ofNullable(googleApiService.getResultFromGeoCode(dto.getLocationName()))
-            .filter(results -> !results.isEmpty())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + dto.getLocationName()));
-        placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
+
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocationName());
+        placeResponse.setLocationAddressAndGeoDto(geoDetails);
+
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
         place.setAuthor(user);
         place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class));
         Optional.ofNullable(place.getOpeningHoursList()).orElse(Collections.emptySet())
-            .forEach(openingHours -> openingHours.setPlace(place));
+                .forEach(openingHours -> openingHours.setPlace(place));
         mapMultipartFilesToPhotos(images, place, user);
         return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
+    }
+
+    @Override
+    public AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
+        List<GeocodingResult> geocodingResults = Optional
+                .ofNullable(googleApiService.getResultFromGeoCode(locationName))
+                .filter(results -> !results.isEmpty())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + locationName));
+
+        return initializeGeoCodingResults(geocodingResults);
+    }
+
+
+    private AddPlaceLocation initializeGeoCodingResults(
+            List<GeocodingResult> geocodingResults) {
+        GeocodingResult ukrLang = geocodingResults.getFirst();
+        GeocodingResult engLang = geocodingResults.get(1);
+        return AddPlaceLocation.builder()
+                .address(ukrLang.formattedAddress)
+                .addressEng(engLang.formattedAddress)
+                .lat(ukrLang.geometry.location.lat)
+                .lng(ukrLang.geometry.location.lng)
+                .build();
     }
 
     private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
@@ -584,23 +584,11 @@ public class PlaceServiceImpl implements PlaceService {
         }
     }
 
-    private AddPlaceLocation initializeGeoCodingResults(
-        List<GeocodingResult> geocodingResults) {
-        GeocodingResult ukrLang = geocodingResults.getFirst();
-        GeocodingResult engLang = geocodingResults.get(1);
-        return AddPlaceLocation.builder()
-            .address(ukrLang.formattedAddress)
-            .addressEng(engLang.formattedAddress)
-            .lat(ukrLang.geometry.location.lat)
-            .lng(ukrLang.geometry.location.lng)
-            .build();
-    }
-
     private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
         List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(email);
         placeDtos.forEach(dto -> {
             boolean isFavorite = favoritePlacesLocationIds.stream()
-                .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
+                    .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
             dto.setIsFavorite(isFavorite);
         });
     }
@@ -609,13 +597,13 @@ public class PlaceServiceImpl implements PlaceService {
         return places.stream().map(place -> {
             AdminPlaceDto adminPlaceDto = modelMapper.map(place, AdminPlaceDto.class);
             List<String> photoNames = Optional.ofNullable(place.getPhotos())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Photo::getName)
-                .collect(Collectors.toList());
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(Photo::getName)
+                    .collect(Collectors.toList());
             List<OpenHoursDto> openingHoursList = place.getOpeningHoursList().stream()
-                .map(element -> modelMapper.map(element, OpenHoursDto.class))
-                .toList();
+                    .map(element -> modelMapper.map(element, OpenHoursDto.class))
+                    .toList();
             adminPlaceDto.setImages(photoNames);
             adminPlaceDto.setOpeningHoursList(openingHoursList);
             return adminPlaceDto;
@@ -632,14 +620,14 @@ public class PlaceServiceImpl implements PlaceService {
 
     private PageableDto<SearchPlacesDto> getSearchPlacesDtoPageableDto(Page<Place> page) {
         List<SearchPlacesDto> searchEventsDtos = page.stream()
-            .map(event -> modelMapper.map(event, SearchPlacesDto.class))
-            .toList();
+                .map(event -> modelMapper.map(event, SearchPlacesDto.class))
+                .toList();
 
         return new PageableDto<>(
-            searchEventsDtos,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages());
+                searchEventsDtos,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber(),
+                page.getTotalPages());
     }
 
     /**
@@ -654,7 +642,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto) {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
 
         if (userRepo.findByEmail(dto.getEmail()).isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
@@ -667,5 +655,46 @@ public class PlaceServiceImpl implements PlaceService {
             restClient.sendEmailNotificationChangesPlaceStatus(dto);
         }
         return dto;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public PlaceVO update(PlaceUpdateDto dto) {
+        log.info(LogMessage.IN_UPDATE, dto.getName());
+        Category updatedCategory = modelMapper.map(
+                categoryService.findByName(dto.getCategory().getName()), Category.class);
+        Place updatedPlace = findPlaceById(dto.getId());
+        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(updatable.getAddress());
+        LocationAddressAndGeoForUpdateDto responseDto = null;
+
+        if (geoDetails != null) {
+            responseDto = new LocationAddressAndGeoForUpdateDto(
+                    geoDetails.getAddressEng(),
+                    geoDetails.getLat(),
+                    geoDetails.getLng(),
+                    geoDetails.getAddress()
+            );
+            LocationVO updatedLocation = new LocationVO();
+            updatedLocation.setId(updatable.getId());
+            updatedLocation.setAddress(responseDto.getAddress());
+            updatedLocation.setLat(responseDto.getLat());
+            updatedLocation.setLng(responseDto.getLng());
+            updatedLocation.setAddressUa(responseDto.getAddressUa());
+
+            locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
+        } else {
+            locationService.update(updatedPlace.getLocation().getId(),
+                    modelMapper.map(dto.getLocation(), LocationVO.class));
+        }
+        updatedPlace.setName(dto.getName());
+        updatedPlace.setCategory(updatedCategory);
+        placeRepo.save(updatedPlace);
+        updateOpening(dto.getOpeningHoursList(), updatedPlace);
+        updateDiscount(dto.getDiscountValues(), updatedPlace);
+        return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 }

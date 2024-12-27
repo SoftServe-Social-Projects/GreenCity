@@ -122,9 +122,7 @@ public class ManagementPlacesController {
             @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
             BindingResult bindingResult,
             @RequestPart(required = false) @Nullable MultipartFile[] images) {
-        System.out.println();
-        System.out.println("placeUpdateDto: " + placeUpdateDto.toString());
-        System.out.println();
+
         if (!bindingResult.hasErrors()) {
             placeService.update(placeUpdateDto);
         }

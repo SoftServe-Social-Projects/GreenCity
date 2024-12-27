@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -263,4 +264,6 @@ public interface PlaceService {
      * @throws NotFoundException If the place or user is not found.
      */
     UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto);
+
+    AddPlaceLocation getLocationDetailsFromGeocode(String locationName);
 }

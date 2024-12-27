@@ -405,13 +405,6 @@ $(document).ready(function () {
             $('#lat').val(place.location.lat);
             $('#addressUa').val(place.location.addressUa);
             $('#address').val(place.location.address);
-            $('input[name=latitude]').val(place.location.lat);
-            $('input[name=longitude]').val(place.location.lng);
-            deleteMarkers();
-            let location = {
-                lat: place.location.lat,
-                lng: place.location.lng
-            };
             addMarker(location);
             place.openingHoursList.forEach(function (day) {
                 let dayElement = $(`#${day.weekDay}`);
@@ -429,7 +422,6 @@ $(document).ready(function () {
             place.discountValues.forEach(value => {
                 addDiscountValueForUpdate(value);
             });
-
         });
     });
 
