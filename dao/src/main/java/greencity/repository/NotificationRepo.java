@@ -143,9 +143,9 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      * Method to return count of action users in notification by target user, type,
      * target id, not viewed and second message id.
      *
-     * @param targetUserId      id of target user
-     * @param notificationType  type of notification
-     * @param targetId          id of object related to notification
+     * @param targetUserId     id of target user
+     * @param notificationType type of notification
+     * @param targetId         id of object related to notification
      * @param secondMessageId  the secondary message ID.
      * @return count of action users
      */
