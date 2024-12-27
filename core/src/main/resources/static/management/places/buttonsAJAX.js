@@ -145,37 +145,74 @@ $(document).ready(function () {
         }
 
         let formData = new FormData(document.getElementById('addPlaceForm'));
-
-        let place;
         let type = $('#id').val() ? 'PUT' : 'POST';
 
         if (type === 'POST') {
-            place = {
-                "placeName": formData.get('name'),
-                "locationName": formData.get('address'),
-                "status": formData.get('status'),
-                "categoryName": formData.get('category')
-            };
+            handlePostRequest(formData);
         } else {
-            place = {
-                "id": formData.get('id'),
-                "placeName": formData.get('name'),
-                "locationName": formData.get('address'),
-                "status": formData.get('status'),
-                "categoryName": formData.get('category')
-            };
+            handlePutRequest(formData);
+        }
+    });
+
+    function handlePostRequest(formData) {
+        const place = {
+            "placeName": formData.get('name'),
+            "locationName": formData.get('address'),
+            "status": formData.get('status'),
+            "categoryName": formData.get('category'),
+            "discountValues": getDiscountValues(),
+            "openingHoursList": getOpeningHours()
+        };
+
+        submitPostFormData('/management/places', 'POST', formData, place);
+    }
+
+    function handlePutRequest(formData) {
+        const place = {
+            id: formData.get('id'),
+            name: formData.get('name'),
+            location: {
+                address: formData.get('address'),
+                lat: formData.get('lat'),
+                lng: formData.get('lng'),
+                addressUa: formData.get('addressUa'),
+            },
+            category: {
+                name: formData.get('category'),
+            },
+            discountValues: getDiscountValues(),
+            openingHoursList: getOpeningHours(),
+        };
+
+        submitPutFormData('/management/places', 'PUT', formData, place);
+    }
+
+    function submitPostFormData(url, method, formData, place) {
+        formData.append('addPlaceDto', JSON.stringify(place));
+        const file = document.getElementById("creationFile").files[0];
+        if (file) {
+            formData.append("images", file);
         }
 
-        place.discountValues = getDiscountValues();
-        place.openingHoursList = getOpeningHours();
+        sendAjaxRequest(url, method, formData);
+    }
 
-        formData.append('addPlaceDto', JSON.stringify(place));
-        var file = document.getElementById("creationFile").files[0];
-        formData.append("images", file);
+    function submitPutFormData(url, method, formData, place) {
+        formData.append('placeUpdateDto', JSON.stringify(place));
+        const fileInput = document.getElementById('creationFile');
+        if (fileInput && fileInput.files.length > 0) {
+            Array.from(fileInput.files).forEach((file) => {
+                formData.append('images', file);
+            });
+        }
 
+        sendAjaxRequest(url, method, formData);
+    }
+
+    function sendAjaxRequest(url, method, formData) {
         $.ajax({
-            url: '/management/places',
-            type: type,
+            url: url,
+            type: method,
             data: formData,
             processData: false,
             contentType: false,
@@ -206,7 +243,7 @@ $(document).ready(function () {
                 alert(errorMessage);
             }
         });
-    });
+    }
 
 
 
@@ -364,6 +401,9 @@ $(document).ready(function () {
         $.get(href, function (place) {
             $('#id').val(place.id)
             $('#placeName').val(place.name);
+            $('#lng').val(place.location.lng);
+            $('#lat').val(place.location.lat);
+            $('#addressUa').val(place.location.addressUa);
             $('#address').val(place.location.address);
             $('input[name=latitude]').val(place.location.lat);
             $('input[name=longitude]').val(place.location.lng);

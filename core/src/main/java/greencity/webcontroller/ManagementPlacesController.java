@@ -10,6 +10,7 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.service.CategoryService;
+import greencity.service.LocationService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
 import java.security.Principal;
@@ -44,6 +45,7 @@ public class ManagementPlacesController {
     private final PlaceService placeService;
     private final CategoryService categoryService;
     private final SpecificationService specificationService;
+    private final LocationService locationService;
 
     /**
      * Returns management page with all places.
@@ -130,8 +132,6 @@ public class ManagementPlacesController {
 
         return buildGenericResponseDto(bindingResult);
     }
-
-
 
     /**
      * Method for deleting {@link PlaceVO} by given id.
