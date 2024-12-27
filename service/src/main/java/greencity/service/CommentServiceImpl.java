@@ -374,12 +374,27 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
         UserVO sender, UserVO receiver, Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("notification",
+            Locale.forLanguageTag(locale.getLanguage()),
+            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+        long replyCount = notificationRepo
+            .countUnviewedRepliesByTargetAndParent(
+                receiver.getId(),
+                getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
+                articleId,
+                comment.getParentComment().getId());
+        String message;
+        if (replyCount >= 1) {
+            message = (replyCount + 1) + " " + bundle.getString("REPLIES");
+        } else {
+            message = bundle.getString("REPLY");
+        }
         userNotificationService.createNotification(
             receiver,
             sender,
             getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
             articleId,
-            comment.getParentComment().getText(),
+            message,
             comment.getParentComment().getId(),
             getArticleTitle(articleType, articleId, locale));
     }
