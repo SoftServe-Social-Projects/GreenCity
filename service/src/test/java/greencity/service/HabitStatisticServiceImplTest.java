@@ -250,7 +250,7 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-    void testCalculateHabitBehaviorStatistic() {
+    void calculateHabitBehaviorStatisticTest() {
         List<HabitStatusCount> habitStatusCounts = List.of(
             new HabitStatusCount(HabitAssignStatus.ACQUIRED, 10L),
             new HabitStatusCount(HabitAssignStatus.CANCELLED, 5L),
@@ -267,7 +267,7 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-    void testCalculateInteractionsWeekly() {
+    void calculateInteractionsWeeklyTest() {
         LocalDateTime now = LocalDateTime.now();
 
         List<HabitDateCount> creationStats = List.of(new HabitDateCount(Date.valueOf(now.toLocalDate()), 5L));
@@ -295,7 +295,7 @@ class HabitStatisticServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"weekly", "monthly", "yearly", "invalid"})
-    void testCalculateStartDate(String range) {
+    void calculateStartDateTest(String range) {
         LocalDateTime startDate = invokeCalculateStartDate(range);
         LocalDateTime expectedStartDate;
 
@@ -325,7 +325,7 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-    void testMapToHabitDateCount() {
+    void mapToHabitDateCountTest() {
         Object[] row1 = {Date.valueOf("2024-12-01"), 5L};
         Object[] row2 = {Date.valueOf("2024-12-02"), 10L};
         List<Object[]> results = List.of(row1, row2);
