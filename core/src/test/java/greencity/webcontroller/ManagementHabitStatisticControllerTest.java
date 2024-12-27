@@ -34,7 +34,7 @@ class ManagementHabitStatisticControllerTest {
 
     @Test
     @SneakyThrows
-    void testGetStatisticsPage() {
+    void getStatisticsPageTest() {
         mockMvc.perform(get("/management/habit/statistics"))
             .andExpect(status().isOk())
             .andExpect(view().name("core/management_habit_statistics"));
@@ -42,7 +42,7 @@ class ManagementHabitStatisticControllerTest {
 
     @Test
     @SneakyThrows
-    void testGetUserInterestStatistics() {
+    void getUserInterestStatisticsTest() {
         mockMvc.perform(get("/management/habit/statistics/interest")
             .accept(MediaType.APPLICATION_JSON));
 
@@ -51,7 +51,7 @@ class ManagementHabitStatisticControllerTest {
 
     @Test
     @SneakyThrows
-    void testGetHabitBehaviorStatistics() {
+    void getHabitBehaviorStatisticsTest() {
         mockMvc.perform(get("/management/habit/statistics/habit-behavior")
             .accept(MediaType.APPLICATION_JSON));
 
@@ -60,7 +60,7 @@ class ManagementHabitStatisticControllerTest {
 
     @Test
     @SneakyThrows
-    void testGetUserHabitInteractionStatistics() {
+    void getUserHabitInteractionStatisticsTest() {
         mockMvc.perform(get("/management/habit/statistics/user-interaction")
             .param("range", "weekly")
             .accept(MediaType.APPLICATION_JSON));
