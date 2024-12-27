@@ -156,7 +156,7 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
         + "AND n.targetId = :targetId "
         + "AND n.viewed = false "
         + "AND n.secondMessageId = :secondMessageId")
-    long countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+    long countUnviewedRepliesByTargetAndParent(
         Long targetUserId,
         NotificationType notificationType,
         Long targetId,

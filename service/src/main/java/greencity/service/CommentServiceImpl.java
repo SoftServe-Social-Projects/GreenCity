@@ -378,7 +378,7 @@ public class CommentServiceImpl implements CommentService {
             Locale.forLanguageTag(locale.getLanguage()),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         long replyCount = notificationRepo
-            .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
+            .countUnviewedRepliesByTargetAndParent(
                 receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
