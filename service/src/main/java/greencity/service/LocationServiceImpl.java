@@ -79,7 +79,7 @@ public class LocationServiceImpl implements LocationService {
         log.info(LogMessage.IN_UPDATE, location);
 
         Location updatable = locationRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Location with ID " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
 
         updatable.setLat(location.getLat());
         updatable.setLng(location.getLng());
