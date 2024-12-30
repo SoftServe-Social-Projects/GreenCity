@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.DiscountValue;
 import java.util.Set;
-
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

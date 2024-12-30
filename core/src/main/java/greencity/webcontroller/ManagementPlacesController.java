@@ -119,10 +119,10 @@ public class ManagementPlacesController {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public GenericResponseDto updatePlace(
-            @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
-            BindingResult bindingResult,
-            @Parameter(hidden = true) Principal principal,
-            @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
+        BindingResult bindingResult,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
             placeService.updateFromUI(placeUpdateDto, images, principal.getName());
         }

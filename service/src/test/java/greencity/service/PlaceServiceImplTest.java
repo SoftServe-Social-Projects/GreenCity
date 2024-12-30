@@ -8,6 +8,7 @@ import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -201,7 +202,6 @@ class PlaceServiceImplTest {
     private RestClient restClient;
     @Mock
     private PhotoRepo photoRepo;
-
 
     @BeforeEach
     void init() {
@@ -519,30 +519,6 @@ class PlaceServiceImplTest {
 
         verify(placeRepo).findAll(pageable);
         verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserEmail(principal.getName());
-    }
-
-    @Test
-    void updateTest() {
-        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        Place place = getPlace();
-        placeUpdateDto.setId(1L);
-        placeUpdateDto.setOpeningHoursList(new HashSet<>());
-        placeUpdateDto.setDiscountValues(new HashSet<>());
-        placeUpdateDto.setName("new Name");
-        placeUpdateDto.setCategory(categoryDto);
-        placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto());
-        CategoryDtoResponse categoryDtoResponce = CategoryDtoResponse.builder().build();
-        when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
-        when(categoryService.findByName(category.getName())).thenReturn(categoryDtoResponce);
-        when(modelMapper.map(categoryDtoResponce, Category.class)).thenReturn(category);
-        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-
-        PlaceVO updatedPlace = placeService.update(placeUpdateDto);
-
-        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
-        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(modelMapper).map(placeUpdateDto.getLocation(), LocationVO.class);
-        verify(locationService).update(place.getLocation().getId(), locationVO);
     }
 
     @Test

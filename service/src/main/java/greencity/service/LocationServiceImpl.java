@@ -8,8 +8,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.LocationRepo;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -79,7 +77,7 @@ public class LocationServiceImpl implements LocationService {
         log.info(LogMessage.IN_UPDATE, location);
 
         Location updatable = locationRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
 
         updatable.setLat(location.getLat());
         updatable.setLng(location.getLng());
@@ -89,7 +87,6 @@ public class LocationServiceImpl implements LocationService {
 
         return modelMapper.map(savedLocation, LocationVO.class);
     }
-
 
     /**
      * {@inheritDoc}
