@@ -85,9 +85,6 @@ public class LocationServiceImpl implements LocationService {
         updatable.setLng(location.getLng());
         updatable.setAddress(location.getAddress());
         updatable.setAddressUa(location.getAddressUa());
-        System.out.println("In service");
-        System.out.println(updatable);
-        System.out.println();
         Location savedLocation = locationRepo.save(updatable);
 
         return modelMapper.map(savedLocation, LocationVO.class);

@@ -668,8 +668,8 @@ public class PlaceServiceImpl implements PlaceService {
                 categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findPlaceById(dto.getId());
         LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
-        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(updatable.getAddress());
-        LocationAddressAndGeoForUpdateDto responseDto = null;
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
+        LocationAddressAndGeoForUpdateDto responseDto;
 
         if (geoDetails != null) {
             responseDto = new LocationAddressAndGeoForUpdateDto(
@@ -686,6 +686,7 @@ public class PlaceServiceImpl implements PlaceService {
             updatedLocation.setAddressUa(responseDto.getAddressUa());
 
             locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
+
         } else {
             locationService.update(updatedPlace.getLocation().getId(),
                     modelMapper.map(dto.getLocation(), LocationVO.class));
