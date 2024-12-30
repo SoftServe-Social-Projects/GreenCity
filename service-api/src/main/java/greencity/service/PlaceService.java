@@ -101,7 +101,7 @@ public interface PlaceService {
      * @return place {@link PlaceVO}
      * @author Kateryna Horokh
      */
-    PlaceVO update(PlaceUpdateDto dto);
+    PlaceVO update(PlaceUpdateDto dto, MultipartFile image);
 
     /**
      * Find all places from DB.

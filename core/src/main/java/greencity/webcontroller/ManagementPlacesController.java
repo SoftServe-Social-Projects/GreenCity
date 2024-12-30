@@ -121,9 +121,9 @@ public class ManagementPlacesController {
     public GenericResponseDto updatePlace(
             @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
             BindingResult bindingResult,
-            @RequestPart(required = false) @Nullable MultipartFile[] images) {
+            @RequestPart(required = false) @Nullable MultipartFile image) {
         if (!bindingResult.hasErrors()) {
-            placeService.update(placeUpdateDto);
+            placeService.update(placeUpdateDto, image);
         }
 
         return buildGenericResponseDto(bindingResult);

@@ -662,7 +662,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public PlaceVO update(PlaceUpdateDto dto) {
+    public PlaceVO update(PlaceUpdateDto dto, MultipartFile image) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
         Category updatedCategory = modelMapper.map(
                 categoryService.findByName(dto.getCategory().getName()), Category.class);
