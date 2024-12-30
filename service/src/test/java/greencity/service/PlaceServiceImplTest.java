@@ -41,6 +41,7 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
+import greencity.repository.PhotoRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
@@ -198,13 +199,16 @@ class PlaceServiceImplTest {
     private UserNotificationService userNotificationService;
     @Mock
     private RestClient restClient;
+    @Mock
+    private PhotoRepo photoRepo;
+
 
     @BeforeEach
     void init() {
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
-            userNotificationService, restClient);
+            userNotificationService, restClient, photoRepo);
     }
 
     @Test

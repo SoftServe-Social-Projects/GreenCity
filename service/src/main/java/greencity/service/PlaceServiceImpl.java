@@ -49,6 +49,7 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
+import greencity.repository.PhotoRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
@@ -103,7 +104,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final FileService fileService;
     private final UserNotificationService userNotificationService;
     private final RestClient restClient;
-
+    private final PhotoRepo photoRepo;
     /**
      * {@inheritDoc}
      */
@@ -574,13 +575,19 @@ public class PlaceServiceImpl implements PlaceService {
 
     private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
         if (images != null && images.length > 0 && images[0] != null) {
-            List<Photo> placePhotos = new ArrayList<>();
+            List<Photo> newPhotos = new ArrayList<>();
             for (MultipartFile image : images) {
                 if (image != null) {
-                    placePhotos.add(Photo.builder().place(place).name(fileService.upload(image)).user(user).build());
+                    Photo newPhoto = Photo.builder()
+                            .place(place)
+                            .name(fileService.upload(image))
+                            .user(user)
+                            .build();
+                    Photo savedPhoto = photoRepo.save(newPhoto);
+                    newPhotos.add(savedPhoto);newPhotos.add(newPhoto);
                 }
             }
-            place.setPhotos(placePhotos);
+            place.getPhotos().addAll(newPhotos);
         }
     }
 
@@ -738,8 +745,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = modelMapper.map(updatedPlace, Place.class);
         Optional<User> user = userRepo.findByEmail(email);
         mapMultipartFilesToPhotos(images, place, user.orElse(null));
-
-
+        placeRepo.save(updatedPlace);
         return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 }
