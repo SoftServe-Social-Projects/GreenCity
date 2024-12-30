@@ -662,7 +662,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public PlaceVO update(PlaceUpdateDto dto, MultipartFile image) {
+    public PlaceVO update(PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
         Category updatedCategory = modelMapper.map(
                 categoryService.findByName(dto.getCategory().getName()), Category.class);
@@ -696,6 +696,50 @@ public class PlaceServiceImpl implements PlaceService {
         placeRepo.save(updatedPlace);
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
         updateDiscount(dto.getDiscountValues(), updatedPlace);
+        return modelMapper.map(updatedPlace, PlaceVO.class);
+    }
+
+    @Transactional
+    @Override
+    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email) {
+        log.info(LogMessage.IN_UPDATE, dto.getName());
+        Category updatedCategory = modelMapper.map(
+                categoryService.findByName(dto.getCategory().getName()), Category.class);
+        Place updatedPlace = findPlaceById(dto.getId());
+        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
+        LocationAddressAndGeoForUpdateDto responseDto;
+
+        if (geoDetails != null) {
+            responseDto = new LocationAddressAndGeoForUpdateDto(
+                    geoDetails.getAddressEng(),
+                    geoDetails.getLat(),
+                    geoDetails.getLng(),
+                    geoDetails.getAddress()
+            );
+            LocationVO updatedLocation = new LocationVO();
+            updatedLocation.setId(updatable.getId());
+            updatedLocation.setAddress(responseDto.getAddress());
+            updatedLocation.setLat(responseDto.getLat());
+            updatedLocation.setLng(responseDto.getLng());
+            updatedLocation.setAddressUa(responseDto.getAddressUa());
+
+            locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
+
+        } else {
+            locationService.update(updatedPlace.getLocation().getId(),
+                    modelMapper.map(dto.getLocation(), LocationVO.class));
+        }
+        updatedPlace.setName(dto.getName());
+        updatedPlace.setCategory(updatedCategory);
+        placeRepo.save(updatedPlace);
+        updateOpening(dto.getOpeningHoursList(), updatedPlace);
+        updateDiscount(dto.getDiscountValues(), updatedPlace);
+        Place place = modelMapper.map(updatedPlace, Place.class);
+        Optional<User> user = userRepo.findByEmail(email);
+        mapMultipartFilesToPhotos(images, place, user.orElse(null));
+
+
         return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 }

@@ -101,8 +101,10 @@ public interface PlaceService {
      * @return place {@link PlaceVO}
      * @author Kateryna Horokh
      */
-    PlaceVO update(PlaceUpdateDto dto, MultipartFile image);
+    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email);
 
+
+    PlaceVO update(PlaceUpdateDto dto);
     /**
      * Find all places from DB.
      *
