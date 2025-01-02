@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -316,18 +315,10 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
-        String message = null;
-        ResourceBundle bundle = ResourceBundle.getBundle("notification",
-            Locale.forLanguageTag(locale.getLanguage()),
-            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT), articleId);
-        if (commentsCount >= 1) {
-            message = (commentsCount + 1) + " " + bundle.getString("COMMENTS");
-        } else if (commentsCount == 0) {
-            message = bundle.getString("COMMENT");
-        }
+        String message = (commentsCount >= 1) ? (commentsCount + 1) + " COMMENTS" : "COMMENT";
         userNotificationService.createNotification(
             receiver,
             userVO,
@@ -374,21 +365,13 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
         UserVO sender, UserVO receiver, Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("notification",
-            Locale.forLanguageTag(locale.getLanguage()),
-            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         long replyCount = notificationRepo
             .countUnviewedRepliesByTargetAndParent(
                 receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
                 comment.getParentComment().getId());
-        String message;
-        if (replyCount >= 1) {
-            message = (replyCount + 1) + " " + bundle.getString("REPLIES");
-        } else {
-            message = bundle.getString("REPLY");
-        }
+        String message = (replyCount >= 1) ?  (replyCount + 1) + " REPLIES" : "REPLY";
         userNotificationService.createNotification(
             receiver,
             sender,

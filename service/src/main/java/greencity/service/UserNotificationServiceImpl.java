@@ -353,13 +353,15 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
-        dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
+        String notificationType = dto.getNotificationType();
+        dto.setTitleText(bundle.getString(notificationType + "_TITLE"));
         final List<User> uniqueActionUsers =
             new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
         int size = new HashSet<>(uniqueActionUsers).size();
         dto.setActionUserText(uniqueActionUsers.stream().map(User::getName).toList());
         dto.setActionUserId(uniqueActionUsers.stream().map(User::getId).toList());
-        String bodyTextTemplate = bundle.getString(dto.getNotificationType());
+
+        String bodyTextTemplate = bundle.getString(notificationType);
         String bodyText;
         switch (size) {
             case 1 -> bodyText = bodyTextTemplate;
@@ -378,6 +380,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             }
         }
         dto.setBodyText(bodyText);
+        String message = dto.getMessage();
+        if (message != null && isMessageLocalizationRequired(notificationType)) {
+            dto.setMessage(localizeMessage(message, bundle));
+        }
         return dto;
     }
 
@@ -461,5 +467,30 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .secondMessage(secondMessageText)
             .emailSent(false)
             .build();
+    }
+
+    private boolean isMessageLocalizationRequired(String notificationType) {
+        return switch (notificationType) {
+            case "ECONEWS_COMMENT_REPLY", "ECONEWS_COMMENT",
+                 "EVENT_COMMENT_REPLY", "EVENT_COMMENT",
+                 "HABIT_COMMENT", "HABIT_COMMENT_REPLY" -> true;
+            default -> false;
+        };
+    }
+
+    private String localizeMessage(String message, ResourceBundle bundle) {
+        if (message.contains("REPLIES")) {
+            message = message.replace("REPLIES", bundle.getString("REPLIES"));
+        }
+        if (message.contains("REPLY")) {
+            message = message.replace("REPLY", bundle.getString("REPLY"));
+        }
+        if (message.contains("COMMENTS")) {
+            message = message.replace("COMMENTS", bundle.getString("COMMENTS"));
+        }
+        if (message.contains("COMMENT")) {
+            message = message.replace("COMMENT", bundle.getString("COMMENT"));
+        }
+        return message;
     }
 }
