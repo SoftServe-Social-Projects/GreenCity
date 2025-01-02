@@ -6,6 +6,11 @@ import java.util.ResourceBundle;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NotificationUtils {
+    private static final String REPLIES = "REPLIES";
+    private static final String REPLY = "REPLY";
+    private static final String COMMENTS = "COMMENTS";
+    private static final String COMMENT = "COMMENT";
+
     public static String resolveTimesInEnglish(final int number) {
         return switch (number) {
             case 1 -> "";
@@ -44,17 +49,17 @@ public class NotificationUtils {
     }
 
     public static String localizeMessage(String message, ResourceBundle bundle) {
-        if (message.contains("REPLIES")) {
-            message = message.replace("REPLIES", bundle.getString("REPLIES"));
+        if (message.contains(REPLIES)) {
+            message = message.replace(REPLIES, bundle.getString(REPLIES));
         }
-        if (message.contains("REPLY")) {
-            message = message.replace("REPLY", bundle.getString("REPLY"));
+        if (message.contains(REPLY)) {
+            message = message.replace(REPLY, bundle.getString(REPLY));
         }
-        if (message.contains("COMMENTS")) {
-            message = message.replace("COMMENTS", bundle.getString("COMMENTS"));
+        if (message.contains(COMMENTS)) {
+            message = message.replace(COMMENTS, bundle.getString(COMMENTS));
         }
-        if (message.contains("COMMENT")) {
-            message = message.replace("COMMENT", bundle.getString("COMMENT"));
+        if (message.contains(COMMENT)) {
+            message = message.replace(COMMENT, bundle.getString(COMMENT));
         }
         return message;
     }
