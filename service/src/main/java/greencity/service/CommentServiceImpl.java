@@ -371,7 +371,7 @@ public class CommentServiceImpl implements CommentService {
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
                 comment.getParentComment().getId());
-        String message = (replyCount >= 1) ?  (replyCount + 1) + " REPLIES" : "REPLY";
+        String message = (replyCount >= 1) ? (replyCount + 1) + " REPLIES" : "REPLY";
         userNotificationService.createNotification(
             receiver,
             sender,

@@ -65,8 +65,7 @@ class NotificationUtilsTest {
         return Stream.of(
             "ECONEWS_COMMENT_REPLY", "ECONEWS_COMMENT",
             "EVENT_COMMENT_REPLY", "EVENT_COMMENT",
-            "HABIT_COMMENT", "HABIT_COMMENT_REPLY"
-        );
+            "HABIT_COMMENT", "HABIT_COMMENT_REPLY");
     }
 
     @ParameterizedTest(name = "Test isMessageLocalizationRequired for invalid notification type {0}")
@@ -77,8 +76,7 @@ class NotificationUtilsTest {
 
     private static Stream<String> provideInvalidNotificationTypes() {
         return Stream.of(
-            "ECONEWS_LIKE", "EVENT_COMMENT_LIKE", "HABIT_COMMENT_USER_TAG"
-        );
+            "ECONEWS_LIKE", "EVENT_COMMENT_LIKE", "HABIT_COMMENT_USER_TAG");
     }
 
     @ParameterizedTest(name = "Test localizeMessage for input {0}")
@@ -94,8 +92,7 @@ class NotificationUtilsTest {
             Arguments.of("5 COMMENTS", "5 коментарів"),
             Arguments.of("REPLY", "відповідь"),
             Arguments.of("2 REPLIES", "2 відповіді"),
-            Arguments.of("comment", "comment")
-        );
+            Arguments.of("comment", "comment"));
     }
 
     @ParameterizedTest(name = "Test localizeMessage for input {0}")
@@ -111,7 +108,6 @@ class NotificationUtilsTest {
             Arguments.of("5 COMMENTS", "5 comments"),
             Arguments.of("REPLY", "a reply"),
             Arguments.of("2 REPLIES", "2 replies"),
-            Arguments.of("comment", "comment")
-        );
+            Arguments.of("comment", "comment"));
     }
 }

@@ -37,8 +37,8 @@ public class NotificationUtils {
     public static boolean isMessageLocalizationRequired(String notificationType) {
         return switch (notificationType) {
             case "ECONEWS_COMMENT_REPLY", "ECONEWS_COMMENT",
-                 "EVENT_COMMENT_REPLY", "EVENT_COMMENT",
-                 "HABIT_COMMENT", "HABIT_COMMENT_REPLY" -> true;
+                "EVENT_COMMENT_REPLY", "EVENT_COMMENT",
+                "HABIT_COMMENT", "HABIT_COMMENT_REPLY" -> true;
             default -> false;
         };
     }
