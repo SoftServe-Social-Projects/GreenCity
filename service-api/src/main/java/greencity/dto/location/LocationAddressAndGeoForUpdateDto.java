@@ -34,10 +34,4 @@ public class LocationAddressAndGeoForUpdateDto {
         max = ServiceValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
     @Pattern(regexp = "^[^<>]+$")
     private String addressUa;
-
-    public LocationAddressAndGeoForUpdateDto(String address, Double lat, Double lng) {
-        this.address = address;
-        this.lat = lat;
-        this.lng = lng;
-    }
 }
