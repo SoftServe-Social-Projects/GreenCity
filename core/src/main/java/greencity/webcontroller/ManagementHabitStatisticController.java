@@ -29,7 +29,7 @@ public class ManagementHabitStatisticController {
     /**
      * Endpoint to retrieve user interest statistics.
      *
-     * @return A ResponseEntity containing user interest statistics.
+     * @return ResponseEntity containing user interest statistics.
      */
     @Operation(summary = "Retrieve user interest statistics.")
     @ApiResponses(value = {
@@ -44,7 +44,7 @@ public class ManagementHabitStatisticController {
     /**
      * Endpoint to retrieve habit behavior statistics.
      *
-     * @return A ResponseEntity containing habit behavior statistics.
+     * @return ResponseEntity containing habit behavior statistics.
      */
     @Operation(summary = "Retrieve statistics of how users behave with habits.")
     @ApiResponses(value = {
@@ -59,7 +59,7 @@ public class ManagementHabitStatisticController {
     /**
      * Endpoint to retrieve user interaction with habits(creation, subscription).
      *
-     * @return A ResponseEntity containing habit behavior statistics.
+     * @return ResponseEntity containing habit behavior statistics.
      */
     @Operation(summary = "Retrieve statistics of how users interact with habits.")
     @ApiResponses(value = {
