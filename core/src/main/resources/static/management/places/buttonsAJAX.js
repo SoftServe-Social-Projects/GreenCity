@@ -245,8 +245,6 @@ $(document).ready(function () {
         });
     }
 
-
-
     function validateForm() {
         let isValid = true;
 
