@@ -551,8 +551,7 @@ public class PlaceServiceImpl implements PlaceService {
         return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
     }
 
-    @Override
-    public AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
+    private AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
         List<GeocodingResult> geocodingResults = Optional
             .ofNullable(googleApiService.getResultFromGeoCode(locationName))
             .filter(results -> !results.isEmpty())
@@ -665,19 +664,10 @@ public class PlaceServiceImpl implements PlaceService {
         return dto;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public PlaceVO update(PlaceUpdateDto dto) {
-        log.info(LogMessage.IN_UPDATE, dto.getName());
-        Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getName()), Category.class);
-        Place updatedPlace = findPlaceById(dto.getId());
-        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
+    private void updateLocation(PlaceUpdateDto dto, Place updatedPlace, LocationVO updatable) {
         AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
         LocationAddressAndGeoForUpdateDto responseDto;
+
         if (geoDetails != null) {
             responseDto = new LocationAddressAndGeoForUpdateDto(
                 geoDetails.getAddressEng(),
@@ -690,16 +680,32 @@ public class PlaceServiceImpl implements PlaceService {
             updatedLocation.setLat(responseDto.getLat());
             updatedLocation.setLng(responseDto.getLng());
             updatedLocation.setAddressUa(responseDto.getAddressUa());
+
             locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
         } else {
             locationService.update(updatedPlace.getLocation().getId(),
                 modelMapper.map(dto.getLocation(), LocationVO.class));
         }
+    }
+
+    private void updatePlaceProperties(PlaceUpdateDto dto, Place updatedPlace, Category updatedCategory) {
         updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
         placeRepo.save(updatedPlace);
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
         updateDiscount(dto.getDiscountValues(), updatedPlace);
+    }
+
+    @Transactional
+    @Override
+    public PlaceVO update(PlaceUpdateDto dto) {
+        log.info(LogMessage.IN_UPDATE, dto.getName());
+        Category updatedCategory = modelMapper.map(
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
+        Place updatedPlace = findPlaceById(dto.getId());
+        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
+        updateLocation(dto, updatedPlace, updatable);
+        updatePlaceProperties(dto, updatedPlace, updatedCategory);
         return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 
@@ -711,32 +717,8 @@ public class PlaceServiceImpl implements PlaceService {
             categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findPlaceById(dto.getId());
         LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
-        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
-        LocationAddressAndGeoForUpdateDto responseDto;
-
-        if (geoDetails != null) {
-            responseDto = new LocationAddressAndGeoForUpdateDto(
-                geoDetails.getAddressEng(),
-                geoDetails.getLat(),
-                geoDetails.getLng(),
-                geoDetails.getAddress());
-            LocationVO updatedLocation = new LocationVO();
-            updatedLocation.setId(updatable.getId());
-            updatedLocation.setAddress(responseDto.getAddress());
-            updatedLocation.setLat(responseDto.getLat());
-            updatedLocation.setLng(responseDto.getLng());
-            updatedLocation.setAddressUa(responseDto.getAddressUa());
-
-            locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
-        } else {
-            locationService.update(updatedPlace.getLocation().getId(),
-                modelMapper.map(dto.getLocation(), LocationVO.class));
-        }
-        updatedPlace.setName(dto.getName());
-        updatedPlace.setCategory(updatedCategory);
-        placeRepo.save(updatedPlace);
-        updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscountValues(), updatedPlace);
+        updateLocation(dto, updatedPlace, updatable);
+        updatePlaceProperties(dto, updatedPlace, updatedCategory);
         Place place = modelMapper.map(updatedPlace, Place.class);
         Optional<User> user = userRepo.findByEmail(email);
         mapMultipartFilesToPhotos(images, place, user.orElse(null));

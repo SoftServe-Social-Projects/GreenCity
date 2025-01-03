@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -95,14 +94,21 @@ public interface PlaceService {
     List<PlaceVO> getAllCreatedPlacesByUserId(Long userId);
 
     /**
+     * Method for updating from admin panel {@link PlaceVO}.
+     *
+     * @param dto    - dto for Place entity
+     * @param images - array of photos
+     * @param email  - admin user email
+     * @return place {@link PlaceVO}
+     */
+    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email);
+
+    /**
      * Method for updating {@link PlaceVO}.
      *
      * @param dto - dto for Place entity
      * @return place {@link PlaceVO}
-     * @author Kateryna Horokh
      */
-    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email);
-
     PlaceVO update(PlaceUpdateDto dto);
 
     /**
@@ -266,6 +272,4 @@ public interface PlaceService {
      * @throws NotFoundException If the place or user is not found.
      */
     UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto);
-
-    AddPlaceLocation getLocationDetailsFromGeocode(String locationName);
 }
