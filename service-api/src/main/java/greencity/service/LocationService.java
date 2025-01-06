@@ -57,4 +57,6 @@ public interface LocationService {
      * @author Kateryna Horokh.
      */
     Optional<LocationVO> findByLatAndLng(Double lat, Double lng);
+
+    boolean existsByLatAndLng(Double lat, Double lng);
 }

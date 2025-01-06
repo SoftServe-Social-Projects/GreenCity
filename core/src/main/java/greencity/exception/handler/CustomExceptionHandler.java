@@ -5,29 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
-import greencity.exception.exceptions.BadCategoryRequestException;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.BadSocialNetworkLinksException;
-import greencity.exception.exceptions.EventDtoValidationException;
-import greencity.exception.exceptions.InvalidStatusException;
-import greencity.exception.exceptions.InvalidURLException;
-import greencity.exception.exceptions.MultipartXSSProcessingException;
-import greencity.exception.exceptions.NotCurrentUserException;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.ToDoListItemNotFoundException;
-import greencity.exception.exceptions.TagNotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
-import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserHasNoFriendWithIdException;
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasNoToDoListItemsException;
-import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -208,6 +186,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(BadRequestException.class)
     public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        log.warn(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(PlaceAlreadyExistsException.class)
+    public final ResponseEntity<Object> handlePlaceAlreadyExistsException(PlaceAlreadyExistsException ex, WebRequest request) {
         log.warn(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

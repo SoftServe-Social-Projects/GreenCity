@@ -1,5 +1,6 @@
 package greencity.service;
 
+import com.google.api.gax.rpc.AlreadyExistsException;
 import com.google.maps.model.GeocodingResult;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
@@ -43,9 +44,7 @@ import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.PlaceStatusException;
-import greencity.exception.exceptions.UserBlockedException;
+import greencity.exception.exceptions.*;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
@@ -559,6 +558,12 @@ public class PlaceServiceImpl implements PlaceService {
         }
         List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
         //TODO: avoid duplicates in our db
+        double lat = geocodingResults.getFirst().geometry.location.lat;
+        double lng = geocodingResults.getFirst().geometry.location.lng;
+        if (locationService.existsByLatAndLng(lat, lng)) {
+            throw new PlaceAlreadyExistsException(ErrorMessage.PLACE_ALREADY_EXISTS.formatted(lat, lng));
+        }
+
         placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
