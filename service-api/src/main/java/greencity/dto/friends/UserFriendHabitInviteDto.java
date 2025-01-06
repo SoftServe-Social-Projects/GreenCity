@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class UserFriendHabitInviteDto extends UserFriendDto {
     private Boolean hasInvitation;
+    private Boolean hasAcceptedInvitation;
 }
