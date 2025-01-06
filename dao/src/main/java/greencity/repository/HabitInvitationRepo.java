@@ -54,53 +54,59 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
      * @param pageable pagination information for the result.
      * @return a {@link Page} of {@link UserFriendHabitInviteDto}.
      */
-    @Query(nativeQuery = true, value = """
-        WITH friends AS (
-            SELECT DISTINCT
-                CASE WHEN friend_id = :userId THEN user_id ELSE friend_id END AS id
-            FROM users_friends
-            WHERE (user_id = :userId OR friend_id = :userId) AND status = 'FRIEND'
-        ),
-        filtered_friends AS (
-            SELECT u.id,
-                   u.name,
-                   u.email,
-                   u.profile_picture
-            FROM users u
-            WHERE u.id IN (SELECT id FROM friends)
-              AND (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')))
-        ),
-        relevant_habit_assignments AS (
-            SELECT DISTINCT ha.id AS habit_assign_id,
-                            ha.user_id AS friend_id
-            FROM habit_assign ha
-            WHERE ha.habit_id = :habitId AND ha.status IN ('REQUESTED', 'INPROGRESS')
-        ),
-        invitations AS (
-            SELECT DISTINCT
-                i.invitee_id AS friend_id,
-                CASE
-                    WHEN i.status = 'ACCEPTED' THEN TRUE
-                    ELSE FALSE
-                END AS has_accepted_invitation,
-                i.status IN ('PENDING', 'ACCEPTED') AS has_invitation
-            FROM habit_invitations i
-            WHERE i.status IN ('PENDING', 'ACCEPTED')
-              AND i.inviter_id = :userId
-              AND i.inviter_habit_assign_id IN (
-                  SELECT habit_assign_id FROM relevant_habit_assignments
-              )
-        )
-        SELECT f.id,
-               f.name,
-               f.email,
-               f.profile_picture,
-               inv.has_invitation,
-               inv.has_accepted_invitation
-        FROM filtered_friends f
-        LEFT JOIN invitations inv ON f.id = inv.friend_id
-        LEFT JOIN relevant_habit_assignments ha ON f.id = ha.friend_id
-        """)
+    @Query(nativeQuery = true,
+        value = """
+            WITH friends AS (
+                SELECT DISTINCT
+                    CASE WHEN friend_id = :userId THEN user_id ELSE friend_id END AS id
+                FROM users_friends
+                WHERE (user_id = :userId OR friend_id = :userId) AND status = 'FRIEND'
+            ),
+            filtered_friends AS (
+                SELECT u.id,
+                       u.name,
+                       u.email,
+                       u.profile_picture
+                FROM users u
+                WHERE u.id IN (SELECT id FROM friends)
+                  AND (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            ),
+            relevant_habit_assignments AS (
+                SELECT DISTINCT ha.id AS habit_assign_id,
+                                ha.user_id AS friend_id
+                FROM habit_assign ha
+                WHERE ha.habit_id = :habitId AND ha.status IN ('REQUESTED', 'INPROGRESS')
+            ),
+            invitations AS (
+                SELECT DISTINCT
+                    CASE
+                        WHEN i.inviter_id = :userId THEN i.invitee_id
+                        ELSE i.inviter_id
+                    END AS friend_id,
+                    CASE
+                        WHEN i.status = 'ACCEPTED' THEN TRUE
+                        ELSE FALSE
+                    END AS has_accepted_invitation,
+                    i.status IN ('PENDING', 'ACCEPTED') AS has_invitation
+                FROM habit_invitations i
+                WHERE i.status IN ('PENDING', 'ACCEPTED')
+                  AND (
+                      (i.inviter_id = :userId AND i.inviter_habit_assign_id
+                            IN (SELECT habit_assign_id FROM relevant_habit_assignments))
+                      OR
+                      (i.invitee_id = :userId AND i.inviter_habit_assign_id
+                            IN (SELECT habit_assign_id FROM relevant_habit_assignments))
+                  )
+            )
+            SELECT f.id,
+                   f.name,
+                   f.email,
+                   f.profile_picture,
+                   COALESCE(inv.has_invitation, FALSE) AS has_invitation,
+                   COALESCE(inv.has_accepted_invitation, FALSE) AS has_accepted_invitation
+            FROM filtered_friends f
+            LEFT JOIN invitations inv ON f.id = inv.friend_id
+            """)
     List<Tuple> findUserFriendsWithHabitInvites(
         Long userId, String name, Long habitId, Pageable pageable);
 }
