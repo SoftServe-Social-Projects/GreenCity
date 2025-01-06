@@ -231,6 +231,25 @@ class PlaceServiceImplTest {
     }
 
     @Test
+    void saveShouldSavePlaceSuccessfully() {
+        PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
+        PlaceVO placeVO = ModelUtils.getPlaceVO();
+        Place place = getPlace();
+        when(userService.findByEmail(user.getEmail())).thenReturn(userVOAdmin);
+        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
+        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
+        when(categoryRepo.findByName(placeAddDto.getCategory().getName())).thenReturn(category);
+        when(placeRepo.save(place)).thenReturn(place);
+        when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
+        PlaceVO savedPlace = placeService.save(placeAddDto, user.getEmail());
+        assertEquals(placeVO, savedPlace);
+        verify(userService).findByEmail(user.getEmail());
+        verify(proposePlaceMapper).checkLocationValues(placeAddDto.getLocation());
+        verify(categoryRepo).findByName(placeAddDto.getCategory().getName());
+        verify(placeRepo).save(place);
+    }
+
+    @Test
     void updateStatusTest() {
         Place genericEntity = getPlace();
         genericEntity.setCategory(ModelUtils.getCategory());
