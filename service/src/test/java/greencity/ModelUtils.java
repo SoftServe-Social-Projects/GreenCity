@@ -3282,10 +3282,12 @@ public class ModelUtils {
                     new TupleElementImpl<>(String.class, "email"),
                     new TupleElementImpl<>(String.class, "name"),
                     new TupleElementImpl<>(String.class, "profile_picture"),
-                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
                 },
-                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
-            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", true});
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", true, true});
 
         return List.of(tuple);
     }
@@ -3298,10 +3300,12 @@ public class ModelUtils {
                     new TupleElementImpl<>(String.class, "email"),
                     new TupleElementImpl<>(String.class, "name"),
                     new TupleElementImpl<>(String.class, "profile_picture"),
-                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
                 },
-                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
-            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", false});
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", false, false});
 
         Tuple tuple2 = new TupleImpl(
             new TupleMetadata(
@@ -3310,10 +3314,12 @@ public class ModelUtils {
                     new TupleElementImpl<>(String.class, "email"),
                     new TupleElementImpl<>(String.class, "name"),
                     new TupleElementImpl<>(String.class, "profile_picture"),
-                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
                 },
-                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
-            new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false});
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false, false});
         return List.of(tuple1, tuple2);
     }
 }
