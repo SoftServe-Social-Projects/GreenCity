@@ -1,6 +1,5 @@
 package greencity.service;
 
-import com.google.api.gax.rpc.AlreadyExistsException;
 import com.google.maps.model.GeocodingResult;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
@@ -557,7 +556,6 @@ public class PlaceServiceImpl implements PlaceService {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
-        //TODO: avoid duplicates in our db
         double lat = geocodingResults.getFirst().geometry.location.lat;
         double lng = geocodingResults.getFirst().geometry.location.lng;
         if (locationService.existsByLatAndLng(lat, lng)) {

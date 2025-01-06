@@ -23,7 +23,8 @@ public interface LocationRepo extends JpaRepository<Location, Long> {
     Optional<Location> findByLatAndLng(Double lat, Double lng);
 
     /**
-     * Method returns {@param true} if location with such {@param lat} and {@param lng} exists
+     * Method returns {@param true} if location with such {@param lat} and.
+     * {@param lng} exists
      *
      * @param lat latitude of point of the map
      * @param lng longitude of point of the map
@@ -31,13 +32,12 @@ public interface LocationRepo extends JpaRepository<Location, Long> {
      * @author Ivan Hrenevych.
      */
     @Query(value = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM locations l
-                    WHERE ROUND(CAST(l.lat AS numeric), 4) = ROUND(CAST(:lat AS numeric), 4)
-                      AND ROUND(CAST(l.lng AS numeric), 4) = ROUND(CAST(:lng AS numeric), 4)
-                )
-               """, nativeQuery = true)
+         SELECT EXISTS (
+             SELECT 1
+             FROM locations l
+             WHERE ROUND(CAST(l.lat AS numeric), 4) = ROUND(CAST(:lat AS numeric), 4)
+               AND ROUND(CAST(l.lng AS numeric), 4) = ROUND(CAST(:lng AS numeric), 4)
+         )
+        """, nativeQuery = true)
     boolean existsByLatAndLng(@Param("lat") double lat, @Param("lng") double lng);
-
 }
