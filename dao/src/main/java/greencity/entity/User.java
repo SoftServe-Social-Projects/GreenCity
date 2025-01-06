@@ -3,8 +3,11 @@ package greencity.entity;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
+import greencity.enums.EcoPlacePrivacyPolicy;
 import greencity.enums.EmailNotification;
+import greencity.enums.LocationPrivacyPolicy;
 import greencity.enums.Role;
+import greencity.enums.ToDoListPrivacyPolicy;
 import greencity.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -211,13 +214,16 @@ public class User {
     private List<SocialNetwork> socialNetworks;
 
     @Column(name = "show_location")
-    private Boolean showLocation;
+    @Enumerated(EnumType.STRING)
+    private LocationPrivacyPolicy showLocation = LocationPrivacyPolicy.PUBLIC;
 
     @Column(name = "show_eco_place")
-    private Boolean showEcoPlace;
+    @Enumerated(EnumType.STRING)
+    private EcoPlacePrivacyPolicy showEcoPlace = EcoPlacePrivacyPolicy.PUBLIC;
 
     @Column(name = "show_shopping_list")
-    private Boolean showShoppingList;
+    @Enumerated(EnumType.STRING)
+    private ToDoListPrivacyPolicy showShoppingList = ToDoListPrivacyPolicy.PUBLIC;
 
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;

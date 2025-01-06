@@ -1,0 +1,19 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="set-default-values-for-show-location" author="Vladyslav Haliara">
+        <addDefaultValue tableName="users" columnName="show_location" defaultValue="PUBLIC"/>
+    </changeSet>
+
+    <changeSet id="set-default-values-for-show-eco-place" author="Vladyslav Haliara">
+        <addDefaultValue tableName="users" columnName="show_eco_place" defaultValue="PUBLIC"/>
+    </changeSet>
+
+    <changeSet id="set-default-values-for-show_shopping_list" author="Vladyslav Haliara">
+        <addDefaultValue tableName="users" columnName="show_shopping_list" defaultValue="PUBLIC"/>
+    </changeSet>
+
+</databaseChangeLog>
