@@ -770,9 +770,9 @@ public class HabitServiceImpl implements HabitService {
                 .email(tuple.get("email", String.class))
                 .profilePicturePath(tuple.get("profile_picture", String.class))
                 .hasInvitation(tuple.get("has_invitation", Boolean.class))
-                    .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
+                .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
 
-                    .build())
+                .build())
             .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
