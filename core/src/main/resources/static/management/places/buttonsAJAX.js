@@ -200,11 +200,10 @@ $(document).ready(function () {
     function submitPutFormData(url, method, formData, place) {
         formData.append('placeUpdateDto', JSON.stringify(place));
         const fileInput = document.getElementById('creationFile');
-        if (fileInput && fileInput.files.length > 0) {
-            Array.from(fileInput.files).forEach((file) => {
-                formData.append('images', file);
-            });
-        }
+
+        Array.from(fileInput?.files || []).forEach((file) => {
+            formData.append('images', file);
+        });
 
         sendAjaxRequest(url, method, formData);
     }
