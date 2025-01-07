@@ -182,7 +182,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param discounts    - set of {@link DiscountValue}.
      * @param updatedPlace - {@link Place} entity.
      */
-    @SuppressWarnings("unchecked")
+    // NOSONAR
     private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
@@ -212,7 +212,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param hoursUpdateDtoSet - set of {@code Discount}.
      * @param updatedPlace      - {@link Place} entity.
      */
-    @SuppressWarnings("unchecked")
+    // NOSONAR
     private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
         updatedPlace.setOpeningHoursList(null);
@@ -439,7 +439,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param placeList - {@link List} of {@link Place} that will be filtered.
      * @return {@link List} of {@link Place} - list of filtered {@link Place}s.
      */
-    @SuppressWarnings("unchecked")
+    // NOSONAR
     private List<Place> getPlacesByDistanceFromUser(FilterPlaceDto filterDto, List<Place> placeList) {
         FilterDistanceDto distanceFromUserDto = filterDto.getDistanceFromUserDto();
         if (distanceFromUserDto != null
