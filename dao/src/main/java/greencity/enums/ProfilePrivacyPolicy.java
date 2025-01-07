@@ -1,6 +1,6 @@
 package greencity.enums;
 
-public enum EcoPlacePrivacyPolicy {
+public enum ProfilePrivacyPolicy {
     PRIVATE,
     FRIENDS_ONLY,
     PUBLIC

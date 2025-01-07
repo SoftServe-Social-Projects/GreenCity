@@ -9,11 +9,9 @@ import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.enums.EcoPlacePrivacyPolicy;
 import greencity.enums.EmailNotification;
-import greencity.enums.LocationPrivacyPolicy;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
-import greencity.enums.ToDoListPrivacyPolicy;
 import greencity.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,11 +71,11 @@ public class UserVO {
 
     private String firstName;
 
-    private LocationPrivacyPolicy showLocation;
+    private ProfilePrivacyPolicy showLocation;
 
-    private EcoPlacePrivacyPolicy showEcoPlace;
+    private ProfilePrivacyPolicy showEcoPlace;
 
-    private ToDoListPrivacyPolicy showToDoList;
+    private ProfilePrivacyPolicy showToDoList;
 
     private LocalDateTime lastActivityTime;
 

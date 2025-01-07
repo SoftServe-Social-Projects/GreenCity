@@ -1,6 +1,6 @@
 package greencity.enums;
 
-public enum ToDoListPrivacyPolicy {
+public enum ProfilePrivacyPolicy {
     PRIVATE,
     FRIENDS_ONLY,
     PUBLIC
