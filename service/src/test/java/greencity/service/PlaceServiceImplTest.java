@@ -231,7 +231,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void saveShouldSavePlaceSuccessfully() {
+    void savePlaceWithValidDataSucceedsTest() {
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         Place place = getPlace();
