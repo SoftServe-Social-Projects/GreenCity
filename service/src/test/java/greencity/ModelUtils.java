@@ -174,17 +174,15 @@ import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.CommentStatus;
-import greencity.enums.EcoPlacePrivacyPolicy;
 import greencity.enums.EmailNotification;
 import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
-import greencity.enums.LocationPrivacyPolicy;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
-import greencity.enums.ToDoListPrivacyPolicy;
 import greencity.enums.UserStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -426,9 +424,9 @@ public class ModelUtils {
             .userLocationDto(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .showShoppingList(ToDoListPrivacyPolicy.PUBLIC)
-            .showEcoPlace(EcoPlacePrivacyPolicy.PUBLIC)
-            .showLocation(LocationPrivacyPolicy.PUBLIC)
+            .showShoppingList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
@@ -1736,9 +1734,9 @@ public class ModelUtils {
                     .ecoNewsLiked(null)
                     .ecoNewsCommentsLiked(null)
                     .firstName("dfsfsdf")
-                    .showLocation(LocationPrivacyPolicy.PUBLIC)
-                    .showEcoPlace(EcoPlacePrivacyPolicy.PUBLIC)
-                    .showShoppingList(ToDoListPrivacyPolicy.PUBLIC)
+                    .showLocation(ProfilePrivacyPolicy.PUBLIC)
+                    .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+                    .showShoppingList(ProfilePrivacyPolicy.PUBLIC)
                     .lastActivityTime(LocalDateTime.now())
                     .userActions(null)
                     .languageVO(getLanguageVO())
@@ -1754,9 +1752,9 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .showShoppingList(ToDoListPrivacyPolicy.PUBLIC)
-            .showEcoPlace(EcoPlacePrivacyPolicy.PUBLIC)
-            .showLocation(LocationPrivacyPolicy.PUBLIC)
+            .showShoppingList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
