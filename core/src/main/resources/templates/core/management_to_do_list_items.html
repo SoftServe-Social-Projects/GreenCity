@@ -59,17 +59,25 @@
                     </div>
                 </div>
                 <table class="table table-bordered">
-                    <thead>
+                    <thead class="text-align-center">
                     <tr>
-                        <th>
+                        <th rowspan="2">
                             <span class="custom-checkbox">
                                 <input type="checkbox" id="selectAll">
                                 <label for="selectAll"></label>
                             </span>
                         </th>
-                        <th style="width: 5%">[[#{greenCity.pages.table.id}]]</th>
-                        <th style="width: 80%">[[#{greenCity.pages.table.translations}]]</th>
-                        <th style="width: 10%">[[#{greenCity.pages.table.actions}]]</th>
+                        <th rowspan="2" style="width: 5%">[[#{greenCity.pages.table.id}]]</th>
+                        <th colspan="3" style="width: 80%">[[#{greenCity.pages.table.translations}]]</th>
+                        <th rowspan="2" style="width: 10%">[[#{greenCity.pages.table.actions}]]</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 10%">
+                            [[#{greenCity.pages.table.translation.id}]]
+                        </th>
+                        <th style="width: 70%">[[#{greenCity.pages.table.content}]]</th>
+                        <th style="width: 5%">[[#{greenCity.pages.table.language.code}]]
+                        </th>
                     </tr>
                     </thead>
 
@@ -83,8 +91,8 @@
                                 <input type="search" th:name="id" placeholder="Search"
                                        th:value="${fields eq null ? '' : fields.id }"/>
                             </td>
-                            <td>
-                                <input type="search" th:name="content" placeholder="Search"
+                            <td colspan="3">
+                                <input type="search" th:name="content" placeholder="Search" style="width: 100%"
                                        th:value="${fields eq null ? '' : fields.content }"/>
                             </td>
                             <td colspan="2">
@@ -106,25 +114,15 @@
                                 </span>
                             </td>
                             <td th:text="${toDoListItem.getId()}"></td>
-                            <td>
-                                <table class="table table-borderless m-0">
-                                    <thead>
-                                    <tr class="table-secondary">
-                                        <th class="py-1" style="width: 10%">
-                                            [[#{greenCity.pages.table.translation.id}]]
-                                        </th>
-                                        <th class="py-1" style="width: 70%">[[#{greenCity.pages.table.content}]]</th>
-                                        <th class="py-1" style="width: 5%">[[#{greenCity.pages.table.language.code}]]
-                                        </th>
-                                    </tr>
-                                    </thead>
+                            <td colspan="3">
+                                <table class="table table-borderless m-0 table-child">
                                     <tbody>
                                     <th:block
                                             th:each="translation : ${toDoListItem.getTranslations()}">
                                         <tr>
-                                            <td class="py-1" th:text="${translation.getId()}"></td>
-                                            <td class="py-1" th:text="${translation.getContent()}"></td>
-                                            <td class="py-1" th:text="${translation.getLanguage().getCode()}"></td>
+                                            <td class="small-column text-right" th:text="${translation.getId()}"></td>
+                                            <td class="text-align-center" th:text="${translation.getContent()}"></td>
+                                            <td class="small-column" th:text="${translation.getLanguage().getCode()}"></td>
                                         </tr>
                                     </th:block>
                                     </tbody>

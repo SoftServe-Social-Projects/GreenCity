@@ -119,77 +119,11 @@ header {
     .header .logo {
         margin-left: 14px;
     }
-
-    .navigation-menu {
-        width: auto;
-    }
-
-    .navigation-menu .navigation-menu-left {
-        display: none;
-    }
-
-    .burger-b {
-        margin-left: 5px;
-    }
-
-    .burger-b .menu-icon-wrapper {
-        display: inline;
-    }
 }
 
 @media screen and (max-width: 576px) {
     .header .logo {
         margin-top: 15px;
         margin-left: 16px;
-    }
-
-    .navigation-menu-left-col {
-        height: 100%;
-    }
-
-    .navigation-menu-left-col ul .mobile-vis {
-        display: flex;
-    }
-
-    .create-button {
-        min-width: 138px;
-        min-height: 48px;
-    }
-
-    .create-button span {
-        padding: 0 1px;
-    }
-
-    .navigation-menu-right {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-    }
-
-    .navigation-menu-right ul .sign-in-link, .navigation-menu-right ul .sign-up-link {
-        display: none;
-    }
-}
-
-@media screen and (max-width: 320px) {
-    .navigation-menu-left-col {
-        box-shadow: none;
-    }
-
-    .navigation-menu-left-col ul li:nth-of-type(6) {
-        border-bottom: 1px solid rgba(73, 74, 73, 0.2);
-    }
-
-    .create-button {
-        min-width: 138px;
-        min-height: 48px;
-    }
-
-    .create-button span {
-        padding: 0 1px;
-    }
-
-    li:nth-of-type(6) {
-        margin-bottom: 40px;
     }
 }

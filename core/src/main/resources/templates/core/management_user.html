@@ -5,6 +5,7 @@
     <title>User management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -198,108 +199,21 @@
                                 [[#{greenCity.pages.table.userName}]]
                                 <img id="user-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"onclick="sortByFieldName('name')">
                                 <span class="table-filter-icon"></span>
-
-<!--                                <div class="name-filter-form" style="display: block;">-->
-<!--                                    <div class="filter-sorting-buttons">-->
-<!--                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('name')">Ascending</button>-->
-<!--                                        <button class="sort-buttons" onclick="byNameFieldDesc('name')">Descending</button>-->
-<!--&lt;!&ndash;                                    </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                                    <form action="/management/users" id="nameFilterForm"&ndash;&gt;-->
-<!--&lt;!&ndash;                                          method="GET">&ndash;&gt;-->
-<!--&lt;!&ndash;                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"&ndash;&gt;-->
-<!--&lt;!&ndash;                                               th:name="name"&ndash;&gt;-->
-<!--&lt;!&ndash;                                               th:value="${fields eq null ? '' : fields.name}">&ndash;&gt;-->
-<!--&lt;!&ndash;                                        <div class="filter-checkbox">&ndash;&gt;-->
-<!--&lt;!&ndash;                                            <input type="checkbox" class="filter-checkbox-input">&ndash;&gt;-->
-<!--&lt;!&ndash;                                            <p class="filter-checkbox-text">save filtering</p>&ndash;&gt;-->
-<!--&lt;!&ndash;                                        </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                                        <div class="filter-buttons">&ndash;&gt;-->
-<!--&lt;!&ndash;                                            <button class="filter-cancel">Cancel</button>&ndash;&gt;-->
-<!--&lt;!&ndash;                                            <button type="submit" class="filter-apply">Save changes</button>&ndash;&gt;-->
-<!--&lt;!&ndash;                                        </div>&ndash;&gt;-->
-<!--                                    </form>-->
-<!--       перша форма                         </div>-->
                             </th>
                             <th style="width: 241px;">
                                 [[#{greenCity.pages.table.email}]]
                                 <img id="email-icon" class="sorting" style="left: 65%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('email')">
                                 <span class="table-filter-icon"></span>
-<!--                                <div class="name-filter-form" style="display: none;">-->
-<!--                                    <div class="filter-sorting-buttons">-->
-<!--                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('email')">Ascending</button>-->
-<!--                                        <button class="sort-buttons" onclick="byNameFieldDesc('email')">Descending</button>-->
-<!--                                    </div>-->
-<!--                                    <form action="/management/users" id="emailFilterForm"-->
-<!--                                          method="GET">-->
-<!--                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"-->
-<!--                                               th:name="email"-->
-<!--                                               th:value="${fields eq null ? '' : fields.email}">-->
-<!--                                        <div class="filter-checkbox">-->
-<!--                                            <input type="checkbox" class="filter-checkbox-input">-->
-<!--                                            <p class="filter-checkbox-text">save filtering</p>-->
-<!--                                        </div>-->
-<!--                                        <div class="filter-buttons">-->
-<!--                                            <button class="filter-cancel">Cancel</button>-->
-<!--                                            <button type="submit" class="filter-apply">Save changes</button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
-<!--           друга прихована таблиця                     </div>-->
                             </th>
-                            <th>  <!--style="width: 288px;"-->
-
-                                    [[#{greenCity.pages.table.credo}]]
-                                    <img id="credo-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userCredo')">
-                                    <span class="table-filter-icon"></span>
-
-<!--                                <div class="name-filter-form">-->
-<!--                                    <div class="filter-sorting-buttons">-->
-<!--                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userCredo')">Ascending</button>-->
-<!--                                        <button class="sort-buttons" onclick="byNameFieldDesc('userCredo')">Descending</button>-->
-<!--                                    </div>-->
-<!--                                    <form action="/management/users" id="credoFilterForm"-->
-<!--                                          method="GET" >-->
-<!--                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"-->
-<!--                                               th:name="userCredo"-->
-<!--                                               th:value="${fields eq null ? '' : fields.userCredo}">-->
-<!--                                        <div class="filter-checkbox">-->
-<!--                                            <input type="checkbox" class="filter-checkbox-input">-->
-<!--                                            <p class="filter-checkbox-text">save filtering</p>-->
-<!--                                        </div>-->
-<!--                                        <div class="filter-buttons">-->
-<!--                                            <button class="filter-cancel">Cancel</button>-->
-<!--                                            <button type="submit" class="filter-apply">Save changes</button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
-<!--         третя таблиця                       </div>-->
+                            <th>
+                                [[#{greenCity.pages.table.credo}]]
+                                <img id="credo-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userCredo')">
+                                <span class="table-filter-icon"></span>
                             </th>
                             <th style="width: 235px;">
                                 [[#{greenCity.pages.table.role}]]
                                 <img id="role-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('role')">
                                 <span class="table-filter-icon"></span>
-<!--                                <div class="name-filter-form"    style="display: block;">-->
-<!--                                    <div class="filter-sorting-buttons">-->
-<!--                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('role')">Ascending</button>-->
-<!--                                        <button class="sort-buttons" onclick="byNameFieldDesc('role')">Descending</button>-->
-<!--                                    </div>-->
-<!--                                    <form action="/management/users" id="roleFilterForm"-->
-<!--                                          method="GET" >-->
-<!--                                        <select class="form-search filter"-->
-<!--                                                th:name="role"-->
-<!--                                                th:value="${fields eq null ? '' : fields.role}">-->
-<!--                                            <option th:text="USER" th:value="0"/>-->
-<!--                                            <option th:text="MODERATOR" th:value="2"/>-->
-<!--                                            <option th:text="ADMIN" th:value="1"/>-->
-<!--                                        </select>-->
-<!--                                        <div class="filter-checkbox">-->
-<!--                                            <input type="checkbox" class="filter-checkbox-input">-->
-<!--                                            <p class="filter-checkbox-text">save filtering</p>-->
-<!--                                        </div>-->
-<!--                                        <div class="filter-buttons">-->
-<!--                                            <button class="filter-cancel">Cancel</button>-->
-<!--                                            <button type="submit" class="filter-apply">Save changes</button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
-<!--        четрверте  видиме                      </div>-->
                             </th>
                             <th style="width: 131px;">
                                 [[#{greenCity.pages.table.status}]]
@@ -310,7 +224,7 @@
                                 <span>[[#{greenCity.pages.table.actions}]]</span>
                             </th>
                         </tr>
-<!--                        Table content-->
+                        <!--Table content-->
                         </thead>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
                             <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
@@ -595,7 +509,7 @@
             </div>
         </div>
     </div>
-    <div id="footer" th:insert="core/footer"></div>
 </div>
+<div id="footer" th:insert="core/footer"></div>
 </body>
 </html>

@@ -4,6 +4,7 @@
     <title>User's personal page</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -146,7 +147,7 @@
                 <div class="divider"></div>
 
                 <div style="margin: auto">
-                    <div class="dropdown userpage"> <!--style="margin-top: 12px; display: inline-block"-->
+                    <div class="dropdown userpage">
                         <button class="dropbtn userpage green">
                             <div class="button-container">
                                 <div class="button-text"
@@ -243,47 +244,6 @@
                     </div>
                 </div>
             </div>
-
-            <!--<div class="tooltip-container" style="display: none">
-                <div style="display: inline-block">
-                    <table>
-                        <colgroup>
-                            <col span="1" style="width: 145px">
-                            <col span="1" style="width: 20px">
-                            <col span="1" style="width: 37px">
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <td><h2>Target time</h2></td>
-                            <td>10</td>
-                            <td>days</td>
-                        </tr>
-                        <tr>
-                            <td><h2>Time in progress</h2></td>
-                            <td>8</td>
-                            <td>days</td>
-                        </tr>
-                        <tr>
-                            <td><h2>Percent of done</h2></td>
-                            <td>80</td>
-                            <td>%</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="display: inline-block">
-                    <h2 style="margin-bottom: 8px">To-Do list</h2>
-                    <th:block class="list-of" th:each="item, iterStatus :${habit1.toDoListItems}">
-                        <div class="custom-checkbox userpage">
-                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                   name="options[]" th:value="${item.id}"
-                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
-                                   th:text="${item.text}"></label>
-                        </div>
-                    </th:block>
-                </div>
-            </div>-->
 
             <div class="user-tables">
 
@@ -747,8 +707,8 @@
 
         </div>
     </div>
-    <div id="footer" th:insert="core/footer"></div>
 </div>
+<div id="footer" th:insert="core/footer"></div>
 
 <script>
     function saveListItem(itemId, habitId) {

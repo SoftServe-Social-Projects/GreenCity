@@ -41,11 +41,11 @@
                                 <input type="text" name="query" th:value="${query}" class="form-control" th:placeholder="#{greenCity.pages.search}">
                             </form>
                         </span>
-                        <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-success"
-                           data-toggle="modal"><i class="material-icons">&#xE147;</i>
-                            <span>[[#{greenCity.factsOfTheDay.page.add.factsOfTheDay}]]</span></a>
-                        <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                class="material-icons">&#xE15C;</i> <span>[[#{greenCity.pages.delete}]]</span></a>
+                        <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-secondary"
+                           data-toggle="modal" style="width: 182px;">
+                            <div>[[#{greenCity.factsOfTheDay.page.add.factsOfTheDay}]]</div></a>
+                        <a href="#deleteAllSelectedModal" class="btn btn-remove" data-toggle="modal">
+                            <div>[[#{greenCity.pages.delete}]]</div></a>
                     </div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 <thead class="text-align-center">
                     <tr>
                         <th rowspan="2">
-                            <span class="alternative-checkbox">
+                            <span class="custom-checkbox">
                                 <input type="checkbox" id="selectAll">
                                 <label for="selectAll"></label>
                             </span>
@@ -92,7 +92,7 @@
                         <th rowspan="2">[[#{greenCity.pages.table.tags}]]</th>
                         <th rowspan="2">[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
-                    <tr class="table-secondary">
+                    <tr>
                         <th class="small-column mobile-hidden">[[#{greenCity.pages.table.translation.id}]]</th>
                         <th>[[#{greenCity.pages.table.content}]]
                             <span onclick="orderByField('factOfTheDayTranslations.content','asc')">
@@ -111,7 +111,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <span class="alternative-checkbox">
+                            <span class="custom-checkbox">
                                 <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                        name="options[]" th:value="${factOfTheDay.getId()}">
                                 <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
@@ -124,7 +124,7 @@
                                 <tbody>
                                 <th:block
                                         th:each="translation : ${pageable.getPage().get(iterStatus.index).getFactOfTheDayTranslations()}">
-                                    <tr class="table-secondary-tr">
+                                    <tr>
                                         <td class="mobile-hidden small-column text-right" th:text="${translation.getId()}">1</td>
                                         <td th:text="${translation.getContent()}"></td>
                                         <td class="small-column" th:text="${translation.getLanguage().getCode()}"></td>
@@ -135,10 +135,10 @@
                         </td>
                         <td class="mobile-hidden" th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd.MM.yyyy HH:mm')}"></td>
                         <td>
-                            <table class="table table-borderless m-0 table-child">
+                            <table class="table table-borderless m-0">
                                 <tbody id="tag-table-body">
                                 <th:block th:each="tag : ${pageable.getPage().get(iterStatus.index).getTags()}">
-                                        <tr class="table-secondary-tr">
+                                        <tr>
                                             <td th:data-tag-id="${tag.getId()}" th:data="${tag.getLanguageCode()}" th:text="${tag.getName()}"></td>
                                         </tr>
                                 </th:block>
@@ -276,7 +276,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-info" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
                     </div>
                 </form>
             </div>

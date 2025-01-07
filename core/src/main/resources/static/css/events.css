@@ -9,12 +9,12 @@
     right: 10px;
     top: 50%;
     transform: translateY(-40%);
-    color: #9CA7B0;
+    color: var(--gray-gull);
 }
 
 .dropdown-btn {
-    background-color: #f1f1f1;
-    color: #333;
+    background-color: var(--white-smoke);
+    color: var(--black-ash);
     padding: 10px;
     font-size: 16px;
     border: none;
@@ -50,9 +50,9 @@
 .select-all-checkbox {
     width: 18px;
     height: 18px;
-    border: 2px solid #4CAF50;
+    border: 2px solid var(--green);
     border-radius: 2px;
-    background-color: #fff;
+    background-color: var(--white);
     cursor: pointer;
     position: relative;
     margin-right: 8px;
@@ -61,6 +61,6 @@
 .select-all-label {
     font-size: 16px;
     font-weight: 500;
-    color: #333;
+    color: var(--black-ash);
     cursor: pointer;
 }
