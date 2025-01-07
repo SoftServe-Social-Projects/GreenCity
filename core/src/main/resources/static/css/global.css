@@ -71,7 +71,8 @@ table th, table td {
     border-top: none;
     border-left: 1px solid var(--gray-gull);
     border-right: 1px solid var(--gray-gull);
-    border-bottom: 1px solid var(--gray-gull);    padding: 18px;
+    border-bottom: 1px solid var(--gray-gull);
+    padding: 18px;
     background-color: var(--white);
 }
 

@@ -188,7 +188,9 @@ input[type=range] {
     border-radius: 2px;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb,
+input[type="range"]::-moz-range-thumb,
+input[type="range"]::-ms-thumb {
     background-color: var(--green);
     -webkit-appearance: none;
     width: 12px;
