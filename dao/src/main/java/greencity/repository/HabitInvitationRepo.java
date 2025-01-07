@@ -78,7 +78,10 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
         ),
         invitations AS (
             SELECT DISTINCT
-                i.invitee_id AS friend_id,
+                CASE
+                    WHEN i.inviter_id = :userId THEN i.invitee_id
+                    ELSE i.inviter_id
+                END AS friend_id,
                 CASE
                     WHEN i.status = 'ACCEPTED' THEN TRUE
                     ELSE FALSE
@@ -86,20 +89,22 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
                 i.status IN ('PENDING', 'ACCEPTED') AS has_invitation
             FROM habit_invitations i
             WHERE i.status IN ('PENDING', 'ACCEPTED')
-              AND i.inviter_id = :userId
-              AND i.inviter_habit_assign_id IN (
-                  SELECT habit_assign_id FROM relevant_habit_assignments
+              AND (
+                  (i.inviter_id = :userId AND i.inviter_habit_assign_id
+                        IN (SELECT habit_assign_id FROM relevant_habit_assignments))
+                  OR
+                  (i.invitee_id = :userId AND i.inviter_habit_assign_id
+                        IN (SELECT habit_assign_id FROM relevant_habit_assignments))
               )
         )
         SELECT f.id,
                f.name,
                f.email,
                f.profile_picture,
-               inv.has_invitation,
-               inv.has_accepted_invitation
+               COALESCE(inv.has_invitation, FALSE) AS has_invitation,
+               COALESCE(inv.has_accepted_invitation, FALSE) AS has_accepted_invitation
         FROM filtered_friends f
         LEFT JOIN invitations inv ON f.id = inv.friend_id
-        LEFT JOIN relevant_habit_assignments ha ON f.id = ha.friend_id
         """)
     List<Tuple> findUserFriendsWithHabitInvites(
         Long userId, String name, Long habitId, Pageable pageable);
