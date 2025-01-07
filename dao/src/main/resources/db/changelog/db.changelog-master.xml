@@ -258,4 +258,6 @@
     <include file="db/changelog/logs/ch-add-invitee-id-and-inviter-id-to-habit-invite-table.xml"/>
     <include file="/db/changelog/logs/ch-habits-followers-add-created-at-column.xml"/>
     <include file="/db/changelog/logs/ch-habits-add-created-at-column.xml"/>
+    <include file="db/changelog/logs/ch-change-user-profile-columns-type-Haliara.xml"/>
+    <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
 </databaseChangeLog>

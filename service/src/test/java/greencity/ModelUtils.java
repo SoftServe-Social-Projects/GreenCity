@@ -175,6 +175,7 @@ import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
@@ -605,9 +606,9 @@ public class ModelUtils {
             .userLocationDto(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .showToDoList(true)
-            .showEcoPlace(true)
-            .showLocation(true)
+            .showToDoList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
