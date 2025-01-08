@@ -5,6 +5,7 @@ import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterGeocodingApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
@@ -275,10 +276,13 @@ public class PlaceController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
+    //TODO: add filters to fetch places from API and DB (create requestFilterObject). Search for places in our DB and API
+    //TODO: add boolean to search places in DB only or in DB and Google API
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
-        @Valid @RequestBody FilterPlaceDto filterDto,
-        @CurrentUser UserVO userVO) {
+            //@Valid @RequestBody FilterGeocodingApiDto filterDto,
+            @Valid @RequestBody FilterPlaceDto filterDto,
+            @CurrentUser UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 

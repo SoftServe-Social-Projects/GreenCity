@@ -438,6 +438,8 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO) {
+        //TODO: apply filters to db
+        //TODO: create a request to googleApiService with filters
         Long userId = userVO == null ? null : userVO.getId();
         List<Place> list =
             ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
@@ -449,7 +451,7 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method that filtering places by distance.
+     * Method that filters places by distance.
      *
      * @param filterDto - {@link FilterPlaceDto} DTO.
      * @param placeList - {@link List} of {@link Place} that will be filtered.

@@ -40,8 +40,12 @@ public class GoogleApiService {
         List<GeocodingResult> geocodingResults = new ArrayList<>();
         LOCALES.forEach(locale -> {
             try {
+                //TODO: pass all available parameters (update filterPlaceDto class).
                 GeocodingResult[] results = GeocodingApi.newRequest(context)
-                    .address(searchRequest).language(locale.getLanguage()).await();
+                        .address(searchRequest)
+                        .language(locale.getLanguage())
+                        //TODO: more params
+                        .await();
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {
                 log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
