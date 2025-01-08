@@ -35,4 +35,6 @@ public class AddPlaceDto {
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
     private String locationName;
+    private String description;
+    private String websiteUrl;
 }

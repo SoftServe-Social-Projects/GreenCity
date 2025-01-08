@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Prots-2" author="Nazar Prots">
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="31"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="32"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="33"/>
+            <column name="user_id" value="2"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

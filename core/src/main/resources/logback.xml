@@ -1,31 +1,19 @@
 <configuration>
 
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n" />
-    <property name="APP_LOG_ROOT" value="logs"/>
+    <!-- Define the custom date format -->
+    <property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss" />
 
+    <!-- Define the log pattern with the custom date format -->
+    <property name="LOG_PATTERN" value="[%d{${DATE_FORMAT}}] %highlight(%level) %cyan(%-40.40logger{40}) %magenta(%-5.5(:%line)) %msg%n" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <!-- Use the log pattern with the custom date format -->
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <appender name="ratingCalculationLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${APP_LOG_ROOT}/rating-%d{yyyy-MM}.log</fileNamePattern>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>10MB</maxFileSize>
-        </triggeringPolicy>
-    </appender>
-
-    <logger name="ratingLog" level="INFO">
-        <appender-ref ref="ratingCalculationLog" />
-    </logger>
-
-    <root level="info">
+    <!-- Define loggers and root level -->
+    <root level="INFO">
         <appender-ref ref="console" />
     </root>
 

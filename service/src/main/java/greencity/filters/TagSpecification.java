@@ -41,7 +41,7 @@ public class TagSpecification implements MySpecification<Tag> {
         CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         ListJoin<Tag, TagTranslation> translationJoin = root.join(Tag_.tagTranslations);
 
-        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+        return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
             : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get(TagTranslation_.NAME),
                 "%" + searchCriteria.getValue() + "%"),
                 criteriaBuilder.equal(translationJoin.get(TagTranslation_.tag).get(Tag_.ID),

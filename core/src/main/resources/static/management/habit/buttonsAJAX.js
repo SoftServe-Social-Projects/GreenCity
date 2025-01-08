@@ -76,45 +76,99 @@ function unlinkAdvices(habitId) {
     });
 }
 
-// Habit`s Shopping List
+// Habit`s To-Do List
 
-let checkedShopIds = [];
-let checkedChShop = 0;
+let checkedToDoIds = [];
+let checkedChToDo = 0;
 
-function updateCheckBoxCountShop(chInt, id) {
-    let chBox = $('#Shopcheckbox' + chInt);
+function updateCheckBoxCountToDo(chInt, id) {
+    let chBox = $('#ToDocheckbox' + chInt);
     if (chBox.is(":checked")) {
-        checkedChShop++;
-        checkedShopIds.push(id);
+        checkedChToDo++;
+        checkedToDoIds.push(id);
     } else {
-        checkedChShop--;
-        let pos = checkedShopIds.indexOf(id)
-        checkedShopIds.splice(pos, 1)
+        checkedChToDo--;
+        let pos = checkedToDoIds.indexOf(id)
+        checkedToDoIds.splice(pos, 1)
     }
 
     let deactivateButton = $('#unlinktable3');
-    if (checkedChShop === 0) {
+    if (checkedChToDo === 0) {
         deactivateButton.addClass("disabled");
     } else deactivateButton.removeClass("disabled");
 }
 
 
-function unlinkShop(habitId) {
+function unlinkToDo(habitId) {
     clearAllErrorsSpan();
 
     // Ajax request
     $.ajax({
-        url: '/management/shopping-list-items/unlink/' + habitId,
+        url: '/management/to-do-list-items/unlink/' + habitId,
         type: 'DELETE',
         dataType: 'json',
         contentType: 'application/json',
         success: function (data) {
             location.reload();
         },
-        data: JSON.stringify(checkedShopIds)
+        data: JSON.stringify(checkedToDoIds)
     });
 }
 
+function deleteHabit(deleteUrl) {
+    if (!confirm('Are you sure you want to delete this habit?')) {
+        return;
+    }
+
+    $.ajax({
+        url: deleteUrl,
+        type: 'DELETE',
+        success: function () {
+            alert('Habit deleted successfully!');
+            console.log('Habit successfully deleted');
+            location.reload();
+        },
+        error: function (xhr) {
+            console.error('Error deleting habit:', xhr.responseText);
+            alert('Failed to delete habit. Please try again.');
+        }
+    });
+}
+
+$(document).ready(function () {
+    $(document).on('click', '.eDelBtn', function (event) {
+        event.preventDefault();
+        const deleteUrl = $(this).attr('href');
+        deleteHabit(deleteUrl);
+    });
+})
+
+
 function linknew() {
     // TODO: create request
+}
+
+function sortByFieldName(nameField) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    var page = urlSearch.get("page");
+    if (page !== null) {
+        urlSearch.set("page", "0");
+    }
+    if (sort === nameField + ",asc") {
+        urlSearch.set("sort", nameField + ",desc");
+        localStorage.setItem("sort", nameField + ",desc");
+    } else {
+        urlSearch.set("sort", nameField + ",asc");
+        localStorage.setItem("sort", nameField + ",asc");
+    }
+    let url = "/management/habits?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
 }

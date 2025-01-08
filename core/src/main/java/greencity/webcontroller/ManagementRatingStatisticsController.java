@@ -8,15 +8,15 @@ import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,20 +30,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/management/rating")
+@RequiredArgsConstructor
 public class ManagementRatingStatisticsController {
     private final RatingStatisticsService ratingStatisticsService;
     private final RatingExcelExporter ratingExcelExporter;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    /**
-     * Constructor.
-     */
-    @Autowired
-    public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-        RatingExcelExporter ratingExcelExporter) {
-        this.ratingStatisticsService = ratingStatisticsService;
-        this.ratingExcelExporter = ratingExcelExporter;
-    }
 
     /**
      * Returns management page with User rating statistics.
@@ -53,8 +44,8 @@ public class ManagementRatingStatisticsController {
      * @author Dovganyuk Taras
      */
     @ApiPageable
-    @Operation(summary = "Get management page with facts of the day.")
-    @GetMapping("")
+    @Operation(summary = "Get management page with User rating statistics.")
+    @GetMapping
     public String getUserRatingStatistics(Model model,
         @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable) {
         Pageable paging =
@@ -117,7 +108,7 @@ public class ManagementRatingStatisticsController {
      * @param ratingStatisticsViewDto used for receive parameters for filters from
      *                                UI.
      */
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
         @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable,
         RatingStatisticsViewDto ratingStatisticsViewDto) {

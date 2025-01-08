@@ -67,25 +67,6 @@ class CustomExceptionHandlerTest {
     }
 
     @Test
-    void handleBadEmailException() {
-        UserAlreadyRegisteredException actual = new UserAlreadyRegisteredException("email");
-        ValidationExceptionDto validationDto = new ValidationExceptionDto(actual.getMessage(), "email");
-        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.BAD_REQUEST);
-        ResponseEntity<Object> body = status.body(Collections.singletonList(validationDto));
-        assertEquals(customExceptionHandler.handleBadEmailException(actual), body);
-    }
-
-    @Test
-    void handleEmailNotVerified() {
-        EmailNotVerified emailNotVerified = new EmailNotVerified("email");
-        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        when(errorAttributes.getErrorAttributes(any(WebRequest.class), any(ErrorAttributeOptions.class)))
-            .thenReturn(objectMap);
-        assertEquals(customExceptionHandler.handleEmailNotVerified(emailNotVerified, webRequest),
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse));
-    }
-
-    @Test
     void handleBadSocialNetworkLinkException() {
         InvalidURLException invalidURLException = new InvalidURLException("test");
         ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
@@ -102,15 +83,6 @@ class CustomExceptionHandlerTest {
             .thenReturn(objectMap);
         assertEquals(
             customExceptionHandler.handleBadSocialNetworkLinkException(badSocialNetworkLinksException, webRequest),
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
-    }
-
-    @Test
-    void testHandleBadRefreshTokenException() {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        when(errorAttributes.getErrorAttributes(any(WebRequest.class), any(ErrorAttributeOptions.class)))
-            .thenReturn(objectMap);
-        assertEquals(customExceptionHandler.handleBadRefreshTokenException(webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
     }
 

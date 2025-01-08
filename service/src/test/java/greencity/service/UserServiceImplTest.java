@@ -2,7 +2,8 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -15,6 +16,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.enums.UserStatus;
+import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import org.junit.jupiter.api.Test;
@@ -23,34 +25,35 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static greencity.ModelUtils.TEST_EMAIL;
-import static greencity.ModelUtils.TEST_EMAIL_2;
-import static greencity.ModelUtils.TEST_USER;
-import static greencity.ModelUtils.TEST_USER_ROLE_USER;
-import static greencity.ModelUtils.TEST_USER_STATUS_DTO;
-import static greencity.ModelUtils.TEST_USER_VO;
-import static greencity.ModelUtils.TEST_USER_VO_ROLE_USER;
+import static greencity.ModelUtils.getListUserManagementVO;
+import static greencity.ModelUtils.getSortedPageable;
+import static greencity.ModelUtils.getUnSortedPageable;
+import static greencity.ModelUtils.getUserFilterDto;
+import static greencity.ModelUtils.getUserManagementVOPage;
+import static greencity.ModelUtils.getUserPage;
+import static greencity.ModelUtils.testEmail;
+import static greencity.ModelUtils.testEmail2;
+import static greencity.ModelUtils.testUser;
+import static greencity.ModelUtils.testUserRoleUser;
+import static greencity.ModelUtils.testUserStatusDto;
+import static greencity.ModelUtils.testUserVo;
+import static greencity.ModelUtils.userVORoleUser;
+import static greencity.ModelUtils.getUser;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.CREATED;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,8 +73,10 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    UserManagementVOMapper userManagementVOMapper;
 
-    private UserVO userVO = UserVO.builder()
+    private final UserVO userVO = UserVO.builder()
         .id(1L)
         .name("Test Testing")
         .email("test@gmail.com")
@@ -112,7 +117,7 @@ class UserServiceImplTest {
     void checkIfTheUserIsOnlineEqualsTrueTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        User user = ModelUtils.getUser();
+        User user = getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
@@ -123,10 +128,7 @@ class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime localDateTime = LocalDateTime.of(
-            2015, Month.JULY, 29, 19, 30, 40);
-        Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime);
-        User user = ModelUtils.getUser();
+        User user = getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.empty());
@@ -157,7 +159,7 @@ class UserServiceImplTest {
 
     @Test
     void checkUpdatableUserTest() {
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(getUser()));
         when(modelMapper.map(any(), any())).thenReturn(userVO);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
             userService.checkUpdatableUser(1L, "email");
@@ -167,7 +169,7 @@ class UserServiceImplTest {
 
     @Test
     void getInitialsByIdTest() {
-        when(userRepo.findById(any())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findById(any())).thenReturn(Optional.of(getUser()));
         when(modelMapper.map(any(), any())).thenReturn(userVO);
         assertEquals("TT", userService.getInitialsById(12L));
         userVO.setName("Taras");
@@ -176,55 +178,53 @@ class UserServiceImplTest {
 
     @Test
     void testFindByEmail() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
-        UserVO actual = userService.findByEmail(TEST_EMAIL);
+        UserVO actual = userService.findByEmail(testEmail);
 
-        assertEquals(TEST_USER_VO, actual);
+        assertEquals(testUserVo, actual);
 
-        verify(userRepo).findByEmail(TEST_EMAIL);
-        verify(modelMapper).map(TEST_USER, UserVO.class);
+        verify(userRepo).findByEmail(testEmail);
+        verify(modelMapper).map(testUser, UserVO.class);
     }
 
     @Test
-    void testFindByEmailReturnNull() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
+    void testFindByEmailThrowException() {
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.empty());
 
-        UserVO actual = userService.findByEmail(TEST_EMAIL);
+        assertThrows(WrongIdException.class, () -> userService.findByEmail(testEmail));
 
-        assertNull(actual);
-
-        verify(userRepo).findByEmail(TEST_EMAIL);
+        verify(userRepo).findByEmail(testEmail);
     }
 
     @Test
     void testFindNotDeactivatedByEmail() {
-        when(userRepo.findNotDeactivatedByEmail(TEST_EMAIL))
-            .thenReturn(Optional.of(TEST_USER));
-        when(modelMapper.map(Optional.of(TEST_USER), UserVO.class))
-            .thenReturn(TEST_USER_VO);
+        when(userRepo.findNotDeactivatedByEmail(testEmail))
+            .thenReturn(Optional.of(testUser));
+        when(modelMapper.map(Optional.of(testUser), UserVO.class))
+            .thenReturn(testUserVo);
 
-        Optional<UserVO> actual = userService.findNotDeactivatedByEmail(TEST_EMAIL);
+        Optional<UserVO> actual = userService.findNotDeactivatedByEmail(testEmail);
 
-        assertEquals(Optional.of(TEST_USER_VO), actual);
+        assertEquals(Optional.of(testUserVo), actual);
     }
 
     @Test
     void testFindIdByEmail() {
-        when(userRepo.findIdByEmail(TEST_EMAIL)).thenReturn(Optional.of(1L));
+        when(userRepo.findIdByEmail(testEmail)).thenReturn(Optional.of(1L));
 
-        Long actual = userService.findIdByEmail(TEST_EMAIL);
+        Long actual = userService.findIdByEmail(testEmail);
 
         assertEquals(1L, actual);
     }
 
     @Test
     void testFindIdByEmailThrowsException() {
-        when(userRepo.findIdByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.findIdByEmail(testEmail)).thenReturn(Optional.empty());
 
         assertThrows(WrongEmailException.class,
-            () -> userService.findIdByEmail(TEST_EMAIL));
+            () -> userService.findIdByEmail(testEmail));
     }
 
     @Test
@@ -240,66 +240,90 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateStatus() {
-        when(userRepo.findByEmail(TEST_EMAIL_2)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(TEST_USER_ROLE_USER));
-        when(modelMapper.map(TEST_USER_ROLE_USER, UserVO.class)).thenReturn(TEST_USER_VO_ROLE_USER);
+        when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
+        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUserRoleUser));
+        when(modelMapper.map(testUserRoleUser, UserVO.class)).thenReturn(userVORoleUser);
         doNothing().when(userRepo).updateUserStatus(2L, String.valueOf(UserStatus.CREATED));
-        when(modelMapper.map(TEST_USER_VO_ROLE_USER, UserStatusDto.class)).thenReturn(TEST_USER_STATUS_DTO);
+        when(modelMapper.map(userVORoleUser, UserStatusDto.class)).thenReturn(testUserStatusDto);
 
-        UserStatusDto actual = userService.updateStatus(2L, CREATED, TEST_EMAIL_2);
+        UserStatusDto actual = userService.updateStatus(2L, CREATED, testEmail2);
 
-        assertEquals(TEST_USER_STATUS_DTO, actual);
+        assertEquals(testUserStatusDto, actual);
 
         verify(userRepo, times(2)).findByEmail(anyString());
         verify(modelMapper, times(4)).map(any(User.class), eq(UserVO.class));
         verify(userRepo, times(2)).findById(anyLong());
         verify(userRepo).updateUserStatus(2L, String.valueOf(CREATED));
-        verify(modelMapper).map(TEST_USER_VO_ROLE_USER, UserStatusDto.class);
+        verify(modelMapper).map(userVORoleUser, UserStatusDto.class);
     }
 
     @Test
     void testUpdateStatusThrowsBadUpdateRequestException() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
         assertThrows(BadUpdateRequestException.class,
-            () -> userService.updateStatus(1L, CREATED, TEST_EMAIL));
+            () -> userService.updateStatus(1L, CREATED, testEmail));
     }
 
     @Test
     void testUpdateStatusThrowsLowRoleLevelException() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
+        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
         assertThrows(LowRoleLevelException.class,
-            () -> userService.updateStatus(2L, CREATED, TEST_EMAIL));
+            () -> userService.updateStatus(2L, CREATED, testEmail));
     }
 
     @Test
-    void getAllUsersByCriteriaTest() {
-        // given
-        Pageable pageable = PageRequest.of(0, 10);
-        List<UserManagementVO> managementVOsList = new ArrayList<>();
-        UserManagementVO userManagementVO = ModelUtils.getUserManagementVO();
-        managementVOsList.add(userManagementVO);
-        Page<UserManagementVO> page = new PageImpl<>(managementVOsList, pageable, 1);
-        when(userRepo.findAllManagementVo(any(UserFilter.class), eq(pageable))).thenReturn(page);
+    void getAllUsersByCriteriaSortedPageableTest() {
+        Page<User> userPage = getUserPage();
+        Pageable sortedPageable = getSortedPageable();
+        UserFilterDto request = getUserFilterDto();
 
-        // when
-        PageableDto<UserManagementVO> allUsersByCriteria =
-            userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable);
+        List<UserManagementVO> listUserManagementVO = getListUserManagementVO();
+        Page<UserManagementVO> userManagementVOPage = getUserManagementVOPage();
 
-        // then
-        assertTrue(allUsersByCriteria.getPage().contains(userManagementVO));
-        verify(userRepo, times(1)).findAllManagementVo(any(UserFilter.class), eq(pageable));
+        when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
+        when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
+
+        PageableDetailedDto<UserManagementVO> allUsersByCriteria =
+            userService.getAllUsersByCriteria(request, sortedPageable);
+
+        assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
+
+        verify(userRepo).findAll(any(UserFilter.class), eq(sortedPageable));
+        verify(userManagementVOMapper).mapAllToPage(getUserPage());
+    }
+
+    @Test
+    void getAllUsersByCriteriaUnsortedPageableTest() {
+        Page<User> userPage = getUserPage();
+        Pageable unsortedPageable = getUnSortedPageable();
+        Pageable sortedPageable = getSortedPageable();
+        UserFilterDto request = getUserFilterDto();
+
+        List<UserManagementVO> listUserManagementVO = getListUserManagementVO();
+        Page<UserManagementVO> userManagementVOPage = getUserManagementVOPage();
+
+        when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
+        when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
+
+        PageableDetailedDto<UserManagementVO> allUsersByCriteria =
+            userService.getAllUsersByCriteria(request, unsortedPageable);
+
+        assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
+
+        verify(userRepo).findAll(any(UserFilter.class), eq(sortedPageable));
+        verify(userManagementVOMapper).mapAllToPage(getUserPage());
     }
 
     @Test
     void updateUserRatingTest() {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
         doNothing().when(userRepo).updateUserRating(1L, 6.0d);
 
@@ -314,5 +338,17 @@ class UserServiceImplTest {
         when(userRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> userService.updateUserRating(1L, 6.0d));
         verify(userRepo).findById(1L);
+    }
+
+    @Test
+    void findByEmailsTest() {
+        List<String> emails = List.of("email@gmail.com", "gmail@gmail.com");
+
+        when(userRepo.findAllByEmailIn(emails)).thenReturn(List.of(getUser(), getUser()));
+        when(modelMapper.map(getUser(), UserVO.class)).thenReturn(userVO);
+
+        assertEquals(List.of(userVO, userVO), userService.findByEmails(emails));
+
+        verify(userRepo).findAllByEmailIn(emails);
     }
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="comments-2-delete" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="created_date" tableName="comments"/>
+        </preConditions>
+        <dropColumn columnName="created_date" tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments-2-delete-1" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="modified_date" tableName="comments"/>
+        </preConditions>
+        <dropColumn columnName="modified_date" tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments-2-delete-2" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="text" tableName="comments"/>
+        </preConditions>
+        <dropColumn columnName="text" tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments-2-delete-3" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="estimate_id" tableName="comments"/>
+        </preConditions>
+        <dropColumn columnName="estimate_id" tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments-2-delete-4" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="place_id" tableName="comments"/>
+        </preConditions>
+        <dropColumn columnName="place_id" tableName="comments"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -55,7 +55,7 @@ class ManagementTagsControllerTest {
     @InjectMocks
     private ManagementTagsController tagsController;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -159,7 +159,6 @@ class ManagementTagsControllerTest {
         PageableAdvancedDto<TagVO> tags = ModelUtils.getPageableAdvancedDtoForTag();
         TagViewDto tagViewDto = ModelUtils.getTagViewDto();
         String tagViewDtoAsJson = objectMapper.writeValueAsString(tagViewDto);
-        String pageableAsJson = objectMapper.writeValueAsString(pageable);
 
         when(tagsService.search(pageable, tagViewDto)).thenReturn(tags);
         when(languageService.getAllLanguages()).thenReturn(languages);

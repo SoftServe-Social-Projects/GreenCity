@@ -2,8 +2,10 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.*;
+import greencity.dto.tag.TagDto;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Set;
 
 public interface FactOfTheDayService {
     /**
@@ -14,15 +16,6 @@ public interface FactOfTheDayService {
      * @author Mykola Lehkyi
      */
     PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable);
-
-    /**
-     * Method find {@link FactOfTheDayVO} by id.
-     *
-     * @param id of {@link FactOfTheDayVO}
-     * @return {@link FactOfTheDayVO}
-     * @author Mykola Lehkyi
-     */
-    FactOfTheDayDTO getFactOfTheDayById(Long id);
 
     /**
      * Method saves new {@link FactOfTheDayVO} and
@@ -43,16 +36,6 @@ public interface FactOfTheDayService {
      * @author Mykola Lehkyi
      */
     FactOfTheDayPostDTO updateFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
-
-    /**
-     * Method updates {@link FactOfTheDayVO}{@link FactOfTheDayVO} and
-     * {@link FactOfTheDayTranslationVO}.
-     *
-     * @param fact {@link FactOfTheDayVO}
-     * @return instance of {@link FactOfTheDayVO}
-     * @author Mykola Lehkyi
-     */
-    FactOfTheDayVO update(FactOfTheDayPostDTO fact);
 
     /**
      * Method deletes {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}
@@ -83,19 +66,36 @@ public interface FactOfTheDayService {
     PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery);
 
     /**
-     * Method return random {@link FactOfTheDayVO} .
+     * Returns a random {@link FactOfTheDayTranslationDTO} based on the provided
+     * language code and habit tags.
      *
-     * @return FactOfTheDay
-     * @author Mykola Lehkyi
+     * @param tagsId a set of tag IDs associated with habits
+     * @return a random fact of the day
      */
-    FactOfTheDayVO getRandomFactOfTheDay();
+    FactOfTheDayTranslationDTO getRandomFactOfTheDayByTags(Set<Long> tagsId);
 
     /**
-     * Method return random {@link FactOfTheDayTranslationDTO} by languageCode.
+     * Returns a random general {@link FactOfTheDayTranslationDTO} for the specified
+     * language.
      *
-     * @param languageCode String
-     * @return {@link FactOfTheDayTranslationDTO}
-     * @author Mykola Lehkyi
+     * @return a random general fact of the day
      */
-    FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode);
+    FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay();
+
+    /**
+     * Returns a random {@link FactOfTheDayTranslationDTO} for a user based on the
+     * provided language code and the user's habit tags.
+     *
+     * @param email the email of the user for whom the tags are retrieved
+     * @return a random fact of the day based on the user's habits
+     */
+    FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String email);
+
+    /**
+     * Retrieves all tags associated with Facts of the Day.
+     *
+     * @return a set of {@link TagDto} representing all available tags for facts of
+     *         the day
+     */
+    Set<TagDto> getAllFactOfTheDayTags();
 }

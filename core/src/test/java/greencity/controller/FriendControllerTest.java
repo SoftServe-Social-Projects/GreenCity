@@ -1,9 +1,12 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.FriendService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,13 +16,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
-
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -46,12 +52,15 @@ class FriendControllerTest {
     private static final String FRIEND_LINK = "/friends";
     private final Principal principal = ModelUtils.getPrincipal();
     private final UserVO userVO = ModelUtils.getUserVO();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(friendController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
             .build();
     }
 
@@ -130,8 +139,13 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), null,
-            PageRequest.of(0, 10));
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
+                userVO.getId(),
+                "",
+                false,
+                false,
+                PageRequest.of(0, 10)
+        );
     }
 
     @Test
@@ -186,7 +200,7 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).getAllUserFriendRequests(userVO.getId(), PageRequest.of(0, 20));
+        verify(friendService).getAllUserFriendRequests(userVO.getId(), "", false, PageRequest.of(0, 20));
     }
 
     @Test
@@ -199,7 +213,7 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllFriendsOfUser(userVO.getId(), name, PageRequest.of(0, 20));
+        verify(friendService).findAllFriendsOfUser(userVO.getId(), name, false, PageRequest.of(0, 20));
     }
 
     @Test
@@ -214,5 +228,36 @@ class FriendControllerTest {
 
         verify(userService).findByEmail(principal.getName());
         verify(friendService).deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
+    }
+
+    @Test
+    void getUserAsFriendDtoTest() throws Exception {
+        var userAsFriend = ModelUtils.getUserAsFriendDto();
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(friendService.getUserAsFriend(anyLong(), anyLong())).thenReturn(userAsFriend);
+
+        mockMvc.perform(get(FRIEND_LINK + "/user-data-as-friend/{friendId}", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userAsFriend)))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).getUserAsFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void getUserAsFriendDtoNotFoundExceptionTest() throws Exception {
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(friendService.getUserAsFriend(anyLong(),anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get(FRIEND_LINK + "/user-data-as-friend/{friendId}", 1L)
+                .principal(principal)
+            )
+            .andExpect(status().isNotFound());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).getUserAsFriend(anyLong(),anyLong());
     }
 }

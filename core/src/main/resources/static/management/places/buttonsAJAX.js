@@ -1,3 +1,4 @@
+
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
@@ -21,6 +22,20 @@ function initMap() {
     // Adds a marker at the center of the map.
     addMarker(mapCenter);
 }
+
+$(document).ready(function() {
+    $('#locationInputType').change(function() {
+        var selectedValue = $(this).val();
+
+        if (selectedValue === 'map') {
+            $('#mapSection').show();
+            $('#addressSection').hide();
+        } else if (selectedValue === 'address') {
+            $('#mapSection').hide();
+            $('#addressSection').show();
+        }
+    });
+});
 
 // Adds a marker to the map and push to the array.
 function addMarker(location) {
@@ -109,45 +124,55 @@ $(document).ready(function () {
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
-        let formData = $('#addPlaceForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        let place = {
-            "name": formData.name,
-            "location":
-                {
-                    "address": formData.address,
-                    "lat": formData.latitude,
-                    "lng": formData.longitude
-                },
-            "status": formData.status,
-            "category": formData.category,
-            "photo": formData.photo
-        }
-        place.discountValues = getDiscountValues();
-        place.openingHoursList = getOpeningHours();
-        if (formData.id !== '') {
-            place.id = formData.id;
+
+        let formData = new FormData(document.getElementById('addPlaceForm'));
+
+        let place;
+        let type = $('#id').val() ? 'PUT' : 'POST';
+
+        if (type === 'POST') {
+            place = {
+                "placeName": formData.get('name'),
+                "locationName": formData.get('address'),
+                "status": formData.get('status'),
+                "categoryName": formData.get('category')
+            };
+        } else {
+            place = {
+                "id": formData.get('id'),
+                "placeName": formData.get('name'),
+                "locationName": formData.get('address'),
+                "status": formData.get('status'),
+                "categoryName": formData.get('category')
+            };
         }
 
-        // Ajax request
-        let type = $('#id').val() ? 'put' : 'post';
+        place.discountValues = getDiscountValues();
+        place.openingHoursList = getOpeningHours();
+
+        formData.append('addPlaceDto', JSON.stringify(place));
+        var file = document.getElementById("creationFile").files[0];
+        console.log(file);
+        formData.append("images", file);
         $.ajax({
             url: '/management/places',
             type: type,
-            dataType: 'json',
-            contentType: 'application/json',
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
                         $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError);
-                    })
+                    });
                 } else {
                     location.reload();
                 }
             },
-            data: JSON.stringify(place)
+            error: function (xhr, status, error) {
+                console.error(error);
+                alert('Error');
+            }
         });
     });
 
@@ -309,3 +334,151 @@ $(document).ready(function () {
         $('#discounts').append(discDiv);
     }
 });
+
+$(document).ready(function () {
+    $('.filter-container').hide();
+    setPageSizeFromLocalStorage();
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('th').length) {
+            $('.filter-container').hide();
+            $('.eFilterBtn').removeClass('active');
+        }
+    });
+
+    $('.eFilterBtn').on('click', function () {
+        const $filterContainer = $(this).closest('th').find('.filter-container');
+        $('.eFilterBtn').not(this).removeClass('active');
+        $('.filter-container').not($filterContainer).hide();
+        $(this).toggleClass('active');
+        $filterContainer.toggle();
+    });
+});
+
+function getUrlSearchParams() {
+    const allParam = window.location.search;
+    const urlSearch = new URLSearchParams(allParam);
+
+    const params = {
+        id: urlSearch.get("id"),
+        status: urlSearch.get("status"),
+        name: urlSearch.get("name"),
+        author: urlSearch.get("author"),
+        address: urlSearch.get("address"),
+    };
+
+    if (params.page !== null) {
+        params.page = "0";
+    }
+
+    const newUrlSearch = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== null) {
+            newUrlSearch.set(key, value);
+        }
+    });
+    if (urlSearch.has("sort")) {
+        const sortParams = urlSearch.getAll("sort").filter(Boolean);
+        sortParams.forEach(param => newUrlSearch.append("sort", param));
+    }
+
+    return newUrlSearch;
+}
+
+function searchByNameField(searchValue, fieldName, searchValue2 = null, fieldName2 = null) {
+    let urlSearch = getUrlSearchParams();
+    if (searchValue !== null && searchValue !== "") {
+        urlSearch.set(fieldName, searchValue);
+    }
+    if (searchValue2 !== null && searchValue2 !== "") {
+        urlSearch.set(fieldName2, searchValue2);
+    }
+
+    let url = "/management/places?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function removeFilter(filterName) {
+    let urlSearch = getUrlSearchParams();
+    console.log(urlSearch.toString())
+    urlSearch.delete(filterName);
+    console.log(urlSearch.toString())
+    let newUrl = "/management/places?" + urlSearch.toString();
+
+    if (!urlSearch.toString()) {
+        newUrl = "/management/places";
+    }
+    window.location.href = newUrl;
+}
+
+
+function orderByNameField(sortOrder, fieldName) {
+    const urlSearch = getUrlSearchParams();
+    urlSearch.delete("sort");
+    urlSearch.append("sort", `${fieldName},${sortOrder}`);
+    const url = "/management/places?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function () {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function saveItemsOnPage(itemsOnPage) {
+    var allParam = window.location.search;
+    localStorage.setItem('pageSize', itemsOnPage);
+    document.getElementById('currentPageSize').innerText = itemsOnPage;
+    console.log(itemsOnPage)
+    var urlSearch = new URLSearchParams(allParam);
+    localStorage.setItem("size", itemsOnPage);
+    let url = "/management/places?";
+    urlSearch.set("size", itemsOnPage);
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function setPageSizeFromLocalStorage() {
+    let pageSize = localStorage.getItem('pageSize') || 20;
+    document.getElementById('currentPageSize').innerText = pageSize;
+}
+
+function searchByQuery(query) {
+    if (query === null || query === '') {
+        removeFilter('query');
+    }
+    let urlSearch = getUrlSearchParams();
+    urlSearch.set("query", query);
+
+    let url = "/management/places?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function getSelectedStatus() {
+    const radios = document.getElementsByName('status');
+    for (const radio of radios) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return '';
+}
+

@@ -4,7 +4,6 @@ import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-
 import java.time.LocalDateTime;
 
 public class ModelUtils {

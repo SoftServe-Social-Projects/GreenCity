@@ -16,7 +16,7 @@ a, a:active, a:focus, a:hover {
 }
 
 .button-link {
-    color: #494a49;
+    color: var(--gray-ash);
 }
 
 .button-content, .news-info, .news-links-images, .top-elements {
@@ -39,13 +39,13 @@ a, a:active, a:focus, a:hover {
 }
 
 .tags-item {
-    color: #666;
+    color: var(--dark-gray);
     text-transform: capitalize;
     font-size: 14px;
     line-height: 16px;
     margin: 0 8px;
     padding: 8px 16px;
-    border: 1px solid #878787;
+    border: 1px solid var(--gray-light);
     border-radius: 25px;
 }
 
@@ -64,7 +64,7 @@ a, a:active, a:focus, a:hover {
 
 .news-title {
     margin: 0 6.8% 24px;
-    color: #494a49;
+    color: var(--gray-ash);
     font-weight: 500;
     width: 100%;
     font-size: calc(19.42857px + 1.42857vw);
@@ -83,7 +83,7 @@ a, a:active, a:focus, a:hover {
 }
 
 .news-info-author, .news-info-date {
-    color: #494a49;
+    color: var(--gray-ash);
     font-size: calc(13.71429px + .71429vw);
     line-height: calc(9.14286px + 2.14286vw);
 }
@@ -107,7 +107,7 @@ a, a:active, a:focus, a:hover {
 .like_wr   .numerosity_likes {
     font-family: Lato,sans-serif;
     font-size: 16px;
-    color: #878787;
+    color: var(--gray-light);
     opacity: .6;
     margin-left: 10px;
 }
@@ -134,7 +134,7 @@ a, a:active, a:focus, a:hover {
 
 .news-text{
     margin-left: 3rem;
-    color: #000;
+    color: var(--black);
     text-align: left;
     width: 100%;
 }
@@ -146,7 +146,7 @@ a, a:active, a:focus, a:hover {
 }
 
 .id{
-    color:#13AA57;
+    color: var(--green);
     margin-right: 10px;
     font-size: 18px;
 }
@@ -156,12 +156,12 @@ a, a:active, a:focus, a:hover {
     font-weight: 500;
     font-size: 24px;
     line-height: 35px;
-    color: #313131;
+    color: var(--black-ash);
     margin-bottom: 18px;
 }
 
 .counter   hr {
-    background: #e6e6e6;
+    background: var(--white-smoke);
     margin-top: 0;
     margin-bottom: 32px;
 }
@@ -183,13 +183,15 @@ img {
 
 input[type=range] {
     -webkit-appearance: none;
-    background-color: #13AA57;
+    background-color: var(--green);
     height: 3px;
     border-radius: 2px;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-    background-color: #13AA57;
+input[type="range"]::-webkit-slider-thumb,
+input[type="range"]::-moz-range-thumb,
+input[type="range"]::-ms-thumb {
+    background-color: var(--green);
     -webkit-appearance: none;
     width: 12px;
     height: 12px;

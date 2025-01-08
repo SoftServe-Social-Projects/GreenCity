@@ -30,4 +30,5 @@ public class AdminPlaceDto {
     private PlaceStatus status;
     private LocalDateTime modifiedDate;
     private Boolean isFavorite;
+    private List<String> images;
 }

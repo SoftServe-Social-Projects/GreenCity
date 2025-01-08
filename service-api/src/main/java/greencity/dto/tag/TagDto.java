@@ -16,4 +16,5 @@ import lombok.Setter;
 public class TagDto {
     private Long id;
     private String name;
+    private String languageCode;
 }

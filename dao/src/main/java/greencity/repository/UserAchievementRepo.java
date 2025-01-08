@@ -10,16 +10,6 @@ import java.util.List;
 @Repository
 public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long> {
     /**
-     * Method finding user achievement by user id and achievement id.
-     *
-     * @param userId        {@link Long}
-     * @param achievementId {@link Long}
-     * @return list {@link UserAchievement}
-     */
-    @Query(value = "FROM UserAchievement u WHERE u.user.id =:userId AND u.achievement.id =:achievementId")
-    UserAchievement getUserAchievementByIdAndAchievementId(Long userId, Long achievementId);
-
-    /**
      * Retrieves a list of UserAchievement objects associated with a given user ID.
      *
      * @param userId The unique identifier of the user for whom to fetch the
@@ -39,4 +29,17 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
     @Query(value = "DELETE FROM user_achievements "
         + "WHERE user_id = :userId AND achievement_id = :achievementId", nativeQuery = true)
     void deleteByUserAndAchievementId(Long userId, Long achievementId);
+
+    /**
+     * Retrieves a list of UserAchievement objects associated with a given user ID
+     * and achievement category ID.
+     *
+     * @param userId                The unique identifier of the user for whom to
+     *                              fetch the achievements.
+     * @param achievementCategoryId The unique identifier of the achievement
+     *                              category to search the achievements in.
+     * @return A list of UserAchievement objects related to the specified user ID
+     *         and achievement category ID.
+     */
+    List<UserAchievement> findAllByUserIdAndAchievement_AchievementCategoryId(Long userId, Long achievementCategoryId);
 }

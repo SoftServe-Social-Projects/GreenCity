@@ -4,12 +4,14 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.service.CategoryService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
-@RequestMapping("/category")
-@AllArgsConstructor
+@RequestMapping("/categories")
+@RequiredArgsConstructor
 public class CategoryController {
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     /**
      * The method which returns new {@code Category}.
@@ -34,8 +36,10 @@ public class CategoryController {
     @Operation(summary = "Save category")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
+            content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @PostMapping
     public ResponseEntity<CategoryDtoResponse> saveCategory(@Valid @RequestBody CategoryDto dto) {
@@ -51,7 +55,8 @@ public class CategoryController {
     @Operation(summary = "View a list of available categories")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {

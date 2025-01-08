@@ -1,0 +1,128 @@
+language: en-US
+tone_instructions: 'Set the tone of reviews to be professional, constructive, and specific. Offer clear suggestions, encourage collaboration, and acknowledge good practices. Avoid overly critical language; use examples to explain feedback and promote learning.'
+early_access: false
+enable_free_tier: true
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: '@coderabbitai summary'
+  auto_title_placeholder: '@coderabbitai'
+  auto_title_instructions: ''
+  review_status: true
+  commit_status: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+  suggested_labels: true
+  auto_apply_labels: false
+  suggested_reviewers: true
+  poem: true # Don't remove 'poem:true'—it keeps things nice and poetic.
+  path_filters:
+    - '!**/target/**'
+    - '!**/.git/**'
+    - '!**/*.mod'
+    - '!**/*.sum'
+    - '!**/node_modules/**'
+    - '!**/dist/**'
+    - '!**/build/**'
+    - '!**/*.min.js'
+    - '!**/*.min.css'
+  path_instructions:
+    - path: /**/src/main/**/*.java
+      instructions: >-
+        naming:CamelCase;
+        principles:{single_responsibility,small_methods,no_duplication};
+        db:{perf_queries,datetime_not_timestamp};
+        rest:{stateless,singleton,delegate_logic,http_only,minimal_dtos};
+        dtos:{java_records,no_entities,min_data,single_resp};
+        di:constructor_injection; kiss:simple_code;
+        file_handling:os_indep_paths;
+        practices:{least_access,avoid_transactions,code_reuse,static_member_ref,prefer_primitives};
+        sql:{param_annotation,uppercase,avoid_subqueries}; java:avoid_star_imports\n
+        -  Review code using Java standards, taking into account the rules defined by `./checkstyle.xml`.
+    - path: /**/src/test/**/*.java
+      instructions: >-
+        test_naming: descriptive; test_size: small_specific; fixed_data: true;
+        junit5_features: true; assert_use: assertThat; assert_specificity: true;
+        archunit_use: enforce_package_rules; db_query_count_tests:
+        track_performance; util_service_factory_pattern: true; avoid_db_access:
+        true; mock_strategy: static_mocks; context_restart_minimize: true\n
+        For test code, focus on:
+        - Correctness of test assertions
+        - Test coverage of edge cases
+        - Clear test naming and documentation
+        - Be more lenient with code style and minor optimisations
+        - Check for test method naming convention featureTestScenario (https://github.com/ita-social-projects/GreenCity/wiki/Naming-Conventions)
+    - path: /**/*.js
+      instructions: |
+        Review the JavaScript/JQuery code for best practices and potential bugs.
+        Ensure that the code adheres to modern standards.
+        Ensure sufficient error handling and logging is present.
+        Check for common security vulnerabilities such as:
+          - SQL Injection
+          - XSS (Cross-Site Scripting)
+          - CSRF (Cross-Site Request Forgery)
+          - Insecure dependencies
+          - Sensitive data exposure
+    - path: /**/*.html
+      instructions: |
+        Review the HTML and Thymeleaf files for correct syntax, structure, and adherence to best practices. 
+        Ensure the following:
+        - Use semantic HTML elements for better accessibility (e.g., <header>, <main>, <section>, <footer>).
+        - Validate proper nesting of HTML tags and avoid unclosed elements.
+        - Check Thymeleaf attributes (e.g., th:text, th:if, th:each) for correctness and clarity.
+        - Ensure Thymeleaf expressions follow project standards and avoid unnecessary complexity.
+        - Verify that conditional logic in Thymeleaf is clear, concise, and avoids excessive nesting.
+        - Ensure proper use of `th:fragment` for reusable components and layout structures.
+        - Validate that variables and expressions used in Thymeleaf match backend data models.
+        - Confirm that static assets are referenced using Thymeleaf attributes like `th:src` or `th:href` for consistency.
+        - Ensure templates are free from inline styles and scripts; prefer external CSS and JS files.
+        - Check for accessibility best practices:
+          - Include `alt` attributes for images.
+          - Use ARIA roles where applicable.
+          - Validate form inputs for proper labels and placeholders.
+        - Flag any hardcoded text that should use localization (e.g., `th:text="#{message.key}"`).
+        - Ensure consistent indentation and formatting for readability.
+        - Remove unused or commented-out code to maintain clean templates.
+        Provide detailed feedback with identified issues, recommendations for fixes, and explanations for best practices.
+    - path: /**/*.css
+      instructions: |
+        Review the CSS files for correctness, maintainability, and adherence to best practices. 
+        Ensure the following:
+        - Use a consistent naming convention, such as BEM (Block-Element-Modifier), for class names.
+        - Avoid using ID selectors (#id) for styling; prefer class selectors (.class) for better reusability.
+        - Check for unused CSS selectors and remove them to keep the stylesheet clean.
+        - Ensure proper grouping of related styles for readability and maintainability.
+        - Use shorthand properties where applicable (e.g., margin: 0 10px; instead of individual margin properties).
+        - Validate that colors, fonts, and spacing follow the project's design system or standards.
+        - Ensure consistent use of units (e.g., avoid mixing `px`, `em`, `rem`, `%`, etc.).
+        - Check for appropriate use of responsive design techniques (e.g., media queries).
+        - Ensure proper use of variables (e.g., CSS custom properties or preprocessor variables) for colors, fonts, and sizes.
+        - Avoid overly specific selectors to prevent CSS bloat and improve maintainability.
+        - Validate that CSS animations and transitions are smooth and performant.
+        - Ensure consistent indentation and formatting (e.g., 2 spaces or 4 spaces, depending on project standards).
+        - Remove !important declarations unless absolutely necessary.
+        - Minimize inline styles and ensure styles are defined in external stylesheets.
+        - Check for accessibility considerations, such as sufficient contrast ratios for text and backgrounds.
+        - Confirm that styles for interactive elements (e.g., buttons, links) include hover, focus, and active states.
+        Provide detailed feedback with identified issues, recommendations for improvements, and explanations for best practices.
+  abort_on_close: true
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+    base_branches: [ "dev","prod","prod21" ]
+chat:
+  auto_reply: true
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  pull_requests:
+    scope: auto

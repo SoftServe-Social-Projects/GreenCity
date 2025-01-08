@@ -18,7 +18,8 @@ class AchievementCategoryVOMapperTest {
 
     @Test
     void convert() {
-        AchievementCategory achievementCategory = new AchievementCategory(1L, "Name", Collections.emptyList());
+        AchievementCategory achievementCategory =
+            new AchievementCategory(1L, "Name", "Назва", "Title", Collections.emptyList());
         AchievementCategoryVO achievementCategoryVO = AchievementCategoryVO.builder()
             .id(achievementCategory.getId())
             .name(achievementCategory.getName())

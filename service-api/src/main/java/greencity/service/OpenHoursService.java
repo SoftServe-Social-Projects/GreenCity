@@ -62,7 +62,7 @@ public interface OpenHoursService {
      * {@code Place}.
      *
      * @param placeId to find by.
-     * @return a list of the {@code OpeningHours} for the place by id.
+     * @return a set of the {@code OpeningHours} for the place by id.
      */
     Set<OpeningHoursVO> findAllByPlaceId(Long placeId);
 

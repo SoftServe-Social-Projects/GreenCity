@@ -1,0 +1,33 @@
+#editor-container {
+    min-height: 120px;
+}
+
+.quill-error, .form-error {
+    color: var(--red);
+    font-size: 12px;
+}
+
+.custom-carousel-control {
+    background-color: var(--black-translucent);
+    border: 2px solid var(--white);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    transition: background-color 0.3s ease;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.custom-carousel-control.carousel-control-prev {
+    left: 10px;
+}
+
+.custom-carousel-control.carousel-control-next {
+    right: 10px;
+}

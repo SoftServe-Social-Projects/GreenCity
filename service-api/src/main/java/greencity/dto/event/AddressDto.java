@@ -1,17 +1,17 @@
 package greencity.dto.event;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class AddressDto {
-    private double latitude;
-    private double longitude;
+public class AddressDto extends UpdateAddressDto {
     private String streetEn;
     private String streetUa;
     private String houseNumber;

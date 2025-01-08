@@ -14,8 +14,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 @Setter
 public class AddressLatLngResponse {
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private AddressResponse addressEn;
     private AddressResponse addressUa;
 }

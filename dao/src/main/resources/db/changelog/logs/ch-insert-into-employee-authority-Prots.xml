@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Prots-1" author="Nazar Prots">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from employee_authorities
+                where id in (31, 32, 33);
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="employee_authorities">
+            <column name="id">31</column>
+            <column name="name">SEE_ALL_AGREEMENTS</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">32</column>
+            <column name="name">CREATE_AGREEMENT</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">33</column>
+            <column name="name">DELETE_AGREEMENT</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

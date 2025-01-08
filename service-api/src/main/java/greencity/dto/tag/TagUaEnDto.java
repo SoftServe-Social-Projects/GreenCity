@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class TagUaEnDto {
-    private long id;
+    private Long id;
     private String nameUa;
     private String nameEn;
 }

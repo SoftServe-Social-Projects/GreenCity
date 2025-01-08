@@ -32,6 +32,8 @@ public class PlaceResponseMapper extends AbstractConverter<Place, PlaceResponse>
                 .lat(source.getLocation().getLat())
                 .lng(source.getLocation().getLng())
                 .build())
+            .websiteUrl(source.getEmail())
+            .description(source.getDescription())
             .build();
     }
 }

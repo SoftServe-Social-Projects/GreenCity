@@ -8,14 +8,17 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.CommentStatus;
+import greencity.service.CommentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsDtoMapperTest {
+    @Mock
+    CommentService commentService;
     @InjectMocks
     EcoNewsDtoMapper ecoNewsDtoMapper;
 
@@ -36,9 +39,7 @@ class EcoNewsDtoMapperTest {
                 .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
-            .countComments(ecoNews.getEcoNewsComments()
-                .stream()
-                .filter(obj -> !obj.getStatus().equals(CommentStatus.DELETED)).collect(Collectors.toList()).size())
+            .countComments(commentService.countCommentsForEcoNews(ecoNews.getId()))
             .title(ecoNews.getTitle())
             .shortInfo(ecoNews.getShortInfo())
             .imagePath(ecoNews.getImagePath())
@@ -46,6 +47,7 @@ class EcoNewsDtoMapperTest {
             .author(ModelUtils.getEcoNewsAuthorDto())
             .creationDate(ecoNews.getCreationDate())
             .content("text")
+            .hidden(false)
             .build();
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));

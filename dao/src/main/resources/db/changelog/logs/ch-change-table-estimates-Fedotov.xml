@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="Dmytro Fedotov" id="estimates1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_comment_estimates_comment"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimates"
+                                 constraintName="fk_comment_estimates_comment" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="place_comments"/>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="estimates2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="fk_comment_estimates_comment" tableName="estimates"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="fk_comment_estimates_comment" tableName="estimates">
+            <column name="comment_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="estimates3">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK4ybp1p4b8005qrgccsrookt9p"/>
+        </preConditions>
+        <dropForeignKeyConstraint
+                constraintName="FK4ybp1p4b8005qrgccsrookt9p"
+                baseTableName="estimates"/>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="estimates4">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FK4ybp1p4b8005qrgccsrookt9p" tableName="estimates"/>
+        </preConditions>
+        <dropIndex
+                indexName="FK4ybp1p4b8005qrgccsrookt9p"
+                tableName="estimates"/>
+    </changeSet>
+
+</databaseChangeLog>

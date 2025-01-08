@@ -36,9 +36,9 @@ public class SwaggerConfig {
                     .bearerFormat("JWT")))
             .info(new Info().title("Greencity API")
                 .summary("Api Documentation")
-                .version("3.1.0")
+                .version("3.0.3")
                 .license(new License().name("Apache 2.0").identifier("Apache-2.0")
                     .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
-            .openapi("3.1.0");
+            .openapi("3.0.3");
     }
 }

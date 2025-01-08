@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Herchanivska-9" author="Viktoriia Herchanivska">
+        <sql>
+            INSERT INTO user_email_preferences (user_id, email_preference, periodicity)
+            SELECT u.id, 'SYSTEM', 'TWICE_A_DAY'
+            FROM users u
+            WHERE u.id NOT IN (
+                SELECT uep.user_id FROM user_email_preferences uep
+                WHERE uep.email_preference = 'SYSTEM'
+            );
+        </sql>
+        <sql>
+            INSERT INTO user_email_preferences (user_id, email_preference, periodicity)
+            SELECT u.id, 'LIKES', 'TWICE_A_DAY'
+            FROM users u
+            WHERE u.id NOT IN (
+                SELECT uep.user_id FROM user_email_preferences uep
+                WHERE uep.email_preference = 'LIKES'
+            );
+        </sql>
+
+        <sql>
+            INSERT INTO user_email_preferences (user_id, email_preference, periodicity)
+            SELECT u.id, 'COMMENTS', 'TWICE_A_DAY'
+            FROM users u
+            WHERE u.id NOT IN (
+                SELECT uep.user_id FROM user_email_preferences uep
+                WHERE uep.email_preference = 'COMMENTS'
+            );
+        </sql>
+
+        <sql>
+            INSERT INTO user_email_preferences (user_id, email_preference, periodicity)
+            SELECT u.id, 'INVITES', 'TWICE_A_DAY'
+            FROM users u
+            WHERE u.id NOT IN (
+                SELECT uep.user_id FROM user_email_preferences uep
+                WHERE uep.email_preference = 'INVITES'
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="ch-add-unique-constraint-to-include-habit_id-column-in-user_action-table-Sotnik.xml" author="Olena Sotnik">
+        <dropUniqueConstraint tableName="user_actions"
+                              constraintName="user_actions_user_id_achievement_category_id_key"/>
+        <addUniqueConstraint tableName="user_actions"
+                             columnNames="user_id, achievement_category_id, habit_id"/>
+    </changeSet>
+</databaseChangeLog>

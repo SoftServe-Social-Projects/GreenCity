@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import jakarta.persistence.UniqueConstraint;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import jakarta.persistence.Column;
@@ -21,7 +22,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "user_actions")
+@Table(name = "user_actions",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "achievement_category_id", "habit_id"}))
 @Builder
 @EqualsAndHashCode
 public class UserAction {
@@ -30,9 +32,11 @@ public class UserAction {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "achievement_category_id")
     private AchievementCategory achievementCategory;
 
     @Column(name = "count")
@@ -40,6 +44,6 @@ public class UserAction {
     private Integer count = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "habit_id", nullable = true)
+    @JoinColumn(name = "habit_id")
     private Habit habit;
 }

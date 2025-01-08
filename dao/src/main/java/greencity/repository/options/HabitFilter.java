@@ -2,11 +2,12 @@ package greencity.repository.options;
 
 import greencity.dto.filter.FilterHabitDto;
 import greencity.entity.*;
-import org.springframework.data.jpa.domain.Specification;
+import static greencity.repository.options.CriteriaUtils.replaceCriteria;
 import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  * The class implements {@link Specification}. Constructor takes a {@code DTO}
@@ -15,20 +16,12 @@ import java.util.Optional;
  *
  * @author Hutei Volodymyr
  */
+@RequiredArgsConstructor
 public class HabitFilter implements Specification<Habit> {
-    private final transient FilterHabitDto filterHabitDto;
     private static final String DEFAULT_HABIT_IMAGE =
         "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_"
             + "2021-06-01_15-39-56.jpg";
-
-    /**
-     * The constructor takes {@link FilterHabitDto} object.
-     *
-     * @param filterHabitDto object contains fields to filter by.
-     */
-    public HabitFilter(FilterHabitDto filterHabitDto) {
-        this.filterHabitDto = filterHabitDto;
-    }
+    private final transient FilterHabitDto filterHabitDto;
 
     /**
      * Forms a list of {@link Predicate} based on type of the classes initialized in
@@ -95,22 +88,5 @@ public class HabitFilter implements Specification<Habit> {
 
     private Predicate hasComplexityEquals(Root<Habit> r, CriteriaBuilder cb, Integer complexity) {
         return cb.equal(r.get("complexity"), complexity);
-    }
-
-    /**
-     * Returns a String criteria for search.
-     *
-     * @param criteria String for search.
-     * @return String creteria not be {@literal null}.
-     */
-    private String replaceCriteria(String criteria) {
-        criteria = Optional.ofNullable(criteria).orElseGet(() -> "");
-        criteria = criteria.trim();
-        criteria = criteria.replace("_", "\\_");
-        criteria = criteria.replace("%", "\\%");
-        criteria = criteria.replace("\\", "\\\\");
-        criteria = criteria.replace("'", "\\'");
-        criteria = "%" + criteria + "%";
-        return criteria;
     }
 }
