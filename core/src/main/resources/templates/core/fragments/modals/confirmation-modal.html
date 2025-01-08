@@ -1,0 +1,16 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="confirmationModal" class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content p-5">
+            <div class="modal-body">
+                <p id="confirmationMessage" class="mb-4 text-dark display-5 text-left font-weight-bold">Event will be deleted. Do you want to continue?</p>
+
+                <div class="d-flex flex-column flex-md-row justify-content-end" style="gap: 10px">
+                    <button type="button" id="cancelModalButton" class="btn btn-outline-success w-xs-100 d-md-inline px-4" data-dismiss="modal">No</button>
+                    <button type="button" id="confirmModalButton" class="btn btn-success w-xs-100 d-md-inline px-4">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

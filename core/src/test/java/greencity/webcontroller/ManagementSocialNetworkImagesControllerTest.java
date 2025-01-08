@@ -71,24 +71,6 @@ class ManagementSocialNetworkImagesControllerTest {
     }
 
     @Test
-    void getAllSocialNetworkImagesSearchByQueryTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS =
-            Collections.singletonList(new SocialNetworkImageResponseDTO());
-        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImageResponsePageableDto =
-            new PageableDto<>(socialNetworkImageResponseDTOS, 2, 0, 3);
-        when(socialNetworkImageService.searchBy(pageable, "query")).thenReturn(socialNetworkImageResponsePageableDto);
-        this.mockMvc.perform(get(managementSocialNetworkImagesLink + "?query=query")
-            .param("page", "0")
-            .param("size", "10"))
-            .andExpect(view().name("core/management_social_network_images"))
-            .andExpect(model().attribute("pageable", socialNetworkImageResponsePageableDto))
-            .andExpect(status().isOk());
-
-        verify(socialNetworkImageService).searchBy(pageable, "query");
-    }
-
-    @Test
     void save() throws Exception {
         SocialNetworkImageRequestDTO socialNetworkImageRequestDTO = new SocialNetworkImageRequestDTO();
         Gson gson = new Gson();

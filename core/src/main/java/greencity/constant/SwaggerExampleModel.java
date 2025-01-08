@@ -86,12 +86,12 @@ public class SwaggerExampleModel {
         + "{\n"
         + "\t\"id\":\0,\n"
         + "\t\"title\":\"string\",\n"
-        + "\t\"description\":\"string\",\n"
+        + "\t\"description\":\"string7string4string\",\n"
         + "\t\"datesLocations\":[\n"
         + "\t\t{\n"
         + "\t\t\t\"startDate\":\"2023-05-27T15:00:00Z\",\n"
         + "\t\t\t\"finishDate\":\"2023-05-27T17:00:00Z\",\n"
-        + "\t\t\t\"onlineLink\":\"string\",\n"
+        + "\t\t\t\"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\",\n"
         + "\t\t\t\"coordinates\":{\n"
         + "\t\t\t\t\"latitude\":1,\n"
         + "\t\t\t\t\"longitude\":1\n"
@@ -101,6 +101,6 @@ public class SwaggerExampleModel {
         + "\t\"titleImage\":\"string\",\n"
         + "\t\"additionalImages\":[\"string\"],\n"
         + "\t\"tags\":[\"Social\"],\n"
-        + "\t\"isOpen\":true\n"
+        + "\t\"open\":true\n"
         + "}";
 }

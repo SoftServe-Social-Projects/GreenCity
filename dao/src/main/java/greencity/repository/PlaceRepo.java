@@ -1,7 +1,10 @@
 package greencity.repository;
 
-import java.time.LocalDateTime;
+import greencity.entity.Place;
+import greencity.enums.PlaceStatus;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,21 +12,18 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import greencity.entity.Place;
-import greencity.enums.PlaceStatus;
 
 /**
  * Provides an interface to manage {@link Place} entity.
  */
 @Repository
-public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationExecutor<Place> {
+public interface PlaceRepo extends PlaceSearchRepo, JpaRepository<Place, Long>, JpaSpecificationExecutor<Place> {
     /**
      * Finds all places related to the given {@code PlaceStatus}.
      *
      * @param status   to find by.
      * @param pageable pageable configuration.
      * @return a list of places with the given {@code PlaceStatus}.
-     * @author Roman Zahorui
      */
     Page<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status, Pageable pageable);
 
@@ -54,8 +54,8 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @param status    - {@link PlaceStatus} of places
      * @return list of {@link Place}'s
      */
-    List<Place> findAllByModifiedDateBetweenAndStatus(
-        LocalDateTime startDate, LocalDateTime endDate, PlaceStatus status);
+    List<Place> findAllByModifiedDateBetweenAndStatus(ZonedDateTime startDate, ZonedDateTime endDate,
+        PlaceStatus status);
 
     /**
      * Method returns {@link Place} by search query and page.
@@ -80,4 +80,13 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
             + "WHERE c.name IN (:category) "
             + "or c.name_ua IN (:category)")
     List<Place> findPlaceByCategory(String[] category);
+
+    /**
+     * Finds a place by its name.
+     *
+     * @param name the name of the place.
+     * @return an optional containing the place if found, or empty otherwise.
+     */
+    @Query("SELECT p FROM Place p WHERE LOWER(p.name) = LOWER(:name)")
+    Optional<Place> findByNameIgnoreCase(@Param("name") String name);
 }

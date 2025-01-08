@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import static greencity.validator.UrlValidator.isUrlValid;
 
@@ -60,7 +61,7 @@ public class EventDtoRequestValidator
         }
 
         dates.stream()
-            .filter(date -> date.getStartDate() == null || date.getFinishDate() == null)
+            .filter(date -> Objects.isNull(date.getStartDate()) || Objects.isNull(date.getFinishDate()))
             .findAny()
             .ifPresent(date -> {
                 throw new EventDtoValidationException(ErrorMessage.INVALID_DATE);
@@ -87,7 +88,6 @@ public class EventDtoRequestValidator
             }
 
             if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC))
-                || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
                 || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC)
                     .plusYears(MAX_YEARS_OF_PLANNING))) {

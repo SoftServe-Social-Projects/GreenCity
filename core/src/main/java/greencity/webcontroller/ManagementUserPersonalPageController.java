@@ -54,7 +54,7 @@ public class ManagementUserPersonalPageController {
             .getAllHabitAssignsByUserIdAndCancelledStatus(id, locale.getLanguage());
         List<HabitAssignDto> customHabits = habitAssignService
             .getAllCustomHabitAssignsByUserId(id, locale.getLanguage());
-        List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllPublishedNewsByUserId(user.getId());
+        List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllByUser(user);
         List<PlaceVO> createdEcoPlaces = placeService.getAllCreatedPlacesByUserId(user.getId());
 
         model.addAttribute("user", user);

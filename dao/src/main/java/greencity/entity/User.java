@@ -39,6 +39,7 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.IntegerJdbcType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -135,13 +136,11 @@ import java.util.Set;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "refreshTokenKey", "estimates", "restorePasswordEmail", "customShoppingListItems",
-        "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
+        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "subscribedEvents"})
 @ToString(
-    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "estimates", "restorePasswordEmail", "customShoppingListItems", "eventOrganizerRating",
-        "favoriteEvents", "subscribedEvents"})
+    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
+        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "subscribedEvents"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -167,7 +166,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private OwnSecurity ownSecurity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private VerifyEmail verifyEmail;
 
     @OneToOne(mappedBy = "user")
@@ -186,7 +185,7 @@ public class User {
 
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<CustomShoppingListItem> customShoppingListItems = new ArrayList<>();
+    private List<CustomToDoListItem> customToDoListItems = new ArrayList<>();
 
     @Column(name = "profile_picture")
     private String profilePicturePath;
@@ -197,9 +196,6 @@ public class User {
 
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
-
-    @ManyToMany(mappedBy = "usersLiked")
-    private Set<EcoNewsComment> ecoNewsCommentsLiked;
 
     @OneToMany
     @Builder.Default
@@ -230,14 +226,17 @@ public class User {
     @Column(name = "show_eco_place")
     private Boolean showEcoPlace;
 
-    @Column(name = "show_shopping_list")
-    private Boolean showShoppingList;
+    @Column(name = "show_to_do_list")
+    private Boolean showToDoList;
 
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;
 
     @Column(name = "event_organizer_rating")
     private Double eventOrganizerRating;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Language language;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -248,8 +247,18 @@ public class User {
     private List<Filter> filters = new ArrayList<>();
 
     @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    private Set<EcoNews> favoriteEcoNews;
+
+    @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    private Set<Habit> favoriteHabits;
+
+    @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
     private Set<Event> favoriteEvents;
 
     @ManyToMany(mappedBy = "attenders", fetch = FetchType.LAZY)
     private Set<Event> subscribedEvents;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<UserNotificationPreference> emailPreference = new HashSet<>();
 }

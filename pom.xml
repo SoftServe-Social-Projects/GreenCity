@@ -42,6 +42,9 @@
         <commons.dbcp2.version>2.10.0</commons.dbcp2.version>
         <liquibase.version>4.25.0</liquibase.version>
         <jjwt.version>0.12.3</jjwt.version>
+        <commons.collections4.version>4.4</commons.collections4.version>
+        <commons.lang3.version>3.13.0</commons.lang3.version>
+        <org.eclipse.jgit.version>7.1.0.202411261347-r</org.eclipse.jgit.version>
     </properties>
 
     <profiles>

@@ -30,6 +30,6 @@ public class LanguageTranslationValidator implements
             .sorted(Comparator.comparing(LanguageDTO::getCode))
             .toList();
 
-        return (value.size() == 3) && (languageDTOS.equals(valueLanguageDTOS));
+        return (value.size() == 2) && (languageDTOS.equals(valueLanguageDTOS));
     }
 }

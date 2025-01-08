@@ -152,7 +152,6 @@ $(document).ready(function() {
             $('#id').val(socialnetworkimage.id);
             $('#hostPath').val(socialnetworkimage.hostPath);
             $('#imagePath').val(socialnetworkimage.imagePath);
-            $('#file').val(econews.file);
         });
     });
     //submit button in editEcoNewsModal

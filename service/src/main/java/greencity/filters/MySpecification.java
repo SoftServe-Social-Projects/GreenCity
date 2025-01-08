@@ -71,4 +71,11 @@ public interface MySpecification<T> extends Specification<T> {
             : criteriaBuilder.like(root.get(searchCriteria.getKey()).get("name"),
                 "%" + searchCriteria.getValue() + "%");
     }
+
+    default Predicate getBooleanPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
+        SearchCriteria searchCriteria) {
+        String value = searchCriteria.getValue().toString().trim();
+        return value.isEmpty() ? criteriaBuilder.conjunction()
+            : criteriaBuilder.equal(root.get(searchCriteria.getKey()), Boolean.parseBoolean(value));
+    }
 }

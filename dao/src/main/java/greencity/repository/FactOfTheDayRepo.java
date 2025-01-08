@@ -1,7 +1,9 @@
 package greencity.repository;
 
+import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,13 +27,43 @@ public interface FactOfTheDayRepo extends JpaRepository<FactOfTheDay, Long> {
     Page<FactOfTheDay> searchBy(Pageable pageable, String searchQuery);
 
     /**
-     * Method for getting random {@link FactOfTheDay} by language code. This method
-     * use native SQL query to reduce the load on the backend
+     * Retrieves a random {@link FactOfTheDay} based on the provided tag IDs. Uses a
+     * native SQL query to optimize performance.
      *
-     * @return {@link FactOfTheDay} in Optional
-     * @author Mykola Lehkyi
+     * @param tagsId a set of tag IDs associated with facts of the day
+     * @return an {@link Optional} containing a random {@link FactOfTheDay}, if
+     *         found
      */
-    @Query(nativeQuery = true, value = "select * from fact_of_the_day as fd "
-        + " ORDER BY RANDOM() LIMIT 1 ")
-    Optional<FactOfTheDay> getRandomFactOfTheDay();
+    @Query(nativeQuery = true, value = "SELECT * FROM fact_of_the_day AS fd "
+        + "INNER JOIN fact_of_the_day_tags ft ON fd.id = ft.fact_of_the_day_id "
+        + "AND ft.tag_id IN :tagsId "
+        + "ORDER BY RANDOM() LIMIT 1")
+    Optional<FactOfTheDay> getRandomFactOfTheDay(Set<Long> tagsId);
+
+    /**
+     * Retrieves a set of {@link TagDto} for a specific Fact of the Day by its ID.
+     *
+     * @param id the ID of the fact of the day
+     * @return a set of {@link TagDto} associated with the fact of the day
+     */
+    @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, l.code) "
+        + "FROM FactOfTheDay f "
+        + "JOIN f.tags t "
+        + "JOIN t.tagTranslations tt "
+        + "JOIN tt.language l "
+        + "WHERE f.id = :id")
+    Set<TagDto> findTagsByFactOfTheDayId(Long id);
+
+    /**
+     * Retrieves all tags related to either Facts of the Day or Habits.
+     *
+     * @return a set of {@link TagDto} representing tags for Facts of the Day and
+     *         Habits
+     */
+    @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, l.code) "
+        + "FROM Tag t "
+        + "JOIN t.tagTranslations tt "
+        + "JOIN tt.language l "
+        + "WHERE t.type = 'FACT_OF_THE_DAY' or t.type = 'HABIT'")
+    Set<TagDto> findAllFactOfTheDayAndHabitTags();
 }

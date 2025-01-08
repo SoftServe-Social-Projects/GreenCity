@@ -9,6 +9,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.tag.TagDto;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/management/factoftheday")
@@ -74,6 +76,7 @@ public class ManagementFactOfTheDayController {
             : factOfTheDayService.searchBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("query", query);
         return "core/management_fact_of_the_day";
     }
 
@@ -154,5 +157,21 @@ public class ManagementFactOfTheDayController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.deleteAllFactOfTheDayAndTranslations(listId));
+    }
+
+    /**
+     * Retrieves all tags related to Facts of the Day.
+     *
+     * @return {@link ResponseEntity} containing a set of {@link TagDto}.
+     */
+    @Operation(summary = "Retrieve all tags associated with Facts of the Day.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/tags")
+    public ResponseEntity<Set<TagDto>> getAllFactOfTheDayTags() {
+        return ResponseEntity.ok(factOfTheDayService.getAllFactOfTheDayTags());
     }
 }

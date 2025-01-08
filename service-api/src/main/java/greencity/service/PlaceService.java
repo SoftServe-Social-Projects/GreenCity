@@ -2,12 +2,28 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.*;
+import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterAdminPlaceDto;
+import greencity.dto.place.FilterPlaceCategory;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.dto.search.SearchPlacesDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
+import greencity.exception.exceptions.NotFoundException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@code Place} entity.
@@ -168,7 +184,7 @@ public interface PlaceService {
      * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
-    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO);
 
     /**
      * The method finds all {@link PlaceVO}'s filtered by the parameters contained
@@ -181,6 +197,16 @@ public interface PlaceService {
      * @author Rostyslav Khasanov
      */
     PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable);
+
+    /**
+     * Method finds all filtered places for admin page.
+     *
+     * @param filterDto contains objects whose values determine the filter
+     *                  parameters of the returned list.
+     * @param pageable  pageable configuration.
+     * @return list of {@link AdminPlaceDto}
+     */
+    PageableDto<AdminPlaceDto> getFilteredPlacesForAdmin(FilterAdminPlaceDto filterDto, Pageable pageable);
 
     /**
      * Get list of available statuses of {@link PlaceVO}.
@@ -217,5 +243,24 @@ public interface PlaceService {
     /**
      * Method for create new place From UI.
      */
-    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email);
+    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images);
+
+    /**
+     * Method for getting Places by searchQuery.
+     *
+     * @param pageable    {@link Pageable}
+     * @param searchQuery query to search
+     * @return PageableDto of {@link SearchPlacesDto} instances
+     */
+    PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
+
+    /**
+     * Updates the status of a place and ensures the user with the given email
+     * exists.
+     *
+     * @param dto Contains the place name, user email, and the new status.
+     * @return The same UpdatePlaceStatusWithUserEmailDto.
+     * @throws NotFoundException If the place or user is not found.
+     */
+    UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto);
 }

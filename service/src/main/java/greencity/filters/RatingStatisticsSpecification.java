@@ -1,14 +1,11 @@
 package greencity.filters;
 
-import greencity.constant.ErrorMessage;
 import greencity.entity.RatingStatistics;
 import greencity.entity.RatingStatistics_;
 import greencity.entity.User;
 import greencity.entity.User_;
-import greencity.enums.RatingCalculationEnum;
-import greencity.exception.exceptions.NotFoundException;
+import greencity.entity.RatingPoints;
 import jakarta.persistence.criteria.*;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +22,7 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
                 allPredicates =
                     criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
-            if (searchCriteria.getType().equals("enum")) {
+            if (searchCriteria.getType().equals("ratingPoints")) {
                 allPredicates =
                     criteriaBuilder.and(allPredicates, getEventNamePredicate(root, criteriaBuilder, searchCriteria));
             }
@@ -55,16 +52,9 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
 
     private Predicate getEventNamePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        List<RatingCalculationEnum> enumValues = Arrays.asList(RatingCalculationEnum.values());
-        RatingCalculationEnum ratingCalculationEnum = enumValues.stream()
-            .filter(x -> x.toString().equalsIgnoreCase(((String) searchCriteria.getValue())))
-            .findFirst().orElseThrow(() -> new NotFoundException(
-                ErrorMessage.RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME + searchCriteria.getValue()));
-        Predicate predicate = criteriaBuilder.disjunction();
-        predicate = criteriaBuilder.or(predicate,
-            criteriaBuilder.equal(root.get(searchCriteria.getKey()), ratingCalculationEnum));
-
-        return predicate;
+        Join<RatingStatistics, RatingPoints> ratingPointsJoin = root.join(RatingStatistics_.ratingPoints);
+        return criteriaBuilder.like(criteriaBuilder.lower(ratingPointsJoin.get("name")),
+            "%" + searchCriteria.getValue().toString().toLowerCase() + "%");
     }
 
     private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,

@@ -4,7 +4,6 @@ import greencity.dto.location.LocationVO;
 import greencity.entity.Location;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.LocationRepo;
-import greencity.service.LocationServiceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

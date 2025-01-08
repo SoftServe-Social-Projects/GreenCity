@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
@@ -54,22 +53,6 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                     .id(user.getId())
                     .build())
                 .collect(Collectors.toSet()))
-            .ecoNewsComments(ecoNews.getEcoNewsComments().stream()
-                .map(ecoNewsComment -> EcoNewsCommentVO.builder()
-                    .id(ecoNewsComment.getId())
-                    .createdDate(ecoNewsComment.getCreatedDate())
-                    .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
-                    .status(ecoNewsComment.getStatus())
-                    .text(ecoNewsComment.getText())
-                    .modifiedDate(ecoNewsComment.getModifiedDate())
-                    .user(UserVO.builder()
-                        .id(ecoNewsComment.getUser().getId())
-                        .name(ecoNewsComment.getUser().getName())
-                        .userStatus(ecoNewsComment.getUser().getUserStatus())
-                        .role(ecoNewsComment.getUser().getRole())
-                        .build())
-                    .build())
-                .collect(Collectors.toList()))
             .build();
     }
 }

@@ -24,11 +24,11 @@ function setLanguageEn() {
 
 function setLanguageUa() {
     let localStorage = window.localStorage;
-    localStorage.setItem("language", "uk")
+    localStorage.setItem("language", "ua")
     var currentUrl = window.location.href;
     let check = currentUrl.toString();
     if (check.includes("?")){
-        let url = "&lang=uk";
+        let url = "&lang=ua";
         $.ajax({
             url: currentUrl + url,
             success: function (res) {
@@ -36,7 +36,7 @@ function setLanguageUa() {
             }
         })
     }else {
-        let url = "?lang=uk";
+        let url = "?lang=ua";
         $.ajax({
             url: currentUrl + url,
             success: function (res) {

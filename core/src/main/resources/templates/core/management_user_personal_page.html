@@ -104,11 +104,11 @@
                 </div>
 
                 <div class="user-info-text" style="text-align: center"
-                     th:text="${user.city} + ', Ukraine'">
+                     th:text="${user.userLocationDto != null ? user.userLocationDto.getCityEn() + ', Ukraine' : 'Location is not specified.'}">
                 </div>
 
                 <div class="block-green"
-                     th:text="'Rate: ' + ${T(Math).round(user.rating)}">
+                     th:text="'Rate: ' + ${T(java.lang.Math).round(user.rating)}">
                 </div>
 
                 <div class="social-networks"
@@ -277,8 +277,8 @@
                     </table>
                 </div>
                 <div style="display: inline-block">
-                    <h2 style="margin-bottom: 8px">Shopping list</h2>
-                    <th:block class="list-of" th:each="item, iterStatus :${habit1.shoppingListItems}">
+                    <h2 style="margin-bottom: 8px">To-Do list</h2>
+                    <th:block class="list-of" th:each="item, iterStatus :${habit1.toDoListItems}">
                         <div class="custom-checkbox userpage">
                             <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                    name="options[]" th:value="${item.id}"
@@ -361,10 +361,10 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">Shopping list</span><br>
-                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
-                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
-                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">To-Do list</span><br>
+                                                            <th:block class="list-of" th:each="toDoItem, iterStatuss :${habitAssign.getUserToDoListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${toDoItem.getBoolStatus()}" th:text="${toDoItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${toDoItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
                                                             </th:block>
                                                         </div>
 
@@ -450,10 +450,10 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">Shopping list</span><br>
-                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
-                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
-                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">To-Do list</span><br>
+                                                            <th:block class="list-of" th:each="toDoItem, iterStatuss :${habitAssign.getUserToDoListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${toDoItem.getBoolStatus()}" th:text="${toDoItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${toDoItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
                                                             </th:block>
                                                         </div>
 
@@ -538,10 +538,10 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">Shopping list</span><br>
-                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
-                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
-                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">To-Do list</span><br>
+                                                            <th:block class="list-of" th:each="toDoItem, iterStatuss :${habitAssign.getUserToDoListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${toDoItem.getBoolStatus()}" th:text="${toDoItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${toDoItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
                                                             </th:block>
                                                         </div>
 
@@ -650,10 +650,10 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
-                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
-                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
-                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">To-Do list</span><br>
+                                                            <th:block class="list-of" th:each="toDoItem, iterStatuss :${habitAssign.getUserToDoListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${toDoItem.getBoolStatus()}" th:text="${toDoItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${toDoItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
                                                             </th:block>
                                                         </div>
 
@@ -760,7 +760,7 @@
 
         $.ajax({
             type: "PUT",
-            url: "/management/users/updateShoppingItem/"+habitId+"/"+itemId,
+            url: "/management/users/updateToDoItem/"+habitId+"/"+itemId,
         }).done(function(data) {
             console.log(data);
         });

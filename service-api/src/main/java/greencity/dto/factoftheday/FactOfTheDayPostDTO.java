@@ -20,4 +20,5 @@ public class FactOfTheDayPostDTO {
     private String name;
     @Valid
     private List<FactOfTheDayTranslationEmbeddedPostDTO> factOfTheDayTranslations;
+    private List<Long> tags;
 }

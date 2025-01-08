@@ -5,12 +5,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class MapBoundsDto {
     @Min(value = -90, message = ServiceValidationConstants.MIN_VALUE_LATITUDE)
     @Max(value = 90, message = ServiceValidationConstants.MAX_VALUE_LATITUDE)

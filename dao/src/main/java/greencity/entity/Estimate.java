@@ -27,5 +27,5 @@ public class Estimate {
     private Place place;
 
     @OneToOne
-    private Comment comment;
+    private PlaceComment comment;
 }

@@ -9,9 +9,7 @@ import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -49,13 +47,13 @@ public class ManagementAchievementController {
     @GetMapping
     public String getAllAchievement(@RequestParam(required = false, name = "query") String query, Pageable pageable,
         Model model) {
-        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         PageableAdvancedDto<AchievementVO> allAchievements = query == null || query.isEmpty()
-            ? achievementService.findAll(paging)
-            : achievementService.searchAchievementBy(paging, query);
+            ? achievementService.findAll(pageable)
+            : achievementService.searchAchievementBy(pageable, query);
         model.addAttribute("pageable", allAchievements);
-        model.addAttribute("categoryList", achievementCategoryService.findAll());
+        model.addAttribute("categoryList", achievementCategoryService.findAllForManagement());
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("query", query);
         return "core/management_achievement";
     }
 
@@ -100,17 +98,6 @@ public class ManagementAchievementController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         achievementService.deleteAll(listId);
         return ResponseEntity.status(HttpStatus.OK).body(listId);
-    }
-
-    /**
-     * Method for getting econews by id.
-     *
-     * @param id of Eco New
-     * @return {@link AchievementVO} instance.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<AchievementVO> getAchievementById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findById(id));
     }
 
     /**

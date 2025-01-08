@@ -62,32 +62,39 @@ public class ManagementEcoNewsController {
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
+    @ApiLocale
     @GetMapping
-    public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
-        PageableAdvancedDto<EcoNewsDto> allEcoNews;
-        if (ecoNewsViewDto.getId() != null && !ecoNewsViewDto.isEmpty()) {
-            allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
+    public String getAllEcoNews(@RequestParam(required = false, name = "query") String query,
+        Model model,
+        @Parameter(hidden = true) Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        @Parameter(hidden = true) Locale locale) {
+        PageableAdvancedDto<EcoNewsDto> allEcoNews = ecoNewsService
+            .getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, locale);
+        model.addAttribute("pageable", allEcoNews);
+        if (!ecoNewsViewDto.isEmpty()) {
             model.addAttribute("fields", ecoNewsViewDto);
-            model.addAttribute("query", "");
         } else {
-            allEcoNews = query == null || query.isEmpty()
-                ? ecoNewsService.findAll(pageable)
-                : ecoNewsService.searchEcoNewsBy(pageable, query);
             model.addAttribute("fields", new EcoNewsViewDto());
+        }
+        if (query != null && !query.isEmpty()) {
             model.addAttribute("query", query);
         }
-
-        model.addAttribute("pageable", allEcoNews);
         Sort sort = pageable.getSort();
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
+            boolean isFirstSortProperty = true;
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
+                if (isFirstSortProperty) {
+                    orderUrl.append(order.getProperty()).append(",").append(order.getDirection());
+                    isFirstSortProperty = false;
+                } else {
+                    orderUrl.append("&sort=").append(order.getProperty()).append(",").append(order.getDirection());
+                }
             }
-            model.addAttribute("sortModel", orderUrl);
+            model.addAttribute("sortModel", orderUrl.toString());
         }
-        model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
+        model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags(locale.getLanguage()));
         model.addAttribute("pageSize", pageable.getPageSize());
         return "core/management_eco_news";
     }

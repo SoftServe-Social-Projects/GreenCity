@@ -12,7 +12,7 @@ import greencity.entity.Tag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-public class NewTagDtoMapperTest {
+class NewTagDtoMapperTest {
     @InjectMocks
     NewTagDtoMapper newTagDtoMapper;
 

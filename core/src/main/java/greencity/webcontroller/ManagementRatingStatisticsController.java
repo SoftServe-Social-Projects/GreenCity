@@ -44,7 +44,7 @@ public class ManagementRatingStatisticsController {
      * @author Dovganyuk Taras
      */
     @ApiPageable
-    @Operation(summary = "Get management page with facts of the day.")
+    @Operation(summary = "Get management page with User rating statistics.")
     @GetMapping
     public String getUserRatingStatistics(Model model,
         @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable) {

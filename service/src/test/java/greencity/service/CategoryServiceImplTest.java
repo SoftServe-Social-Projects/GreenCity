@@ -37,17 +37,17 @@ class CategoryServiceImplTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
-    private Category category = Category.builder()
+    private final Category category = Category.builder()
         .id(1L)
         .name("Test")
         .places(Collections.emptyList())
         .build();
-    private CategoryDtoResponse categoryDtoResponse = CategoryDtoResponse.builder()
+    private final CategoryDtoResponse categoryDtoResponse = CategoryDtoResponse.builder()
         .id(1L)
         .name("Test")
         .build();
 
-    private CategoryDto categoryDto = CategoryDto.builder()
+    private final CategoryDto categoryDto = CategoryDto.builder()
         .name("Test")
         .build();
 
@@ -119,7 +119,7 @@ class CategoryServiceImplTest {
         when(categoryRepo.findAll()).thenReturn(genericEntityList);
         List<CategoryDto> mappedList = genericEntityList
             .stream()
-            .map(category -> modelMapper.map(category, CategoryDto.class))
+            .map(c -> modelMapper.map(c, CategoryDto.class))
             .collect(Collectors.toList());
         List<CategoryDto> allCategoryDto = categoryService.findAllCategoryDto();
         assertEquals(mappedList, allCategoryDto);

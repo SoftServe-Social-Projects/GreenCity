@@ -1,33 +1,33 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.entity.event.EventComment;
+import greencity.dto.comment.CommentDto;
+import greencity.entity.Comment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class EventCommentDtoMapperTest {
     @InjectMocks
-    private EventCommentDtoMapper eventCommentDtoMapper;
+    private CommentDtoMapper commentDtoMapper;
 
     @Test
     void convertTest() {
-        EventComment eventComment = ModelUtils.getEventCommentWithReplies();
-        EventCommentDto actual = eventCommentDtoMapper.convert(eventComment);
+        Comment comment = ModelUtils.getComment().setParentComment(new Comment().setId(2L));
+        CommentDto actual = commentDtoMapper.convert(comment);
 
-        assertEquals(eventComment.getId(), actual.getId());
-        assertEquals(eventComment.getText(), actual.getText());
-        assertEquals(eventComment.getModifiedDate(), actual.getModifiedDate());
-        assertEquals(eventComment.getComments().size(), actual.getNumberOfReplies());
-        assertEquals(eventComment.getUsersLiked().size(), actual.getLikes());
-        assertEquals(eventComment.isCurrentUserLiked(), actual.isCurrentUserLiked());
-        assertEquals(eventComment.getUser().getId(), actual.getAuthor().getId());
-        assertEquals(eventComment.getUser().getName(), actual.getAuthor().getName());
-        assertEquals(eventComment.getUser().getProfilePicturePath(), actual.getAuthor().getUserProfilePicturePath());
+        assertNotNull(actual);
+        assertEquals(comment.getId(), actual.getId(), "Comment ID mismatch");
+        assertEquals(comment.getText(), actual.getText(), "Comment text mismatch");
+        assertEquals(comment.getModifiedDate(), actual.getModifiedDate(), "Modified date mismatch");
+        assertEquals(comment.getUsersLiked().size(), actual.getLikes(), "Likes count mismatch");
+        assertEquals(comment.isCurrentUserLiked(), actual.isCurrentUserLiked(), "Current user liked status mismatch");
+        assertEquals(comment.getParentComment().getId(), actual.getParentCommentId(), "Parent comment ID mismatch");
+
     }
 }

@@ -11,7 +11,6 @@ import lombok.Setter;
 import lombok.ToString;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,6 +35,7 @@ public class EcoNews {
 
     @Column
     private String source;
+
     @Column
     private String shortInfo;
 
@@ -50,10 +50,6 @@ public class EcoNews {
 
     @Column(nullable = false)
     private boolean hidden = false;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "ecoNews", fetch = FetchType.LAZY)
-    private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();
 
     @ManyToMany
     private List<Tag> tags;
@@ -73,4 +69,11 @@ public class EcoNews {
         joinColumns = @JoinColumn(name = "eco_news_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersDislikedNews = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Builder.Default
+    @JoinTable(name = "eco_news_followers",
+        joinColumns = @JoinColumn(name = "eco_news_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private Set<User> followers = new HashSet<>();
 }

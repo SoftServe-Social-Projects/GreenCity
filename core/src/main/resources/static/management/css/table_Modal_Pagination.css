@@ -24,7 +24,6 @@ body {
     background: #fff;
     margin-top: 5px;
     border-radius: 3px;
-    min-width: 1000px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 }
 
@@ -32,8 +31,7 @@ body {
     padding-bottom: 15px;
     color: #212529;
     padding: 16px 30px;
-    min-width: 100%;
-    margin: -20px -25px 10px;
+    width: 100%;
     border-radius: 3px 3px 0 0;
 }
 
@@ -279,7 +277,7 @@ body {
 
 .buttons {
     display: flex;
-    margin-right: 20px;
+    margin-right: 0px;
 }
 
 .username {
@@ -364,15 +362,8 @@ table.table tr th:last-child {
     width: 100px;
 }
 
-table.table-striped tbody tr {
-    background-color: #e5ebef;
-    white-space: nowrap;
-}
-
-
 table.table th i {
     font-size: 14px;
-    margin: 0 5px;
     cursor: pointer;
 }
 
@@ -442,7 +433,7 @@ table.table .avatar {
 
 .pagination {
     justify-content: center;
-    margin: 0 0 5px;
+    margin: 10px 0 5px 0;
 }
 
 .pagination li a {
@@ -556,8 +547,7 @@ table.table .avatar {
 }
 
 .custom-checkbox {
-    margin-left: 8px;
-    margin-top: -9px;
+    position:relative;
 }
 
 .custom-checkbox.userpage {
@@ -568,12 +558,18 @@ table.table .avatar {
 .custom-checkbox input[type="checkbox"] {
     opacity: 0;
     position: absolute;
-    margin: 5px 0 0 3px;
     z-index: 9;
 }
 
 .custom-checkbox .modal-checkbox label:before {
     border: 1px solid green;
+}
+
+.custom-checkbox label {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin:0;
 }
 
 .custom-checkbox label:before {
@@ -587,26 +583,37 @@ table.table .avatar {
     z-index: 2;
     width: 18px;
     height: 18px;
-
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .custom-checkbox input[type="checkbox"]:checked + label:after {
     content: '';
     position: absolute;
-    left: 6px;
-    top: 3px;
+    top: 50%;
+    left: 50%;
     width: 6px;
     height: 11px;
-    border: solid #ffffff;
+    border: solid #ffffff 1px;
     border-width: 0 3px 3px 0;
-    transform: inherit;
-    z-index: 3;
-    transform: rotateZ(45deg);
+    transform: translate(-50%, -50%) rotate(45deg);
+    z-index: 10;
 }
 
-.custom-checkbox input[type="checkbox"]:checked + label:before {
+.custom-checkbox input[type="checkbox"]:checked + label:before,
+.custom-checkbox input[type="checkbox"].indeterminate + label:before{
     border-color: #13AA57;
     background: #13AA57;
+}
+
+.custom-checkbox input[type="checkbox"].indeterminate + label:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 2px;
+    background: #ffffff;
+    transform: translate(-50%, -50%);
 }
 
 .column-role{
@@ -771,9 +778,11 @@ table.table .avatar {
 }
 
 .dropbtn.status {
-    width: 130px;
+    width: 150px;
     height: 25px;
     background-color: #ffffff00;
+    text-align: left;
+    border-radius: 0;
     border: solid 1px #ffffff00;
 }
 
@@ -980,12 +989,7 @@ table.table .avatar {
     display: block;
     background-color: #ffffff;
     z-index: 10000;
-    width: 185px;
-    height: 60px;
-    margin-left: -11px;
-    border: 1px solid #CACFD3;
-    border-top: 0px solid #CACFD3;
-
+    border-radius: 0;
 }
 
 .dropdown-content.status a {
@@ -993,14 +997,12 @@ table.table .avatar {
     text-decoration: none;
     display: block;
     font-weight: normal;
-
 }
 
 .dropdown.status {
-    position: relative;
+    vertical-align: middle;
     display: flex;
-    padding-right: 20px;
-    margin-left: 0 !important;
+    align-items: stretch;
 }
 
 .dropdown-content.status a:hover {
@@ -1032,8 +1034,6 @@ table.table .avatar {
     margin-top: 5px;
     margin-left: -1px;
     border: solid 1px #336B4C;
-
-
 }
 
 .change_color {
@@ -1073,13 +1073,10 @@ table.table .avatar {
     margin-left: 0 !important;
     z-index: 5;
     box-sizing: border-box;
-
-
 }
 
 .dropdown-content.size a:hover {
     color: #9CA7B0;
-    /*border: solid 1px #9CA7B0;*/
     background-color: #336B4C;
     box-sizing: border-box;
     height: 35px;
@@ -1088,11 +1085,8 @@ table.table .avatar {
 }
 
 .filter-list-grid {
-    position: relative;
     right: 50px;
     display: flex;
-    /*padding-top: 5px;*/
-
 }
 
 .filter-list-grid i {
@@ -1333,6 +1327,15 @@ table.table .avatar {
     left: 10px;
 }
 
+.search-box-right.fixed-i-position {
+    margin: 10px 10px 10px 30px;
+}
+
+.search-box-right.fixed-i-position i {
+    top: 15px;
+    left: -25px;
+}
+
 .filter-button {
     border: 1px solid #9CA7B0;
     display: flex;
@@ -1380,8 +1383,8 @@ td input[type=search] {
 }
 
 .btn {
-    width: 122px;
-    height: 48px;
+    min-width: 122px;
+    min-height: 48px;
     border-radius: 5px;
     font-weight: 600;
 }
@@ -1500,8 +1503,13 @@ td input[type=search] {
 
 .btn-danger{
     height: 40px;
-    margin-top: 25px;
-    width: 98px;
+    min-width: 98px;
+}
+
+.btn-success, .btn-danger{
+    text-align: center;
+    align-content: center;
+    margin: 5px;
 }
 
 .dropbtn.userpage:focus {
@@ -1741,4 +1749,253 @@ a.lightgrey {
     float: right;
     margin-top: 11px;
     margin-right: 5px;
+}
+.table-child tr:nth-child(odd) {
+    border-bottom: 1px solid #ddd;
+}
+
+.table-child td {
+    background-color: #f1f1f1;
+}
+
+.align-content-center {
+    align-content: center;
+}
+.alternative-checkbox input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #9CA7B0;
+    border-radius: 3px;
+}
+
+.alternative-checkbox input[type="checkbox"]:checked {
+    background-color: white;
+}
+
+.alternative-checkbox input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 5px;
+    width: 8px;
+    height: 13px;
+    border: solid #13AA57;
+    border-width: 0 4px 4px 0;
+    transform: rotate(45deg);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.text-align-center, .clearfix.text-align-center{
+    text-align: center;
+}
+
+.small-column {
+    width: 5%;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        height: auto;
+    }
+    .table-child {
+        display: block;
+        width: 100%;
+        border: 0;
+    }
+
+    .mobile-hidden,
+    .mobile-hidden .small-column{
+        display: none;
+    }
+}
+
+.table-container {
+    overflow-x: scroll;
+    margin-bottom: 1rem;
+}
+
+.scrollable-table {
+    display: block;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.table-container::-webkit-scrollbar {
+    display: block;
+    height: 10px;
+    background-color: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
+
+.table-container .table-header-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.filter-container {
+    background-color: #ffffff;
+    border: 1px solid #9CA7B0;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    position: absolute;
+    top: 100%;
+    margin-left: -10px;
+}
+.filter-container__search .visibility {
+    display: inline;
+    position: absolute;
+}
+
+.filter-container__search input[type="radio"] {
+    opacity: 0.01;
+    z-index: 100;
+}
+
+.filter-container__search input[type="radio"]:checked+label,
+.Checked+label {
+    border: 1px solid #13AA57;
+    background-color: #13AA57;
+    color: #ffffff;
+}
+
+.filter-container__search .visibility-label {
+    border: 1px solid #13AA57;
+    background-color: #ffffff;
+    color: #13AA57;
+    border-radius: 5px;
+    width: 140px;
+    height: 40px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.filter-container__search {
+    align-self: stretch;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.filter-container__search .form-search {
+    width: 100%;
+    padding-right: 30px; /* Add padding to the right to make space for the icon */
+    box-sizing: border-box;
+}
+
+.eco-news .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-40%);
+    color: #9CA7B0;
+}
+
+.places .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-40%);
+    color: #9CA7B0;
+}
+
+.filter-container__search .material-icons {
+    font-size: 20px;
+}
+
+.filter-container__buttons {
+    align-self: flex-end;
+}
+
+.filter-container__buttons input {
+    margin-top: .5rem;
+}
+
+.filter-container__buttons .btn-secondary {
+    width: 98px;
+}
+
+.table-filter-icon.active {
+    background-image: url("/img/filter-icon-active.svg");
+}
+
+.table-filter-icon.filtered {
+    background-image: url("/img/filter-icon-active.svg");
+}
+
+.material-icons.sorted {
+    color: #13AA57;
+}
+
+.eco-news .form-inline.searching {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.places .form-inline.searching {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.radio-buttons .filter-container__search {
+    display: grid;
+    justify-content: start;
+}
+
+.radio-buttons .btn {
+    margin: 10px 0 0 0;
+    width: 70px;
+    height: 35px;
+}
+
+.filter-container__search.tags {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-checkbox.tag span, .custom-checkbox.date span {
+    margin-left: 10px;
+    color: #13AA57;
+    font-weight: 600;
+}
+
+.custom-checkbox.tag input[type="checkbox"]:checked + label:after,
+.custom-checkbox.date input[type="checkbox"]:checked + label:after {
+    transform: translateY(10px);
+}
+
+.form-control.end-date {
+    margin-top: 10px;
+}
+
+.filter-container__search.tags,
+.filter-container__search.date {
+    padding: 10px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 65vh;
+    transition: height 0.3s ease;
 }

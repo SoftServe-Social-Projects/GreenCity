@@ -40,12 +40,12 @@ class FavoritePlaceServiceImplTest {
     @InjectMocks
     private FavoritePlaceServiceImpl favoritePlaceService;
 
-    private FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
-    private FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
-    private FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
-    private String userEmail = favoritePlace.getUser().getEmail();
-    private Long favoritePlaceId = favoritePlace.getId();
-    private PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
+    private final FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
+    private final FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
+    private final FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
+    private final String userEmail = favoritePlace.getUser().getEmail();
+    private final Long favoritePlaceId = favoritePlace.getId();
+    private final PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
 
     @Test
     void saveFavoritePlaceAlreadyExistTest() {
@@ -67,8 +67,6 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void saveBadUserEmailTest() {
-        String userEmail = "email";
-
         when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
@@ -232,12 +230,12 @@ class FavoritePlaceServiceImplTest {
         location.setLng(favoritePlaceVO.getPlace().getLocation().getLng());
         location.setLat(favoritePlaceVO.getPlace().getLocation().getLat());
         location.setAddress(favoritePlaceVO.getPlace().getLocation().getAddress());
-        PlaceByBoundsDto placeByBoundsDto =
+        PlaceByBoundsDto favoritePlaceByBoundsDto =
             new PlaceByBoundsDto(favoritePlaceVO.getId(), favoritePlaceVO.getName(), location);
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(favoritePlace);
-        when(modelMapper.map(favoritePlace, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
+        when(modelMapper.map(favoritePlace, PlaceByBoundsDto.class)).thenReturn(favoritePlaceByBoundsDto);
 
-        assertEquals(placeByBoundsDto,
+        assertEquals(favoritePlaceByBoundsDto,
             favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
     }
 

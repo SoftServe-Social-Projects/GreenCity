@@ -2,21 +2,21 @@ package greencity.message;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.place.PlaceNotificationDto;
-import greencity.dto.user.PlaceAuthorDto;
-import java.io.Serializable;
+import greencity.dto.user.SubscriberDto;
+import greencity.enums.EmailPreferencePeriodicity;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@ToString
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class SendReportEmailMessage implements Serializable {
-    private List<PlaceAuthorDto> subscribers;
+public class SendReportEmailMessage {
+    private List<SubscriberDto> subscribers;
     private Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap;
-    private String emailNotification;
+    private EmailPreferencePeriodicity periodicity;
 }

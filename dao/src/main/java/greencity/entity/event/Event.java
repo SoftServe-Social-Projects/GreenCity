@@ -3,6 +3,8 @@ package greencity.entity.event;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.EventType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,11 +26,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -83,6 +83,9 @@ public class Event {
     @Column
     private boolean isOpen = true;
 
+    @Enumerated(EnumType.STRING)
+    private EventType type;
+
     @ManyToMany
     @JoinTable(name = "events_tags",
         joinColumns = @JoinColumn(name = "event_id"),
@@ -92,9 +95,6 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventGrade> eventGrades = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<EventComment> eventsComments = new ArrayList<>();
-
     @ManyToMany
     @JoinTable(
         name = "events_users_likes",
@@ -102,31 +102,10 @@ public class Event {
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLikedEvents = new HashSet<>();
 
-    /**
-     * Method for getting an event type.
-     *
-     * @return {@link EventType} instance.
-     * @author Olena Sotnik.
-     */
-    public EventType getEventType() {
-        if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink())
-            && Objects.nonNull(date.getAddress()))) {
-            return EventType.ONLINE_OFFLINE;
-        }
-        if (dates.stream().allMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
-            return EventType.ONLINE;
-        }
-        return EventType.OFFLINE;
-    }
-
-    /**
-     * Method for checking if event is Relevant.
-     *
-     * @return boolean: true if relevant, false if event passed.
-     * @author Olena Sotnik.
-     */
-    public boolean isRelevant() {
-        return dates.getLast().getFinishDate().isAfter(ZonedDateTime.now())
-            || dates.getLast().getFinishDate().isEqual(ZonedDateTime.now());
-    }
+    @ManyToMany
+    @JoinTable(
+        name = "events_users_dislikes",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersDislikedEvents = new HashSet<>();
 }

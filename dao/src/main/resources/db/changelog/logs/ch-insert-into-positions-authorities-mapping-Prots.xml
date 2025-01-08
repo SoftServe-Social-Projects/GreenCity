@@ -5,17 +5,20 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="3" author="Nazar Prots">
-        <insert tableName="positions_authorities_mapping">
-            <column name="position_id">7</column>
-            <column name="authorities_id">31</column>
-        </insert>
-        <insert tableName="positions_authorities_mapping">
-            <column name="position_id">7</column>
-            <column name="authorities_id">32</column>
-        </insert>
-        <insert tableName="positions_authorities_mapping">
-            <column name="position_id">7</column>
-            <column name="authorities_id">33</column>
-        </insert>
+        <sql>
+            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
+            VALUES (7, 31)
+                ON CONFLICT (position_id, authorities_id) DO NOTHING;
+        </sql>
+        <sql>
+            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
+            VALUES (7, 32)
+                ON CONFLICT (position_id, authorities_id) DO NOTHING;
+        </sql>
+        <sql>
+            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
+            VALUES (7, 33)
+                ON CONFLICT (position_id, authorities_id) DO NOTHING;
+        </sql>
     </changeSet>
 </databaseChangeLog>

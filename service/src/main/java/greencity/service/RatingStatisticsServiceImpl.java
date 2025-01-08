@@ -35,7 +35,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
             .map(x -> RatingStatisticsDtoForTables.builder()
                 .id(x.getId())
                 .createDate(x.getCreateDate())
-                .eventName(x.getRatingCalculationEnum().toString())
+                .eventName(x.getRatingPoints().getName())
                 .pointsChanged(x.getPointsChanged())
                 .rating(x.getRating())
                 .userId(x.getUser().getId())
@@ -112,8 +112,8 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         }
         if (!ratingStatisticsViewDto.getEventName().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key(RatingStatistics_.RATING_CALCULATION_ENUM)
-                .type("enum")
+                .key(RatingStatistics_.RATING_POINTS)
+                .type(RatingStatistics_.RATING_POINTS)
                 .value(ratingStatisticsViewDto.getEventName())
                 .build();
             criteriaList.add(searchCriteria);

@@ -1,12 +1,9 @@
 package greencity.service;
 
-import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.language.LanguageDTO;
-import greencity.entity.Language;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepo;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -15,22 +12,15 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link LanguageService}.
- *
- * @author Oleh Kopylchak
- * @author Vitaliy Dzen
  */
 @Service
 @RequiredArgsConstructor
 public class LanguageServiceImpl implements LanguageService {
     private final LanguageRepo languageRepo;
     private final ModelMapper modelMapper;
-    private final HttpServletRequest request;
 
     /**
-     * Method finds all {@link Language}.
-     *
-     * @return List of all {@link LanguageDTO}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public List<LanguageDTO> getAllLanguages() {
@@ -42,46 +32,17 @@ public class LanguageServiceImpl implements LanguageService {
      * {@inheritDoc}
      */
     @Override
-    public String extractLanguageCodeFromRequest() {
-        String languageCode = request.getParameter("language");
-
-        if (languageCode == null) {
-            return AppConstant.DEFAULT_LANGUAGE_CODE;
-        }
-
-        return languageCode;
+    public LanguageDTO findByCode(String code) {
+        return languageRepo.findByCode(code)
+            .map(l -> modelMapper.map(l, LanguageDTO.class))
+            .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public LanguageDTO findByCode(String code) {
-        Language language = languageRepo.findByCode(code)
-            .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE));
-        return modelMapper.map(language, LanguageDTO.class);
-    }
-
-    /**
-     * method, that returns codes of all {@link Language}s.
-     *
-     * @return {@link List} of language code strings.
-     */
-    @Override
     public List<String> findAllLanguageCodes() {
         return languageRepo.findAllLanguageCodes();
-    }
-
-    /**
-     * Method for getting {@link LanguageDTO} by tagTranslationId.
-     *
-     * @param tagTranslationId id of tag translation object.
-     * @return {@link LanguageDTO}.
-     * @author Vira Maksymets
-     */
-    @Override
-    public LanguageDTO findByTagTranslationId(Long tagTranslationId) {
-        Language language = languageRepo.findByTagTranslationId(tagTranslationId).orElseThrow();
-        return modelMapper.map(language, LanguageDTO.class);
     }
 }

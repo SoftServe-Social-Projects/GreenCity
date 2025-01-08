@@ -1,7 +1,7 @@
 package greencity.repository.options;
 
 import greencity.constant.RepoConstants;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.entity.User;
 import static greencity.repository.options.CriteriaUtils.replaceCriteria;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -33,7 +33,7 @@ public class UserFilter implements Specification<User> {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterUserDto != null) {
-            predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchCriteria()));
+            predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getQuery()));
         }
         if (filterUserDto != null && filterUserDto.getStatus() != null) {
             predicates.add(hasStatusLike(root, criteriaBuilder, filterUserDto.getStatus()));
