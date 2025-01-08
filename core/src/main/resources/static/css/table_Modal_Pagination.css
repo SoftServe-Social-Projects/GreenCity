@@ -861,6 +861,10 @@ td input[type=search] {
     outline: none;
 }
 
+.btn-secondary.disabled, .btn-secondary:disabled{
+    background-color: var(--white) !important;
+}
+
 .btn.btn-tertiary {
     color: var(--green);
     background-color: var(--white);
