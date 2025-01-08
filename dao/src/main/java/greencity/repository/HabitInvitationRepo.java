@@ -56,13 +56,10 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
      */
     @Query(nativeQuery = true, value = """
         WITH friends AS (
-            SELECT DISTINCT user_id AS id
+            SELECT DISTINCT
+                CASE WHEN friend_id = :userId THEN user_id ELSE friend_id END AS id
             FROM users_friends
-            WHERE friend_id = :userId AND status = 'FRIEND'
-            UNION
-            SELECT friend_id AS id
-            FROM users_friends
-            WHERE user_id = :userId AND status = 'FRIEND'
+            WHERE (user_id = :userId OR friend_id = :userId) AND status = 'FRIEND'
         ),
         filtered_friends AS (
             SELECT u.id,
@@ -71,33 +68,43 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
                    u.profile_picture
             FROM users u
             WHERE u.id IN (SELECT id FROM friends)
-              AND LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))
+              AND (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')))
+        ),
+        relevant_habit_assignments AS (
+            SELECT DISTINCT ha.id AS habit_assign_id,
+                            ha.user_id AS friend_id
+            FROM habit_assign ha
+            WHERE ha.habit_id = :habitId AND ha.status IN ('REQUESTED', 'INPROGRESS')
         ),
         invitations AS (
-            SELECT DISTINCT i.invitee_id AS friend_id,
-                            TRUE AS has_invitation
+            SELECT DISTINCT
+                CASE
+                    WHEN i.inviter_id = :userId THEN i.invitee_id
+                    ELSE i.inviter_id
+                END AS friend_id,
+                CASE
+                    WHEN i.status = 'ACCEPTED' THEN TRUE
+                    ELSE FALSE
+                END AS has_accepted_invitation,
+                i.status IN ('PENDING', 'ACCEPTED') AS has_invitation
             FROM habit_invitations i
-            WHERE i.status = 'PENDING'
-              AND i.inviter_id = :userId
-              AND i.inviter_habit_assign_id IN (
-                  SELECT ha.id FROM habit_assign ha WHERE ha.habit_id = :habitId
+            WHERE i.status IN ('PENDING', 'ACCEPTED')
+              AND (
+                  (i.inviter_id = :userId AND i.inviter_habit_assign_id
+                        IN (SELECT habit_assign_id FROM relevant_habit_assignments))
+                  OR
+                  (i.invitee_id = :userId AND i.inviter_habit_assign_id
+                        IN (SELECT habit_assign_id FROM relevant_habit_assignments))
               )
-        ),
-        habit_assignments AS (
-            SELECT DISTINCT ha.user_id AS friend_id
-            FROM habit_assign ha
-            WHERE ha.habit_id = :habitId
-            AND ha.status = 'INPROGRESS'
-            AND ha.user_id IN (SELECT id FROM friends)
         )
         SELECT f.id,
                f.name,
                f.email,
                f.profile_picture,
-               COALESCE(inv.friend_id, ha.friend_id) IS NOT NULL AS has_invitation
+               COALESCE(inv.has_invitation, FALSE) AS has_invitation,
+               COALESCE(inv.has_accepted_invitation, FALSE) AS has_accepted_invitation
         FROM filtered_friends f
         LEFT JOIN invitations inv ON f.id = inv.friend_id
-        LEFT JOIN habit_assignments ha ON f.id = ha.friend_id
         """)
     List<Tuple> findUserFriendsWithHabitInvites(
         Long userId, String name, Long habitId, Pageable pageable);
