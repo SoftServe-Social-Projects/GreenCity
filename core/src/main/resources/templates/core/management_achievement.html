@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Achievement management</title>
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet"/>
     <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -23,11 +21,12 @@
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/achievements/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 <body th:with="baseUrl='/management/achievement'" th:data-base-url="${baseUrl}">
 <div id="header" th:insert="~{core/header}"></div>
-<div id="sidebar" th:insert="~{core/sidepanel}"></div>
 <div class="main-content">
+    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
     <div class="container-xl">
         <div class="table-responsive">
             <div class="table-wrapper">
@@ -56,14 +55,14 @@
                         </div>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
+                <table class="table table-bordered">
                     <thead>
-                    <tr class="table-primary">
+                    <tr>
                         <th>
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
+                            <span class="custom-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <label for="selectAll"></label>
+                            </span>
                         </th>
                         <th>[[#{greenCity.pages.table.id}]]
                             <span onclick="orderByField('id','asc')">

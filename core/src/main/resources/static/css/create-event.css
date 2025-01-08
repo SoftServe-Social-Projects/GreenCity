@@ -3,20 +3,20 @@
 }
 
 .quill-error, .form-error {
-    color: red;
+    color: var(--red);
     font-size: 12px;
 }
 
 .custom-carousel-control {
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 2px solid white;
+    background-color: var(--black-translucent);
+    border: 2px solid var(--white);
     border-radius: 50%;
     width: 50px;
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--white);
     transition: background-color 0.3s ease;
     position: absolute;
     top: 50%;

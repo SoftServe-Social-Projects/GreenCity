@@ -14,6 +14,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.UserActionRepo;
 import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -40,6 +41,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     private final LanguageService languageService;
     private final FileService fileService;
     private final HabitAssignService habitAssignService;
+    private final UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -204,6 +206,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
         HabitVO habitVO = modelMapper.map(habit, HabitVO.class);
 
+        userActionRepo.deleteAllByHabitId(id);
         habitTranslationRepo.deleteAllByHabit(habit);
         habitAssignService.deleteAllHabitAssignsByHabit(habitVO);
         habitRepo.delete(habit);

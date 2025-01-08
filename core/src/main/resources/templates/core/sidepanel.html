@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Sidebar</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/sidebar.css}">
-    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
-    <script th:src="@{/management/user/paginationAndSort.js}"></script>
-</head>
-
 <nav id="sidebar" class="menuVertical">
 
     <ul>
@@ -110,7 +100,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#2-2">
+                    <a th:href="@{/management/habit/statistics}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.statistics.habits}]]</span>
                     </a>
@@ -143,5 +133,3 @@
         </div>
     </ul>
 </nav>
-
-</html>

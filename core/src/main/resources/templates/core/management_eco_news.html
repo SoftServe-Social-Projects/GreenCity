@@ -5,11 +5,7 @@
     <meta charset="utf-8"/>
     <title>Eco news management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -27,10 +23,7 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
-
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
     <script th:src="@{/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
@@ -50,8 +43,8 @@
 <body>
 <div id="page">
     <div id="header" th:insert="core/header"></div>
-    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="main-content">
+        <div id="sidebar" th:insert="core/sidepanel"></div>
         <div class="container-xl">
             <div class="table-responsive eco-news">
                 <div class="table-wrapper">
@@ -91,16 +84,15 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="table-container">
-                        <table class="table table-bordered scrollable-table" id="tabElement">
+                    </div>
+                        <table class="table table-bordered" id="tabElement">
                             <thead>
-                            <tr class="table-primary">
+                            <tr>
                                 <th>
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
+                                    <span class="custom-checkbox">
+                                        <input type="checkbox" id="selectAll">
+                                        <label for="selectAll"></label>
+                                    </span>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
@@ -442,43 +434,41 @@
                                 </tbody>
                             </th:block>
                         </table>
-                        </div>
-                        <!-- Start of Paging -->
-                        <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
-                            <div class="d-flex justify-content-center">
-                                <ul class="pagination">
-                                    <li class="page-item"
-                                        th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
-                                        <a class="page-link" rel="tooltip" id="prevPageLink" th:if="${!pageable.isFirst()}"
-                                           onclick="buildUrlPage(0)"><i
-                                                class="arrow fas fa-chevron-left"></i></a>
-                                        <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
-                                                class="arrow fas fa-chevron-left"></i></a>
-                                    </li>
+                    <!-- Start of Paging -->
+                    <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
+                        <div class="d-flex justify-content-center">
+                            <ul class="pagination">
+                                <li class="page-item"
+                                    th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
+                                    <a class="page-link" rel="tooltip" id="prevPageLink" th:if="${!pageable.isFirst()}"
+                                       onclick="buildUrlPage(0)"><i
+                                            class="arrow fas fa-chevron-left"></i></a>
+                                    <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
+                                            class="arrow fas fa-chevron-left"></i></a>
+                                </li>
 
-                                    <li class="page-item"
-                                        th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
-                                        th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
-                                        th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                                        <a class="page-link"
-                                           href="javascript:void(0)"
-                                           th:onclick="'buildUrlPage(' + ${pageNumber} + ')'">[[${pageNumber}+1]]</a>
-                                    </li>
+                                <li class="page-item"
+                                    th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
+                                    th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
+                                    th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
+                                    <a class="page-link"
+                                       href="javascript:void(0)"
+                                       th:onclick="'buildUrlPage(' + ${pageNumber} + ')'">[[${pageNumber}+1]]</a>
+                                </li>
 
-                                    <li class="page-item"
-                                        th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
-                                        <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                                           th:onclick="'buildUrlPage(' + (${pageable.getTotalPages()} - 1) + ')'"
-                                        ><i
-                                                class="arrow fas fa-chevron-right"></i></a>
-                                        <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
-                                                class="arrow fas fa-chevron-right"></i></a>
-                                    </li>
-                                </ul>
-                            </div>
+                                <li class="page-item"
+                                    th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
+                                    <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
+                                       th:onclick="'buildUrlPage(' + (${pageable.getTotalPages()} - 1) + ')'"
+                                    ><i
+                                            class="arrow fas fa-chevron-right"></i></a>
+                                    <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
+                                            class="arrow fas fa-chevron-right"></i></a>
+                                </li>
+                            </ul>
                         </div>
-                        <!-- End of Paging -->
                     </div>
+                    <!-- End of Paging -->
                 </div>
             </div>
 
