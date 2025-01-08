@@ -5,10 +5,7 @@
     <meta charset="utf-8"/>
     <title>Graphs</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -26,12 +23,13 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script th:src="@{/management/user/graphs.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 
 <body>
 <div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
 <div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="container">
         <h2 align="center">Users city Graph</h2>
 

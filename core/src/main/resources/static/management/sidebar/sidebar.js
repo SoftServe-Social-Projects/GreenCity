@@ -3,34 +3,18 @@
  */
 
 function minimize() {
-    var menu = document.getElementsByClassName("menuVertical")[0];
-    var mainContWidth = document.getElementsByClassName("main-content")[0];
-    menu.classList.toggle("narrow");
-    var arrow = document.getElementById("maximize");
-    if (menu.classList.contains("narrow")) {
-        localStorage.setItem("narrow", "narrow");
-        for (var u = 0; u < acc.length; u++) {
-            var pr = acc[u].nextElementSibling;
-            pr.style.display = "none";
-            sessionStorage.removeItem("panel" + u);
-        }
-    } else {
-        localStorage.removeItem("narrow");
-    }
-    if (menu.classList.contains("narrow")) {
-        if (!arrow.classList.contains("on")) {
-            arrow.classList.add("on");
-        }
-    } else if (arrow.classList.contains("on")) {
-        arrow.classList.remove("on");
-    }
-    if (arrow.classList.contains("on")) {
-        localStorage.setItem("on", "on");
-    } else {
-        localStorage.removeItem("on");
-    }
+    const menu = document.querySelector(".menuVertical");
+    const mainContent = document.querySelector(".main-content");
+    const arrow = document.getElementById("maximize");
 
-    mainContWidth.style.paddingLeft = parseInt(window.getComputedStyle(menu).width, 10) + "px";
+    menu.classList.toggle("narrow");
+    const isNarrow = menu.classList.contains("narrow");
+
+    localStorage.setItem("narrow", isNarrow ? "narrow" : "");
+    localStorage.setItem("on", isNarrow ? "on" : "");
+
+    arrow.classList.toggle("on", isNarrow);
+    mainContent.style.gridTemplateColumns = `${window.getComputedStyle(menu).width} auto`;
 }
 
 /**
@@ -38,36 +22,35 @@ function minimize() {
  * or resize screen.
  */
 
-var btn = document.getElementById("maximize");
+function resizeMenu() {
+    const menu = document.querySelector(".menuVertical");
+    const isNarrow = window.innerWidth < 1150;
 
-btn.addEventListener("click", minimize);
+    if (menu.classList.contains("narrow") !== isNarrow) {
+        minimize();
+    }
+}
+
+// Ініціалізація
+document.addEventListener("DOMContentLoaded", () => {
+    const menu = document.querySelector(".menuVertical");
+    const mainContent = document.querySelector(".main-content");
+    const arrow = document.getElementById("maximize");
+
+    if (localStorage.getItem("narrow")) {
+        menu.classList.add("narrow");
+    }
+
+    if (localStorage.getItem("on")) {
+        arrow.classList.add("on");
+    }
+
+    mainContent.style.gridTemplateColumns = `${window.getComputedStyle(menu).width} auto`;
+});
+
+document.getElementById("maximize").addEventListener("click", minimize);
 window.addEventListener("resize", resizeMenu);
 
-function resizeMenu() {
-    var wth = window.innerWidth;
-    var menu = document.getElementsByClassName("menuVertical")[0];
-    if (wth > 1150) {
-        if (menu.classList.contains("narrow")) {
-            minimize();
-        }
-    }
-    if (wth < 1150) {
-        if (!menu.classList.contains("narrow")) {
-            minimize();
-        }
-    }
-
-}
-
-if (localStorage.getItem("narrow") !== null) {
-    var menu = document.getElementsByClassName("menuVertical")[0];
-    menu.classList.toggle("narrow")
-}
-
-if (localStorage.getItem("on") !== null) {
-    var minbtn = document.getElementById("maximize");
-    minbtn.classList.add("on")
-}
 
 /**
  * Script for opening and closing dropdown items.
