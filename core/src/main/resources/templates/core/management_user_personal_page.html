@@ -3,9 +3,8 @@
     <meta charset=UTF-8/>
     <title>User's personal page</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -20,10 +19,10 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 
 <body>
@@ -64,11 +63,8 @@
 </script>
 
 <div id="header" th:insert="core/header"></div>
-<div>
-    <div id="sidebar" th:insert="core/sidepanel"></div>
-</div>
-
 <div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="container-xl">
 
         <div class="page-title">
@@ -151,7 +147,7 @@
                 <div class="divider"></div>
 
                 <div style="margin: auto">
-                    <div class="dropdown userpage"> <!--style="margin-top: 12px; display: inline-block"-->
+                    <div class="dropdown userpage">
                         <button class="dropbtn userpage green">
                             <div class="button-container">
                                 <div class="button-text"
@@ -248,47 +244,6 @@
                     </div>
                 </div>
             </div>
-
-            <!--<div class="tooltip-container" style="display: none">
-                <div style="display: inline-block">
-                    <table>
-                        <colgroup>
-                            <col span="1" style="width: 145px">
-                            <col span="1" style="width: 20px">
-                            <col span="1" style="width: 37px">
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <td><h2>Target time</h2></td>
-                            <td>10</td>
-                            <td>days</td>
-                        </tr>
-                        <tr>
-                            <td><h2>Time in progress</h2></td>
-                            <td>8</td>
-                            <td>days</td>
-                        </tr>
-                        <tr>
-                            <td><h2>Percent of done</h2></td>
-                            <td>80</td>
-                            <td>%</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="display: inline-block">
-                    <h2 style="margin-bottom: 8px">To-Do list</h2>
-                    <th:block class="list-of" th:each="item, iterStatus :${habit1.toDoListItems}">
-                        <div class="custom-checkbox userpage">
-                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                   name="options[]" th:value="${item.id}"
-                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
-                                   th:text="${item.text}"></label>
-                        </div>
-                    </th:block>
-                </div>
-            </div>-->
 
             <div class="user-tables">
 
@@ -752,8 +707,8 @@
 
         </div>
     </div>
-    <div id="footer" th:insert="core/footer"></div>
 </div>
+<div id="footer" th:insert="core/footer"></div>
 
 <script>
     function saveListItem(itemId, habitId) {

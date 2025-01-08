@@ -12,10 +12,7 @@ body {
 .main-content {
     flex: 1 0 auto;
     padding-top: 54px;
-    padding-left: 264px;
-}
-@media screen and (max-width: 1152px){
-    .main-content {
-        padding-left: 60px;
-    }
+    display: grid;
+    grid-template-columns: auto auto;
+    min-height: 800px;
 }
