@@ -16,7 +16,7 @@ footer {
 	font-family: OpenSans, sans-serif;
 	font-size: 14.07px;
 	line-height: 16px;
-	color: #494a49 !important;
+	color: var(--gray-ash) !important;
 	padding-top: 3px;
     padding-left: 20px;
     text-decoration: none !important;
@@ -51,7 +51,7 @@ footer {
     font-family: OpenSans, sans-serif;
     font-size: 14.07px;
     line-height: 16px;
-    color: #494a49;
+    color: var(--gray-ash);
     margin-right: 32px;
     padding-top: 3px;
 }
@@ -70,7 +70,7 @@ footer {
     line-height: 16px;
     margin: 0;
     padding-top: 6.9px;
-    color: #494a49;
+    color: var(--gray-ash);
 }
 
 .main-background-image .main .links .right-side .social-network-links {
@@ -99,7 +99,7 @@ footer {
     font-family: OpenSans, sans-serif;
     font-size: 14px;
     line-height: 16px;
-    color: #878787;
+    color: var(--gray-light);
 }
 
 @media screen and (max-width: 1024px) {

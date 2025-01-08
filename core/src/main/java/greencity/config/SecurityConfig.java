@@ -207,7 +207,6 @@ public class SecurityConfig {
                     "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
                     "/database/backupFiles",
-                    "/ai/**",
                     COMMIT_INFO)
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
@@ -285,7 +284,8 @@ public class SecurityConfig {
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     NOTIFICATIONS,
-                    HABIT_ASSIGN_ID + "/friends/habit-duration-info")
+                    HABIT_ASSIGN_ID + "/friends/habit-duration-info",
+                    "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
