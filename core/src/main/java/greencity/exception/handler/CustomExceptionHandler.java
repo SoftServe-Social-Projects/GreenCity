@@ -685,7 +685,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex,
         WebRequest request) {
-        log.warn(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
