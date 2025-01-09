@@ -8,8 +8,10 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
+import greencity.dto.filter.FilterGeocodingApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.AddPlaceLocation;
+import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
@@ -438,8 +440,6 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO) {
-        //TODO: apply filters to db
-        //TODO: create a request to googleApiService with filters
         Long userId = userVO == null ? null : userVO.getId();
         List<Place> list =
             ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
@@ -448,6 +448,20 @@ public class PlaceServiceImpl implements PlaceService {
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterGeocodingApiDto filterDto, /*TODO: remove if unused*/UserVO userVO) {
+        //TODO: create a request to googleApiService with filters
+        List<GeocodingResult> fromGeoCode = googleApiService.getResultFromGeoCode(filterDto);
+        List<PlaceByBoundsDto> list = fromGeoCode.stream()
+                .map(el -> new PlaceByBoundsDto(
+                        0L,
+                        el.formattedAddress,
+                        new LocationDto(0L, el.geometry.location.lat, el.geometry.location.lng, el.formattedAddress)
+                ))
+                .toList();
+        return list;
     }
 
     /**

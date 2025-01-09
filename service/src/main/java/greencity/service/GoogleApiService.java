@@ -8,6 +8,7 @@ import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import greencity.constant.ErrorMessage;
+import greencity.dto.filter.FilterGeocodingApiDto;
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.exception.exceptions.BadRequestException;
@@ -40,11 +41,31 @@ public class GoogleApiService {
         List<GeocodingResult> geocodingResults = new ArrayList<>();
         LOCALES.forEach(locale -> {
             try {
-                //TODO: pass all available parameters (update filterPlaceDto class).
                 GeocodingResult[] results = GeocodingApi.newRequest(context)
                         .address(searchRequest)
                         .language(locale.getLanguage())
-                        //TODO: more params
+                        .await();
+                Collections.addAll(geocodingResults, results);
+            } catch (IOException | InterruptedException | ApiException e) {
+                log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        });
+        return geocodingResults;
+    }
+
+    public List<GeocodingResult> getResultFromGeoCode(FilterGeocodingApiDto filterDto) {
+        List<GeocodingResult> geocodingResults = new ArrayList<>();
+        LOCALES.forEach(locale -> {
+            try {
+                //TODO: pass all available parameters
+                GeocodingResult[] results = GeocodingApi.newRequest(context)
+                        .address(filterDto.getAddress())
+                        .bounds(new LatLng(filterDto.getBounds().getSouthWestLat(), filterDto.getBounds().getSouthWestLng()),
+                                new LatLng(filterDto.getBounds().getNorthEastLat(), filterDto.getBounds().getNorthEastLng()))
+                        .components(filterDto.getComponents())
+                        .region(filterDto.getRegion())
+                        .language(locale.getLanguage())
                         .await();
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {

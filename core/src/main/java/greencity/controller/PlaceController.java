@@ -276,13 +276,32 @@ public class PlaceController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    //TODO: add filters to fetch places from API and DB (create requestFilterObject). Search for places in our DB and API
-    //TODO: add boolean to search places in DB only or in DB and Google API
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
-            //@Valid @RequestBody FilterGeocodingApiDto filterDto,
             @Valid @RequestBody FilterPlaceDto filterDto,
-            @CurrentUser UserVO userVO) {
+            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
+    }
+
+    @Operation(summary = "Return a list places from Google Geocoding API filtered by values contained "
+            + "in the incoming FilterPlaceDto object")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+                    content = @Content(schema = @Schema(implementation = FilterGeocodingApiDto.class))),
+            @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/filter/api")
+    public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlacesFromApi(
+            //TODO: create 2 filter objects for db and API
+            @Valid @RequestBody FilterGeocodingApiDto filterDto,
+            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 

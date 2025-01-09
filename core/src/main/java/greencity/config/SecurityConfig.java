@@ -212,7 +212,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
                     "/place/getListPlaceLocationByMapsBounds",
-                    "/place/filter")
+                    "/place/filter",
+                    "place/filter/api")
                 .permitAll()
                 .requestMatchers(HttpMethod.DELETE,
                     SUBSCRIPTIONS + "/{unsubscribeToken}")
