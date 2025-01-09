@@ -5,7 +5,7 @@ import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.filter.FilterGeocodingApiDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
@@ -287,7 +287,7 @@ public class PlaceController {
             + "in the incoming FilterPlaceDto object")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-                    content = @Content(schema = @Schema(implementation = FilterGeocodingApiDto.class))),
+                    content = @Content(schema = @Schema(implementation = FilterPlacesApiDto.class))),
             @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
                     content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -299,9 +299,8 @@ public class PlaceController {
     })
     @PostMapping("/filter/api")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlacesFromApi(
-            //TODO: create 2 filter objects for db and API
-            @Valid @RequestBody FilterGeocodingApiDto filterDto,
-            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+            @RequestBody FilterPlacesApiDto filterDto,
+            @CurrentUser @Parameter(hidden = true) UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 

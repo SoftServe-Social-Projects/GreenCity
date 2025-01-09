@@ -2,15 +2,15 @@ package greencity.service;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
+import com.google.maps.NearbySearchRequest;
+import com.google.maps.PlacesApi;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.AddressComponent;
-import com.google.maps.model.AddressComponentType;
-import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.LatLng;
+import com.google.maps.model.*;
 import greencity.constant.ErrorMessage;
-import greencity.dto.filter.FilterGeocodingApiDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,11 +54,10 @@ public class GoogleApiService {
         return geocodingResults;
     }
 
-    public List<GeocodingResult> getResultFromGeoCode(FilterGeocodingApiDto filterDto) {
+/*    public List<GeocodingResult> getResultFromGeoCode(FilterPlacesApiDto filterDto) {
         List<GeocodingResult> geocodingResults = new ArrayList<>();
         LOCALES.forEach(locale -> {
             try {
-                //TODO: pass all available parameters
                 GeocodingResult[] results = GeocodingApi.newRequest(context)
                         .address(filterDto.getAddress())
                         .bounds(new LatLng(filterDto.getBounds().getSouthWestLat(), filterDto.getBounds().getSouthWestLng()),
@@ -74,6 +73,76 @@ public class GoogleApiService {
             }
         });
         return geocodingResults;
+    }*/
+
+    /**
+     * Sends a request to the Google Places API using the given FilterPlacesApiDto.
+     *
+     * @param filterDto DTO containing filter parameters for the Places API request.
+     * @param userVO contains location of the user. location from userVO
+     *              is used if location in filterDto is null
+     * @return List of PlacesSearchResult containing the search results.
+     *
+     * @author Hrenevych Ivan
+     */
+    public List<PlacesSearchResult> getResultFromPlacesApi(FilterPlacesApiDto filterDto, UserVO userVO) {
+        List<PlacesSearchResult> placesResults = new ArrayList<>();
+        LOCALES.forEach(locale -> {
+            try {
+                NearbySearchRequest request = PlacesApi.nearbySearchQuery(
+                            context,
+                            filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO)
+                        )
+                        .radius(filterDto.getRadius())
+                        .language(locale.getLanguage());
+
+                if (filterDto.getKeyword() != null) {
+                    request.keyword(filterDto.getKeyword());
+                }
+
+                if (filterDto.getType() != null) {
+                    request.type(filterDto.getType());
+                }
+
+                if (filterDto.getRankBy() != null) {
+                    request.rankby(filterDto.getRankBy());
+                }
+
+                if (filterDto.getMinPrice() != null) {
+                    request.minPrice(filterDto.getMinPrice());
+                }
+
+                if (filterDto.getMaxPrice() != null) {
+                    request.maxPrice(filterDto.getMaxPrice());
+                }
+
+                if (filterDto.isOpenNow()) {
+                    request.openNow(true);
+                }
+
+                if (filterDto.getName() != null) {
+                    request.name(filterDto.getName());
+                }
+
+                PlacesSearchResponse response = request.await();
+                Collections.addAll(placesResults, response.results);
+            } catch (IOException | InterruptedException | ApiException e) {
+                log.error("Error during Google Places API call, reason: {}", e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        return placesResults;
+    }
+
+    /**
+     * Parses a location string (latitude,longitude) into a LatLng object.
+     *
+     * @param location - A string in the format "latitude,longitude".
+     * @return LatLng object representing the location.
+     */
+    private com.google.maps.model.LatLng getLocationFromUserVO(UserVO userVO) {
+        return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(), userVO.getUserLocationDto().getLongitude());
     }
 
     /**

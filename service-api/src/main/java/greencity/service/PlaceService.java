@@ -2,7 +2,7 @@ package greencity.service;
 
 import com.google.maps.model.GeocodingResult;
 import greencity.dto.PageableDto;
-import greencity.dto.filter.FilterGeocodingApiDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
@@ -198,7 +198,7 @@ public interface PlaceService {
      * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
-    List<PlaceByBoundsDto> getPlacesByFilter(FilterGeocodingApiDto filterDto,
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto,
                                              UserVO userVO);
 
     /**

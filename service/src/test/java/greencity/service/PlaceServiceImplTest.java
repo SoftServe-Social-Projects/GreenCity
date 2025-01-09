@@ -6,7 +6,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.filter.FilterDistanceDto;
-import greencity.dto.filter.FilterGeocodingApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;

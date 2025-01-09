@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -8,7 +9,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
-import greencity.dto.filter.FilterGeocodingApiDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationDto;
@@ -451,16 +452,15 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterGeocodingApiDto filterDto, /*TODO: remove if unused*/UserVO userVO) {
-        //TODO: create a request to googleApiService with filters
-        List<GeocodingResult> fromGeoCode = googleApiService.getResultFromGeoCode(filterDto);
-        List<PlaceByBoundsDto> list = fromGeoCode.stream()
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, /*TODO: remove if unused*/UserVO userVO) {
+        List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
+        List<PlaceByBoundsDto> list = fromPlacesApi.stream()
                 .map(el -> new PlaceByBoundsDto(
-                        0L,
-                        el.formattedAddress,
-                        new LocationDto(0L, el.geometry.location.lat, el.geometry.location.lng, el.formattedAddress)
-                ))
-                .toList();
+                    System.currentTimeMillis(),//TODO: counter with increment
+                    el.name,
+                    new LocationDto(0L, el.geometry.location.lat, el.geometry.location.lng, el.vicinity)
+                )).toList();
+        //TODO: map PlacesSearchResult to PlaceByBoundsDto
         return list;
     }
 
