@@ -1,0 +1,144 @@
+:root {
+    --black: #000000;
+    --black-shadow: rgba(73, 74, 73, 0.2);
+    --black-ash: #333;
+    --black-translucent: rgba(0, 0, 0, 0.5);
+    --black-chancoal: #ffffff00;
+    --gray: #708090;
+    --red: red;
+    --red-cherry: #E02116;
+    --red-cherry-dark: #B21D15;
+    --red-shadow: rgba(225,83,97,.5);
+    --orange: #FF9310;
+    --green-emerald: #04AA6D;
+    --green: #13AA57;
+    --green-eucalyptus: #28a745;
+    --green-light: #B3E6C9;
+    --green-shadow: #336B4C;
+    --gray-gull: #9CA7B0;
+    --gray-asphalt: #64727D;
+    --gray-dark-asphalt: #444E55;
+    --gray-ash: #494a49;
+    --gray-light: #878787;
+    --gray-blue: #566787;
+    --dark-gray: #666;
+    --white: white;
+    --white-smoke: #f1f1f1;
+    --white-focus: #ddd;
+    --white-blue: #E3E6E8;
+    --white-green: #E7F7EE;
+    --white-gray-blue: #CACFD3;
+    --light-mustard: #fff7cf;
+    --light-pink: #FCE0DE;
+    scroll-behavior: smooth;
+}
+
+h1, h2 {
+    color: var(--green);
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 5px;
+}
+
+.error {
+    color: var(--red);
+    text-align: center;
+    margin-top: -26px;
+}
+
+.active-link,
+.active-link:focus {
+    color: var(--green-emerald) !important;
+}
+
+/* The popup form - hidden by default */
+.form-popup {
+    padding-left: 20px;
+    display: none;
+    position: absolute;
+    z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+    max-width: 280px;
+    height: 600px;
+    border-top: none;
+    border-left: 1px solid var(--gray-gull);
+    border-right: 1px solid var(--gray-gull);
+    border-bottom: 1px solid var(--gray-gull);
+    padding: 18px;
+    background-color: var(--white);
+}
+
+/* Full-width input fields */
+.form-container input[type=text], .form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 15px 0;
+    border: none;
+    background: var(--white-smoke);
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: var(--white-focus);
+    outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+    background-color: var(--green-emerald);
+    color: var(--white);
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom:10px;
+    opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+    border: var(--green-eucalyptus);
+    border: 3px;
+    border-radius: 2px;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+}
+
+.filter-btn{
+    height: 40px;
+    width: 240px;
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    background-color: var(--green);
+    color: var(--white);
+    margin-bottom: 30px;
+}
+
+.apply-btn{
+    height: 40px;
+    width: 91px;
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    background-color: var(--green);
+    color: var(--white);
+    margin-left: 18px;
+}
+
+.star1, .star2, .star3{
+    background-image: url("/img/star-empty.png");
+}
+
+input[type=checkbox]{
+    color: var(--green);
+}

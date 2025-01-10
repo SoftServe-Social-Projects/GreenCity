@@ -10,6 +10,7 @@ import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import lombok.AllArgsConstructor;
@@ -70,11 +71,11 @@ public class UserVO {
 
     private String firstName;
 
-    private Boolean showLocation;
+    private ProfilePrivacyPolicy showLocation;
 
-    private Boolean showEcoPlace;
+    private ProfilePrivacyPolicy showEcoPlace;
 
-    private Boolean showToDoList;
+    private ProfilePrivacyPolicy showToDoList;
 
     private LocalDateTime lastActivityTime;
 

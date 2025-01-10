@@ -320,14 +320,64 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable      current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u "
-        + "WHERE u.id != :userId "
-        + "AND u.id NOT IN ("
-        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
-        + "      UNION "
-        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
-        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:filteringName, '&', '\\&'), "
-        + "'%', '\\%'), '_', '\\_'), '#', '\\#'), '%')) ")
+    @Query(nativeQuery = true,
+        value = """
+            SELECT *
+            FROM users u
+            WHERE u.id != :userId
+              AND u.id NOT IN (
+                  SELECT user_id AS id
+                  FROM users_friends
+                  WHERE friend_id = :userId
+                    AND status = 'FRIEND'
+                  UNION
+                  SELECT friend_id AS id
+                  FROM users_friends
+                  WHERE user_id = :userId
+                    AND status = 'FRIEND'
+              )
+              AND (
+                  LOWER(u.name) LIKE LOWER(
+                      CONCAT('%',
+                             REPLACE(REPLACE(REPLACE(
+                                    REPLACE(:filteringName, '&', '\\&'),
+                                    '%', '\\%'),
+                                    '_', '\\_'),
+                                    '#', '\\#'), '%')
+                      )
+                  )
+                  OR LOWER(u.user_credo) LIKE LOWER(
+                      CONCAT('%',
+                             REPLACE(REPLACE(REPLACE(
+                                    REPLACE(:filteringName, '&', '\\&'),
+                                    '%', '\\%'),
+                                    '_', '\\_'),
+                                    '#', '\\#'), '%')
+                      )
+                  OR EXISTS (
+                      SELECT 1
+                      FROM user_location ul
+                      WHERE ul.id = u.user_location
+                        AND( LOWER(ul.city_en) LIKE LOWER(
+                                CONCAT('%',
+                                       REPLACE(REPLACE(
+                                                       REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                               '%', '\\%'),
+                                                       '_', '\\_'),
+                                               '#', '\\#'), '%')
+                                                     )
+                              OR LOWER(ul.city_ua) LIKE LOWER(
+                                    CONCAT('%',
+                                           REPLACE(REPLACE(
+                                                           REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                                   '%', '\\%'),
+                                                           '_', '\\_'),
+                                                   '#', '\\#'), '%')
+                                                        )
+                          )
+                  )
+            """)
+
     Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
 
     /**
@@ -339,17 +389,107 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable      current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u "
-        + "WHERE u.id != :userId "
-        + "AND u.id NOT IN ("
-        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
-        + "      UNION "
-        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
-        + "      UNION "
-        + "      SELECT friend_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'REQUEST' "
-        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:filteringName, '&', '\\&'), "
-        + "'%', '\\%'), '_', '\\_'), '#', '\\#'), '%')) ")
-    Page<User> getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(Long userId, String filteringName,
+    @Query(nativeQuery = true,
+        value = """
+                                SELECT *
+            FROM users u
+            WHERE u.id != :userId
+              AND u.id NOT IN (
+                SELECT user_id AS id
+                FROM users_friends
+                WHERE friend_id = :userId
+                  AND status = 'FRIEND'
+                UNION
+                SELECT friend_id AS id
+                FROM users_friends
+                WHERE user_id = :userId
+                  AND status = 'FRIEND'
+            )
+              AND (
+                LOWER(u.name) LIKE LOWER(
+                        CONCAT('%',
+                               REPLACE(REPLACE(
+                                               REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                       '%', '\\%'),
+                                               '_', '\\_'),
+                                       '#', '\\#'), '%')
+                                   )
+                    OR LOWER(u.user_credo) LIKE LOWER(
+                        CONCAT('%',
+                               REPLACE(REPLACE(
+                                               REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                       '%', '\\%'),
+                                               '_', '\\_'),
+                                       '#', '\\#'), '%')
+                                                )
+                    OR EXISTS (
+                    SELECT 1
+                    FROM user_location ul
+                    WHERE ul.id = u.user_location
+                      AND( LOWER(ul.city_en) LIKE LOWER(
+                              CONCAT('%',
+                                     REPLACE(REPLACE(
+                                                     REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                             '%', '\\%'),
+                                                     '_', '\\_'),
+                                             '#', '\\#'), '%')
+                                                   )
+                            OR LOWER(ul.city_ua) LIKE LOWER(
+                                  CONCAT('%',
+                                         REPLACE(REPLACE(
+                                                         REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                                 '%', '\\%'),
+                                                         '_', '\\_'),
+                                                 '#', '\\#'), '%')
+                                                      )
+                        )
+                )
+                )
+              AND (
+                :filterByFriendsOfFriends = FALSE
+                    OR u.id IN (
+                    SELECT user_id
+                    FROM users_friends
+                    WHERE (friend_id IN (
+                        SELECT friend_id
+                        FROM users_friends
+                        WHERE user_id = :userId
+                    )
+                        OR friend_id IN (
+                            SELECT user_id
+                            FROM users_friends
+                            WHERE friend_id = :userId
+                        ))
+                      AND status = 'FRIEND'
+                    UNION
+                    SELECT friend_id
+                    FROM users_friends
+                    WHERE user_id IN (
+                        SELECT friend_id
+                        FROM users_friends
+                        WHERE user_id = :userId
+                    )
+                      AND status = 'FRIEND'
+                )
+                )
+              AND (
+                :filterByCity = FALSE
+                    OR EXISTS (
+                    SELECT 1
+                    FROM user_location ul
+                    WHERE ul.id = u.user_location
+                      AND ul.city_ua IN (
+                        SELECT ul2.city_ua FROM user_location ul2
+                                                    JOIN users u2 ON ul2.id = u2.user_location
+                        WHERE u2.id = :userId
+                    )
+                )
+                )
+            """)
+    Page<User> getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(Long userId,
+        String filteringName,
+        boolean filterByFriendsOfFriends,
+        boolean filterByCity,
         Pageable pageable);
 
     /**
@@ -377,10 +517,69 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId   current user's id.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u "
-        + "       INNER JOIN users_friends ON u.id = users_friends.user_id "
-        + "       WHERE users_friends.friend_id = :userId AND users_friends.status = 'REQUEST' ")
-    Page<User> getAllUserFriendRequests(Long userId, Pageable pageable);
+    @Query(nativeQuery = true,
+        value = """
+                SELECT *
+                FROM users u
+                INNER JOIN users_friends
+                ON u.id = users_friends.user_id
+                WHERE users_friends.friend_id = :userId
+                 AND users_friends.status = 'REQUEST'
+                 AND (
+                 LOWER(u.name) LIKE LOWER(
+                         CONCAT('%',
+                                REPLACE(REPLACE(
+                                                REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                        '%', '\\%'),
+                                                '_', '\\_'),
+                                        '#', '\\#'), '%')
+                                    )
+                     OR LOWER(u.user_credo) LIKE LOWER(
+                         CONCAT('%',
+                                REPLACE(REPLACE(
+                                                REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                        '%', '\\%'),
+                                                '_', '\\_'),
+                                        '#', '\\#'), '%')
+                                                 )
+                     OR EXISTS (
+                     SELECT 1
+                     FROM user_location ul
+                     WHERE ul.id = u.user_location
+                       AND( LOWER(ul.city_en) LIKE LOWER(
+                           CONCAT('%',
+                                  REPLACE(REPLACE(
+                                                  REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                          '%', '\\%'),
+                                                  '_', '\\_'),
+                                          '#', '\\#'), '%')
+                                                )
+                         OR LOWER(ul.city_ua) LIKE LOWER(
+                               CONCAT('%',
+                                      REPLACE(REPLACE(
+                                                      REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                              '%', '\\%'),
+                                                      '_', '\\_'),
+                                              '#', '\\#'), '%')
+                                                   )
+                     )
+                 )
+                 )
+                              AND (
+                 :filterByCity = FALSE
+                     OR EXISTS (
+                     SELECT 1
+                     FROM user_location ul
+                     WHERE ul.id = u.user_location
+                       AND ul.city_ua IN (
+                         SELECT ul2.city_ua FROM user_location ul2
+                                                     JOIN users u2 ON ul2.id = u2.user_location
+                         WHERE u2.id = :userId
+                     )
+                 )
+                 )
+            """)
+    Page<User> getAllUserFriendRequests(Long userId, String filteringName, boolean filterByCity, Pageable pageable);
 
     /**
      * Method to find users which are friends to user with userId.
@@ -390,13 +589,66 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable      current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u "
-        + "WHERE u.id IN ("
-        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
-        + "      UNION "
-        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
-        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%'))")
-    Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);
+    @Query(nativeQuery = true,
+        value = """
+                      SELECT *
+               FROM users u
+               WHERE u.id != :userId
+                   AND u.id IN (
+                       SELECT user_id AS id
+                       FROM users_friends
+                       WHERE friend_id = :userId
+                         AND status = 'FRIEND'
+                       UNION
+                       SELECT friend_id AS id
+                       FROM users_friends
+                       WHERE user_id = :userId
+                         AND status = 'FRIEND'
+                   )
+                   AND (
+                   LOWER(u.name) LIKE LOWER(
+                           CONCAT('%',
+                                  REPLACE(REPLACE(
+                                                  REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                          '%', '\\%'),
+                                                  '_', '\\_'),
+                                          '#', '\\#'), '%')
+                                      )
+                       OR LOWER(u.user_credo) LIKE LOWER(
+                           CONCAT('%',
+                                  REPLACE(REPLACE(
+                                                  REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                          '%', '\\%'),
+                                                  '_', '\\_'),
+                                          '#', '\\#'), '%')
+                                                   )
+                       OR EXISTS (SELECT 1
+                                  FROM user_location ul
+                                  WHERE ul.id = u.user_location
+                                    AND LOWER(ul.city_en) LIKE LOWER(
+                                          CONCAT('%',
+                                                 REPLACE(REPLACE(
+                                                                 REPLACE(REPLACE(:filteringName, '&', '\\&'),
+                                                                         '%', '\\%'),
+                                                                 '_', '\\_'),
+                                                         '#', '\\#'), '%')
+                                                               ))
+                   )
+                   AND (
+                         :filterByCity = FALSE
+                             OR EXISTS (
+                             SELECT 1
+                             FROM user_location ul
+                             WHERE ul.id = u.user_location
+                               AND ul.city_ua IN (
+                                 SELECT ul2.city_ua FROM user_location ul2
+                                                             JOIN users u2 ON ul2.id = u2.user_location
+                                 WHERE u2.id = :userId
+                             )
+                         )
+                         )
+            """)
+    Page<User> findAllFriendsOfUser(Long userId, String filteringName, boolean filterByCity, Pageable pageable);
 
     /**
      * Method to find mutual friends with friendId for current user with userId.
@@ -642,4 +894,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
              GROUP BY uep.emailPreference, uep.periodicity
         """)
     List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
+
+    /**
+     * Count total active users in the system.
+     */
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userStatus IN (greencity.enums.UserStatus.ACTIVATED) ")
+    Long countActiveUsers();
 }

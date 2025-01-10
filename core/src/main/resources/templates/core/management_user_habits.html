@@ -5,10 +5,8 @@
     <meta charset="utf-8"/>
     <title>User Habits</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/habits.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -22,12 +20,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
-
     <script th:src="@{/management/habit/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 
     <script>
         $(function () {
@@ -38,34 +33,13 @@
             });
         });
     </script>
-
-    <style>
-        input[type=range] {
-            -webkit-appearance: none;
-            background-color: #13AA57;
-            height: 2.5px;
-            border-radius: 2px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            background-color: #13AA57;
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 10px;
-            overflow: visible;
-            cursor: pointer;
-        }
-
-    </style>
-
 </head>
 
 <body>
 <div id="page">
     <div id="header" th:insert="~{core/header}"></div>
-    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
     <div class="main-content">
+        <div id="sidebar" th:insert="~{core/sidepanel}"></div>
         <div class="container-xl">
             <div class="table-responsive">
                 <div class="table-wrapper">
@@ -177,21 +151,22 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr class="table-primary">
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
                                 <th>
                                 <span class="custom-checkbox">
                                     <input type="checkbox" id="selectAll">
                                     <label for="selectAll"></label>
                                 </span>
                                 </th>
-                                <th style="width: 120px;">
+                                <th>
                                     <span>[[#{greenCity.pages.table.id}]]</span>
                                     <img id="id-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
                                     <span class="table-filter-icon"></span>
                                 </th>
-                                <th style="width: 200px;">
+                                <th>
                                     <span>[[#{greenCity.pages.table.icon}]]</span>
                                     <span class="table-filter-icon filter"></span>
                                 </th>
@@ -214,88 +189,90 @@
                                     [[#{greenCity.pages.table.actions}]]
                                 </th>
                             </tr>
-                            </thead>
-                            <th:block th:each="habit, iterStatus :${pageable.getPage()}">
-                                <tr
-                                        th:each="translation: ${habit.habitTranslations.?[languageCode == ('uk'==#locale.getLanguage() ? 'ua' : #locale.getLanguage())]}">
-                                    <td>
+                        </thead>
+                        <th:block th:each="habit, iterStatus :${pageable.getPage()}">
+                            <tr
+                                    th:each="translation: ${habit.habitTranslations.?[languageCode == ('uk'==#locale.getLanguage() ? 'ua' : #locale.getLanguage())]}">
+                                <td>
                                 <span class="custom-checkbox">
                                     <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                            name="options[]" th:value="${habit.id}"
                                            th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                 </span>
-                                    </td>
-                                    <td><a class="id-link" th:text="${habit.id}"
-                                           th:href="@{/management/habits/{id} (id=${habit.id})}"/>
-                                    </td>
-                                    <td style="min-width: 98px">
-                                        <div class="habit_img">
-                                            <img th:src="${#strings.startsWith(habit.image, 'http') ? habit.image : '/' + habit.image}"
-                                                 style="height:inherit; max-width: 51px">
-                                        </div>
-                                    </td>
+                                </td>
+                                <td><a class="id-link" th:text="${habit.id}"
+                                       th:href="@{/management/habits/{id} (id=${habit.id})}"/>
+                                </td>
+                                <td style="min-width: 98px">
+                                    <div class="habit_img">
+                                        <img th:src="${#strings.startsWith(habit.image, 'http') ? habit.image : '/' + habit.image}"
+                                             style="height:inherit; max-width: 51px">
+                                    </div>
+                                </td>
 
-                                    <td class="habit_complexity" th:text="${habit.getComplexity()}"></td>
-                                    <td class="habit_defaultDuration" th:text="${habit.getDefaultDuration()}"></td>
-                                    <td>
-                                        <div class="pr" style="width: 27em">[[${translation.name}]]</div>
-                                    </td>
-                                    <td>
-                                        <div class="pr" style="width: 27em">[[${translation.description}]]</div>
-                                    </td>
-                                    <td class="habit_isCustomHabit">
-                                        <select th:id="'status-isCustom-'+${habit.id}"
-                                                th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-custom-status/'+${habit.id}+'\');'"
-                                                class="form-control">
-                                            <option th:if="${habit.isCustomHabit == null}" th:value="null" th:selected="true">Not Set</option>
-                                            <option th:value="true" th:selected="${habit.isCustomHabit == true}">True</option>
-                                            <option th:value="false" th:selected="${habit.isCustomHabit == false}">False</option>
-                                        </select>
-                                    </td>
+                                <td class="habit_complexity" th:text="${habit.getComplexity()}"></td>
+                                <td class="habit_defaultDuration" th:text="${habit.getDefaultDuration()}"></td>
+                                <td>
+                                    <div>[[${translation.name}]]</div>
+                                </td>
+                                <td>
+                                    <div>[[${translation.description}]]</div>
+                                </td>
+                                <td class="habit_isCustomHabit">
+                                    <select th:id="'status-isCustom-'+${habit.id}"
+                                            th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-custom-status/'+${habit.id}+'\');'"
+                                            class="form-control">
+                                        <option th:if="${habit.isCustomHabit == null}" th:value="null" th:selected="true">Not Set</option>
+                                        <option th:value="true" th:selected="${habit.isCustomHabit == true}">True</option>
+                                        <option th:value="false" th:selected="${habit.isCustomHabit == false}">False</option>
+                                    </select>
+                                </td>
 
-                                    <td class="habit_isDeleted">
-                                        <select th:id="'status-isDeleted-'+${habit.id}"
-                                                th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-deleted-status/'+${habit.id}+'\');'"
-                                                class="form-control">
-                                            <option th:if="${habit.isDeleted == null}" th:value="null" th:selected="true">Not Set</option>
-                                            <option th:value="true" th:selected="${habit.isDeleted == true}">True</option>
-                                            <option th:value="false" th:selected="${habit.isDeleted == false}">False</option>
-                                        </select>
-                                    </td>
+                                <td class="habit_isDeleted">
+                                    <select th:id="'status-isDeleted-'+${habit.id}"
+                                            th:onchange="'toggleStatus('+${habit.id}+', \'/management/habits/switch-deleted-status/'+${habit.id}+'\');'"
+                                            class="form-control">
+                                        <option th:if="${habit.isDeleted == null}" th:value="null" th:selected="true">Not Set</option>
+                                        <option th:value="true" th:selected="${habit.isDeleted == true}">True</option>
+                                        <option th:value="false" th:selected="${habit.isDeleted == false}">False</option>
+                                    </select>
+                                </td>
 
-                                    <td>
-                                        <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
-                                            <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
-                                        </a>
-                                    </td>
-
-                                </tr>
-                                </tbody>
-                            </th:block>
-                        </table>
-                        <div class="clearfix">
-                            <ul class="pagination">
-                                <li class="page-item" th:classappend="${pageable.getCurrentPage() == 0 ? 'disabled' : ''}">
-                                    <a th:href="@{habits(page=${pageable.getCurrentPage()-1}, sort=${sortModel})}"
-                                       class="page-link">
-                                        <i class="arrow fas fa-chevron-left"></i>
+                                <td>
+                                    <a href="#editHabitModal" class="restore edit eBtn" th:data-id="${habit.id}" data-toggle="modal">
+                                        <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                     </a>
-                                </li>
-                                <li class="page-item" th:each="i : ${#numbers.sequence(0, pageable.getTotalPages()-1)}"
-                                    th:classappend="${pageable.getCurrentPage() == i ? 'active' : ''}">
-                                    <a th:href="@{habits(page=${i}, sort=${sortModel})}"
-                                       class="page-link"
-                                       th:text="${i + 1}">1</a>
-                                </li>
-                                <li class="page-item" th:classappend="${pageable.getCurrentPage() == pageable.getTotalPages() - 1 ? 'disabled' : ''}">
-                                    <a th:href="@{habits(page=${pageable.getCurrentPage()+1}, sort=${sortModel})}"
-                                       class="page-link">
-                                        <i class="arrow fas fa-chevron-right"></i>
+                                    <a class="delete eDelBtn" data-toggle="modal"
+                                       th:href="@{/management/habits/delete(id=${habit.id})}">
+                                        <i class="material-icons" data-toggle="tooltip"
+                                           th:title="#{greenCity.pages.delete}">&#xE872;</i>
                                     </a>
-                                </li>
-                            </ul>
-                        </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </table>
+                    <div class="clearfix">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${pageable.getCurrentPage() == 0 ? 'disabled' : ''}">
+                                <a th:href="@{habits(page=${pageable.getCurrentPage()-1}, sort=${sortModel})}"
+                                   class="page-link">
+                                    <i class="arrow fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, pageable.getTotalPages()-1)}"
+                                th:classappend="${pageable.getCurrentPage() == i ? 'active' : ''}">
+                                <a th:href="@{habits(page=${i}, sort=${sortModel})}"
+                                   class="page-link"
+                                   th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${pageable.getCurrentPage() == pageable.getTotalPages() - 1 ? 'disabled' : ''}">
+                                <a th:href="@{habits(page=${pageable.getCurrentPage()+1}, sort=${sortModel})}"
+                                   class="page-link">
+                                    <i class="arrow fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

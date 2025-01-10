@@ -1,0 +1,56 @@
+input[type=range] {
+    -webkit-appearance: none;
+    background-color: var(--green);
+    height: 2.5px;
+    border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background-color: var(--green);
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 10px;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.habit_complexity {
+    white-space: nowrap;
+}
+
+
+.btn_modal {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 24px;
+    position: static;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+    border-radius: 4px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0px 0px;
+    font-size: 16px;
+    border-color: var(--green);
+}
+
+.save_changes_btn {
+    background: var(--green);
+    color: var(--white);
+}
+
+.cancel_btn {
+    background-color: var(--white);
+    color: var(--green);
+}
+
+.habit_img {
+    height: 34px;
+    width: auto;
+}
