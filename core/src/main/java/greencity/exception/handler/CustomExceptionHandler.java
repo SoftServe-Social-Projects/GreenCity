@@ -27,6 +27,7 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoToDoListItemsException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
+import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import lombok.AllArgsConstructor;
