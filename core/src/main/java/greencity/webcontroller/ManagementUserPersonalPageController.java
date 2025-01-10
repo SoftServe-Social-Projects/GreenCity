@@ -35,14 +35,14 @@ public class ManagementUserPersonalPageController {
      * Method that returns management page of a {@link UserVO}.
      *
      * @param id    Path variable - id of user
-     * @param query Query for searching related data
      * @param model Model that will be configured and returned to user.
      *
      * @return View template path {@link String}.
      */
     @GetMapping
-    public String getUserById(@PathVariable Long id,
-        @RequestParam(required = false, name = "query") String query, Model model,
+    public String getUserById(
+        Model model,
+        @PathVariable Long id,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         UserVO user = userService.findById(id);
 
@@ -64,6 +64,7 @@ public class ManagementUserPersonalPageController {
         model.addAttribute("customHabits", customHabits);
         model.addAttribute("publishedEcoNews", publishedEcoNews);
         model.addAttribute("createdEcoPlaces", createdEcoPlaces);
+
         return "core/management_user_personal_page";
     }
 

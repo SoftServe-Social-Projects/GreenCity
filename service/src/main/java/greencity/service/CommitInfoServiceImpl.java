@@ -29,6 +29,7 @@ public class CommitInfoServiceImpl implements CommitInfoService {
         try {
             repository = new FileRepositoryBuilder()
                 .setGitDir(new File(".git"))
+                .setMustExist(true)
                 .readEnvironment()
                 .findGitDir()
                 .build();
@@ -40,6 +41,10 @@ public class CommitInfoServiceImpl implements CommitInfoService {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ResourceNotFoundException if the Git repository cannot be found, is
+     *                                   not initialized, or commit information
+     *                                   cannot be fetched due to an I/O error.
      */
     @Override
     public CommitInfoDto getLatestCommitInfo() {

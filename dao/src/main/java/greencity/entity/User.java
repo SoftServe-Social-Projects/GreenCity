@@ -90,44 +90,96 @@ import java.util.Set;
             + "GROUP BY month",
         resultSetMapping = "monthsStatisticsMapping"),
     @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
-        query = "with current_user_friends as ("
-            + "SELECT user_id "
-            + "    FROM users_friends "
-            + "    WHERE friend_id = :userId AND status = 'FRIEND' "
-            + "    UNION "
-            + "    SELECT friend_id "
-            + "    FROM users_friends "
-            + "    WHERE user_id = :userId AND status = 'FRIEND')"
-            + "SELECT u.id, u.name, u.email, u.rating, ul.id AS ulId, ul.city_en AS cityEn, ul.city_ua AS cityUa, "
-            + "ul.region_en AS regionEn, ul.region_ua AS regionUa, ul.country_en AS countryEn, "
-            + "ul.country_ua AS countryUa, ul.latitude, ul.longitude, (SELECT count(*) "
-            + "        FROM users_friends uf1 "
-            + "        WHERE uf1.friend_id = u.id "
-            + "          and uf1.user_id in (SELECT user_id FROM current_user_friends) "
-            + "          and uf1.status = 'FRIEND' "
-            + "           or "
-            + "         uf1.friend_id in (SELECT user_id FROM current_user_friends) "
-            + "          and uf1.user_id = u.id "
-            + "          and uf1.status = 'FRIEND') as mutualFriends, "
-            + "       u.profile_picture as profilePicturePath, "
-            + "       (SELECT p.room_id "
-            + "       FROM chat_rooms_participants p"
-            + "       WHERE p.participant_id IN (u.id, :userId) "
-            + "       GROUP BY p.room_id "
-            + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId, "
-            + "(SELECT uf2.status "
-            + "FROM users_friends uf2 "
-            + "WHERE ( uf2.user_id = :userId AND uf2.friend_id = u.id ) "
-            + "or ( uf2.user_id = u.id AND uf2.friend_id = :userId )"
-            + "LIMIT 1) as friendStatus, "
-            + "(SELECT uf3.user_id "
-            + "FROM users_friends uf3"
-            + " WHERE ( uf3.user_id = :userId AND uf3.friend_id = u.id ) "
-            + "or ( uf3.user_id = u.id AND uf3.friend_id = :userId )"
-            + "LIMIT 1) as requesterId "
-            + "FROM users u "
-            + "LEFT JOIN user_location ul ON u.user_location = ul.id "
-            + "WHERE u.id IN (:users)",
+        query = """
+                WITH current_user_friends AS (
+                    SELECT user_id
+                    FROM users_friends
+                    WHERE friend_id = :userId AND status = 'FRIEND'
+                    UNION
+                    SELECT friend_id
+                    FROM users_friends
+                    WHERE user_id = :userId AND status = 'FRIEND'
+                )
+                SELECT
+                    u.id,
+                    u.name,
+                    u.email,
+                    u.rating,
+                    ul.id AS ulId,
+                    ul.city_en AS cityEn,
+                    ul.city_ua AS cityUa,
+                    ul.region_en AS regionEn,
+                    ul.region_ua AS regionUa,
+                    ul.country_en AS countryEn,
+                    ul.country_ua AS countryUa,
+                    ul.latitude,
+                    ul.longitude,
+                    (
+                        SELECT COUNT(*)
+                        FROM users_friends uf1
+                        WHERE (
+                            (uf1.friend_id = u.id AND uf1.user_id IN
+                                        (
+                                            SELECT user_id
+                                            FROM current_user_friends) AND uf1.status = 'FRIEND'
+                                        )
+                                        OR
+                                        (
+                                            uf1.friend_id IN
+                                            (
+                                                SELECT user_id FROM current_user_friends
+                                            )
+                                            AND uf1.user_id = u.id AND uf1.status = 'FRIEND'
+                                        )
+                        )
+                    ) AS mutualFriends,
+                    u.profile_picture AS profilePicturePath,
+                    (
+                        SELECT p.room_id
+                        FROM chat_rooms_participants p
+                        WHERE p.participant_id IN (u.id, :userId)
+                        GROUP BY p.room_id
+                        HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1
+                    ) AS chatId,
+                    (
+                        SELECT uf2.status
+                        FROM users_friends uf2
+                        WHERE (uf2.user_id = :userId AND uf2.friend_id = u.id)
+                           OR (uf2.user_id = u.id AND uf2.friend_id = :userId)
+                        LIMIT 1
+                    ) AS friendStatus,
+                    (
+                        SELECT uf3.user_id
+                        FROM users_friends uf3
+                        WHERE (uf3.user_id = :userId AND uf3.friend_id = u.id)
+                           OR (uf3.user_id = u.id AND uf3.friend_id = :userId)
+                        LIMIT 1
+                    ) AS requesterId
+                FROM users u
+                LEFT JOIN user_location ul ON u.user_location = ul.id
+                WHERE
+                    u.id IN (:users)
+                    OR (
+                        (
+                            (
+                                SELECT uf2.status
+                                FROM users_friends uf2
+                                WHERE (uf2.user_id = :userId AND uf2.friend_id = u.id)
+                                   OR (uf2.user_id = u.id AND uf2.friend_id = :userId)
+                                LIMIT 1
+                            ) = 'REQUEST'
+                        )
+                        AND (
+                            (
+                                SELECT uf3.user_id
+                                FROM users_friends uf3
+                                WHERE (uf3.user_id = :userId AND uf3.friend_id = u.id)
+                                   OR (uf3.user_id = u.id AND uf3.friend_id = :userId)
+                                LIMIT 1
+                            ) = (:userId)
+                        )
+                    )
+            """,
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor
