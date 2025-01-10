@@ -452,15 +452,14 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, /*TODO: remove if unused*/UserVO userVO) {
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, /*TODO: test why null is passed from controller*/UserVO userVO) {
         List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
         List<PlaceByBoundsDto> list = fromPlacesApi.stream()
                 .map(el -> new PlaceByBoundsDto(
-                    System.currentTimeMillis(),//TODO: counter with increment
+                    System.currentTimeMillis(),
                     el.name,
                     new LocationDto(0L, el.geometry.location.lat, el.geometry.location.lng, el.vicinity)
                 )).toList();
-        //TODO: map PlacesSearchResult to PlaceByBoundsDto
         return list;
     }
 
