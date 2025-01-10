@@ -182,7 +182,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param discounts    - set of {@link DiscountValue}.
      * @param updatedPlace - {@link Place} entity.
      */
-    private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
+    void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
         Set<DiscountValueVO> discountValuesVO = discountService.findAllByPlaceId(updatedPlace.getId());
@@ -211,7 +211,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param hoursUpdateDtoSet - set of {@code Discount}.
      * @param updatedPlace      - {@link Place} entity.
      */
-    private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
+    void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
         updatedPlace.setOpeningHoursList(null);
         Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());

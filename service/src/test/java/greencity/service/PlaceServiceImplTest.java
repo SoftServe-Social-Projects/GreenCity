@@ -1,13 +1,21 @@
 package greencity.service;
 
+import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.category.CategoryDtoResponse;
+import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.place.AddPlaceDto;
@@ -24,8 +32,10 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
+import greencity.entity.DiscountValue;
 import greencity.entity.Language;
 import greencity.entity.Location;
+import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -49,15 +59,21 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+
+import java.lang.reflect.Method;
 import java.security.Principal;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
 import static greencity.ModelUtils.getSearchPlacesDto;
@@ -66,11 +82,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
@@ -79,7 +100,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -109,6 +133,13 @@ class PlaceServiceImplTest {
     private final LanguageVO languageVO = LanguageVO.builder()
         .id(2L)
         .code("en")
+        .build();
+    private final Location location = Location.builder()
+        .id(1L)
+        .lat(42.57)
+        .lng(46.53)
+        .address("Location")
+        .addressUa("Локація")
         .build();
     private final User user =
         User.builder()
@@ -142,13 +173,20 @@ class PlaceServiceImplTest {
             .userStatus(UserStatus.ACTIVATED)
             .languageVO(languageVO)
             .build();
-    private final Place genericEntity1 = Place.builder()
+    Place genericEntity1 = Place.builder()
         .id(1L)
         .name("test1")
         .author(user)
+        .location(Location.builder()
+            .id(1L)
+            .lat(42.57)
+            .lng(46.53)
+            .address("Location")
+            .build())
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
+
     private final Place genericEntity2 = Place.builder()
         .id(2L)
         .name("test2")
@@ -156,12 +194,7 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private final LocationVO locationVO = LocationVO.builder()
-        .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
+
     @Mock
     private PlaceRepo placeRepo;
     @Mock
@@ -198,6 +231,8 @@ class PlaceServiceImplTest {
     private RestClient restClient;
     @Mock
     private PhotoRepo photoRepo;
+    @InjectMocks
+    private PlaceServiceImpl placeServiceImpl;
 
     @BeforeEach
     void init() {
@@ -953,5 +988,42 @@ class PlaceServiceImplTest {
         verify(userRepo).findByEmail(dto.getEmail());
         verify(placeRepo).save(place);
         verify(restClient, times(0)).sendEmailNotificationChangesPlaceStatus(dto);
+    }
+
+    @Test
+    void updateOpeningThrowsExceptionForInvalidOperationTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        updatedPlace.setOpeningHoursList(null);
+
+        Set<OpeningHoursDto> hoursUpdateDtoSet = new HashSet<>();
+        OpeningHoursDto openingHoursDto = new OpeningHoursDto();
+        hoursUpdateDtoSet.add(openingHoursDto);
+
+        Mockito.doThrow(new RuntimeException("Test exception"))
+            .when(openingHoursService)
+            .deleteAllByPlaceId(Mockito.anyLong());
+
+        Assertions.assertThrows(RuntimeException.class,
+            () -> placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace),
+            "Expected updateOpening to throw an exception");
+    }
+
+    @Test
+    void updateDiscountThrowsExceptionForInvalidOperationTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+
+        Set<DiscountValueDto> discounts = new HashSet<>();
+        DiscountValueDto discountValueDto = new DiscountValueDto();
+        discounts.add(discountValueDto);
+
+        Mockito.doThrow(new RuntimeException("Test exception"))
+            .when(discountService)
+            .deleteAllByPlaceId(Mockito.anyLong());
+
+        Assertions.assertThrows(RuntimeException.class,
+            () -> placeServiceImpl.updateDiscount(discounts, updatedPlace),
+            "Expected updateDiscount to throw an exception");
     }
 }
