@@ -1,13 +1,18 @@
 package greencity.constant;
 
-public final class EventTupleConstant {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class EventTupleConstant {
     public static final String eventId = "eventId";
     public static final String title = "title";
+    public static final String description = "description";
     public static final String organizerId = "organizerId";
     public static final String organizerName = "organizerName";
     public static final String creationDate = "creation_date";
     public static final String titleImage = "title_image";
     public static final String isOpen = "is_open";
+    public static final String type = "type";
     public static final String isRelevant = "isRelevant";
     public static final String likes = "likes";
     public static final String countComments = "countComments";
@@ -15,6 +20,7 @@ public final class EventTupleConstant {
     public static final String isFavorite = "isFavorite";
     public static final String isSubscribed = "isSubscribed";
     public static final String grade = "grade";
+    public static final String currentUserGrade = "currentUserGrade";
     public static final String startDate = "start_date";
     public static final String finishDate = "finish_date";
     public static final String onlineLink = "online_link";
@@ -34,4 +40,5 @@ public final class EventTupleConstant {
     public static final String tagId = "tagId";
     public static final String tagName = "tagName";
     public static final String languageCode = "languageCode";
+    public static final String dislikes = "dislikes";
 }

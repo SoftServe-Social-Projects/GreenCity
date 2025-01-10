@@ -3,8 +3,8 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.service.PlaceCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,14 +38,14 @@ public class PlaceCommentController {
     /**
      * Method witch save comment by Place Id.
      *
-     * @param placeId       Id of place to witch related comment.
-     * @param addCommentDto DTO with contain data od Comment.
+     * @param placeId                Id of place to witch related comment.
+     * @param placeCommentRequestDto DTO with contain data od Comment.
      * @return CommentDTO
      */
     @Operation(summary = "Add comment.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
-            content = @Content(schema = @Schema(implementation = CommentReturnDto.class))),
+            content = @Content(schema = @Schema(implementation = PlaceCommentResponseDto.class))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -55,10 +55,11 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity<Object> save(@PathVariable Long placeId,
-        @Valid @RequestBody AddCommentDto addCommentDto,
+        @Valid @RequestBody PlaceCommentRequestDto placeCommentRequestDto,
         @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         return ResponseEntity
-            .status(HttpStatus.CREATED).body(placeCommentService.save(placeId, addCommentDto, principal.getName()));
+            .status(HttpStatus.CREATED).body(placeCommentService.save(placeId, placeCommentRequestDto,
+                principal.getName()));
     }
 
     /**
@@ -71,7 +72,7 @@ public class PlaceCommentController {
     @Operation(summary = "Get comment by id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = CommentReturnDto.class))),
+            content = @Content(schema = @Schema(implementation = PlaceCommentResponseDto.class))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,

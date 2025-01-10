@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="Dmytro Fedotov" id="photos1">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.table_constraints
+                WHERE constraint_type = 'FOREIGN KEY'
+                  AND constraint_name = 'fk_comment_photo_comment';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photos"
+                                 constraintName="fk_comment_photo_comment" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="place_comments"/>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="photos2">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM pg_indexes
+                WHERE indexname = 'fk_comment_photo_comment' AND tablename = 'photos';
+            </sqlCheck>
+        </preConditions>
+        <createIndex indexName="fk_comment_photo_comment" tableName="photos">
+            <column name="comment_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="photos3">
+        <dropForeignKeyConstraint
+                constraintName="FKsm3nsiqunp5ke6cmkundcw4a1"
+                baseTableName="photos"/>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="photos4">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM pg_indexes WHERE indexname = 'FKsm3nsiqunp5ke6cmkundcw4a1';
+            </sqlCheck>
+        </preConditions>
+        <dropIndex
+                indexName="FKsm3nsiqunp5ke6cmkundcw4a1"
+                tableName="photos"/>
+    </changeSet>
+
+</databaseChangeLog>

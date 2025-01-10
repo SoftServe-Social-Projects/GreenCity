@@ -1,13 +1,9 @@
 package greencity.dto.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-@Getter
-@AllArgsConstructor
-@EqualsAndHashCode
+@Value
 public class RegistrationStatisticsDtoResponse {
-    private final Integer month;
-    private final Long count;
+    Integer month;
+    Long count;
 }

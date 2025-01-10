@@ -9,12 +9,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Getter
-@EqualsAndHashCode(callSuper = true)
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class EventDateLocationDto extends AbstractEventDateLocationDto {
     private Long id;
-
     private EventDto event;
-
     private AddressDto coordinates;
 }

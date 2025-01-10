@@ -6,8 +6,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,17 +25,18 @@ import static org.mockito.Mockito.when;
 /**
  * @author Yurii Koval
  */
+@ExtendWith(MockitoExtension.class)
 class JwtAuthenticationProviderTest {
     private final Role expectedRole = Role.ROLE_ADMIN;
 
     @Mock
     JwtTool jwtTool;
 
+    @InjectMocks
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtTool);
     }
 

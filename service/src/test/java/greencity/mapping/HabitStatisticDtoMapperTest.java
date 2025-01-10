@@ -4,8 +4,6 @@ import greencity.ModelUtils;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
-import greencity.enums.HabitRate;
-import java.time.ZonedDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

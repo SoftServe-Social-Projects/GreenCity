@@ -3,14 +3,6 @@ function clearAllErrorsSpan() {
 }
 
 let checkedCh = 0;
-function updateCheckBoxCount(chInt) {
-    let chBox = $('#checkbox' + chInt);
-    let deleteBtn = $("#btnDelete");
-    chBox.is(":checked") ? checkedCh++ : checkedCh--;
-    if (checkedCh === 0) {
-        deleteBtn.addClass("disabled");
-    } else deleteBtn.removeClass("disabled");
-}
 
 $(document).ready(function () {
     let deleteBtn = $("#btnDelete");
@@ -69,7 +61,7 @@ $(document).ready(function () {
 
     function sendAjaxPostRequest(payload) {
         $.ajax({
-            url: '/management/tags/',
+            url: '/management/tags',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
@@ -160,17 +152,17 @@ $(document).ready(function () {
         clearAllErrorsSpan();
         $('#editTagModal').modal();
         var href = $(this).attr('href');
-        $.get(href, function (tag, status) {
+        $.get(href, function (tag) {
             $('#id').val(tag.id);
             $('#tagType').val(tag.type);
-            tag.tagTranslations.forEach(function (translation, index) {
+            tag.tagTranslations.forEach(function (translation) {
                 $(`#name_${translation.languageVO.id}_${translation.languageVO.code}`)
                     .val(translation.name);
             })
         });
     });
 
-    $('#addTagModalBtn').on('click', function (event) {
+    $('#addTagModalBtn').on('click', function () {
         clearAllErrorsSpan();
     });
 
@@ -189,7 +181,7 @@ $(document).ready(function () {
 
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
-        var href = '/management/tags/';
+        var href = '/management/tags';
         var payload = getCheckedValues(checkbox);
         sendAjaxDeleteRequest(href, payload);
     });

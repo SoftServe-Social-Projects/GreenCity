@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3" author="Nazar Prots">
+        <sql>
+            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
+            VALUES (7, 31)
+                ON CONFLICT (position_id, authorities_id) DO NOTHING;
+        </sql>
+        <sql>
+            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
+            VALUES (7, 32)
+                ON CONFLICT (position_id, authorities_id) DO NOTHING;
+        </sql>
+        <sql>
+            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
+            VALUES (7, 33)
+                ON CONFLICT (position_id, authorities_id) DO NOTHING;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

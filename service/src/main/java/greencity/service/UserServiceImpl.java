@@ -2,13 +2,16 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.PageableDto;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.PageInfoDto;
+import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadUpdateRequestException;
@@ -16,6 +19,7 @@ import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserRepo;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -25,22 +29,27 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
+    private final UserManagementVOMapper userManagementVOMapper;
     @Value("300000")
     private long timeAfterLastActivity;
 
@@ -57,9 +66,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findById(Long id) {
-        User user = userRepo.findById(id)
+        return userRepo.findById(id)
+            .map(user -> modelMapper.map(user, UserVO.class))
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(user, UserVO.class);
     }
 
     /**
@@ -67,8 +76,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findByEmail(String email) {
-        Optional<User> optionalUser = userRepo.findByEmail(email);
-        return optionalUser.map(user -> modelMapper.map(user, UserVO.class)).orElse(null);
+        return userRepo.findByEmail(email)
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
@@ -82,22 +92,16 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
      */
     @Override
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        return userRepo.findIdByEmail(email).orElseThrow(
-            () -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        return userRepo.findIdByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
     /**
-     * Updates last activity time for a given user.
-     *
-     * @param userId               - {@link UserVO}'s id
-     * @param userLastActivityTime - new {@link UserVO}'s last activity time
-     * @author Yurii Zhurakovskyi
+     * {@inheritDoc}
      */
     @Override
     public void updateUserLastActivityTime(Long userId, Date userLastActivityTime) {
@@ -128,7 +132,6 @@ public class UserServiceImpl implements UserService {
      */
     @Deprecated
     @Override
-    @Transactional
     public UserRoleDto updateRole(Long id, Role role, String email) {
         checkUpdatableUser(id, email);
         User user = userRepo.findById(id)
@@ -223,22 +226,29 @@ public class UserServiceImpl implements UserService {
         userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional(readOnly = true)
-    public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
-        Pageable pageable) {
-        UserFilterDto filterUserDto = createUserFilterDto(criteria, role, status);
-        Page<UserManagementVO> listOfUsers = userRepo.findAllManagementVo(new UserFilter(filterUserDto), pageable);
+    public PageableDetailedDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable) {
+        var userFilterDto = createUserFilterDto(request.getQuery(), request.getRole(), request.getStatus());
+        pageable = applyDefaultSorting(pageable);
 
-        return new PageableDto<>(
-            listOfUsers.getContent(),
-            listOfUsers.getTotalElements(),
-            listOfUsers.getPageable().getPageNumber(),
-            listOfUsers.getTotalPages());
+        Page<User> users = userRepo.findAll(new UserFilter(userFilterDto), pageable);
+        Page<UserManagementVO> userManagementVOs = userManagementVOMapper.mapAllToPage(users);
+
+        var pageInfo = getPageInfo(pageable, userManagementVOs);
+        String sortModel = getSortModel(pageable);
+
+        return new PageableDetailedDto<>(userManagementVOs.getContent(), userManagementVOs.getTotalElements(),
+            pageInfo.currentPage(), pageInfo.pageNumbers(), pageInfo.totalPages(), sortModel,
+            pageInfo.currentPage() == 0, pageInfo.currentPage() == pageInfo.totalPages() - 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
     public void updateUserRating(Long userId, Double rating) {
         if (userRepo.findById(userId).isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
@@ -254,5 +264,52 @@ public class UserServiceImpl implements UserService {
             role = role.equals("all") ? null : role;
         }
         return new UserFilterDto(criteria, role, status);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserVO> findByEmails(List<String> emails) {
+        return userRepo.findAllByEmailIn(emails).stream()
+            .map(u -> modelMapper.map(u, UserVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
+        EmailPreferencePeriodicity periodicity) {
+        return userRepo.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference.name(), periodicity.name()).stream()
+            .map(u -> modelMapper.map(u, UserVO.class))
+            .toList();
+    }
+
+    private Pageable applyDefaultSorting(Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            return PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
+        }
+        return pageable;
+    }
+
+    private String getSortModel(Pageable pageable) {
+        return pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
+    }
+
+    private PageInfoDto getPageInfo(Pageable pageable, Page<UserManagementVO> userManagementVOs) {
+        int currentPage = pageable.getPageNumber();
+        int totalPages = userManagementVOs.getTotalPages();
+        int startPage = Math.max(0, currentPage - 3);
+        int endPage = Math.min(currentPage + 3, totalPages - 1);
+        List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
+
+        return new PageInfoDto(currentPage, totalPages, pageNumbers);
     }
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-fact_of_the_day_tags-and-assign-tag" author="Maryna">
+        <createTable tableName="fact_of_the_day_tags">
+            <column name="fact_of_the_day_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="fact_of_the_day_tags"
+                baseColumnNames="fact_of_the_day_id"
+                constraintName="fk_fact_of_the_day_tags_fact_of_the_day"
+                referencedTableName="fact_of_the_day"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="fact_of_the_day_tags"
+                baseColumnNames="tag_id"
+                constraintName="fk_fact_of_the_day_tags_tag"
+                referencedTableName="tags"
+                referencedColumnNames="id"/>
+
+        <createIndex indexName="idx_fact_of_the_day_tags_fact_of_the_day_id" tableName="fact_of_the_day_tags">
+            <column name="fact_of_the_day_id"/>
+        </createIndex>
+        <createIndex indexName="idx_fact_of_the_day_tags_tag_id" tableName="fact_of_the_day_tags">
+            <column name="tag_id"/>
+        </createIndex>
+
+        <sql>
+            INSERT INTO fact_of_the_day_tags (fact_of_the_day_id, tag_id)
+            SELECT f.id, t.id
+            FROM fact_of_the_day f, tags t
+            WHERE t.type = 'FACT_OF_THE_DAY';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

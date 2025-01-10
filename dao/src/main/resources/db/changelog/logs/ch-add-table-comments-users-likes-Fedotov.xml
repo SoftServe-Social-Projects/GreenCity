@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+
+    <changeSet id="comments-users-likes-1" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_name = 'comments_users_likes';
+            </sqlCheck>
+        </preConditions>
+        <createTable tableName="comments_users_likes">
+            <column name="comment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="comments-users-likes-2" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE constraint_name = 'fk_comments_users_likes_comment';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="comments_users_likes"
+                                 constraintName="fk_comments_users_likes_comment"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments-users-likes-3" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE constraint_name = 'fk_comments_users_likes_user';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comments_users_likes"
+                                 constraintName="fk_comments_users_likes_user"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

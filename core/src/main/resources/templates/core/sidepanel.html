@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Sidebar</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/sidebar.css}">
-    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
-    <script th:src="@{/management/user/paginationAndSort.js}"></script>
-</head>
-
 <nav id="sidebar" class="menuVertical">
 
     <ul>
@@ -16,13 +6,10 @@
                 <img th:src="@{/img/arrow-icon.png}">
             </div>
         </block>
-        <li>
-            <a onclick="Order()" >
+        <li><a th:href="@{/management/users}">
             <div class="img_n"><img th:src="@{/img/icon_user.png}"></div>
-            <span id="to_be_white">[[#{greenCity.sidebar.users}]]</span>
-            </a>
+            <span>[[#{greenCity.sidebar.users}]]</span></a>
         </li>
-
         <li class="accordion">
             <dropdown>
                 <div class="img_n"><img th:src="@{/img/habits_white.svg}"></div>
@@ -38,21 +25,9 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/management/facts}">
-                        <div class="img_nested_list"><img th:src="@{/img/habit_fact.png}"></div>
-                        <span>[[#{greenCity.sidebar.habits.facts}]]</span>
-                    </a>
-                </li>
-                <li>
-                    <a th:href="@{/management/advices}">
-                        <div class="img_nested_list"><img th:src="@{/img/habit_advices.png}"></div>
-                        <span>[[#{greenCity.sidebar.habits.advice}]]</span>
-                    </a>
-                </li>
-                <li>
-                    <a th:href="@{/management/shopping-list-items}">
+                    <a th:href="@{/management/to-do-list-items}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
-                        <span>[[#{greenCity.sidebar.habits.shoppingList}]]</span>
+                        <span>[[#{greenCity.sidebar.habits.toDoList}]]</span>
                     </a>
                 </li>
             </ul>
@@ -90,7 +65,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#2-2">
+                    <a th:href="@{/management/rating/calculation}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.ratings.calculation.setup}]]</span>
                     </a>
@@ -101,27 +76,11 @@
             <div class="img_n"><img th:src="@{/img/social_net_icon.png}"></div>
             <span>[[#{greenCity.sidebar.socialNetworksImagines}]]</span></a></li>
 
-        <li class="accordion">
-            <dropdown>
+        <li>
+            <a th:href="@{/management/achievement}">
                 <div class="img_n"><img th:src="@{/img/achievements_icon.png}"></div>
-                <span>[[#{greenCity.sidebar.achievements}]]</span></dropdown>
+                <span>[[#{greenCity.sidebar.achievements}]]</span></a>
         </li>
-        <div class="panel">
-            <ul>
-                <li>
-                    <a th:href="@{/management/achievement}">
-                        <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
-                        <span>[[#{greenCity.sidebar.achievements.all}]]</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#2-2">
-                        <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
-                        <span>[[#{greenCity.sidebar.achievements.setup}]]</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
 
         <li><a th:href="@{/management/factoftheday}">
             <div class="img_n"><img th:src="@{/img/facts_of_day_icon.png}"></div>
@@ -135,19 +94,19 @@
         <div class="panel">
             <ul>
                 <li>
-                    <a href="#2-1">
+                    <a th:href="@{/management/user/statistics}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.statistics.users}]]</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#2-2">
+                    <a th:href="@{/management/habit/statistics}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.statistics.habits}]]</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#2-1">
+                    <a th:href="@{/management/econews/statistics}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.statistics.ecoNews}]]</span>
                     </a>
@@ -159,7 +118,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#2-1">
+                    <a th:href="@{/management/achievement/statistics}">
                         <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
                         <span>[[#{greenCity.sidebar.statistics.achievements}]]</span>
                     </a>
@@ -174,5 +133,3 @@
         </div>
     </ul>
 </nav>
-
-</html>

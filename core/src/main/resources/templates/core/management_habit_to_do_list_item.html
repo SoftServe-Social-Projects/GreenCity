@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script th:src="@{/management/habit_todolist/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+    <div class="container-xl">
+        <div class="row" id="to-do-list-admin-page" style="margin: auto">
+            <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h2 style="display: inline-block;font-weight: 500;font-size: 32px;color: #13AA57;">
+                                    [[#{greenCity.habitToDoListItem.page.h}]]</h2>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <H3 class="d-flex justify-content-center">
+                                            [[#{greenCity.habitToDoListItem.page.tableName.active}]]</H3>
+                                        <a href="#deleteAllSelectedModal" class="btn btn-remove disabled"
+                                           data-toggle="modal" id="btnDelete">
+                                            <div>Delete</div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <table class="table table-bordered" style="margin-top: 3%">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                <span class="custom-checkbox ">
+                                    <input type="checkbox" id="selectAllRemove">
+                                    <label for="selectAllRemove"></label>
+                                </span>
+                                        </th>
+                                        <th style="width: 5%">ID</th>
+                                        <th style="width: 80%">
+                                            [[#{greenCity.habitToDoListItem.page.translation.toDoListItem}]]
+                                        </th>
+                                        <th style="width: 10%">[[#{greenCity.habitToDoListItem.page.actions}]]</th>
+                                    </tr>
+                                    </thead>
+                                    <th:block th:each="toDoListItem, iterStatus :${currentToDoListItems}">
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                <span class="custom-checkbox">
+                                        <input class="remove-checkbox" type="checkbox"
+                                               th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                               name="options[]" th:value="${toDoListItem.getId()}"
+                                               th:onclick="'updateCheckBoxCountRemove('+${iterStatus.count}+')'">
+                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                </span>
+                                            </td>
+                                            <td th:text="${toDoListItem.getId()}"></td>
+                                            <td>
+                                                <table class="table table-borderless m-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="py-1" style="width: 10%">
+                                                            [[#{greenCity.habitToDoListItem.page.translationId.toDoListItem}]]
+                                                        </th>
+                                                        <th class="py-1" style="width: 70%">
+                                                            [[#{greenCity.habitToDoListItem.page.translation.content.toDoListItem}]]
+                                                        </th>
+                                                        <th class="py-1" style="width: 5%">
+                                                            [[#{greenCity.habitToDoListItem.page.translation.code.toDoListItem}]]
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <th:block
+                                                            th:each="translation : ${toDoListItem.getTranslations()}">
+                                                        <tr>
+                                                            <td class="py-1" th:text="${translation.getId()}"></td>
+                                                            <td class="py-1" th:text="${translation.getContent()}"></td>
+                                                            <td class="py-1"
+                                                                th:text="${translation.getLanguage().getCode()}"></td>
+                                                        </tr>
+                                                    </th:block>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/management/habit-to-do-list/delete/?habitId={habitId}&itemId={itemId}(itemId=${toDoListItem.getId()}, habitId = ${habitId})}"
+                                                   class="delete eDelBtn">
+                                                    [[#{greenCity.habitToDoListItem.page.remove.toDoListItem}]]</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </th:block>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 3%">
+                            <div class="col-sm-12">
+                                <H2 class="d-flex justify-content-center">
+                                    [[#{greenCity.habitToDoListItem.page.tableName.possible}]]</H2>
+                                <a href="#addAllSelectedModal" class="btn btn-remove disabled" data-toggle="modal"
+                                   id="btnAdd">
+                                    <div>[[#{greenCity.habitToDoListItem.page.addAll.toDoListItem}]]</div>
+                                </a>
+                                <table class="table" style="margin-top: 3%">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAllAdd">
+                                    <label for="selectAllAdd"></label>
+                                </span>
+                                        </th>
+                                        <th style="width: 5%">ID</th>
+                                        <th style="width: 80%">
+                                            [[#{greenCity.habitToDoListItem.page.translation.toDoListItem}]]
+                                        </th>
+                                        <th style="width: 10%">[[#{greenCity.habitToDoListItem.page.actions}]]</th>
+                                    </tr>
+                                    </thead>
+
+                                    <th:block th:each="toDoListItem, iterStatus :${toDoListItems.getPage()}">
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                <span class="custom-checkbox">
+                                        <input class="add-checkbox" type="checkbox"
+                                               th:id="checkboxAdd+${iterStatus.count}" id="checkbox1"
+                                               name="options[]" th:value="${toDoListItem.getId()}"
+                                               th:onclick="'updateCheckBoxCountAdd('+${iterStatus.count}+')'">
+                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                </span>
+                                            </td>
+                                            <td th:text="${toDoListItem.getId()}"></td>
+                                            <td>
+                                                <table class="table table-borderless m-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th style="width: 10%">
+                                                            [[#{greenCity.habitToDoListItem.page.translationId.toDoListItem}]]
+                                                        </th>
+                                                        <th style="width: 70%">
+                                                            [[#{greenCity.habitToDoListItem.page.translation.content.toDoListItem}]]
+                                                        </th>
+                                                        <th style="width: 5%">
+                                                            [[#{greenCity.habitToDoListItem.page.translation.code.toDoListItem}]]
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <th:block
+                                                            th:each="translation : ${toDoListItem.getTranslations()}">
+                                                        <tr>
+                                                            <td class="py-1" th:text="${translation.getId()}"></td>
+                                                            <td class="py-1" th:text="${translation.getContent()}"></td>
+                                                            <td class="py-1"
+                                                                th:text="${translation.getLanguage().getCode()}"></td>
+                                                        </tr>
+                                                    </th:block>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/management/habit-to-do-list/add/?habitId={habitId}&itemId={itemId}(itemId=${toDoListItem.getId()}, habitId = ${habitId})}"
+                                                   class="add addBtn">[[#{greenCity.habitToDoListItem.page.add.toDoListItem}]]</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </th:block>
+                                </table>
+                                <div class="clearfix" th:if="${toDoListItems.getPage().size() ne 0}">
+                                    <div class="hint-text">
+                                        Showing
+                                        <b th:text="${toDoListItems.getCurrentPage() eq 0 ? '1 -' : (toDoListItems.isHasNext() ? toDoListItems.getPage().size() * toDoListItems.getCurrentPage() : toDoListItems.getTotalElements() - toDoListItems.getPage().size()) + 1 + ' - '}"></b>
+                                        <b th:text="${toDoListItems.getCurrentPage() eq 0 ? toDoListItems.getPage().size() : (toDoListItems.isHasNext() ? toDoListItems.getPage().size() * (toDoListItems.getCurrentPage() + 1) : toDoListItems.getTotalElements())}">*</b>
+                                        out of
+                                        <b th:text="${toDoListItems.getTotalElements()}"></b>
+                                        entries
+                                    </div>
+                                    <ul class="pagination">
+
+                                        <li class="page-item"
+                                            th:classappend="${!toDoListItems.isFirst()} ? '' : 'disabled'">
+                                            <a class="page-link" rel="tooltip" th:if="${!toDoListItems.isFirst()}"
+                                               th:href="@{/management/habit-to-do-list?habitId={habitId}&page={id}(id=${0},habitId=${habitId})}"><i
+                                                    class="arrow fas fa-chevron-left"></i></a>
+                                            <a class="page-link" rel="tooltip" th:if="${toDoListItems.isFirst()}"><i
+                                                    class="arrow fas fa-chevron-left"></i></a>
+                                        </li>
+
+                                        <li class="page-item"
+                                            th:if="${pageNumber > -1 && pageNumber < toDoListItems.getTotalPages()}"
+                                            th:classappend="${pageNumber == toDoListItems.getNumber()} ? 'active' : ''"
+                                            th:each="pageNumber : ${#numbers.sequence(toDoListItems.getNumber()-3, toDoListItems.getNumber()+3)}">
+                                            <a class="page-link"
+                                               th:href="@{/management/habit-to-do-list?habitId={habitId}&page={id}(id=${pageNumber},habitId=${habitId})}">[[${pageNumber}+1]]</a>
+                                        </li>
+
+                                        <li class="page-item"
+                                            th:classappend="${!toDoListItems.isLast()} ? '' : 'disabled'">
+                                            <a class="page-link" rel="tooltip" th:if="${!toDoListItems.isLast()}"
+                                               th:href="@{/management/habit-to-do-list?habitId&={habitId}page={id}(id=${toDoListItems.getTotalPages()-1},habitId=&{habitId})}"><i
+                                                    class="arrow fas fa-chevron-right"></i></a>
+                                            <a class="page-link" rel="tooltip" th:if="${toDoListItems.isLast()}"><i
+                                                    class="arrow fas fa-chevron-right"></i></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete all selected Modal HTML -->
+                        <div id="deleteAllSelectedModal" class="modal fade">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form id="">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Delete all selected</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete these Records?</p>
+                                            <p class="text-warning"><small>This action cannot be undone.</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="button" class="btn btn-default btn-tertiary"
+                                                   data-dismiss="modal" value="Cancel">
+                                            <a href="" id="deleteAllSubmit" class="btn btn-remove">
+                                                <div>Delete</div>
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Modal HTML -->
+                        <div id="addToDoListItemModal" class="modal fade">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form id="addGoalForm">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Add Goal</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to add that Record?</p>
+                                            <p class="text-warning"><small>This action cannot be undone.</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="button" class="btn btn-default btn-tertiary"
+                                                   data-dismiss="modal" value="Cancel">
+                                            <a href="" id="addOneSubmit" class="btn btn-remove">
+                                                <div>Add</div>
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Modal HTML -->
+                        <div id="deleteToDoListItemModal" class="modal fade">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form id="deleteGoalForm">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Delete Goal</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete that Record?</p>
+                                            <p class="text-warning"><small>This action cannot be undone.</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="button" class="btn btn-default btn-tertiary"
+                                                   data-dismiss="modal" value="Cancel">
+                                            <a href="" id="deleteOneSubmit" class="btn btn-remove">
+                                                <div>Delete</div>
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Add all Selected Model html -->
+                        <div id="addAllSelectedModal" class="modal fade">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form id="">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Add all selected</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to add these Records?</p>
+                                            <p class="text-warning"><small>This action cannot be undone.</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="button" class="btn btn-default btn-tertiary"
+                                                   data-dismiss="modal" value="Cancel">
+                                            <a href="" id="addAllSubmit" class="btn btn-remove">
+                                                <div>Add</div>
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer" th:insert="core/footer"></div>
+</body>
+</html>

@@ -1,13 +1,16 @@
 package greencity.repository.options;
 
 import greencity.constant.RepoConstants;
-import greencity.dto.filter.FilterUserDto;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.entity.User;
+import static greencity.repository.options.CriteriaUtils.replaceCriteria;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import jakarta.persistence.criteria.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -17,17 +20,9 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Rostyslav Khasanov
  */
+@RequiredArgsConstructor
 public class UserFilter implements Specification<User> {
     private final transient UserFilterDto filterUserDto;
-
-    /**
-     * The constructor takes {@link FilterUserDto} object.
-     *
-     * @param filterUserDto object contains fields to filter by.
-     */
-    public UserFilter(UserFilterDto filterUserDto) {
-        this.filterUserDto = filterUserDto;
-    }
 
     /**
      * Forms a list of {@link Predicate} based on type of the classes initialized in
@@ -38,7 +33,7 @@ public class UserFilter implements Specification<User> {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterUserDto != null) {
-            predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchCriteria()));
+            predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getQuery()));
         }
         if (filterUserDto != null && filterUserDto.getStatus() != null) {
             predicates.add(hasStatusLike(root, criteriaBuilder, filterUserDto.getStatus()));
@@ -52,7 +47,7 @@ public class UserFilter implements Specification<User> {
 
     /**
      * Returns a predicate where {@link User} has some values defined in the
-     * incoming {@link FilterUserDto} object.
+     * incoming {@link UserFilterDto} object.
      *
      * @param r  must not be {@literal null}.
      * @param cb must not be {@literal null}.
@@ -72,7 +67,7 @@ public class UserFilter implements Specification<User> {
      *
      * @param r      must not be {@literal null}.
      * @param cb     must not be {@literal null}.
-     * @param status status which defiend in object.
+     * @param status status which defined in object.
      * @return a {@link Predicate}, may be {@literal null}.
      */
     private Predicate hasStatusLike(Root<User> r, CriteriaBuilder cb, String status) {
@@ -86,28 +81,11 @@ public class UserFilter implements Specification<User> {
      *
      * @param r    must not be {@literal null}.
      * @param cb   must not be {@literal null}.
-     * @param role role which defiend in object.
+     * @param role role which defined in object.
      * @return a {@link Predicate}, may be {@literal null}.
      */
     private Predicate hasRoleLike(Root<User> r, CriteriaBuilder cb, String role) {
         role = replaceCriteria(role);
         return cb.like(r.get(RepoConstants.ROLE).as(String.class), role);
-    }
-
-    /**
-     * Returns a String criteria for search.
-     *
-     * @param criteria String for search.
-     * @return String creteria not be {@literal null}.
-     */
-    private String replaceCriteria(String criteria) {
-        criteria = Optional.ofNullable(criteria).orElseGet(() -> "");
-        criteria = criteria.trim();
-        criteria = criteria.replace("_", "\\_");
-        criteria = criteria.replace("%", "\\%");
-        criteria = criteria.replace("\\", "\\\\");
-        criteria = criteria.replace("'", "\\'");
-        criteria = "%" + criteria + "%";
-        return criteria;
     }
 }

@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,13 +63,13 @@ class ManagementAchievementControllerTest {
 
     @Test
     void getAllAchievementTest() throws Exception {
-        Pageable paging = PageRequest.of(0, 3, Sort.by("id").descending());
+        Pageable paging = PageRequest.of(0, 3);
         List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
         PageableAdvancedDto<AchievementVO> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
             3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         when(achievementService.findAll(paging)).thenReturn(allAchievements);
-        when(achievementCategoryService.findAll()).thenReturn(achievementCategoryList);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
         this.mockMvc.perform(get(link)
             .param("page", "0")
             .param("size", "3"))
@@ -79,19 +78,19 @@ class ManagementAchievementControllerTest {
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
         verify(achievementService).findAll(paging);
-        verify(achievementCategoryService).findAll();
+        verify(achievementCategoryService).findAllForManagement();
     }
 
     @Test
     void getAllAchievementSearchByQueryTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 3, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(0, 3);
         List<AchievementVO> list = Collections.singletonList(new AchievementVO());
         PageableAdvancedDto<AchievementVO> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
             3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
         when(achievementService.searchAchievementBy(pageable, "query")).thenReturn(allAchievements);
-        when(achievementCategoryService.findAll()).thenReturn(achievementCategoryList);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
         when(languageService.getAllLanguages()).thenReturn(languages);
         this.mockMvc.perform(get(link + "?query=query")
             .param("page", "0")
@@ -99,10 +98,11 @@ class ManagementAchievementControllerTest {
             .andExpect(model().attribute("pageable", allAchievements))
             .andExpect(model().attribute("categoryList", achievementCategoryList))
             .andExpect(model().attribute("languages", languages))
+            .andExpect(model().attribute("query", "query"))
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
         verify(achievementService).searchAchievementBy(pageable, "query");
-        verify(achievementCategoryService).findAll();
+        verify(achievementCategoryService).findAllForManagement();
         verify(languageService).getAllLanguages();
     }
 
@@ -135,14 +135,6 @@ class ManagementAchievementControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(achievementService).deleteAll(listId);
-    }
-
-    @Test
-    void getAchievementByIdTest() throws Exception {
-        this.mockMvc.perform(get(link + "/1")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-            .andExpect(status().isOk());
-        verify(achievementService).findById(1L);
     }
 
     @Test

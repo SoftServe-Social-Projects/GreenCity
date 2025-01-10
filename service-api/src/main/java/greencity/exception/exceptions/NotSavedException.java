@@ -1,5 +1,7 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
 /**
  * Exception that we get when we try saving some object but such object already
  * exist, then we get {@link NotSavedException}.
@@ -7,13 +9,6 @@ package greencity.exception.exceptions;
  * @author Vitaliy Dzen
  * @version 1.0
  */
+@StandardException
 public class NotSavedException extends RuntimeException {
-    /**
-     * Constructor for NotSavedException.
-     *
-     * @param message - giving message.
-     */
-    public NotSavedException(String message) {
-        super(message);
-    }
 }

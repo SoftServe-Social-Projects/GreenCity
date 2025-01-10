@@ -1,4 +1,3 @@
-
 @font-face {
     font-family: 'Lato Regular';
     src: url('Lato-Regular.eot');
@@ -15,12 +14,12 @@
     width: 264px;
     position: absolute;
     top: 52px;
-    background: #444E55;
+    background: var(--gray-dark-asphalt);
     overflow:auto;
     scrollbar-width: none;
     font-size: 16px;
-
 }
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -34,7 +33,6 @@
     list-style: none;
     position: relative;
     transition: 0.4s;
-
 }
 
 .menuVertical ul li {
@@ -44,7 +42,6 @@
     transition: 0.4s;
     height: 56px;
     justify-content: center;
-
 }
 
 .menuVertical ul li a, dropdown {
@@ -56,18 +53,16 @@
     line-height: 2em;
     padding: 16px 0 16px 16px;
     text-decoration: none;
-
-
 }
 
 .menuVertical ul li:hover a, dropdown:hover{
-    background: #9CA7B0;
-    color: #F7F9FA;
+    background: var(--gray-gull);
+    color: var(--white-smoke);
 }
 
 .menuVertical ul li:active a, .active_li{
-    background: #64727D;
-    color: #F7F9FA;
+    background: var(--gray-asphalt);
+    color: var(--white-smoke);
 }
 
 .accordion {
@@ -78,7 +73,7 @@
 }
 
 .accordion .active {
-    background: #444E55;
+    background: var(--gray-dark-asphalt);
 }
 
 .panel{
@@ -106,7 +101,7 @@
     width: content-box;
     box-sizing: border-box;
     font-weight: normal;
-    color: #F7F9FA;
+    color: var(--white-smoke);
     line-height: 2em;
     text-decoration: none;
 }
@@ -116,13 +111,13 @@
 }
 
 .panel li:hover a{
-    background: #9CA7B0;
-    color: #F7F9FA;
+    background: var(--gray-gull);
+    color: var(--white-smoke);
 }
 
 .panel li:active a{
-    background: #64727D;
-    color: #F7F9FA;
+    background: var(--gray-asphalt);
+    color: var(--white-smoke);
 }
 
 /* Style the accordion panel. Note: hidden by default */
@@ -149,14 +144,7 @@
     margin-left: 5px;
     transition: .3s;
 }
-block {
-    display: block;
-    width: 100%;
-    position: relative;
-    background: #444E55;
-    cursor: pointer;
-    justify-content: end;
-}
+
 .img_blc{
     padding-left: 235px;
     z-index: 4;
@@ -171,11 +159,6 @@ block {
     -o-transform: rotate(180deg);
     transform: rotate(180deg);
 }
-block:hover img{
-    transition: .3s;
-    background: #444E55;
-}
-
 
 .narrow{
     width:56px;
@@ -195,10 +178,6 @@ block:hover img{
     display: none;
 }
 
-#to_be_white{
-    color: white;
-}
-
 button.close {
     padding: 2rem 1rem !important;
 }
@@ -213,7 +192,7 @@ button.close:focus {
 }
 
 .cb-tags {
-    accent-color: #13AA57
+    accent-color: var(--green);
 }
 
 

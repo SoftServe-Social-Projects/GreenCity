@@ -26,4 +26,6 @@ public class PlaceResponse {
     private AddPlaceLocation locationAddressAndGeoDto;
     @Builder.Default
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
+    private String description;
+    private String websiteUrl;
 }

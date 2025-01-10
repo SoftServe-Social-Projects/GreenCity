@@ -1,13 +1,10 @@
 package greencity.repository;
 
+import greencity.dto.habitstatistic.HabitStatusCount;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +13,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
@@ -42,7 +43,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + " WHERE ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED','REQUESTED')")
     List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
     /**
@@ -91,7 +92,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      */
     @Query("SELECT ha FROM HabitAssign ha "
         + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
-        + "AND DATE(ha.createDate) = :dateTime AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + "AND DATE(ha.createDate) = :dateTime AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED','REQUESTED')")
     Optional<HabitAssign> findByHabitIdAndUserIdAndCreateDate(@Param("habitId") Long habitId,
         @Param("userId") Long userId,
         @Param("dateTime") ZonedDateTime dateTime);
@@ -153,8 +154,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance.
      */
     @Query(value = "SELECT * FROM habit_assign ha"
-        + " WHERE habit_id = :habitId AND user_id = :userId AND upper(ha.status) = 'CANCELLED'", nativeQuery = true)
-    HabitAssign findByHabitIdAndUserIdAndStatusIsCancelled(@Param("habitId") Long habitId,
+        + " WHERE habit_id = :habitId AND user_id = :userId AND upper(ha.status) IN ('CANCELLED','REQUESTED')",
+        nativeQuery = true)
+    HabitAssign findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
     /**
@@ -185,6 +187,21 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
     Optional<HabitAssign> findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(
         @Param("habitAssignId") Long habitAssignId,
+        @Param("userId") Long userId);
+
+    /**
+     * Method to find a list of {@link HabitAssign} instances by {@link User} id and
+     * {@link Habit} id (with not cancelled and not expired status).
+     *
+     * @param userId  {@link User} id.
+     * @param habitId {@link Habit} id.
+     * @return List of {@link HabitAssign} instances, if none exist returns an empty
+     *         list.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign AS ha "
+        + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    List<HabitAssign> findHabitsByHabitIdAndUserId(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
     /**
@@ -271,14 +288,13 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * Method to find all habit assigns by status.
      *
      * @param status {@link HabitAssignStatus} status of habit assign.
-     *
      * @return list of {@link HabitAssign} instances.
      * @author Vira Maksymets
      */
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
-        + "WHERE (upper(ha.status) = :status) AND (ha.habit.id = :habitId)")
+        + "WHERE ha.status = :status AND ha.habit.id = :habitId")
     List<HabitAssign> findAllHabitAssignsByStatusAndHabitId(@Param("status") HabitAssignStatus status,
         @Param("habitId") Long habitId);
 
@@ -286,7 +302,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * Method to find amount of users that acquired habit.
      *
      * @param habitId {@link Habit} id.
-     *
      * @return Long.
      * @author Oleh Kulbaba
      */
@@ -336,6 +351,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "WHERE (uf.user_id = :userId OR uf.friend_id = :userId) "
         + "AND uf.status = 'FRIEND' "
         + "AND ha.habit_id = :habitId "
+        + "AND ha.is_private = FALSE "
         + "AND ha.user_id != :userId "
         + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')", nativeQuery = true)
     List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
@@ -408,4 +424,33 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
         """)
     List<HabitAssign> findByUserIdsAndHabitId(List<Long> userIds, Long habitId);
+
+    /**
+     * Returns a list of HabitAssign objects that have last day of primary duration
+     * to send notification to user.
+     *
+     * @return list of HabitAssign objects that meet the specified conditions
+     */
+    @Query(value = """
+            SELECT ha
+            FROM HabitAssign ha
+            LEFT JOIN Notification n ON n.targetId = ha.id AND n.notificationType = 'HABIT_LAST_DAY_OF_PRIMARY_DURATION'
+            WHERE ha.status = 'INPROGRESS'
+            AND (CAST(ha.workingDays AS float) / ha.duration) >= 0.2
+            AND (CAST(ha.workingDays AS float) / ha.duration) < 0.8
+            AND (CAST(ha.workingDays + 1 AS float) / ha.duration) >= 0.8
+            AND n.id IS NULL
+        """)
+    List<HabitAssign> getHabitAssignsWithLastDayOfPrimaryDurationToMessage();
+
+    /**
+     * Group HabitAssign records by status and count occurrences.
+     */
+    @Query("""
+            SELECT new greencity.dto.habitstatistic.HabitStatusCount(ha.status, COUNT(ha))
+            FROM HabitAssign ha
+            WHERE ha.user.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
+            GROUP BY ha.status
+        """)
+    List<HabitStatusCount> countHabitAssignsByStatus();
 }

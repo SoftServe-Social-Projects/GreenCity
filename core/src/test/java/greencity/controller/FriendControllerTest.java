@@ -139,8 +139,13 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), null,
-            PageRequest.of(0, 10));
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
+                userVO.getId(),
+                "",
+                false,
+                false,
+                PageRequest.of(0, 10)
+        );
     }
 
     @Test
@@ -195,7 +200,7 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).getAllUserFriendRequests(userVO.getId(), PageRequest.of(0, 20));
+        verify(friendService).getAllUserFriendRequests(userVO.getId(), "", false, PageRequest.of(0, 20));
     }
 
     @Test
@@ -208,7 +213,7 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllFriendsOfUser(userVO.getId(), name, PageRequest.of(0, 20));
+        verify(friendService).findAllFriendsOfUser(userVO.getId(), name, false, PageRequest.of(0, 20));
     }
 
     @Test

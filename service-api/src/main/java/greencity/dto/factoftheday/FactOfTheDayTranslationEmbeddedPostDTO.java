@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FactOfTheDayTranslationEmbeddedPostDTO {
-    @Size(min = 0, max = 300)
+    @Size(max = 300)
     private String content;
     @NotNull
     private String languageCode;

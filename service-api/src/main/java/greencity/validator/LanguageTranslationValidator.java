@@ -4,18 +4,17 @@ import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.LanguageService;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Comparator;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class LanguageTranslationValidator implements
     ConstraintValidator<LanguageTranslationConstraint, List<? extends LanguageTranslationDTO>> {
+    private final LanguageService languageService;
     private List<LanguageDTO> languageDTOS;
-    @Autowired
-    private LanguageService languageService;
 
     @Override
     public void initialize(LanguageTranslationConstraint constraintAnnotation) {
@@ -29,9 +28,8 @@ public class LanguageTranslationValidator implements
             .stream()
             .map(LanguageTranslationDTO::getLanguage)
             .sorted(Comparator.comparing(LanguageDTO::getCode))
-            .collect(Collectors.toList());
+            .toList();
 
-        return (value.size() == 3)
-            && (languageDTOS.equals(valueLanguageDTOS));
+        return (value.size() == 2) && (languageDTOS.equals(valueLanguageDTOS));
     }
 }

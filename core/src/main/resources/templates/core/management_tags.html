@@ -4,9 +4,7 @@
     <meta charset="utf-8"/>
     <title>Tags management</title>
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet"/>
     <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -20,14 +18,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/tag/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
 <div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="container-xl">
         <div class="table-responsive">
             <div class="table-wrapper">
@@ -57,24 +55,26 @@
                         </div>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr class="table-primary">
-                        <th>
-                                <span class="custom-checkbox">
-                                    <input id="selectAll" type="checkbox">
-                                    <label for="selectAll"></label>
-                                </span>
+                <table class="table table-bordered">
+                    <thead class="text-align-center">
+                    <tr>
+                        <th rowspan="2">
+                            <span class="custom-checkbox">
+                                <input id="selectAll" type="checkbox">
+                                <label for="selectAll"></label>
+                            </span>
                         </th>
-                        <th>[[#{greenCity.pages.table.id}]]</th>
-                        <th>[[#{greenCity.pages.table.type}]]</th>
-                        <th>[[#{greenCity.pages.table.translations}]]</th>
-                        <th>[[#{greenCity.pages.table.actions}]]</th>
+                        <th rowspan="2" class="small-column">[[#{greenCity.pages.table.id}]]</th>
+                        <th rowspan="2" class="small-column">[[#{greenCity.pages.table.type}]]</th>
+                        <th colspan="3">[[#{greenCity.pages.table.translations}]]</th>
+                        <th rowspan="2">[[#{greenCity.pages.table.actions}]]</th>
+                    </tr>
+                    <tr>
+                        <th class="small-column">[[#{greenCity.pages.table.translation.id}]]</th>
+                        <th>[[#{greenCity.pages.table.name}]]</th>
+                        <th class="small-column">[[#{greenCity.pages.table.language.code}]]</th>
                     </tr>
                     </thead>
-                    <tbody>
-
-                    </tbody>
                     <form action="/management/tags/search" id="searchForm" method="POST">
 
                         <tr>
@@ -86,11 +86,11 @@
                                        type="search"/>
                             </td>
                             <td>
-                                <input placeholder="Search" th:name="type"
+                                <input placeholder="Search" style="width: 100%" th:name="type"
                                        th:value="${fields eq null ? '' : fields.type }"
                                        type="search"/>
                             </td>
-                            <td>
+                            <td colspan="3">
                                 <input placeholder="Search" style="width: 100%" th:name="name"
                                        th:value="${fields eq null ? null : fields.name }"
                                        type="search"/>
@@ -106,31 +106,24 @@
                         <tbody>
                         <tr>
                             <td>
-                                    <span class="custom-checkbox">
-                                        <input id="checkbox1" name="options[]" th:id="checkbox+${iterStatus.count}"
-                                               th:value="${tag.getId()}" type="checkbox"
-                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                        <label for="checkbox1" th:for="checkbox+${iterStatus.count}"></label>
-                                    </span>
+                                <span class="custom-checkbox">
+                                    <input id="checkbox1" name="options[]" th:id="checkbox+${iterStatus.count}"
+                                           th:value="${tag.getId()}" type="checkbox"
+                                           th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                    <label for="checkbox1" th:for="checkbox+${iterStatus.count}"></label>
+                                </span>
                             </td>
                             <td th:text="${tag.getId()}"></td>
                             <td th:text="${tag.getType()}"></td>
-                            <td>
-                                <table class="table table-borderless m-0">
-                                    <thead>
-                                    <tr class="table-secondary">
-                                        <th class="py-1">[[#{greenCity.pages.table.translation.id}]]</th>
-                                        <th class="py-1">[[#{greenCity.pages.table.name}]]</th>
-                                        <th class="py-1">[[#{greenCity.pages.table.language.code}]]</th>
-                                    </tr>
-                                    </thead>
+                            <td colspan="3">
+                                <table class="table table-borderless m-0 table-child">
                                     <tbody>
                                     <th:block
                                             th:each="translation : ${tags.getPage().get(iterStatus.index).getTagTranslations()}">
                                         <tr>
-                                            <td class="py-1 text-right" th:text="${translation.getId()}"></td>
-                                            <td class="py-1" th:text="${translation.getName()}"></td>
-                                            <td class="py-1" th:text="${translation.getLanguageVO().getCode()}"></td>
+                                            <td class="small-column text-right" th:text="${translation.getId()}"></td>
+                                            <td class="text-align-center" th:text="${translation.getName()}"></td>
+                                            <td class="small-column" th:text="${translation.getLanguageVO().getCode()}"></td>
                                         </tr>
                                     </th:block>
                                     </tbody>

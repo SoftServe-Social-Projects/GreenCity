@@ -48,7 +48,7 @@ public interface TagsService {
      * Method that finds one tag by given id.
      *
      * @param id - {@link Long}
-     * @return found tag {@Link TagVO}
+     * @return found tag {@link TagVO}
      */
     TagVO findById(Long id);
 
@@ -125,12 +125,4 @@ public interface TagsService {
      * @author Markiyan Derevetskyi
      */
     List<String> findAllHabitsTags(String languageCode);
-
-    /**
-     * Method that checks if there is allowed amount (less than 3) of unique Tags .
-     *
-     * @param tagNames list of {@link String} values
-     * @return {@link Boolean}
-     */
-    boolean isValidNumOfUniqueTags(List<String> tagNames);
 }

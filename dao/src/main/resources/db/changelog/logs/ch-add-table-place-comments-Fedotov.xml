@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="Dmytro Fedotov" id="placecomment1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="place_comments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="place_comments">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_date" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="estimate_id" type="BIGINT"/>
+            <column name="parent_comment_id" type="BIGINT"/>
+            <column name="place_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Dmytro Fedotov" id="placecomment2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_place_comments_user"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="place_comments"
+                                 constraintName="fk_place_comments_user" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+
+
+    <changeSet author="Dmytro Fedotov" id="placecomment3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_place_comments_place"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="place_comments"
+                                 constraintName="fk_place_comments_place" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="places"/>
+    </changeSet>
+
+
+    <changeSet author="Dmytro Fedotov" id="placecomment4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_place_comments_parent_comment"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="place_comments"
+                                 constraintName="fk_place_comments_parent_comment" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="place_comments"/>
+    </changeSet>
+
+
+    <changeSet author="Dmytro Fedotov" id="placecomment5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_place_comments_estimate"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="estimate_id" baseTableName="place_comments"
+                                 constraintName="fk_place_comments_estimate" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="estimates"/>
+    </changeSet>
+</databaseChangeLog>

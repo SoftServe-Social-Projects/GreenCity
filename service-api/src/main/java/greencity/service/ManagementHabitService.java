@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import java.util.List;
@@ -23,7 +23,7 @@ public interface ManagementHabitService {
      * @return list of {@link HabitManagementDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+    PageableHabitManagementDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
         Integer durationTo, Integer complexity, Boolean withoutImage,
         Boolean withImage,
         Pageable pageable);
@@ -58,4 +58,25 @@ public interface ManagementHabitService {
      * @param listId list of {@code Habit} id's.
      */
     void deleteAll(List<Long> listId);
+
+    /**
+     * Updates the `isDeleted` status of a {@code Habit}. If `isDeleted` is
+     * {@code null}, it is set to the provided {@code newStatus}. Otherwise, it is
+     * updated directly to {@code newStatus}.
+     *
+     * @param id        the ID of the {@code Habit} to update.
+     * @param newStatus the new `isDeleted` status, {@code true} or {@code false}.
+     */
+    void switchIsDeletedStatus(Long id, Boolean newStatus);
+
+    /**
+     * Updates the `isCustom` status of a {@code Habit}. If `isCustom` is
+     * {@code null}, it is set to the provided {@code newIsCustomStatus}. Otherwise,
+     * it is updated directly to {@code newIsCustomStatus}.
+     *
+     * @param id                the ID of the {@code Habit} to update.
+     * @param newIsCustomStatus the new `isCustom` status, {@code true} or
+     *                          {@code false}.
+     */
+    void switchIsCustomStatus(Long id, Boolean newIsCustomStatus);
 }

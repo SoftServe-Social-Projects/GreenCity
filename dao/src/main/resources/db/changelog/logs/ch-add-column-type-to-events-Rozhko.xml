@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="Rozhko-1" author="Ilia Rozhko">
+        <addColumn tableName="events">
+            <column name="type" type="VARCHAR(15)" defaultValue="CHANGE_IT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="Rozhko-2" author="Ilia Rozhko">
+        <update tableName="events">
+            <column name="type" value="ONLINE_OFFLINE"/>
+            <where>id IN (SELECT DISTINCT e.id FROM events e LEFT JOIN events_dates_locations d ON e.id = d.event_id
+                GROUP BY e.id HAVING COUNT(d.online_link) > 0 AND COUNT(d.latitude) > 0)
+            </where>
+        </update>
+        <update tableName="events">
+            <column name="type" value="OFFLINE"/>
+            <where>id IN (SELECT DISTINCT e.id FROM events e LEFT JOIN events_dates_locations d ON e.id = d.event_id
+                GROUP BY e.id HAVING COUNT(d.online_link) = 0 AND COUNT(d.latitude) > 0)
+            </where>
+        </update>
+        <update tableName="events">
+            <column name="type" value="ONLINE"/>
+            <where>id IN (SELECT DISTINCT e.id FROM events e LEFT JOIN events_dates_locations d ON e.id = d.event_id
+                GROUP BY e.id HAVING COUNT(d.online_link) > 0 AND COUNT(d.latitude) = 0)
+            </where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

@@ -11,7 +11,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CategoryRepo;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -23,19 +23,14 @@ import org.springframework.stereotype.Service;
  * @version 1.0
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepo categoryRepo;
-
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     /**
-     * Method for saving Category to database.
-     *
-     * @param dto - dto for Category entity
-     * @return category
-     * @author Kateryna Horokh
+     * {@inheritDoc}
      */
     @Override
     public CategoryDtoResponse save(CategoryDto dto) {
@@ -63,8 +58,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public List<CategoryDtoResponse> findAll() {
@@ -76,8 +69,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public CategoryDtoResponse findById(Long id) {
@@ -93,8 +84,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public CategoryDtoResponse update(Long id, String name) {
@@ -105,8 +94,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public Long deleteById(Long id) {
@@ -123,8 +110,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Kateryna Horokh
      */
     @Override
     public CategoryDtoResponse findByName(String name) {
@@ -137,8 +122,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Kateryna Horokh
      */
     @Override
     public List<CategoryDto> findAllCategoryDto() {

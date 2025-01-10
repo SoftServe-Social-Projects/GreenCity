@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="comments-add-1" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_name = 'comments' AND column_name = 'article_type';
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="comments">
+            <column name="article_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="comments-add-2" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_name = 'comments' AND column_name = 'article_id';
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="comments">
+            <column name="article_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="comments-add-3" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_name = 'comments' AND column_name = 'text';
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="comments">
+            <column name="text" type="varchar(8000)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="comments-add-4" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_name = 'comments' AND column_name = 'created_date';
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="comments">
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="comments-add-5" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_name = 'comments' AND column_name = 'modified_date';
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="comments">
+            <column name="modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="comments-add-6" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_name = 'comments' AND column_name = 'status';
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="comments">
+            <column name="status" type="varchar(30)" defaultValue="ORIGINAL">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="comments-add-7" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.table_constraints
+                WHERE constraint_name = 'fk_comments_user';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                onDelete="RESTRICT"
+                onUpdate="RESTRICT"
+                constraintName="fk_comments_user"/>
+    </changeSet>
+
+    <changeSet id="comments-add-8" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.table_constraints
+                WHERE constraint_name = 'fk_comments_parent_comment';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="parent_comment_id"
+                referencedTableName="comments"
+                referencedColumnNames="id"
+                onDelete="RESTRICT"
+                onUpdate="RESTRICT"
+                constraintName="fk_comments_parent_comment"/>
+    </changeSet>
+</databaseChangeLog>

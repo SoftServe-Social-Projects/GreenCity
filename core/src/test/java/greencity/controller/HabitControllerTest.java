@@ -6,13 +6,10 @@ import greencity.ModelUtils;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.repository.HabitTranslationRepo;
 import greencity.service.HabitService;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,16 +25,22 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class HabitControllerTest {
@@ -50,11 +53,17 @@ class HabitControllerTest {
     @Mock
     TagsService tagsService;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     HabitController habitController;
 
     @Mock
     private Validator mockValidator;
+
+    @Mock
+    private HabitTranslationRepo habitTranslationRepo;
 
     private static final String habitLink = "/habit";
 
@@ -77,12 +86,69 @@ class HabitControllerTest {
     void getAll() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
+        Locale locale = Locale.of("en");
         UserVO userVO = new UserVO();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(habitLink + "?page=1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllHabitsByLanguageCode(userVO, pageable);
+        verify(habitService).getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage());
+    }
+
+    @Test
+    void getMyHabits() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 20;
+        Locale locale = Locale.of("en");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(get(habitLink + "/my")
+            .param("page", String.valueOf(pageNumber))
+            .param("size", String.valueOf(pageSize))
+            .param("lang", String.valueOf(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(habitService).getMyHabits(userVO.getId(), pageable, locale.getLanguage());
+    }
+
+    @Test
+    void getAllHabitsOfFriend() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 20;
+        Locale locale = Locale.of("en");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = new UserVO();
+        Long friendId = 1L;
+
+        mockMvc.perform(get(habitLink + "/all/{friendId}", friendId)
+            .param("page", String.valueOf(pageNumber))
+            .param("size", String.valueOf(pageSize))
+            .param("lang", String.valueOf(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(habitService).getAllHabitsOfFriend(userVO.getId(), friendId, pageable, locale.getLanguage());
+    }
+
+    @Test
+    void getAllMutualHabitsWithFriend() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 20;
+        Locale locale = Locale.of("en");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = new UserVO();
+        Long friendId = 1L;
+
+        mockMvc.perform(get(habitLink + "/allMutualHabits/{friendId}", friendId)
+            .param("page", String.valueOf(pageNumber))
+            .param("size", String.valueOf(pageSize))
+            .param("lang", String.valueOf(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(habitService).getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage());
     }
 
     @Test
@@ -92,12 +158,13 @@ class HabitControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Locale locale = Locale.of("en");
         List<String> tags = Arrays.asList("News", "Education");
+        boolean excludeAssigned = false;
 
         mockMvc.perform(get(habitLink + "/tags/search?page=" + pageNumber +
-            "&lang=" + locale.getLanguage() + "&tags=News,Education")
+            "&lang=" + locale.getLanguage() + "&tags=News,Education" + "&excludeAssigned=" + excludeAssigned)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage());
+        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned, null);
     }
 
     @Test
@@ -267,18 +334,18 @@ class HabitControllerTest {
     }
 
     @Test
-    void getShoppingListItems() throws Exception {
+    void getToDoListItems() throws Exception {
 
-        mockMvc.perform(get(habitLink + "/{id}/shopping-list", 1L))
+        mockMvc.perform(get(habitLink + "/{id}/to-do-list", 1L))
             .andExpect(status().isOk());
 
-        verify(habitService).getShoppingListForHabit(1L, "en");
+        verify(habitService).getToDoListForHabit(1L, "en");
     }
 
     @Test
     void postCustomHabit() throws Exception {
         CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
-        ObjectMapper objectMapper = new ObjectMapper();
+
         objectMapper.findAndRegisterModules();
 
         String requestedJson = objectMapper.writeValueAsString(dto);
@@ -289,7 +356,7 @@ class HabitControllerTest {
         mockMvc.perform(multipart(habitLink + "/custom")
             .file(jsonFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isCreated());
         verify(habitService).addCustomHabit(dto, null, principal.getName());
     }
@@ -312,7 +379,6 @@ class HabitControllerTest {
         MockMultipartFile imageFile = new MockMultipartFile("image", imageContent);
         CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
         String requestedJson = objectMapper.writeValueAsString(dto);
@@ -329,7 +395,7 @@ class HabitControllerTest {
             .file(jsonFile)
             .file(imageFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
         verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), imageFile);
@@ -338,10 +404,93 @@ class HabitControllerTest {
     @Test
     void deleteHabitAssignTest() throws Exception {
         Long customHabitId = 1L;
-        Principal principal = () -> "email@ukr.net";
         mockMvc.perform(delete("/habit/delete/{customHabitId}", customHabitId)
             .principal(principal)).andExpect(status().isOk());
 
         verify(habitService).deleteCustomHabit(customHabitId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void likeTest() {
+        Long habitId = 1L;
+
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(post(habitLink + "/like")
+            .param("habitId", habitId.toString())
+            .principal(getPrincipal()))
+            .andExpect(status().isOk());
+
+        verify(habitService).like(habitId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void dislikeTest() {
+        Long habitId = 1L;
+
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(post(habitLink + "/dislike")
+            .param("habitId", habitId.toString())
+            .principal(getPrincipal()))
+            .andExpect(status().isOk());
+
+        verify(habitService).dislike(habitId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void addToFavoritesTest() {
+        Long habitId = 1L;
+        mockMvc.perform(post(habitLink + "/{habitId}/favorites", habitId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(habitService).addToFavorites(habitId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void removeFromFavoritesTest() {
+        Long habitId = 1L;
+        mockMvc.perform(delete(habitLink + "/{habitId}/favorites", habitId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(habitService).removeFromFavorites(habitId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllFavoritesTest() {
+        UserVO userVO = new UserVO();
+        Pageable pageable = PageRequest.of(0, 10);
+        String languageCode = "en";
+
+        mockMvc.perform(get(habitLink + "/favorites")
+            .principal(getPrincipal())
+            .param("page", "0")
+            .param("size", "10")
+            .locale(Locale.forLanguageTag(languageCode)))
+            .andExpect(status().isOk());
+
+        verify(habitService).getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+    }
+
+    @Test
+    @SneakyThrows
+    void findAllFriendsOfUserToBeInvitedTest() {
+        Long habitId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(get(habitLink + "/friends")
+            .principal(getPrincipal())
+            .param("habitId", habitId.toString())
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(status().isOk());
+
+        verify(habitService).findAllFriendsOfUser(userVO, null, pageable, habitId);
     }
 }

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Eco News Statistic</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/randomcolor@0.6.2/randomColor.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/11.0.1/gridstack.min.css"
+          integrity="sha512-GEMqAs1Ai2iirp6QhD4N5Qt7tDn1RGgF1CY2xp57LrX3vqTDehSC88IOFewV/L84htjbN7aazcK10FyzH+eXSA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        .container-xl {
+            padding: 25px;
+        }
+
+        .container-xl > h2 {
+            font-weight: bold;
+            font-size: 32px;
+            color: #13AA57;
+        }
+
+        #menuButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .chart-options h3 {
+            margin-bottom: 10px;
+        }
+
+        .generate-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .grid-stack {
+            background: #D8D8D8;
+        }
+
+        .grid-stack-item-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFFFFF;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+    <div class="container-xl">
+        <h2>Habit Statistics</h2>
+        <!-- Menu Button -->
+        <button id="menuButton">☰ Settings</button>
+
+        <!-- Modal Structure -->
+        <div id="settingsModal" class="modal hidden">
+            <div class="modal-content" id="modalContent">
+                <span class="close">&times;</span>
+
+                <div class="form-group">
+                    <h3>Interest of users</h3>
+                    <button class="generate-btn" onclick="fetchUserInterestStatistics()">Generate Publication
+                        Generate Interest of Users Statistics
+                    </button>
+                </div>
+                <div class="form-group">
+                    <h3>User activity</h3>
+                    <button class="generate-btn" onclick="fetchHabitBehaviorStatistics()">Generate User Activity Statistics</button>
+                </div>
+                <div class="form-group">
+                    <h3>User interaction</h3>
+                    <label for="dateRange">Get statistic for last:</label>
+                    <select id="dateRange" style="display:block;">
+                        <option value="weekly">Week</option>
+                        <option value="monthly">Month</option>
+                        <option value="yearly">Year</option>
+                    </select>
+                    <button class="generate-btn" onclick="fetchUserInteractionStatistics()">Generate User Interaction Statistics
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <div class="grid-stack" id="chartsGrid"></div>
+    </div>
+</div>
+<div id="footer" th:insert="core/footer"></div>
+<script type="module">
+    import {GridStack} from 'https://cdn.jsdelivr.net/npm/gridstack@11.0.1/+esm';
+
+    let grid;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        grid = GridStack.init({
+            float: true,
+            removable: true,
+            removeTimeout: 100,
+            resizable: {
+                handles: 'e,se,s,sw,w'
+            }
+        });
+
+    });
+
+    window.addChartToGrid = function (innerHTML, chartId) {
+        if (!document.querySelector(`.grid-stack-item #${chartId}`)) {
+            const widget = document.createElement('div');
+            widget.className = 'grid-stack-item';
+            widget.innerHTML = innerHTML
+            grid.makeWidget(widget);
+        }
+    }
+
+    window.addTableToGrid = function (innerHTML, chartId) {
+        let existingWidget = document.getElementById(chartId);
+        let widgetData = {};
+
+        if (existingWidget) {
+            widgetData = {
+                x: parseInt(existingWidget.getAttribute('gs-x')),
+                y: parseInt(existingWidget.getAttribute('gs-y')),
+                w: parseInt(existingWidget.getAttribute('gs-w')),
+                h: parseInt(existingWidget.getAttribute('gs-h'))
+            };
+            grid.removeWidget(existingWidget, {removeDOM: true});
+        }
+
+        const widget = document.createElement('div');
+        widget.className = 'grid-stack-item';
+        widget.setAttribute('gs-x', widgetData.x || 0);
+        widget.setAttribute('gs-y', widgetData.y || 0);
+        widget.setAttribute('gs-w', widgetData.w || 4);
+        widget.setAttribute('gs-h', widgetData.h || 2);
+        widget.innerHTML = innerHTML;
+
+        grid.makeWidget(widget);
+        widget.id = chartId;
+    };
+
+
+    window.removeWidget = function (btn) {
+        const item = btn.closest('.grid-stack-item');
+        grid.removeWidget(item);
+    }
+</script>
+<script>
+    tinymce.init({
+        selector: '#ecoNewsContent'
+    });
+
+
+    // Part 1 Interest of Users
+    async function fetchUserInterestStatistics() {
+        const chartId = 'userInterestChart';
+
+        if (Chart.getChart(chartId)) {
+            Chart.getChart(chartId)?.destroy();
+        }
+
+        const response = await fetch('statistics/interest');
+        if (response.ok) {
+            const data = await response.json();
+
+            const labels = ['Subscribed', 'Creators', 'Non-Participants'];
+            const counts = [data.subscribed, data.creators, data.nonParticipants];
+
+            const randomColors = getRandomColors(labels.length);
+
+            const innerHTML = `
+            <div class="grid-stack-item-content">
+                <button class="delete-btn" onclick="removeWidget(this)">×</button>
+                <canvas id="${chartId}" role="img" aria-label="User Interest Statistics">
+                    Your browser does not support the canvas element.
+                </canvas>
+            </div>`;
+            addChartToGrid(innerHTML, chartId);
+
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'User Interest Statistics',
+                        data: counts,
+                        backgroundColor: randomColors,
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + ' users';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Part 2 User activity
+    async function fetchHabitBehaviorStatistics() {
+        const chartId = 'habitBehaviorChart';
+
+        if (Chart.getChart(chartId)) {
+            Chart.getChart(chartId)?.destroy();
+        }
+
+        const response = await fetch('statistics/habit-behavior');
+        if (response.ok) {
+            const data = await response.json();
+            const rawCounts = [data.giveUp, data.successfullyComplete, data.stayWithHabit];
+            const total = rawCounts.reduce((sum, count) => sum + count, 0);
+            const percentages = rawCounts.map(count => ((count / total) * 100).toFixed(1));
+
+            const labels = ['Give Up', 'Successfully Complete', 'Stay With Habit'];
+            const randomColors = getRandomColors(labels.length);
+
+            const innerHTML = `
+        <div class="grid-stack-item-content">
+            <button class="delete-btn" onclick="removeWidget(this)">×</button>
+            <canvas id="${chartId}" role="img" aria-label="Habit Behavior Statistics">
+                Your browser does not support the canvas element.
+            </canvas>
+        </div>`;
+            addChartToGrid(innerHTML, chartId);
+
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Habit Behavior Statistics',
+                        data: percentages,
+                        backgroundColor: randomColors,
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.label}: ${tooltipItem.raw}% (${rawCounts[tooltipItem.dataIndex]} users)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Part 3 User interaction
+    async function fetchUserInteractionStatistics() {
+        const chartId = 'interactionChart';
+        const range = document.getElementById('dateRange').value;
+
+        if (Chart.getChart(chartId)) {
+            Chart.getChart(chartId)?.destroy();
+        }
+
+        const response = await fetch(`statistics/user-interaction?range=${range}`);
+        if (response.ok) {
+            const data = await response.json();
+            const allDates = generateDateRange(range, data);  // Generate all possible dates for the selected range
+            const labels = allDates.map(date => date.format('YYYY-MM-DD'));
+
+            // Fill missing data points with 0 count
+            const subscriptionCounts = allDates.map(date => {
+                const subscription = data.subscriptions.find(sub => sub.date === date.format('YYYY-MM-DD'));
+                return subscription ? subscription.count : 0;
+            });
+
+            const creationCounts = allDates.map(date => {
+                const creation = data.creations.find(crea => crea.date === date.format('YYYY-MM-DD'));
+                return creation ? creation.count : 0;
+            });
+
+            const randomColors = getRandomColors(2);
+
+            const innerHTML = `
+            <div class="grid-stack-item-content">
+                <button class="delete-btn" onclick="removeWidget(this)">×</button>
+                <canvas id="${chartId}" role="img" aria-label="User Interaction Statistics">
+                    Your browser does not support the canvas element.
+                </canvas>
+            </div>`;
+            addChartToGrid(innerHTML, chartId);
+
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Subscriptions',
+                            data: subscriptionCounts,
+                            fill: true,
+                            borderColor: randomColors[0],
+                            backgroundColor: randomColors[0] + '80',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Creations',
+                            data: creationCounts,
+                            fill: true,
+                            borderColor: randomColors[1],
+                            backgroundColor: randomColors[1] + '80',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'category',
+                            labels: labels
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error('Failed to fetch user interaction data');
+        }
+    }
+
+    // Utility function to generate a range of dates for the selected range (e.g., monthly, yearly)
+    function generateDateRange(range, data) {
+        const moment = window.moment;
+        const dateRange = [];
+
+        const creationDates = data.creations.map(item => moment(item.date));
+        const subscriptionDates = data.subscriptions.map(item => moment(item.date));
+        const allDates = [...creationDates, ...subscriptionDates];
+
+        let startDate = moment.min(allDates);
+        let endDate = moment();
+
+        while (startDate.isSameOrBefore(endDate, 'day')) {
+            dateRange.push(startDate.clone());
+            startDate.add(1, 'day');
+        }
+        return dateRange;
+    }
+
+
+
+    document.getElementById('menuButton').addEventListener('click', function () {
+        const modal = document.getElementById('settingsModal');
+        modal.classList.toggle('hidden');
+        modal.style.display = modal.style.display === "block" ? "none" : "block";
+    });
+
+    document.querySelector('.close').addEventListener('click', function () {
+        document.getElementById('settingsModal').classList.add('hidden');
+        document.getElementById('settingsModal').style.display = "none";
+    });
+
+    function getRandomColors(count) {
+        return randomColor({count: count});
+    }
+</script>
+</body>
+</html>

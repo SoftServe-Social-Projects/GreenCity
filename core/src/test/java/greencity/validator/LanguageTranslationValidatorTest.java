@@ -27,8 +27,8 @@ class LanguageTranslationValidatorTest {
     void isValidTrueTest() {
         LanguageTranslationDTO ltDTO = getLanguageTranslationDTO();
         LanguageDTO lDTO = getLanguageDTO();
-        List<LanguageTranslationDTO> value = Arrays.asList(ltDTO, ltDTO, ltDTO);
-        List<LanguageDTO> languageDTOS = Arrays.asList(lDTO, lDTO, lDTO);
+        List<LanguageTranslationDTO> value = Arrays.asList(ltDTO, ltDTO);
+        List<LanguageDTO> languageDTOS = Arrays.asList(lDTO, lDTO);
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
         languageTranslationValidator.initialize(null);
         assertTrue(languageTranslationValidator.isValid(value, null));

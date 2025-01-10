@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="habit-invitations" author="Ivan Holotsvan">
+        <createTable tableName="habit_invitations">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="inviter_habit_assign_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="invitee_habit_assign_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="habit_invitations"
+                baseColumnNames="inviter_habit_assign_id"
+                referencedTableName="habit_assign"
+        referencedColumnNames="id"
+        constraintName="fk_habit_invitation_inviter_habit_assign"/>
+
+        <addForeignKeyConstraint
+                baseTableName="habit_invitations"
+                baseColumnNames="invitee_habit_assign_id"
+                referencedTableName="habit_assign"
+        referencedColumnNames="id"
+        constraintName="fk_habit_invitation_invitee_habit_assign_id"/>
+    </changeSet>
+</databaseChangeLog>

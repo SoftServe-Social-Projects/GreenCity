@@ -16,11 +16,4 @@ public interface DateService {
      * @return converted to datasource timezone {@link ZonedDateTime}.
      */
     ZonedDateTime convertToDatasourceTimezone(ZonedDateTime toConvert);
-
-    /**
-     * Returns {@link ZonedDateTime} of the datasource.
-     *
-     * @return instance of datasource {@link ZonedDateTime}.
-     */
-    ZonedDateTime getDatasourceZonedDateTime();
 }

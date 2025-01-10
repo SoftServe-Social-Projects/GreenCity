@@ -28,16 +28,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import java.security.Principal;
@@ -61,32 +62,39 @@ public class ManagementEcoNewsController {
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
+    @ApiLocale
     @GetMapping
-    public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
-        PageableAdvancedDto<EcoNewsDto> allEcoNews;
-        if (ecoNewsViewDto.getId() != null && !ecoNewsViewDto.isEmpty()) {
-            allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
+    public String getAllEcoNews(@RequestParam(required = false, name = "query") String query,
+        Model model,
+        @Parameter(hidden = true) Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        @Parameter(hidden = true) Locale locale) {
+        PageableAdvancedDto<EcoNewsDto> allEcoNews = ecoNewsService
+            .getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, locale);
+        model.addAttribute("pageable", allEcoNews);
+        if (!ecoNewsViewDto.isEmpty()) {
             model.addAttribute("fields", ecoNewsViewDto);
-            model.addAttribute("query", "");
         } else {
-            allEcoNews = query == null || query.isEmpty()
-                ? ecoNewsService.findAll(pageable)
-                : ecoNewsService.searchEcoNewsBy(pageable, query);
             model.addAttribute("fields", new EcoNewsViewDto());
+        }
+        if (query != null && !query.isEmpty()) {
             model.addAttribute("query", query);
         }
-
-        model.addAttribute("pageable", allEcoNews);
         Sort sort = pageable.getSort();
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
+            boolean isFirstSortProperty = true;
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
+                if (isFirstSortProperty) {
+                    orderUrl.append(order.getProperty()).append(",").append(order.getDirection());
+                    isFirstSortProperty = false;
+                } else {
+                    orderUrl.append("&sort=").append(order.getProperty()).append(",").append(order.getDirection());
+                }
             }
-            model.addAttribute("sortModel", orderUrl);
+            model.addAttribute("sortModel", orderUrl.toString());
         }
-        model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
+        model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags(locale.getLanguage()));
         model.addAttribute("pageSize", pageable.getPageSize());
         return "core/management_eco_news";
     }
@@ -256,5 +264,31 @@ public class ManagementEcoNewsController {
     @ResponseBody
     public Set<UserVO> getDislikesByEcoNewsId(@PathVariable Long id) {
         return ecoNewsService.findUsersWhoDislikedPost(id);
+    }
+
+    /**
+     * Method which hide {@link EcoNewsVO} by given id.
+     *
+     * @param id of Eco New
+     * @return {@link ResponseEntity}
+     */
+    @PatchMapping("/hide")
+    public ResponseEntity<Long> hide(@RequestParam("id") Long id,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        ecoNewsService.setHiddenValue(id, user, true);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    /**
+     * Method which make visible {@link EcoNewsVO} by given id.
+     *
+     * @param id of Eco New
+     * @return {@link ResponseEntity}
+     */
+    @PatchMapping("/show")
+    public ResponseEntity<Long> show(@RequestParam("id") Long id,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        ecoNewsService.setHiddenValue(id, user, false);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }

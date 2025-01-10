@@ -6,7 +6,7 @@
     line-height: 44px;
     letter-spacing: 0.002em;
     text-align: left;
-    color: #000000;
+    color: var(--black);
 }
 
 .light-text, p {
@@ -47,13 +47,13 @@
 
 input[type=range] {
     -webkit-appearance: none;
-    background-color: #13AA57;
+    background-color: var(--green);
     height: 3px;
     border-radius: 2px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
-    background-color: #13AA57;
+    background-color: var(--green);
     -webkit-appearance: none;
     width: 12px;
     height: 12px;
@@ -79,7 +79,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .column table, td, th {
-    border: 1px solid black;
+    border: 1px solid var(--black);
     border-collapse: collapse;
     width: 100%;
 }
@@ -124,7 +124,7 @@ input[type="range"]::-webkit-slider-thumb {
     line-height: 40px;
     letter-spacing: 0.002em;
     text-align: left;
-    color: #000000;
+    color: var(--black);
     margin: 0;
     padding: 0;
 }

@@ -68,8 +68,11 @@ public class HabitAssign {
     @Column(name = "progress_notification_has_displayed", nullable = false)
     private Boolean progressNotificationHasDisplayed;
 
+    @Column(name = "is_private", nullable = false)
+    private Boolean isPrivate;
+
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserShoppingListItem> userShoppingListItems;
+    private List<UserToDoListItem> userToDoListItems;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "habit_id")
@@ -84,4 +87,10 @@ public class HabitAssign {
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
     private List<HabitStatusCalendar> habitStatusCalendars;
+
+    @OneToMany(mappedBy = "inviterHabitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HabitInvitation> invitationsSent;
+
+    @OneToMany(mappedBy = "inviteeHabitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HabitInvitation> invitationsReceived;
 }

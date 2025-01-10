@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -183,15 +184,10 @@ public class DatabaseBackupServiceImpl implements DataBaseBackUpService {
         log.info("Successfully saved backup with id: {}", saved.getId());
     }
 
+    @AllArgsConstructor
     private static class DatabaseDetails {
         String host;
         String port;
         String dbName;
-
-        DatabaseDetails(String host, String port, String dbName) {
-            this.host = host;
-            this.port = port;
-            this.dbName = dbName;
-        }
     }
 }

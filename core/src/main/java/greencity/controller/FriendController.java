@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,13 +66,11 @@ public class FriendController {
     /**
      * Exception for deleting friend with null id.
      *
-     * @param userVO {@link UserVO} user.
      * @author Oleksandr Sokil
      */
-    @DeleteMapping
+    @DeleteMapping({"", "/"})
     @Operation(hidden = true)
-    public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+    public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
@@ -233,10 +230,16 @@ public class FriendController {
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @RequestParam(required = false) @Nullable String name) {
+        @RequestParam(required = false, defaultValue = "") String name,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByFriendsOfFriends,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByCity) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), name,
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
+                userVO.getId(),
+                name,
+                filterByFriendsOfFriends,
+                filterByCity,
                 page));
     }
 
@@ -286,11 +289,13 @@ public class FriendController {
     @GetMapping("/friendRequests")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> getAllUserFriendsRequests(
+        @RequestParam(required = false, defaultValue = "") String name,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.getAllUserFriendRequests(userVO.getId(), page));
+            .body(friendService.getAllUserFriendRequests(userVO.getId(), name, filterByCity, page));
     }
 
     /**
@@ -312,12 +317,16 @@ public class FriendController {
     @GetMapping
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
+        @RequestParam(required = false, defaultValue = "") String name,
+        @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
-        @RequestParam(required = false) @Nullable String name,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
+            .body(friendService.findAllFriendsOfUser(userVO.getId(),
+                name,
+                filterByCity,
+                page));
     }
 
     /**

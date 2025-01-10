@@ -1,11 +1,9 @@
 package greencity.dto.econews;
 
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.HashSet;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -20,7 +18,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(exclude = {"ecoNewsComments", "tags"})
+@EqualsAndHashCode(exclude = {"tags"})
 public class EcoNewsVO {
     private Long id;
 
@@ -35,9 +33,6 @@ public class EcoNewsVO {
     private String title;
 
     private String text;
-
-    @Builder.Default
-    private List<EcoNewsCommentVO> ecoNewsComments = new ArrayList<>();
 
     @Builder.Default
     private Set<UserVO> usersLikedNews = new HashSet<>();

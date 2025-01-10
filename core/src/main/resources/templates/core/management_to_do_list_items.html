@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Goal management</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script th:src="@{/management/todolist/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+</head>
+<body>
+<div id="header" th:insert="~{core/header}"></div>
+<div class="main-content">
+    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2>[[#{greenCity.toDoListItem.page.h}]]</h2>
+                        </div>
+                        <div class="col-sm-6">
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/toDoListItems"
+                                          method="get">
+                                        <!--<i class="material-icons"></i>-->
+                                        <img alt="search" id="btnSearchImage"
+                                             src="/img/search.png">
+                                        <input type="text" name="query" id="inputSearch" class="form-control"
+                                               placeholder="Search…">
+                                    </form>
+                                </span>
+                            <a href="#addToDoListItemModal" id="addToDoListItemModalBtn"
+                               class="btn btn-secondary" data-toggle="modal">
+                                <!--<i class="material-icons">&#xE147;</i>-->
+                                <div>[[#{greenCity.toDoListItem.page.add.toDoListItem}]]</div>
+                            </a>
+                            <a href="#deleteAllSelectedModal" class="btn btn-remove disabled" data-toggle="modal"
+                               id="btnDelete">
+                                <!--<i class="material-icons">&#xE15C;</i>-->
+                                <div>[[#{greenCity.pages.delete}]]</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-bordered">
+                    <thead class="text-align-center">
+                    <tr>
+                        <th rowspan="2">
+                            <span class="custom-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <label for="selectAll"></label>
+                            </span>
+                        </th>
+                        <th rowspan="2" style="width: 5%">[[#{greenCity.pages.table.id}]]</th>
+                        <th colspan="3" style="width: 80%">[[#{greenCity.pages.table.translations}]]</th>
+                        <th rowspan="2" style="width: 10%">[[#{greenCity.pages.table.actions}]]</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 10%">
+                            [[#{greenCity.pages.table.translation.id}]]
+                        </th>
+                        <th style="width: 70%">[[#{greenCity.pages.table.content}]]</th>
+                        <th style="width: 5%">[[#{greenCity.pages.table.language.code}]]
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <form method="POST" action="/management/to-do-list-items/filter" id="searchForm">
+
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+                            </td>
+                            <td colspan="3">
+                                <input type="search" th:name="content" placeholder="Search" style="width: 100%"
+                                       th:value="${fields eq null ? '' : fields.content }"/>
+                            </td>
+                            <td colspan="2">
+                                <button type="submit" id="searchBy"><img alt="search" src="/img/search.png"></button>
+                            </td>
+                        </tr>
+
+                    </form>
+
+                    <th:block th:each="toDoListItem, iterStatus :${toDoListItems.getPage()}">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <span class="custom-checkbox">
+                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                               name="options[]" th:value="${toDoListItem.getId()}"
+                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                </span>
+                            </td>
+                            <td th:text="${toDoListItem.getId()}"></td>
+                            <td colspan="3">
+                                <table class="table table-borderless m-0 table-child">
+                                    <tbody>
+                                    <th:block
+                                            th:each="translation : ${toDoListItem.getTranslations()}">
+                                        <tr>
+                                            <td class="small-column text-right" th:text="${translation.getId()}"></td>
+                                            <td class="text-align-center" th:text="${translation.getContent()}"></td>
+                                            <td class="small-column" th:text="${translation.getLanguage().getCode()}"></td>
+                                        </tr>
+                                    </th:block>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td>
+                                <a th:href="@{/management/to-do-list-items/{id}(id=${toDoListItem.getId()})}"
+                                   class="edit eBtn"><i class="material-icons" data-toggle="tooltip"
+                                                        th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
+                                <a th:href="@{/management/to-do-list-items/{id}(id=${toDoListItem.getId()})}"
+                                   class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
+                                                                                 data-toggle="tooltip"
+                                                                                 th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </th:block>
+                </table>
+                <div class="clearfix">
+                    <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
+                            th:text="${toDoListItems.getTotalElements()>20?20:toDoListItems.getTotalElements()}">5</b>
+                        [[#{greenCity.page.paging.out.of}]] <b
+                                th:text="${toDoListItems.getTotalElements()}">25</b>
+                        [[#{greenCity.page.paging.entries}]]
+                    </div>
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${toDoListItems.getCurrentPage()==0?'disabled':''}"><a
+                                th:href="@{toDoListItems(page=${toDoListItems.getCurrentPage()-1})}"
+                                class="page-link">[[#{greenCity.page.paging.previous}]]</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0,toDoListItems.getTotalPages()-1)}"
+                            th:classappend="${toDoListItems.getCurrentPage()==i?'active':''}"><a
+                                th:href="@{toDoListItems(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                        <li class="page-item"
+                            th:classappend="${toDoListItems.getCurrentPage()==toDoListItems.getTotalPages()-1?'disabled':''}">
+                            <a
+                                    th:href="@{toDoListItems(page=${toDoListItems.getCurrentPage()+1})}"
+                                    class="page-link">[[#{greenCity.page.paging.next}]]</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Modal HTML -->
+    <div id="addToDoListItemModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="addToDoListItemForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">[[#{greenCity.toDoListItem.page.add.toDoListItem}]]</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <th:block th:each="language, iterInfo : ${languages}">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>[[#{greenCity.pages.popup.language.code}]]</label>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required>
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" th:id="id+${language.getCode()}"
+                                       th:name="id+${language.getCode()}" th:value="${language.getId()}">
+                                <div class="col-9">
+                                    <div class="form-group">
+                                        <label>[[#{greenCity.pages.table.content}]]</label>
+                                        <input type="text" class="form-control eEdit"
+                                               th:name="content+${language.getCode()}">
+                                        <span class="errorSpan"
+                                              th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success btn-primary"
+                               th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Modal HTML -->
+    <div id="editToDoListItemModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editToDoListItemForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">[[#{greenCity.toDoListItem.page.edit.toDoListItem}]]</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>ID</label>
+                            <input type="text" class="form-control" id="id" name="id" readonly required>
+                            <span th:id="errorModalUpdateId" class="errorSpan"></span>
+                        </div>
+                        <th:block th:each="language, iterInfo : ${languages}">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>[[#{greenCity.pages.popup.language.code}]]</label>
+                                        <input type="text" class="form-control" th:id="${language.getCode()}"
+                                               th:name="${language.getCode()}" th:value="${language.getCode()}" readonly
+                                               required>
+                                    </div>
+                                    <input type="hidden" class="form-control" th:id="id+${language.getCode()}"
+                                           th:name="id+${language.getCode()}" th:value="${language.getId()}">
+                                </div>
+                                <div class="col-9">
+                                    <div class="form-group">
+                                        <label>[[#{greenCity.pages.table.content}]]</label>
+                                        <input type="text" class="form-control eEdit"
+                                               th:id="content+${language.getCode()}"
+                                               th:name="content+${language.getCode()}">
+                                        <span class="errorSpan"
+                                              th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success btn-primary"
+                               th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal HTML -->
+    <div id="deleteToDoListItemModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="deleteGoalForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">[[#{greenCity.toDoListItem.page.delete.toDoListItem}]]</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteOneSubmit" class="btn btn-remove">
+                            <div>[[#{greenCity.pages.delete}]]</div>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete all selected Modal HTML -->
+    <div id="deleteAllSelectedModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="">
+                    <div class="modal-header">
+                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>[[#{greenCity.pages.popup.delete.all.h2}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h1}]]</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteAllSubmit" class="btn btn-remove">
+                            <div>[[#{greenCity.pages.delete}]]</div>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer" th:insert="~{core/footer}"></div>
+</body>
+</html>

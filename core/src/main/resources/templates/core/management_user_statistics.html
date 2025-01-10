@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset=UTF-8/>
+    <title>User management statistic</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/randomcolor@0.6.2/randomColor.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/11.0.1/gridstack.min.css"
+          integrity="sha512-GEMqAs1Ai2iirp6QhD4N5Qt7tDn1RGgF1CY2xp57LrX3vqTDehSC88IOFewV/L84htjbN7aazcK10FyzH+eXSA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+    <style>
+        .container-xl {
+            padding: 25px;
+        }
+
+        .container-xl > h2 {
+            font-weight: bold;
+            font-size: 32px;
+            color: #13AA57;
+        }
+
+        #menuButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .chart-options h3 {
+            margin-bottom: 10px;
+        }
+
+        .generate-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+
+        .grid-stack {
+            background: #D8D8D8;
+        }
+
+        .grid-stack-item-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFFFFF;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+    <div class="container-xl">
+        <h2>User Statistics</h2>
+        <!-- Menu Button -->
+        <button id="menuButton">☰ Settings</button>
+
+        <!-- Modal Structure -->
+        <div id="settingsModal" class="modal hidden">
+            <div class="modal-content" id="modalContent">
+                <span class="close">&times;</span>
+                <div class="chart-options">
+                    <div class="form-group">
+                        <h3>Registration Chart</h3>
+                        <label for="granularity">Granularity:</label>
+                        <select id="granularity">
+                            <option value="hour">Hour</option>
+                            <option value="day">Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
+                            <option value="year">Year</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">Start Date:</label>
+                        <input type="datetime-local" id="startDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">End Date:</label>
+                        <input type="datetime-local" id="endDate">
+                    </div>
+
+                    <button class="generate-btn" onclick="fetchRegistrationData()">Generate Registration Chart</button>
+                </div>
+
+                <div class="chart-options">
+                    <h3>Location Chart</h3>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="cityCheckbox" value="city"> City</label>
+                        <label><input type="checkbox" id="regionCheckbox" value="region"> Region</label>
+                        <label><input type="checkbox" id="countryCheckbox" value="country"> Country</label>
+                    </div>
+                    <button class="generate-btn" onclick="fetchLocationsData()">Generate Location Chart</button>
+                </div>
+
+                <div class="chart-options">
+                    <h3>Role Chart</h3>
+                    <button class="generate-btn" onclick="fetchRolesData()">Generate Role Chart</button>
+                </div>
+
+                <div class="chart-options">
+                    <h3>Status Chart</h3>
+                    <button class="generate-btn" onclick="fetchStatusesData()">Generate Status Chart</button>
+                </div>
+
+                <div class="chart-options">
+                    <h3>Email Preferences Chart</h3>
+                    <button class="generate-btn" onclick="fetchEmailPreferencesData()">Generate Email Preferences
+                        Chart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-stack" id="chartsGrid"></div>
+    </div>
+
+</div>
+
+<div id="footer" th:insert="core/footer"></div>
+<script type="module">
+    import {GridStack} from 'https://cdn.jsdelivr.net/npm/gridstack@11.0.1/+esm';
+
+    let grid;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        grid = GridStack.init({
+            float: true,
+            removable: true,
+            removeTimeout: 100,
+            resizable: {
+                handles: 'e,se,s,sw,w'
+            }
+        });
+
+    });
+
+    window.addChartToGrid = function (chartId) {
+        if (!document.querySelector(`.grid-stack-item canvas#${chartId}`)) {
+            const widget = document.createElement('div');
+            widget.className = 'grid-stack-item';
+            widget.innerHTML = `
+            <div class="grid-stack-item-content">
+                <button class="delete-btn" onclick="removeWidget(this)">×</button>
+                <canvas id="${chartId}" role="img" aria-label="Statistics">
+                    Your browser does not support the canvas element.
+                </canvas>
+            </div>
+        `;
+            grid.makeWidget(widget);
+        }
+    }
+
+    window.removeWidget = function (btn) {
+        const item = btn.closest('.grid-stack-item');
+        grid.removeWidget(item);
+    }
+</script>
+<script>
+    async function fetchStatusesData() {
+        if (Chart.getChart("statusesChart")) {
+            Chart.getChart("statusesChart")?.destroy()
+        }
+
+        const data = {
+            labels: [],
+            datasets: [{
+                label: 'User Statuses',
+                data: [],
+            }]
+        }
+
+        const config = {
+            type: "doughnut",
+            data: data,
+        }
+
+        const response = await fetch(`statistics/statuses`);
+        if (response.ok) {
+            const data = await response.json();
+            const labels = data.map(stat => stat.status);
+            const counts = data.map(stat => stat.count);
+
+            config.data.labels = labels;
+            config.data.datasets[0].data = counts;
+
+            const chartId = 'statusesChart';
+            addChartToGrid(chartId);
+
+            const ctx = document.getElementById('statusesChart').getContext('2d');
+            new Chart(ctx, config);
+        } else {
+            alert("No data found for the selected period.");
+        }
+    }
+
+
+    async function fetchEmailPreferencesData() {
+        if (Chart.getChart("emailPreferencesChart")) {
+            Chart.getChart("emailPreferences")?.destroy()
+        }
+
+        const data = {
+            labels: [],
+            datasets: [{
+                label: 'User Preferences',
+                data: [],
+            }]
+        }
+
+        const config = {
+            type: "doughnut",
+            data: data,
+        }
+
+        const response = await fetch(`statistics/preferences`);
+        if (response.ok) {
+            const data = await response.json();
+            const labels = data.map(stat => `${stat.emailPreference} - ${stat.periodicity}`);
+            const counts = data.map(stat => stat.count);
+
+            config.data.labels = labels;
+            config.data.datasets[0].data = counts;
+
+            const chartId = 'emailPreferencesChart';
+            addChartToGrid(chartId);
+
+            const ctx = document.getElementById('emailPreferencesChart').getContext('2d');
+            new Chart(ctx, config);
+        } else {
+            alert("No data found for the selected period.");
+        }
+    }
+
+    async function fetchRolesData() {
+        if (Chart.getChart("rolesChart")) {
+            Chart.getChart("rolesChart")?.destroy()
+        }
+
+        const data = {
+            labels: [],
+            datasets: [{
+                label: 'User Roles',
+                data: [],
+            }],
+        }
+
+        const config = {
+            type: "doughnut",
+            data: data
+        }
+
+        const response = await fetch(`statistics/roles`);
+        if (response.ok) {
+            const data = await response.json();
+            const labels = data.map(stat => stat.role);
+            const counts = data.map(stat => stat.count);
+
+            config.data.labels = labels;
+            config.data.datasets[0].data = counts;
+
+            const chartId = 'rolesChart';
+            addChartToGrid(chartId);
+
+            const ctx = document.getElementById('rolesChart').getContext('2d');
+            new Chart(ctx, config);
+        } else {
+            alert("No data found for the selected period.");
+        }
+    }
+
+    function getRandomColors(count) {
+        return randomColor({count: count});
+    }
+
+    async function fetchLocationsData() {
+        const selectedLocationTypes = [];
+        if (document.getElementById('cityCheckbox').checked) selectedLocationTypes.push('city');
+        if (document.getElementById('regionCheckbox').checked) selectedLocationTypes.push('region');
+        if (document.getElementById('countryCheckbox').checked) selectedLocationTypes.push('country');
+
+        if (selectedLocationTypes.length === 0) return;
+
+        if (Chart.getChart("locationsChart")) {
+            Chart.getChart("locationsChart").destroy();
+        }
+
+        const data = {
+            labels: [],
+            datasets: []
+        };
+
+        const config = {
+            type: "doughnut",
+            data: data
+        };
+
+
+        try {
+            const responses = await Promise.all(selectedLocationTypes.map(locationType =>
+                fetch(`statistics/locations?groupBy=${locationType}`)
+            ));
+
+            const labelsSet = new Set();
+            const datasets = [];
+
+            for (let i = 0; i < responses.length; i++) {
+                const locationType = selectedLocationTypes[i];
+                const dataResponse = responses[i];
+
+                if (dataResponse.ok) {
+                    const locationData = await dataResponse.json();
+                    const labels = locationData.map(stat => stat.location);
+                    const counts = locationData.map(stat => stat.count);
+
+                    labels.forEach(label => labelsSet.add(label));
+
+                    const dataset = {
+                        label: `User Locations by ${locationType.charAt(0).toUpperCase() + locationType.slice(1)}`,
+                        data: Array.from(labelsSet).map(label => {
+                            const index = labels.indexOf(label);
+                            return index !== -1 ? counts[index] : 0;
+                        }),
+                        backgroundColor: getRandomColors(labels.length)
+                    };
+
+                    datasets.push(dataset);
+                }
+            }
+
+            data.labels = Array.from(labelsSet);
+            data.datasets = datasets;
+
+            const chartId = 'locationsChart';
+            addChartToGrid(chartId);
+
+            const ctx = document.getElementById('locationsChart').getContext('2d');
+            new Chart(ctx, config);
+
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+            alert("Error fetching location data.");
+        }
+    }
+
+
+    async function fetchRegistrationData() {
+        if (Chart.getChart("registrationChart")) {
+            Chart.getChart("registrationChart")?.destroy()
+        }
+
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const granularity = document.getElementById('granularity').value;
+
+        if (!startDate || !endDate) {
+            alert("Please select both start and end date");
+            return;
+        }
+
+        const response = await fetch(`statistics/registration?startDate=${startDate}&endDate=${endDate}&granularity=${granularity}`);
+        if (response.ok) {
+            const data = await response.json();
+            const labels = data.map(stat => stat.date);
+            const counts = data.map(stat => stat.count);
+            const randomColors = getRandomColors(1);
+
+            const chartId = 'registrationChart';
+            addChartToGrid(chartId);
+
+            const ctx = document.getElementById('registrationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'User Registrations',
+                        data: counts,
+                        backgroundColor: randomColors,
+                        fill: false,
+                        tension: 1
+                    }]
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: granularity
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+
+            });
+        } else {
+            alert("No data found for the selected period.");
+        }
+    }
+
+    document.getElementById('menuButton').addEventListener('click', function () {
+        const modal = document.getElementById('settingsModal');
+        modal.classList.toggle('hidden');
+        modal.style.display = modal.style.display === "block" ? "none" : "block";
+    });
+
+    document.querySelector('.close').addEventListener('click', function () {
+        document.getElementById('settingsModal').classList.add('hidden');
+        document.getElementById('settingsModal').style.display = "none";
+    });
+</script>
+</body>
+</html>

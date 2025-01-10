@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,31 +90,17 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
-    @Override
-    public PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query) {
-        Page<SocialNetworkImage> page = socialNetworkImageRepo.searchBy(paging, query);
-        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = page.stream()
-            .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-            .collect(Collectors.toList());
-        return new PageableDto<>(
-            socialNetworkImageResponseDTOS,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages());
-    }
-
-    /**
      * Method for deleting {@link SocialNetworkImage} by its id.
      *
      * @param id - {@link SocialNetworkImage} instance id which will be deleted.
      */
     @Override
     public void delete(Long id) {
+        SocialNetworkImage image = socialNetworkImageRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));
+        String path = image.getImagePath();
         socialNetworkImageRepo.deleteById(id);
+        fileService.delete(path);
     }
 
     /**
@@ -125,7 +110,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     @Override
     public void deleteAll(List<Long> listId) {
+        List<SocialNetworkImage> images = socialNetworkImageRepo.findAllById(listId);
+        List<String> paths = images.stream().map(image -> image.getImagePath()).toList();
         listId.forEach(socialNetworkImageRepo::deleteById);
+        paths.forEach(fileService::delete);
     }
 
     @Override
