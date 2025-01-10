@@ -187,11 +187,11 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto,
-                                             UserVO userVO);
+        UserVO userVO);
 
     /**
-     * The method finds all {@link GeocodingResult}'s from {@link GoogleApiService} filtered by the parameters contained
-     * in {@param filterDto} object.
+     * The method finds all {@link GeocodingResult}'s from {@link GoogleApiService}
+     * filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine the filter
      *                  parameters of the returned list.
@@ -199,7 +199,7 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto,
-                                             UserVO userVO);
+        UserVO userVO);
 
     /**
      * The method finds all {@link PlaceVO}'s filtered by the parameters contained

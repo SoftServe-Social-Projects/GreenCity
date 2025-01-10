@@ -42,9 +42,9 @@ public class GoogleApiService {
         LOCALES.forEach(locale -> {
             try {
                 GeocodingResult[] results = GeocodingApi.newRequest(context)
-                        .address(searchRequest)
-                        .language(locale.getLanguage())
-                        .await();
+                    .address(searchRequest)
+                    .language(locale.getLanguage())
+                    .await();
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {
                 log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
@@ -54,33 +54,12 @@ public class GoogleApiService {
         return geocodingResults;
     }
 
-/*    public List<GeocodingResult> getResultFromGeoCode(FilterPlacesApiDto filterDto) {
-        List<GeocodingResult> geocodingResults = new ArrayList<>();
-        LOCALES.forEach(locale -> {
-            try {
-                GeocodingResult[] results = GeocodingApi.newRequest(context)
-                        .address(filterDto.getAddress())
-                        .bounds(new LatLng(filterDto.getBounds().getSouthWestLat(), filterDto.getBounds().getSouthWestLng()),
-                                new LatLng(filterDto.getBounds().getNorthEastLat(), filterDto.getBounds().getNorthEastLng()))
-                        .components(filterDto.getComponents())
-                        .region(filterDto.getRegion())
-                        .language(locale.getLanguage())
-                        .await();
-                Collections.addAll(geocodingResults, results);
-            } catch (IOException | InterruptedException | ApiException e) {
-                log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
-                Thread.currentThread().interrupt();
-            }
-        });
-        return geocodingResults;
-    }*/
-
     /**
      * Sends a request to the Google Places API using the given FilterPlacesApiDto.
      *
      * @param filterDto DTO containing filter parameters for the Places API request.
-     * @param userVO contains location of the user. location from userVO
-     *              is used if location in filterDto is null
+     * @param userVO    contains location of the user. location from userVO is used
+     *                  if location in filterDto is null
      * @return List of PlacesSearchResult containing the search results.
      *
      * @author Hrenevych Ivan
@@ -90,11 +69,10 @@ public class GoogleApiService {
         LOCALES.forEach(locale -> {
             try {
                 NearbySearchRequest request = PlacesApi.nearbySearchQuery(
-                            context,
-                            filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO)
-                        )
-                        .radius(filterDto.getRadius())
-                        .language(locale.getLanguage());
+                    context,
+                    filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO))
+                    .radius(filterDto.getRadius())
+                    .language(locale.getLanguage());
 
                 if (filterDto.getKeyword() != null) {
                     request.keyword(filterDto.getKeyword());
@@ -142,7 +120,8 @@ public class GoogleApiService {
      * @return LatLng object representing the location.
      */
     private com.google.maps.model.LatLng getLocationFromUserVO(UserVO userVO) {
-        return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(), userVO.getUserLocationDto().getLongitude());
+        return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(),
+            userVO.getUserLocationDto().getLongitude());
     }
 
     /**

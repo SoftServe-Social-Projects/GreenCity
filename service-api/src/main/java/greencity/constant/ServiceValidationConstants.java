@@ -42,9 +42,6 @@ public class ServiceValidationConstants {
     public static final String S_W_LNG_CAN_NOT_BE_NULL = "{greenCity.validation.notNull.southWestLng}";
     public static final String LAT_MIN_VALIDATION = "{greenCity.validation.min.lat}";
     public static final String LAT_MAX_VALIDATION = "{greenCity.validation.max.lat}";
-    public static final String INVALID_lAT_LNG_FORMAT = "{greenCity.validation.invalid.latlng}";
-    public static final String INVALID_REGION_FORMAT = "{greenCity.validation.invalid.region}";
-    public static final String INVALID_LANGUAGE_FORMAT = "{greenCity.validation.invalid.language}";
     public static final String LNG_MIN_VALIDATION = "{greenCity.validation.min.lng}";
     public static final String LNG_MAX_VALIDATION = "{greenCity.validation.max.lng}";
     public static final String RATE_MIN_VALUE = "{greenCity.validation.min.rate}";

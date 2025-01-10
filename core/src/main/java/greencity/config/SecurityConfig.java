@@ -212,8 +212,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
                     "/place/getListPlaceLocationByMapsBounds",
-                    "/place/filter",
-                    "place/filter/api")
+                    "/place/filter")
                 .permitAll()
                 .requestMatchers(HttpMethod.DELETE,
                     SUBSCRIPTIONS + "/{unsubscribeToken}")
@@ -325,6 +324,7 @@ public class SecurityConfig {
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
+                    "/place/filter/api",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
                     USER_TO_DO_LIST,
                     "/user/{userId}/habit",

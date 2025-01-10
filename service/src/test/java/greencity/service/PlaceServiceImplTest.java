@@ -7,6 +7,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
@@ -64,11 +65,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
 import static greencity.ModelUtils.getSearchPlacesDto;
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlacesSearchResultList;
+import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
+import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -645,6 +652,26 @@ class PlaceServiceImplTest {
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
         verify(modelMapper).map(genericEntity1, PlaceByBoundsDto.class);
+    }
+
+    @Test
+    void getPlacesByFilterFromApiTest() {
+        UserVO userVO = getUserVO();
+        FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
+
+        when(googleApiService.getResultFromPlacesApi(filterDto, userVO)).thenReturn(getPlacesSearchResultList());
+
+        var result = placeService.getPlacesByFilter(filterDto, userVO);
+        List<PlaceByBoundsDto> updatedResult = result.stream().map(el -> {
+            el.setId(1L);
+            el.getLocation().setId(1L);
+            return el;
+        }).toList();
+        List<PlaceByBoundsDto> expectedResult = getPlaceByBoundsDtoFromApi();
+
+        Assertions.assertArrayEquals(updatedResult.toArray(), expectedResult.toArray());
+
+        verify(googleApiService).getResultFromPlacesApi(filterDto, userVO);
     }
 
     @Test

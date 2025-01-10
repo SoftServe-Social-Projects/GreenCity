@@ -21,21 +21,20 @@ public class FilterPlacesApiDto {
     private boolean openNow;
     private PlaceType type;
 
-    //TODO: create default JSON for swagger
     public static final String defaultJson = """
-            {
-              "location": {
-                "lat": 0,
-                "lng": 0
-              },
-              "radius": 0,
-              "rankBy": "PROMINENCE",
-              "keyword": "string",
-              "minPrice": "0",
-              "maxPrice": "4",
-              "name": "string",
-              "openNow": true,
-              "type": "restaurant"
-            }
-            """;
+        {
+          "location": {
+            "lat": 0,
+            "lng": 0
+          },
+          "radius": 0,
+          "rankBy": "PROMINENCE",
+          "keyword": "string",
+          "minPrice": "0",
+          "maxPrice": "4",
+          "name": "string",
+          "openNow": true,
+          "type": "restaurant"
+        }
+        """;
 }
