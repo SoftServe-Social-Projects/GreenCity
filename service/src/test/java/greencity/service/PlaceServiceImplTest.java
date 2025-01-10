@@ -1027,4 +1027,20 @@ class PlaceServiceImplTest {
         Mockito.verify(openingHoursService, Mockito.times(hoursUpdateDtoSet.size()))
             .save(Mockito.any(OpeningHoursVO.class));
     }
+
+    @Test
+    void updateDiscountDoesNotThrowExceptionTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        Set<DiscountValueDto> discounts = new HashSet<>();
+
+        Mockito.when(discountService.findAllByPlaceId(Mockito.anyLong()))
+            .thenReturn(new HashSet<>());
+        Mockito.doAnswer(invocation -> null)
+            .when(discountService).deleteAllByPlaceId(Mockito.anyLong());
+        Mockito.doAnswer(invocation -> null)
+            .when(discountService).save(Mockito.any(DiscountValueVO.class));
+
+        Assertions.assertDoesNotThrow(() -> placeServiceImpl.updateDiscount(discounts, updatedPlace));
+    }
 }

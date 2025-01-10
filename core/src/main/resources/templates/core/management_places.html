@@ -42,9 +42,6 @@
         .no-wrap {
             white-space: nowrap;
         }
-        #placeTable{
-            border: none;
-        }
     </style>
 </head>
 <body>
@@ -334,9 +331,9 @@
                         <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
                     </div>
                     <input id="id" name="id" style="display: none">
-                    <input type="hidden" id="lat" name="lat">
-                    <input type="hidden" id="lng" name="lng">
-                    <input type="hidden" id="addressUa" name="addressUa">
+                    <input type="hidden" id="lat" name="lat" value="0.0">
+                    <input type="hidden" id="lng" name="lng" value="0.0">
+                    <input type="hidden" id="addressUa" name="addressUa" value="sometext">
                     <div class="modal-body">
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.address}]]</label>
