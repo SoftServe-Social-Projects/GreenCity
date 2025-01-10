@@ -1020,11 +1020,11 @@ class PlaceServiceImplTest {
         existingOpeningHoursVO.add(openingHoursVO);
 
         Mockito.when(openingHoursService.findAllByPlaceId(updatedPlace.getId()))
-                .thenReturn(existingOpeningHoursVO);
+            .thenReturn(existingOpeningHoursVO);
 
         placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace);
         Mockito.verify(openingHoursService).deleteAllByPlaceId(updatedPlace.getId());
         Mockito.verify(openingHoursService, Mockito.times(hoursUpdateDtoSet.size()))
-                .save(Mockito.any(OpeningHoursVO.class));
+            .save(Mockito.any(OpeningHoursVO.class));
     }
 }
