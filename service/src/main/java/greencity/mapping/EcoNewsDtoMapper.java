@@ -5,11 +5,12 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import java.util.stream.Collectors;
-
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.CommentStatus;
+import greencity.service.CommentService;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,6 +19,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
+    private final CommentService commentService;
+
+    @Autowired
+    public EcoNewsDtoMapper(@Lazy CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     /**
      * Method for converting {@link EcoNews} into {@link EcoNewsDto}.
      *
@@ -48,9 +56,8 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             .likes(ecoNews.getUsersLikedNews().size())
             .dislikes(ecoNews.getUsersDislikedNews().size())
             .title(ecoNews.getTitle())
-            .countComments(
-                (int) ecoNews.getEcoNewsComments().stream()
-                    .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count())
+            .countComments(commentService.countCommentsForEcoNews(ecoNews.getId()))
+            .hidden(ecoNews.isHidden())
             .build();
     }
 }

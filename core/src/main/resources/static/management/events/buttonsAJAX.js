@@ -5,9 +5,50 @@ function clearAllTagsInTagList() {
     document.getElementById("tagsEdit").innerHTML='';
 }
 
-function getEventTagList() {
+function changeIcons() {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    var fieldIcons = {
+        'id': 'id-icon',
+        'organizer': 'organizer-icon',
+        'title': 'title-icon',
+        'description': 'description-icon',
+        'tags': 'tags-icon'
+    };
 
+    if (sort !== null) {
+        var [field, direction] = sort.split(',');
+        var iconId = fieldIcons[field];
+
+        if (iconId) {
+            var iconElement = document.getElementById(iconId);
+            if (iconElement) {
+                iconElement.className = direction === 'ASC' ? 'fas fa-chevron-up text-success' : 'fas fa-chevron-down text-success';
+            }
+        }
+    }
 }
+
+
+function sortByFieldName(fieldName) {
+    var currentParams = new URLSearchParams(window.location.search);
+    var currentSort = currentParams.get("sort");
+
+    if (currentSort && currentSort.includes(fieldName)) {
+        if (currentSort.includes('ASC')) {
+            currentParams.set("sort", fieldName + ',DESC');
+        } else {
+            currentParams.set("sort", fieldName + ',ASC');
+        }
+    } else {
+        currentParams.set("sort", fieldName + ',ASC');
+    }
+
+    window.location.search = currentParams.toString();
+}
+
+
 
 function sendDataFromSearchForm() {
     let url = "/management/events?";
@@ -41,3 +82,23 @@ function sendDataFromSearchForm() {
         }
     });
 }
+
+function saveItemsOnPage(itemsOnPage) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    localStorage.setItem("size", itemsOnPage);
+    let url = "/management/events?";
+    urlSearch.set("size", itemsOnPage);
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+document.addEventListener("DOMContentLoaded",()=>{
+    let dropDownSize = localStorage.getItem("size") || 20;
+    $("#dropdown-size").text(dropDownSize);
+    changeIcons();
+})

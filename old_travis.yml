@@ -1,7 +1,7 @@
 {
   "os": "linux",
   "jdk": [
-    "openjdk11"
+    "openjdk21"
   ],
   "dist": "trusty",
   "group": "stable",

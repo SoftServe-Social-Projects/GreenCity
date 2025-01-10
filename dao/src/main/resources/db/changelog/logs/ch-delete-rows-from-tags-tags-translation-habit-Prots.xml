@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="nazarprots3" author="Nazar Prots">
+        <sql>
+            DELETE FROM tag_translations
+            WHERE name IN ('Приватна', 'Private');
+        </sql>
+    </changeSet>
+    <changeSet id="nazarprots4" author="Nazar Prots">
+        <sql>
+            DELETE FROM habits_tags WHERE tag_id = 26;
+        </sql>
+
+        <delete tableName="tags">
+            <where>id = 26</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>

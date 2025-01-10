@@ -1,27 +1,17 @@
 package greencity.dto.search;
 
-import greencity.dto.user.EcoNewsAuthorDto;
-import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
 @Builder
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchNewsDto {
-    @Min(0)
     private Long id;
-    @NotEmpty
     private String title;
-    @NotEmpty
-    private EcoNewsAuthorDto author;
-    @NotEmpty
-    private ZonedDateTime creationDate;
-    @NotEmpty
     private List<String> tags;
 }

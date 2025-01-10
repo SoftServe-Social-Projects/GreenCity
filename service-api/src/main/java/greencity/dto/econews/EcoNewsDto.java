@@ -3,10 +3,16 @@ package greencity.dto.econews;
 import greencity.dto.user.EcoNewsAuthorDto;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import lombok.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +39,7 @@ public class EcoNewsDto {
     private String content;
 
     private String shortInfo;
+
     @NotEmpty
     private EcoNewsAuthorDto author;
 
@@ -47,4 +54,6 @@ public class EcoNewsDto {
     private int dislikes;
 
     private int countComments;
+
+    private boolean hidden;
 }

@@ -1,10 +1,9 @@
 package greencity.mapping;
 
+import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import greencity.dto.place.PlaceResponse;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
@@ -14,15 +13,23 @@ import greencity.enums.PlaceStatus;
 public class PlaceMapper extends AbstractConverter<PlaceResponse, Place> {
     @Override
     protected Place convert(PlaceResponse source) {
-        return Place.builder()
-            .name(source.getPlaceName())
-            .openingHoursList(source.getOpeningHoursList().stream().map(hour -> OpeningHours.builder()
-                .openTime(hour.getOpenTime())
-                .closeTime(hour.getCloseTime())
-                .weekDay(hour.getWeekDay())
+        Place place = new Place();
+        place.setName(source.getPlaceName());
+        place.setOpeningHoursList(mapOpeningHoursList(source, place));
+        place.setStatus(PlaceStatus.APPROVED);
+        place.setDescription(source.getDescription());
+        place.setEmail(source.getWebsiteUrl());
+        return place;
+    }
+
+    private Set<OpeningHours> mapOpeningHoursList(PlaceResponse placeResponse, Place place) {
+        return placeResponse.getOpeningHoursList().stream()
+            .map(dto -> OpeningHours.builder()
+                .place(place)
+                .openTime(dto.getOpenTime())
+                .closeTime(dto.getCloseTime())
+                .weekDay(dto.getWeekDay())
                 .build())
-                .collect(Collectors.toSet()))
-            .status(PlaceStatus.APPROVED)
-            .build();
+            .collect(Collectors.toSet());
     }
 }

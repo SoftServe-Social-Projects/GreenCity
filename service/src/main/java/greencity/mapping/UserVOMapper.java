@@ -3,6 +3,7 @@ package greencity.mapping;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
@@ -14,7 +15,6 @@ import greencity.entity.User;
 import greencity.entity.UserLocation;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +39,6 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .id(user.getVerifyEmail().getUser().getId())
                     .name(user.getVerifyEmail().getUser().getName())
                     .build())
-                .expiryDate(user.getVerifyEmail().getExpiryDate())
                 .token(user.getVerifyEmail().getToken())
                 .build() : null)
             .userFriends(user.getUserFriends() != null ? user.getUserFriends()
@@ -60,7 +59,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .dateOfRegistration(user.getDateOfRegistration())
             .userLocationDto(convertUserLocationToDto(user.getUserLocation()))
             .profilePicturePath(user.getProfilePicturePath())
-            .showShoppingList(user.getShowShoppingList())
+            .showToDoList(user.getShowToDoList())
             .showEcoPlace(user.getShowEcoPlace())
             .showLocation(user.getShowLocation())
             .socialNetworks(user.getSocialNetworks() != null ? user.getSocialNetworks()
@@ -102,6 +101,10 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                         .build())
                     .build())
                 .collect(Collectors.toList()) : new ArrayList<>())
+            .languageVO(user.getLanguage() != null ? LanguageVO.builder()
+                .id(user.getLanguage().getId())
+                .code(user.getLanguage().getCode())
+                .build() : null)
             .build();
     }
 

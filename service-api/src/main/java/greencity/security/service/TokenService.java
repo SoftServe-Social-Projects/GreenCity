@@ -1,6 +1,6 @@
 package greencity.security.service;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Service that provides a token transfer to cookies.

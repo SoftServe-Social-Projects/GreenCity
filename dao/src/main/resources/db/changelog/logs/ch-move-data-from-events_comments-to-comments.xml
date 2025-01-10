@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="1-insert-data-from-events_comments-into-comments" author="Ivan Holotsvan">
+        <sql>
+            ALTER TABLE comments ADD COLUMN old_id BIGINT;
+        </sql>
+        <sql>
+            INSERT INTO comments (article_type, article_id, text, user_id, created_date, modified_date, status, parent_comment_id, old_id)
+            SELECT
+                'EVENT' AS article_type,
+                event_id AS article_id,
+                text,
+                user_id,
+                created_date,
+                modified_date,
+                status,
+                NULL AS parent_comment_id,
+                id AS old_id
+            FROM
+                events_comment;
+        </sql>
+    </changeSet>
+    <changeSet id="2-update-parent-comment-relationships" author="Ivan Holotsvan">
+        <sql>
+            UPDATE comments c
+            SET parent_comment_id = parent_c.id
+                FROM comments parent_c
+            WHERE c.old_id IS NOT NULL
+              AND parent_c.old_id = (SELECT ec.parent_comment_id FROM events_comment ec WHERE ec.id = c.old_id)
+              AND c.article_type = 'EVENT'
+              AND c.parent_comment_id IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet id="3-migrate-likes" author="Ivan Holotsvan">
+        <sql>
+            INSERT INTO comments_users_likes (comment_id, user_id)
+            SELECT
+                c.id AS comment_id,
+                ecl.users_id AS user_id
+            FROM
+                events_comment ec
+                    JOIN
+                comments c ON ec.id = c.old_id
+                    JOIN
+                events_comment_users_likes ecl ON ec.id = ecl.event_comment_id;
+        </sql>
+    </changeSet>
+    <changeSet id="4-drop-old-id-column" author="Ivan Holotsvan">
+        <sql>
+            ALTER TABLE comments DROP COLUMN old_id;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

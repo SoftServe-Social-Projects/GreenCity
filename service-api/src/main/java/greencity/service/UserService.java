@@ -1,14 +1,16 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +31,6 @@ public interface UserService {
      *
      * @param email - {@link UserVO}'s email
      * @return {@link Optional} of found {@link UserVO}.
-     * @author Vasyl Zhovnir
      */
     Optional<UserVO> findNotDeactivatedByEmail(String email);
 
@@ -38,7 +39,6 @@ public interface UserService {
      *
      * @param email - {@link UserVO} email
      * @return {@link UserVO} id
-     * @author Zakhar Skaletskyi
      */
     Long findIdByEmail(String email);
 
@@ -47,7 +47,6 @@ public interface UserService {
      *
      * @param userId               - {@link UserVO}'s id
      * @param userLastActivityTime - new {@link UserVO}'s last activity time
-     * @author Yurii Zhurakovskyi
      */
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
@@ -79,11 +78,11 @@ public interface UserService {
     /**
      * Update {@code ROLE} of user.
      *
-     * @deprecated updates like this on User entity should be handled in
-     *             GreenCityUser via RestClient.
      * @param id   {@link UserVO} id.
      * @param role {@link Role} for user.
      * @return {@link UserRoleDto}
+     * @deprecated updates like this on User entity should be handled in
+     *             GreenCityUser via RestClient.
      */
     @Deprecated
     UserRoleDto updateRole(Long id, Role role, String email);
@@ -123,19 +122,43 @@ public interface UserService {
     void updateEventOrganizerRating(Long userId, Double rate);
 
     /**
-     * Method that returns list of users filtered by criteria.
+     * Method that returns a paginated list of users filtered by specified criteria.
      *
-     * @param criteria value which we used to filter users.
+     * @param request  request for searching related data
+     * @param pageable pagination information including page number, size, and
+     *                 sorting options.
+     *
+     * @return a {@link PageableDetailedDto} containing a list of
+     *         {@link UserManagementVO} filtered by the given criteria, role, and
+     *         status, along with pagination details.
+     *
+     * @author Anton Bondar
      */
-    PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
+    PageableDetailedDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable);
 
     /**
      * Method that update user's rating.
      *
      * @param userId current user's id.
      * @param rating rating.
-     *
-     * @author Anton Bondar.
      */
     void updateUserRating(Long userId, Double rating);
+
+    /**
+     * Find list of {@link UserVO}'s by emails.
+     *
+     * @param emails user emails.
+     * @return list of {@link UserVO}.
+     */
+    List<UserVO> findByEmails(List<String> emails);
+
+    /**
+     * Find list of user ids by emailPreference and periodicity.
+     *
+     * @param emailPreference of user.
+     * @param periodicity     of notification.
+     * @return list of {@link UserVO}.
+     */
+    List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
+        EmailPreferencePeriodicity periodicity);
 }

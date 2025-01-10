@@ -1,21 +1,22 @@
 package greencity.filters;
 
-import static org.mockito.Mockito.*;
-
-import greencity.achievement.AchievementCalculation;
-import greencity.enums.RatingCalculationEnum;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.entity.RatingStatistics_;
 import greencity.entity.User;
 import greencity.entity.User_;
+import greencity.entity.RatingPoints;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.SingularAttribute;
-
-import greencity.rating.RatingCalculation;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ class RatingStatisticsSpecificationTest {
     private Path<Object> pathRatingStatisticsRatingMock;
 
     @Mock
-    private Path<Object> pathRatingStatisticsEnumMock;
+    private Path<Object> pathRatingPointsNameMock;
 
     @Mock
     private Path<Long> pathUserIdMock;
@@ -71,6 +72,9 @@ class RatingStatisticsSpecificationTest {
     private Join<RatingStatistics, User> userJoinMock;
 
     @Mock
+    private Join<RatingStatistics, RatingPoints> ratingPointsJoinMock;
+
+    @Mock
     private SingularAttribute<RatingStatistics, User> user;
 
     @Mock
@@ -82,10 +86,6 @@ class RatingStatisticsSpecificationTest {
     private RatingStatisticsSpecification ratingStatisticsSpecification;
 
     private List<SearchCriteria> criteriaList;
-    @Mock
-    RatingCalculation ratingCalculation;
-    @Mock
-    AchievementCalculation achievementCalculation;
 
     @BeforeEach
     void setUp() {
@@ -101,8 +101,8 @@ class RatingStatisticsSpecificationTest {
                 .build());
         criteriaList.add(
             SearchCriteria.builder()
-                .key(RatingStatistics_.RATING_CALCULATION_ENUM)
-                .type("enum")
+                .key(RatingStatistics_.RATING_POINTS)
+                .type(RatingStatistics_.RATING_POINTS)
                 .value(ratingStatisticsViewDto.getEventName())
                 .build());
         criteriaList.add(
@@ -132,6 +132,8 @@ class RatingStatisticsSpecificationTest {
 
     @Test
     void toPredicate() {
+        String eventNameLowerCase = criteriaList.get(1).getValue().toString().toLowerCase();
+        Path<String> lowerPathMock = mock(Path.class);
 
         when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
 
@@ -142,15 +144,14 @@ class RatingStatisticsSpecificationTest {
 
         when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);
 
-        when(ratingStatisticsRootMock.get(RatingStatistics_.RATING_CALCULATION_ENUM))
-            .thenReturn(pathRatingStatisticsEnumMock);
+        when(ratingStatisticsRootMock.join(RatingStatistics_.ratingPoints)).thenReturn(ratingPointsJoinMock);
 
-        when(criteriaBuilderMock.disjunction()).thenReturn(predicateMock);
+        when(ratingPointsJoinMock.get("name")).thenReturn(pathRatingPointsNameMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.UNDO_COMMENT_OR_REPLY))
+        when(criteriaBuilderMock.lower(any())).thenReturn(lowerPathMock);
+
+        when(criteriaBuilderMock.like(lowerPathMock, "%" + eventNameLowerCase + "%"))
             .thenReturn(andEventNamePredicate);
-
-        when(criteriaBuilderMock.or(predicateMock, andEventNamePredicate)).thenReturn(andEventNamePredicate);
 
         when(criteriaBuilderMock.and(andIdNumericPredicate, andEventNamePredicate)).thenReturn(andEventNamePredicate);
 
@@ -179,13 +180,13 @@ class RatingStatisticsSpecificationTest {
 
         ratingStatisticsSpecification.toPredicate(ratingStatisticsRootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        verify(userJoinMock, never()).get(User_.email);
-        verify(ratingStatisticsRootMock, never()).get(RatingStatistics_.POINTS_CHANGED);
+        verify(ratingStatisticsRootMock, never()).get(RatingStatistics_.RATING_POINTS);
+        verify(ratingPointsJoinMock).get("name");
+        verify(criteriaBuilderMock).like(lowerPathMock, "%" + eventNameLowerCase + "%");
         verify(criteriaBuilderMock).and(predicateMock, andIdNumericPredicate);
         verify(criteriaBuilderMock).and(andIdNumericPredicate, andEventNamePredicate);
         verify(criteriaBuilderMock).and(andEventNamePredicate, andUserIdPredicate);
         verify(criteriaBuilderMock).and(andUserIdPredicate, andDataRangePredicate);
         verify(criteriaBuilderMock).and(andDataRangePredicate, andCurrentRatingPredicate);
-
     }
 }

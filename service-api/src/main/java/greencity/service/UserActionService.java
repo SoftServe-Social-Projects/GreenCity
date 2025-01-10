@@ -51,7 +51,7 @@ public interface UserActionService {
      * for persisting a new user action associated with the specified user,
      * category, and habit. It encapsulates the creation logic and ensures that the
      * action is valid and properly recorded in the database.
-     * 
+     *
      * @param userId     The ID of the user performing the action.
      * @param categoryId The ID of the category associated with the action.
      * @param habitId    The ID of the habit related to the action.

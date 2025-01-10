@@ -1,19 +1,8 @@
 package greencity.service;
 
-import greencity.dto.place.PlaceVO;
-import greencity.message.GeneralEmailMessage;
-
-import java.util.Set;
+import greencity.dto.notification.EmailNotificationDto;
 
 public interface NotificationService {
-    /**
-     * Method for sending report about new places immediately to {@code User}'s who
-     * subscribed and has {@code EmailNotification} type - IMMEDIATELY.
-     *
-     * @param newPlace - new {@code Place} which was added on the map
-     */
-    void sendImmediatelyReport(PlaceVO newPlace);
-
     /**
      * Method for sending report about new places at 12:00:00pm every day to
      * {@code User}'s who subscribed and has {@code EmailNotification} type - DAILY.
@@ -35,20 +24,52 @@ public interface NotificationService {
     void sendMonthlyReport();
 
     /**
-     * method sends a general email notification to many Users.
-     *
-     * @param usersEmails {@link Set} to this users email will be sent.
-     * @param subject     subject of email message.
-     * @param message     text of email message.
-     * @author Yurii Midianyi
+     * Method for sending scheduled email to user has unread notifications connected
+     * with likes. Sending is performed 2 times a day.
      */
-    void sendEmailNotification(Set<String> usersEmails, String subject, String message);
+    void sendLikeScheduledEmail();
 
     /**
-     * method sends a general email notification to one User.
-     *
-     * @param generalEmailMessage {@link GeneralEmailMessage}.
-     * @author Yurii Midianyi
+     * Method for sending scheduled email to user has unread notifications connected
+     * with comments. Sending is performed 2 times a day.
      */
-    void sendEmailNotification(GeneralEmailMessage generalEmailMessage);
+    void sendCommentScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with comment replies. Sending is performed 2 times a day.
+     */
+    void sendCommentReplyScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with friend requests. Sending is performed 2 times a day.
+     */
+    void sendFriendRequestScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with tagging in the comment. Sending is performed 2 times a day.
+     */
+    void sendTaggedInCommentScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with habit assign invites. Sending is performed 2 times a day.
+     */
+    void sendHabitInviteScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with system notifications. Sending is performed 2 times a day.
+     */
+    void sendSystemNotificationsScheduledEmail();
+
+    /**
+     * Method for sending an email notification to one User. Method retrieve
+     * notification type and send email to user immediately.
+     *
+     * @param notification {@link EmailNotificationDto}.
+     */
+    void sendEmailNotification(EmailNotificationDto notification);
 }

@@ -1,8 +1,9 @@
 package greencity.filters;
 
-import lombok.*;
-
-import java.util.Arrays;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import java.util.Objects;
 
 @Builder
@@ -22,14 +23,17 @@ public class SearchCriteria {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         SearchCriteria that = (SearchCriteria) o;
-        boolean valueEquals;
-        if (this.value instanceof String[]) {
-            valueEquals = Arrays.equals((String[]) this.value, (String[]) that.value);
-        } else {
-            valueEquals = this.value.equals(that.value);
+
+        if (!Objects.equals(value, that.value)) {
+            return false;
         }
-        return valueEquals && key.equals(that.key) && type.equals(that.type);
+        if (!Objects.equals(key, that.key)) {
+            return false;
+        }
+        return Objects.equals(type, that.type) && Objects.equals(value, that.value)
+            && Objects.equals(key, that.key);
     }
 
     @Override

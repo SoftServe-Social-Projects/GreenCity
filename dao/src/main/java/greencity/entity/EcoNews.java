@@ -2,10 +2,15 @@ package greencity.entity;
 
 import java.util.HashSet;
 import java.util.Set;
-import lombok.*;
-import javax.persistence.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import jakarta.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,6 +35,7 @@ public class EcoNews {
 
     @Column
     private String source;
+
     @Column
     private String shortInfo;
 
@@ -42,13 +48,14 @@ public class EcoNews {
     @Column(nullable = false)
     private String text;
 
-    @OneToMany(mappedBy = "ecoNews", fetch = FetchType.LAZY)
-    private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();
+    @Column(nullable = false)
+    private boolean hidden = false;
 
     @ManyToMany
     private List<Tag> tags;
 
     @ManyToMany
+    @Builder.Default
     @JoinTable(
         name = "eco_news_users_likes",
         joinColumns = @JoinColumn(name = "eco_news_id"),
@@ -56,9 +63,17 @@ public class EcoNews {
     private Set<User> usersLikedNews = new HashSet<>();
 
     @ManyToMany
+    @Builder.Default
     @JoinTable(
         name = "eco_news_users_dislikes",
         joinColumns = @JoinColumn(name = "eco_news_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersDislikedNews = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Builder.Default
+    @JoinTable(name = "eco_news_followers",
+        joinColumns = @JoinColumn(name = "eco_news_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private Set<User> followers = new HashSet<>();
 }

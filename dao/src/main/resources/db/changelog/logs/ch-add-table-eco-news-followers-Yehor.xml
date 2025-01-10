@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Yehor" author="Yehorov">
+        <createTable tableName="eco_news_followers">
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="eco_news_followers"
+                       columnNames="eco_news_id, users_id"/>
+        <addForeignKeyConstraint baseTableName="eco_news_followers"
+                                 baseColumnNames="eco_news_id"
+                                 constraintName="fk_eco_news_followers_eco_news_id"
+                                 referencedTableName="eco_news"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="eco_news_followers"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_eco_news_followers_users_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

@@ -4,10 +4,10 @@ import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +26,9 @@ public class HabitManagementDto implements Serializable {
     private Integer complexity;
     @Valid
     private List<HabitTranslationManagementDto> habitTranslations;
-    @NotNull
+    @Min(value = 7, message = ServiceValidationConstants.HABIT_DEFAULT_DURATION)
+    @Max(value = 56, message = ServiceValidationConstants.HABIT_DEFAULT_DURATION)
     private Integer defaultDuration;
+    private Boolean isCustomHabit;
+    private Boolean isDeleted;
 }

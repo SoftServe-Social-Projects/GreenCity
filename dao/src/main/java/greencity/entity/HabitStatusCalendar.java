@@ -1,12 +1,12 @@
 package greencity.entity;
 
 import java.time.LocalDate;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"habitAssign"})
 @Getter
 @Setter
 @Builder
@@ -21,5 +21,6 @@ public class HabitStatusCalendar {
     private LocalDate enrollDate;
 
     @ManyToOne
+    @JoinColumn(name = "habit_assign_id")
     private HabitAssign habitAssign;
 }

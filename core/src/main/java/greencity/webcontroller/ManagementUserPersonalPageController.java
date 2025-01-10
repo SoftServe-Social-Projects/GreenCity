@@ -9,12 +9,15 @@ import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.service.*;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -32,15 +35,15 @@ public class ManagementUserPersonalPageController {
      * Method that returns management page of a {@link UserVO}.
      *
      * @param id    Path variable - id of user
-     * @param query Query for searching related data
      * @param model Model that will be configured and returned to user.
      *
      * @return View template path {@link String}.
      */
     @GetMapping
-    public String getUserById(@PathVariable Long id,
-        @RequestParam(required = false, name = "query") String query, Model model,
-        @ApiIgnore @ValidLanguage Locale locale) {
+    public String getUserById(
+        Model model,
+        @PathVariable Long id,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         UserVO user = userService.findById(id);
 
         List<HabitAssignDto> acquiredHabits = habitAssignService
@@ -51,7 +54,7 @@ public class ManagementUserPersonalPageController {
             .getAllHabitAssignsByUserIdAndCancelledStatus(id, locale.getLanguage());
         List<HabitAssignDto> customHabits = habitAssignService
             .getAllCustomHabitAssignsByUserId(id, locale.getLanguage());
-        List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllPublishedNewsByUserId(user.getId());
+        List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllByUser(user);
         List<PlaceVO> createdEcoPlaces = placeService.getAllCreatedPlacesByUserId(user.getId());
 
         model.addAttribute("user", user);
@@ -61,6 +64,7 @@ public class ManagementUserPersonalPageController {
         model.addAttribute("customHabits", customHabits);
         model.addAttribute("publishedEcoNews", publishedEcoNews);
         model.addAttribute("createdEcoPlaces", createdEcoPlaces);
+
         return "core/management_user_personal_page";
     }
 

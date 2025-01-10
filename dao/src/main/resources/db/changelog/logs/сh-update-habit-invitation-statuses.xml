@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="update-habit-invitations-statuses" author="Ivan Holotsvan">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="habit_invitations"/>
+            <tableExists tableName="habit_assign"/>
+            <columnExists tableName="habit_invitations" columnName="status"/>
+        </preConditions>
+
+        <sql>
+            UPDATE habit_invitations
+            SET status = CASE
+                WHEN habit_assign.status = 'INPROGRESS' THEN 'ACCEPTED'
+                WHEN habit_assign.status = 'REQUESTED' THEN 'PENDING'
+            END
+            FROM habit_assign
+            WHERE habit_invitations.invitee_habit_assign_id = habit_assign.id
+            AND habit_invitations.status IS NULL
+            AND habit_assign.status IN ('INPROGRESS','REQUESTED')
+        </sql>
+    </changeSet>
+</databaseChangeLog>

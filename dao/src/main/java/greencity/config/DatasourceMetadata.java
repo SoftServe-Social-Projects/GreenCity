@@ -1,9 +1,10 @@
 package greencity.config;
 
+import greencity.exception.exceptions.FailedToObtainDatasourceTimezone;
 import java.time.ZoneId;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,19 +20,9 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
  */
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class DatasourceMetadata {
     private final JdbcTemplate jdbcTemplate;
-
-    /**
-     * Constructor.
-     *
-     * @param jdbcTemplate {@link JdbcTemplate}
-     */
-
-    @Autowired
-    public DatasourceMetadata(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     /**
      * Gets zoneId of the database. WARNING: this method uses native query for
@@ -68,16 +59,5 @@ public class DatasourceMetadata {
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements_reset.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/fn_recommended_friends.sql"));
         databasePopulator.execute(Objects.requireNonNull(jdbcTemplate.getDataSource()));
-    }
-
-    public static class FailedToObtainDatasourceTimezone extends RuntimeException {
-        /**
-         * Constructor.
-         *
-         * @param message {@link String} why the exception happened.
-         */
-        public FailedToObtainDatasourceTimezone(String message) {
-            super(message);
-        }
     }
 }

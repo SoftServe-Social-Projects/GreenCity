@@ -2,8 +2,13 @@ package greencity.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -28,8 +33,10 @@ public class Category {
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory")
+    @Builder.Default
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "category")
+    @Builder.Default
     private List<Place> places = new ArrayList<>();
 }

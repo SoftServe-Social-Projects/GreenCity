@@ -13,17 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FilterServiceImplTest {
-
     @Mock
     private FilterRepo filterRepo;
 
@@ -53,6 +50,21 @@ class FilterServiceImplTest {
         verify(modelMapper).map(dto, Filter.class);
         verify(userRepo).findById(1L);
         verify(filterRepo).save(filter);
+        verify(modelMapper).map(filter, UserFilterDtoResponse.class);
+    }
+
+    @Test
+    void saveTestThreeFilters() {
+        UserFilterDtoRequest dto = ModelUtils.getUserFilterDtoRequest();
+        Filter filter = ModelUtils.getFilter();
+        when(filterRepo.getAllFilters(1L)).thenReturn(List.of(filter, filter, filter));
+        when(modelMapper.map(filter, UserFilterDtoResponse.class)).thenReturn(ModelUtils.getUserFilterDtoResponse());
+
+        UserFilterDtoResponse dtoResponse = filterServiceImpl.save(1L, dto);
+
+        assertEquals(dtoResponse, ModelUtils.getUserFilterDtoResponse());
+
+        verify(filterRepo).getAllFilters(anyLong());
         verify(modelMapper).map(filter, UserFilterDtoResponse.class);
     }
 
@@ -89,5 +101,4 @@ class FilterServiceImplTest {
         filterServiceImpl.deleteFilterById(filter.getId());
         verify(filterRepo, times(1)).findById(1L);
     }
-
 }

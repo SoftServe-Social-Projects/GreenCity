@@ -8,49 +8,54 @@ import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.ImageUrlParseException;
 import greencity.exception.exceptions.NotSavedException;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.PropertyResolver;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class AzureCloudStorageService implements FileService {
-    private final String connectionString;
-    private final String containerName;
     private final ModelMapper modelMapper;
 
+    @Value("${azure.connection.string}")
+    private String connectionString;
+
+    @Value("${azure.container.name}")
+    private String containerName;
+
     /**
-     * Constructor with parameters.
+     * {@inheritDoc}
      */
-    public AzureCloudStorageService(@Autowired PropertyResolver propertyResolver,
-        ModelMapper modelMapper) {
-        this.connectionString = propertyResolver.getProperty("azure.connection.string");
-        this.containerName = propertyResolver.getProperty("azure.container.name");
-        this.modelMapper = modelMapper;
+    public String upload(MultipartFile file) {
+        return upload(List.of(file)).getFirst();
     }
 
     /**
      * {@inheritDoc}
      */
-
-    public String upload(MultipartFile multipartFile) {
-        final String blob = UUID.randomUUID().toString();
-        BlobClient client = containerClient()
-            .getBlobClient(blob + multipartFile.getOriginalFilename());
-        try {
-            client.upload(new BufferedInputStream(multipartFile.getInputStream()), multipartFile.getSize());
-        } catch (IOException e) {
-            throw new NotSavedException(ErrorMessage.FILE_NOT_SAVED);
-        }
-        return client.getBlobUrl();
+    public List<String> upload(List<MultipartFile> files) {
+        return files.stream()
+            .map(pic -> {
+                String blob = UUID.randomUUID().toString();
+                BlobClient client = containerClient()
+                    .getBlobClient(blob + pic.getOriginalFilename());
+                try {
+                    client.upload(new BufferedInputStream(pic.getInputStream()), pic.getSize());
+                } catch (IOException e) {
+                    throw new NotSavedException(ErrorMessage.FILE_NOT_SAVED);
+                }
+                return client.getBlobUrl();
+            })
+            .toList();
     }
 
     private BlobContainerClient containerClient() {

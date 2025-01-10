@@ -1,12 +1,8 @@
 package greencity.exception.exceptions;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
+import lombok.experimental.StandardException;
 
+@StandardException
 public class EventDtoValidationException extends ValidationException {
-    /**
-     * Exception we get when we receive where incorrect EventDto passed in request.
-     */
-    public EventDtoValidationException(String message) {
-        super(message);
-    }
 }

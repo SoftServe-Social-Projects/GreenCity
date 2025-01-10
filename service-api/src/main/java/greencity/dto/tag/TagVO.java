@@ -5,7 +5,6 @@ import greencity.dto.event.EventVO;
 import greencity.dto.habit.HabitVO;
 import java.util.List;
 import java.util.Set;
-
 import greencity.enums.TagType;
 import lombok.*;
 

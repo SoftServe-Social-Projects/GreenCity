@@ -1,10 +1,8 @@
 package greencity.mapping;
 
 import java.util.Optional;
-
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import greencity.dto.tag.NewTagDto;
 import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;

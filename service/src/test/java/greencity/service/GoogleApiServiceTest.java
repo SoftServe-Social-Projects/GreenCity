@@ -44,8 +44,8 @@ class GoogleApiServiceTest {
             GeocodingApiRequest requestEn = mock(GeocodingApiRequest.class);
             when(GeocodingApi.newRequest(context)).thenReturn(request);
             when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(new Locale("uk").getLanguage())).thenReturn(request);
-            when(request.language(new Locale("en").getLanguage())).thenReturn(requestEn);
+            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
+            when(request.language(Locale.of("en").getLanguage())).thenReturn(requestEn);
             when(request.await()).thenReturn(ModelUtils.getGeocodingResultUk());
             when(requestEn.await()).thenReturn(ModelUtils.getGeocodingResultEn());
             assertEquals(expected, googleApiService.getResultFromGeoCodeByCoordinates(latLng));
@@ -63,7 +63,7 @@ class GoogleApiServiceTest {
             GeocodingApiRequest request = mock(GeocodingApiRequest.class);
             when(GeocodingApi.newRequest(context)).thenReturn(request);
             when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(new Locale("uk").getLanguage())).thenReturn(request);
+            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
             when(request.await()).thenThrow(ApiException.class);
             assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
             verify(request, times(1)).await();
@@ -78,13 +78,13 @@ class GoogleApiServiceTest {
             GeocodingApiRequest request = mock(GeocodingApiRequest.class);
             when(GeocodingApi.newRequest(context)).thenReturn(request);
             when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(new Locale("uk").getLanguage())).thenReturn(request);
+            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
             when(request.await()).thenReturn(new GeocodingResult[0]);
 
             assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
 
             verify(request).latlng(latLng);
-            verify(request).language(new Locale("uk").getLanguage());
+            verify(request).language(Locale.of("uk").getLanguage());
             verify(request).await();
         }
     }
@@ -97,13 +97,13 @@ class GoogleApiServiceTest {
             GeocodingApiRequest request = mock(GeocodingApiRequest.class);
             when(GeocodingApi.newRequest(context)).thenReturn(request);
             when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(new Locale("uk").getLanguage())).thenReturn(request);
+            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
             when(request.await()).thenReturn(null);
 
             assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
 
             verify(request).latlng(latLng);
-            verify(request).language(new Locale("uk").getLanguage());
+            verify(request).language(Locale.of("uk").getLanguage());
             verify(request).await();
         }
     }

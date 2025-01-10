@@ -8,10 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,6 +30,7 @@ class CustomUserRepoImplTest {
     void fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUserTest() {
         long userId = 1L;
         List<User> users = List.of(ModelUtils.getUser());
+        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
         TypedQuery<UserFriendDto> query = mock(TypedQuery.class);
 
         when(entityManager.createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
@@ -37,7 +39,7 @@ class CustomUserRepoImplTest {
         customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
-        verify(query).setParameter("users", users);
+        verify(query).setParameter("users", userIds);
     }
 
     @Test
@@ -52,7 +54,7 @@ class CustomUserRepoImplTest {
         customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
-        verify(query).setParameter("users", List.of(-1));
+        verify(query).setParameter("users", Collections.singletonList(-1L));
     }
 
     @Test

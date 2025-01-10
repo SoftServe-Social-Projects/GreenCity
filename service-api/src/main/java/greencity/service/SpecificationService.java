@@ -7,7 +7,7 @@ import java.util.List;
 public interface SpecificationService {
     /**
      * Save SpecificationVO to DB.
-     * 
+     *
      * @param specificationVO - of Specification.
      * @return saved {@link SpecificationVO }.
      */

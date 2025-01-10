@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="changeContentField2" author="ChekhovskaMaryna">
+        <dropNotNullConstraint tableName="chat_messages" columnName="content" columnDataType="TEXT"/>
+    </changeSet>
+
+    <changeSet id="createTriggerAndFunctionForContentCheck" author="ChekhovskaMaryna">
+        <createProcedure>
+            <![CDATA[
+            CREATE OR REPLACE FUNCTION content_null_check()
+                RETURNS TRIGGER AS $$
+            BEGIN
+                    IF NEW.content IS NULL AND NEW.file_url IS NULL THEN
+                        RAISE EXCEPTION 'content cannot be NULL if file_url is also NULL';
+            END IF;
+            RETURN NEW;
+            END;
+                $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER content_null_check_before_insert
+                BEFORE INSERT ON chat_messages
+                FOR EACH ROW
+                EXECUTE FUNCTION content_null_check();
+
+            CREATE TRIGGER content_null_check_before_update
+                BEFORE UPDATE ON chat_messages
+                FOR EACH ROW
+                EXECUTE FUNCTION content_null_check();
+            ]]>
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>

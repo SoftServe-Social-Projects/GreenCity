@@ -5,28 +5,26 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.AchievementCategory;
 import greencity.entity.Habit;
 import greencity.entity.UserAction;
-import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserActionRepo;
 import greencity.repository.UserRepo;
+import java.util.Collections;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-
-import java.util.Collections;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 @ExtendWith(MockitoExtension.class)
 class UserActionServiceImplTest {
@@ -106,6 +104,8 @@ class UserActionServiceImplTest {
             .achievementCategory(AchievementCategory.builder()
                 .id(1L)
                 .name("HABIT")
+                .title("Набудь Звички")
+                .titleEn("Acquire Habits")
                 .achievementList(Collections.emptyList())
                 .build())
             .count(0)

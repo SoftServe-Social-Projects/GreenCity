@@ -2,13 +2,10 @@ package greencity.dto.place;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
-
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.openhours.OpeningHoursDto;
 import lombok.AllArgsConstructor;
@@ -33,8 +30,11 @@ public class AddPlaceDto {
     private String categoryName;
 
     @Valid
+    @Builder.Default
     @Size(min = 1, message = ServiceValidationConstants.BAD_OPENING_HOURS_LIST_REQUEST)
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
     private String locationName;
+    private String description;
+    private String websiteUrl;
 }

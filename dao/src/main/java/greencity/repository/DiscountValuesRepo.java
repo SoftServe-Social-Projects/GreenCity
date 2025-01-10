@@ -12,7 +12,7 @@ public interface DiscountValuesRepo extends JpaRepository<DiscountValue, Long> {
      * {@code Place}.
      *
      * @param placeId to find by.
-     * @return a list of the {@code DiscountValue} for the place by id.
+     * @return a set of the {@code DiscountValue} for the place by id.
      */
     Set<DiscountValue> findAllByPlaceId(Long placeId);
 

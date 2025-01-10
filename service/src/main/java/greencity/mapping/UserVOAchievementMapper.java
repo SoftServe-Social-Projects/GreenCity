@@ -7,7 +7,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import java.util.stream.Collectors;
 
 @Component

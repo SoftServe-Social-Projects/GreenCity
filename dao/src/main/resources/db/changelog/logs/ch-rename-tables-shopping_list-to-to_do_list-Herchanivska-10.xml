@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Herchanivska-10" author="Viktoriia Herchanivska">
+        <renameTable oldTableName="custom_shopping_list_items" newTableName="custom_to_do_list_items"/>
+        <renameTable oldTableName="habit_shopping_list_items" newTableName="habit_to_do_list_items"/>
+        <renameTable oldTableName="shopping_list_items" newTableName="to_do_list_items"/>
+        <renameTable oldTableName="user_shopping_list" newTableName="user_to_do_list"/>
+        <renameTable oldTableName="shopping_list_item_translations" newTableName="to_do_list_item_translations"/>
+
+        <renameColumn tableName="habit_to_do_list_items" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>
+        <renameColumn tableName="users" oldColumnName="show_shopping_list" newColumnName="show_to_do_list"/>
+        <renameColumn tableName="user_to_do_list" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>
+        <renameColumn tableName="to_do_list_item_translations" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>
+    </changeSet>
+</databaseChangeLog>

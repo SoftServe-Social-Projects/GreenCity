@@ -3,7 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="ch-update-online-link-column-length-Sotnik.xml" author="Olena Sotnik">
-        <sqlFile path="db/changelog/sql/online-link-column-length-change.sql"/>
+        <sqlFile path="db/functions/online-link-column-length-change.sql"/>
         <comment>Changed online_link column length from 255 to 2056 chars in events_dates_locations table</comment>
     </changeSet>
 </databaseChangeLog>

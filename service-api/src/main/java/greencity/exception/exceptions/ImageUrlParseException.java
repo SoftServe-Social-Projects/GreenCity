@@ -1,15 +1,10 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
 /**
  * Exception that is thrown when parsing of image's URL fails.
  */
+@StandardException
 public class ImageUrlParseException extends RuntimeException {
-    /**
-     * Constructor with message.
-     *
-     * @param message message, that explains cause of the exception.
-     */
-    public ImageUrlParseException(String message) {
-        super(message);
-    }
 }

@@ -1,409 +1,350 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-    <head>
-        <meta charset="utf-8"/>
-        <title>Events management</title>
-        <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-        <link rel="stylesheet" th:href="@{/css/header.css}">
-        <link rel="stylesheet" th:href="@{/css/footer.css}">
-        <link rel="stylesheet" th:href="@{/css/position.css}">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-              integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
-        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
-              rel="stylesheet"/>
-        <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-        <script type="text/javascript"
-                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-        <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-        <script th:src="@{/management/events/buttonsAJAX.js}"></script>
-        <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-    </head>
-    <body>
-    <div id="header" th:insert="core/header"></div>
+<head>
+    <meta charset="utf-8"/>
+    <title>Events management</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/events.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+    <script th:src="@{/management/events/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/events/confirmationModal.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
     <div id="sidebar" th:insert="core/sidepanel"></div>
-    <div class="main-content">
-        <div class="container-xl">
-            <div class="row" id="events-content" style="margin:auto">
-                <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
-                    <div id="eco-news" class="row " style="margin-top: 3%; ">
-                        <div class="col-sm-8">
-                            <h2 class="text-success">[[#{greenCity.events.page.h}]]</h2>
+    <div class="container-xl">
+        <div class="table-title" id="events-content" style="margin:auto">
+            <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
+                <div id="eco-news" class="row " style="margin-top: 3%; ">
+                    <div class="col-sm-8">
+                        <h2 class="text-describe text-bold" style=" font-size: 32px; color: #13AA57;">
+                            [[#{greenCity.events.page.h}]]</h2>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="d-flex justify-content-end" style="gap:2rem">
+                                    <a th:href="@{/management/events/create-event}" class="btn btn-secondary">
+                                        <div>[[#{greenCity.events.page.add.event}]]</div>
+                                    </a>
+                                    <button id="deleteSelectedButton" class="btn btn-remove d-none">
+                                        <div>[[#{greenCity.pages.delete}]]</div>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-4">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="d-flex justify-content-end">
-                                        <a href="#addEcoNewsModal" addEventForm id="addEventModalBtn"
-                                           class="btn btn-success" data-toggle="modal" th:onclick="addBtnDisabled()">
-                                            <!-- -->
-                                            <div style="width: 100px;">[[#{greenCity.events.page.add.event}]]</div>
-                                        </a>
-                                        <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled"
-                                           data-toggle="modal">
-                                            <div class="text-danger" style="width: 100px;">[[#{greenCity.pages.delete}]]
+                    </div>
+                </div>
+                <div class="row-box-and-sort">
+                    <div class="main-search">
+                        <!-- Search Form  -->
+                        <form class="form-inline searching" onsubmit="sendDataFromSearchForm()">
+                            <input id="eventSearch" type="text" class="form-search" name="query" th:value="${query}"
+                                   th:placeholder="#{greenCity.pages.search}">
+                            <label for="eventSearch" class="search-icon" style="transform: translateY(-50%);"><i
+                                    class="material-icons">&#xE8B6;</i></label>
+                            <input class="search-submit-btn" type="submit">
+                        </form>
+                        <div>
+                            <button class="filter-button" id="filter-button" onclick="openForm()">
+                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
+                            </button>
+
+                            <div class="form-popup" id="filter">
+                                <form class="form-container"
+                                      style="width: 280px; display:flex; flex-direction:column; min-height: 400px; height: auto"
+                                      method="get" th:action="@{/management/events}">
+                                    <label>[[#{greenCity.pages.table.eventTitle}]]</label>
+                                    <input type="text" name="title" th:value="${filterEventDto.title}"
+                                           class="form-control">
+
+                                    <!-- Tags Filter -->
+                                    <div class="form-group">
+                                        <button type="button" class="dropdown-btn">[[#{greenCity.pages.table.tags}]]
+                                        </button>
+                                        <div class="dropdown-container">
+                                            <div class="select-all-container">
+                                                <input type="checkbox" id="select-all-tags" class="select-all-checkbox"
+                                                       onclick="toggleSelectAll(this, 'tags')">
+                                                <label for="select-all-tags">Select All</label><br>
                                             </div>
-                                        </a>
+                                            <div th:each="tag : ${eventsTag}">
+                                                        <input type="checkbox" th:name="tags" th:value="${tag.getName()}"
+                                                               th:checked="${filterEventDto?.tags != null && filterEventDto.tags.contains(tag.getName())}">
+                                                        <label th:for="${tag}" th:text="${tag.getName()}"></label>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top: 3%">
-                        <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-sm-12">
-                               <span class="custom-checkbox">
-                                   <span class="modal-checkbox">
-                                       <input type="checkbox" id="selectAll">
-                                        <label for="selectAll"></label>
-                                   </span>
-                                </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <!--                SOME BUTTONS TO SHANGE FORM-->
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="d-flex justify-content-end">
-                                        <select style="margin-right: 5%;" onchange="location = this.value">
-                                            <option>[[${pageSize}]]</option>
-                                            <option value="/management/events?size=20">20</option>
-                                            <option value="/management/events?size=40">40</option>
-                                            <option value="/management/events?size=60">60</option>
-                                            <option value="/management/events?size=80">80</option>
-                                            <option value="/management/events?size=100">100</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top: 3%">
-                        <div class="col-sm-12">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr style="background-color: #afbfbd">
-                                    <th>
-                                    <span onclick="orderByNameField('id')">[[#{greenCity.pages.table.id}]]
-                                        <i id="id-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                    </th>
-                                    <th>
-                                    <span onclick="orderByNameField('author.name')">[[#{greenCity.pages.table.author}]]
-                                        <i id="author-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                    </th>
-                                    <th>
-                                    <span onclick="orderByNameField('title')">[[#{greenCity.pages.table.title}]]
-                                        <i id="title-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                    </th>
-                                    <th>
-                                    <span onclick="orderByNameField('text')">[[#{greenCity.pages.table.text}]]
-                                    <i id="text-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                    </th>
-                                    <th>
-                                    <span onclick="orderByNameField('tags')">[[#{greenCity.pages.table.tags}]]
-                                        <i id="tags-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                    </th>
-                                    <th>[[#{greenCity.pages.table.actions}]]</th>
-                                </tr>
-                                </thead>
 
-                                <tbody>
-                                <form>
-                                    <tr>
-                                        <td>
-                                            <input id="idSearchForm" placeholder="" class="input-search-form" type="search"
-                                                   th:value="${fields eq null ? '' : fields.getId()}"/>
-                                        </td>
-                                        <td>
-                                            <input id="authorSearchForm" class="input-search-form" type="search"
-                                                   th:value="${fields eq null ? '' : fields.getAuthor()}"
-                                            />
-                                        </td>
-                                        <td>
-                                            <input id="titleSearchForm" class="input-search-form" type="search"
-                                                   th:value="${fields eq null ? '' : fields.getTitle()}"
-                                            />
-                                        </td>
-                                        <td>
-                                            <input id="textSearchForm" class="input-search-form" type="search"
-                                                   th:value="${fields eq null ? '' : fields.getDescription()}"/>
-                                        </td>
-                                        <td>
-                                            <input id="tagSearchForm" class="input-search-form" type="search"/>
-                                        </td>
-                                        <td>
-                                            <span id="searchBy" onclick="sendDataFromSearchForm()">
-                                                <img alt="search" src="/img/search.png">
-                                            </span>
-                                        </td>
-                                    </tr>
+                                    <!-- Event Time Filter -->
+                                    <div class="form-group">
+                                        <button type="button" class="dropdown-btn">
+                                            [[#{greenCity.pages.table.eventTime}]]
+                                        </button>
+                                        <div class="dropdown-container">
+                                            <input type="checkbox" name="time" id="future" value="FUTURE"
+                                                   th:checked="${filterEventDto?.time != null && filterEventDto.time.name() == 'FUTURE'}">
+                                            <label for="future">Future</label><br>
+                                            <input type="checkbox" name="time" id="past" value="PAST"
+                                                   th:checked="${filterEventDto?.time != null && filterEventDto.time.name() == 'PAST'}">
+                                            <label for="past">Past</label><br>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event Type Filter -->
+                                    <div class="form-group">
+                                        <button type="button" class="dropdown-btn">
+                                            [[#{greenCity.pages.table.eventType}]]
+                                        </button>
+                                        <div class="dropdown-container">
+                                            <input type="radio" name="type" value="" id="all"
+                                                   th:checked="${filterEventDto?.type == null}">
+                                            <label for="all">All Types</label><br>
+                                            <input type="radio" name="type" value="ONLINE" id="online"
+                                                  th:checked="${filterEventDto?.type != null && filterEventDto.type.name() == 'ONLINE'}">
+                                             <label for="online">Online</label><br>
+                                            <input type="radio" name="type" value="OFFLINE" id="offline"
+                                                   th:checked="${filterEventDto?.type != null && filterEventDto.type.name() == 'OFFLINE'}">
+                                            <label for="offline">Offline</label><br>
+                                            <input type="radio" name="type" value="ONLINE_OFFLINE" id="online_offline"
+                                                   th:checked="${filterEventDto?.type != null && filterEventDto.type.name() == 'ONLINE_OFFLINE'}">
+                                            <label for="online_offline">Online/Offline</label><br>
+                                        </div>
+                                    </div>
+
+                                    <!-- Location Filter -->
+                                    <div class="form-group">
+                                        <button type="button" class="dropdown-btn">
+                                            [[#{greenCity.pages.table.location}]]
+                                        </button>
+                                        <div class="dropdown-container">
+                                            <div class="select-all-container">
+                                                <input type="checkbox" id="select-all-location"
+                                                       class="select-all-checkbox"
+                                                       onclick="toggleSelectAll(this, 'cities')">
+                                                <label for="select-all-location">Select All</label><br>
+
+                                            </div>
+                                                <div th:each="city : ${cities}">
+                                                    <input type="checkbox" th:name="cities" th:value="${city}"
+                                                           th:checked="${filterEventDto?.cities != null && filterEventDto.cities.contains(city)}">
+                                                    <label th:for="${city}" th:text="${city}"></label>
+                                                </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filter Buttons -->
+                                    <div style="float: right; margin-top: 30px; margin-bottom: 18px;">
+                                        <button type="submit" class="filter-btn" style="float: right">
+                                            <b>[[#{greenCity.pages.popup.save.changes}]]</b>
+                                        </button>
+                                    </div>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-list-grid">
+                        <div class="dropdown size">
+                            <img src="/img/arrow-down.svg" alt="arrow-icon" class="change_color">
+                            <button class="dropbtn size" th:text="20">
+                            </button>
+                            <div class="dropdown-content size">
+                                <a class="lightgrey" onclick="saveItemsOnPage('20')">20</a>
+                                <a class="lightgrey" onclick="saveItemsOnPage('40')">40</a>
+                                <a class="lightgrey" onclick="saveItemsOnPage('100')">100</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                                <th:block th:each="allEvents, iterStatus :${pageable.getPage()}">
-                                    <tr>
-                                        <td style="width: 8%">
-                                        <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${allEvents.getId()}"
-                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
-                                        </span>
-                                            <span>[[${allEvents.getId()}]]</span>
-                                        </td>
-                                        <td th:text="${allEvents.organizer.name}" style="white-space: nowrap; /* Заборона переносу */
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <div class="custom-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <label for="selectAll"></label>
+                            </div>
+                        </th>
+                        <th style="width: 120px;">
+                            <span>[[#{greenCity.pages.table.id}]]</span>
+                            <img id="id-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                 onclick="sortByFieldName('id')">
+                            <span class="table-filter-icon"></span>
+                        </th>
+                        <th style="width: 180px;">
+                            <span>[[#{greenCity.pages.table.author}]]</span>
+                            <img id="organizer-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                 onclick="sortByFieldName('organizer')">
+                            <span class="table-filter-icon"></span>
+                        </th>
+                        <th style="width: 120px;">
+                            <span>[[#{greenCity.pages.table.title}]]</span>
+                            <img id="title-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                 onclick="sortByFieldName('title')">
+                            <span class="table-filter-icon"></span>
+                        </th>
+
+                        <th style="width: 120px;">
+                            <span>[[#{greenCity.pages.table.text}]]</span>
+                            <img id="description-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                 onclick="sortByFieldName('description')">
+                            <span class="table-filter-icon"></span>
+                        </th>
+
+                        <th style="width: 150px;">
+                            <span>[[#{greenCity.pages.table.tags}]]</span>
+                            <span class="table-filter-icon"></span>
+                        </th>
+                        <th>
+                            <span>[[#{greenCity.pages.table.actions}]]</span>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <th:block th:each="event, iterStatus :${pageable.getPage()}">
+                        <tr>
+                            <td class="custom-checkbox">
+                                <input type="checkbox" th:id="checkbox+${iterStatus.count}"
+                                       name="options[]" th:value="${event.getId()}">
+                                <label th:for="checkbox+${iterStatus.count}"></label>
+                            </td>
+                            <td style="width: 8%">
+                                <span>[[${event.getId()}]]</span>
+                            </td>
+                            <td th:text="${event.organizer.name}" style="white-space: nowrap; /* Заборона переносу */
                                                                                             overflow: hidden;
                                                                                             max-width: 0px;
                                                                                             text-overflow: ellipsis; /* ... */">
-                                        </td>
-                                        <td th:text="${allEvents.title}" style="white-space: nowrap; /* Заборона переносу */
+                            </td>
+                            <td th:text="${event.title}" style="white-space: nowrap; /* Заборона переносу */
                                                                                                 overflow: hidden;
                                                                                                 max-width: 150px;
                                                                                                 text-overflow: ellipsis; /* ... */">
-                                        </td>
-                                        <td th:text="${allEvents.description}" style="white-space: nowrap; /* Заборона переносу */
+                            </td>
+                            <td th:text="${event.description}" style="white-space: nowrap; /* Заборона переносу */
                                                                                                 overflow: hidden;
                                                                                                 max-width: 150px;
                                                                                                 text-overflow: ellipsis;">
-                                        </td>
-                                        <td th:text="${allEvents.tagsToStringEn()}">
-                                        </td>
-                                        <td>
-                                            <a th:href="@{/management/events/find/(id=${allEvents.getId()})}"
-                                            class="edit eBtn">
-                                                <i class="material-icons" data-toggle="tooltip"
-                                                   th:title="#{greenCity.pages.edit}">&#xE254;</i>
-                                            </a>
-                                            <a th:href="@{/management/events/delete/(id=${allEvents.getId()})}"
-                                                class="delete eDelBtn" data-toggle="modal">
-                                                <i class="material-icons" data-toggle="tooltip"
-                                                    th:title="#{greenCity.pages.delete}">&#xE872;</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </th:block>
-                                </tbody>
-                            </table>
-<!--
-                            <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
-                                <div class="d-flex justify-content-center">
-                                    <ul class="pagination">
-                                        <li class="page-item"
-                                            th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
-                                            <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                                               th:href="@{/management/events?page=${id}&size=${pageSize}&sort=${sort}&query=${query}&id=${elId}&author=${author}&title=${title}&description=${text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${0}, sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
-                                                    class="arrow fas fa-chevron-left"></i></a>
-                                            <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
-                                                    class="arrow fas fa-chevron-left"></i></a>
-                                        </li>
+                            </td>
+                            <td th:text="${event.tagsToStringEn()}">
+                            </td>
+                            <td>
+                                <a th:href="@{/management/events/edit/{id}(id=${event.getId()})}"
+                                   class="edit eBtn">
+                                    <i class="material-icons" data-toggle="tooltip"
+                                       th:title="#{greenCity.pages.edit}">&#xE254;</i>
+                                </a>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+                <!-- Pagination -->
+                <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
+                    <div class="d-flex justify-content-center">
+                        <ul class="pagination">
+                            <!-- Previous Page Link -->
+                            <li class="page-item" th:classappend="${pageable.isFirst()} ? 'disabled' : ''">
+                                <a class="page-link" th:if="${!pageable.isFirst()}"
+                                   th:href="@{/management/events(page=${pageable.getNumber()-1}, size=${pageSize}, sort=${sort}, query=${query})}">
+                                    <i class="arrow fas fa-chevron-left"></i>
+                                </a>
+                                <a class="page-link" th:if="${pageable.isFirst()}"><i
+                                        class="arrow fas fa-chevron-left"></i></a>
+                            </li>
 
-                                        <li class="page-item"
-                                            th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
-                                            th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
-                                            th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                                            <a class="page-link"
-                                               th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}">[[${pageNumber}+1]]</a>
-                                        </li>
+                            <!-- Page Numbers -->
+                            <li class="page-item"
+                                th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}"
+                                th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
+                                th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''">
+                                <a class="page-link"
+                                   th:href="@{/management/events(page=${pageNumber}, size=${pageSize}, sort=${sort}, query=${query})}">
+                                    <span th:text="${pageNumber + 1}"></span>
+                                </a>
+                            </li>
 
-                                        <li class="page-item"
-                                            th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
-                                            <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                                               th:href="@{/management/eco-news?&page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageable.getTotalPages()-1},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
-                                                    class="arrow fas fa-chevron-right"></i></a>
-                                            <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
-                                                    class="arrow fas fa-chevron-right"></i></a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
--->
-                        </div>
+                            <!-- Next Page Link -->
+                            <li class="page-item" th:classappend="${pageable.isLast()} ? 'disabled' : ''">
+                                <a class="page-link" th:if="${!pageable.isLast()}"
+                                   th:href="@{/management/events(page=${pageable.getNumber()+1}, size=${pageSize}, sort=${sort}, query=${query})}">
+                                    <i class="arrow fas fa-chevron-right"></i>
+                                </a>
+                                <a class="page-link" th:if="${pageable.isLast()}"><i
+                                        class="arrow fas fa-chevron-right"></i></a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Add Modal HTML -->
-        <div id="addEventsModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form th:action="@{management/events}" method="post" id="addEventsForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title">[[#{greenCity.events.page.add.event}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" class="form-control" name="id" value="-1" readonly required>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.title}]]</label>
-                                <textarea type="text" class="form-control" name="title" required></textarea>
-                                <span th:id="errorModalSavetitle" id="errorModalSavetitle" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.text}]]</label>
-                                <textarea type="text" class="form-control" name="text" required></textarea>
-                                <span th:id="errorModalSavetext" id="errorModalSavetext" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.tags}]]</label>
-                                <div style="width: 100%; display: inline-block;">
-                                    <th:block th:each="allTags, iterStatus :${eventsTag}">
-                                        <div style="margin-right: 5%" class="custom-checkbox">
-                                            <span class="modal-checkbox">
-                                                <input class="tag-checkbox" type="checkbox"
-                                                       th:id="checkboxTag+${iterStatus.count}" id="checkboxTag1"
-                                                       name="Tags[]" th:value="${allTags.getName()}"
-                                                       th:onclick="tagClick()">
-                                                <label th:for="checkboxTag+${iterStatus.count}"
-                                                       th:text="${allTags.getName()}" for="checkboxTag1"></label>
-                                            </span>
-                                        </div>
-                                        <span th:id="errorModalAddTags" class="errorSpan"></span>
-                                    </th:block>
-                                </div>
-                                <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
-
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.source}]]</label>
-                                <textarea type="text" class="form-control" name="source"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.image}]]</label>
-                                <input type="file" class="form-control" name="file" id="creationFile" placeholder="ferf">
-                                <span th:id="errorModalSavefile" class="errorSpan"></span>
-                            </div>
-
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Edit Modal HTML -->
-        <div id="editEventsModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="editEcoNewsForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title">[[#{greenCity.events.page.edit.events}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="id">[[#{greenCity.pages.table.id}]]</label>
-                                <input type="text" class="form-control" id="id" name="id" readonly required>
-                                <span th:id="errorModalUpdateid" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="title">[[#{greenCity.pages.table.title}]]</label>
-                                <textarea type="text" class="form-control" id="title" name="title" required></textarea>
-                                <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="text">[[#{greenCity.pages.table.text}]]</label>
-                                <textarea type="text" class="form-control" id="text" name="text" required></textarea>
-                                <span th:id="errorModalUpdatetext" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="tagsEdit">[[#{greenCity.pages.table.tags}]]</label>
-                                <div id="tagsEdit" style="width: 100%; display: inline-block;">
-
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="imagePath">[[#{greenCity.pages.table.image.path}]]</label>
-                                <textarea type="text" class="form-control" id="imagePath" name="imagePath"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="source">[[#{greenCity.pages.table.source}]]</label>
-                                <textarea type="text" class="form-control" id="source" name="source"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="file">[[#{greenCity.pages.table.image}]]</label>
-                                <input type="file" class="form-control" id="file" name="file">
-                                <span th:id="errorModalUpdatefile" class="errorSpan"></span>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <input type="submit" class="btn btn-info btn-primary" th:value="#{greenCity.pages.popup.save.}"
-                                   id="submitEditBtn">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Delete Modal HTML -->
-        <div id="deleteEventsModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="deleteEventsForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title">[[#{greenCity.events.page.delete.events}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
-                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <a href="" id="deleteOneSubmit" class="btn btn-remove">
-                                <div>[[#{greenCity.pages.delete}]]</div>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Delete all selected Modal HTML -->
-        <div id="deleteAllSelectedModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="">
-                        <div class="modal-header">
-                            <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
-                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <a href="" id="deleteAllSubmit" class="btn btn-danger">
-                                <div>[[#{greenCity.pages.delete}]]</div>
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                <!-- End of Pagination-->
             </div>
         </div>
     </div>
+</div>
+</div>
+<div th:replace="core/fragments/modals/confirmation-modal.html"></div>
+<div id="footer" th:insert="core/footer"></div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var backendAddress = /*[[${backendAddress}]]*/;
 
-    <div id="footer" th:insert="core/footer"></div>
-    </body>
+    /*]]>*/
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropdowns = document.querySelectorAll('.dropdown-btn');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function () {
+                this.classList.toggle('active');
+                const dropdownContent = this.nextElementSibling;
+                dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+            });
+        });
+    });
+
+    function toggleSelectAll(selectAllCheckbox, groupName) {
+        const checkboxes = document.querySelectorAll(`input[name="${groupName}"]`);
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+
+    function openForm() {
+        if (document.getElementById("filter").style.display === "block") {
+            document.getElementById("filter").style.display = "none";
+            document.getElementById("filter-button").style.width = "113px";
+        } else {
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("filter-button").style.width = "280px";
+        }
+    }
+</script>
+<script th:src="@{/management/events/deleteEvents.js}"></script>
+</body>
 </html>

@@ -23,11 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -70,24 +68,6 @@ class ManagementSocialNetworkImagesControllerTest {
             .andExpect(status().isOk());
 
         verify(socialNetworkImageService).findAll(pageable);
-    }
-
-    @Test
-    void getAllSocialNetworkImagesSearchByQueryTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS =
-            Collections.singletonList(new SocialNetworkImageResponseDTO());
-        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImageResponsePageableDto =
-            new PageableDto<>(socialNetworkImageResponseDTOS, 2, 0, 3);
-        when(socialNetworkImageService.searchBy(pageable, "query")).thenReturn(socialNetworkImageResponsePageableDto);
-        this.mockMvc.perform(get(managementSocialNetworkImagesLink + "?query=query")
-            .param("page", "0")
-            .param("size", "10"))
-            .andExpect(view().name("core/management_social_network_images"))
-            .andExpect(model().attribute("pageable", socialNetworkImageResponsePageableDto))
-            .andExpect(status().isOk());
-
-        verify(socialNetworkImageService).searchBy(pageable, "query");
     }
 
     @Test

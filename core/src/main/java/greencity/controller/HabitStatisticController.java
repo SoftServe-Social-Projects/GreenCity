@@ -13,18 +13,30 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitStatisticService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import java.util.List;
 import java.util.Locale;
-import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Validated
 @AllArgsConstructor
@@ -39,11 +51,13 @@ public class HabitStatisticController {
      * @param habitId {@link HabitVO} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
-    @ApiOperation(value = "Find all statistics by habit id.")
+    @Operation(summary = "Find all statistics by habit id.")
     @GetMapping("/{habitId}")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GetHabitStatisticDto.class))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     public ResponseEntity<GetHabitStatisticDto> findAllByHabitId(
         @PathVariable Long habitId) {
@@ -56,12 +70,13 @@ public class HabitStatisticController {
      * @param habitAssignId {@link HabitAssignVO} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
-    @ApiOperation(value = "Find all statistics by habit assign id.")
+    @Operation(summary = "Find all statistics by habit assign id.")
     @GetMapping("/assign/{habitAssignId}")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatisticDto.class,
-            responseContainer = "List"),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = HabitStatisticDto.class)))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     public ResponseEntity<List<HabitStatisticDto>> findAllStatsByHabitAssignId(
         @PathVariable Long habitAssignId) {
@@ -79,25 +94,29 @@ public class HabitStatisticController {
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "add statistic by habit id that is assigned for current user.")
+    @Operation(summary = "add statistic by habit id that is assigned for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitStatisticDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
+            content = @Content(schema = @Schema(implementation = HabitStatisticDto.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @PostMapping("/{habitId}")
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ResponseEntity<HabitStatisticDto> saveHabitStatistic(
         @Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto,
-        @ApiIgnore @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticService.saveByHabitIdAndUserId(habitId, userVO.getId(), addHabitStatisticDto));
     }
 
     /**
-     * Method for updating {@link HabitStatisticDto} by it's id.
+     * Method for updating {@link HabitStatisticDto} by its id.
      *
      * @param id                         {@link HabitStatisticDto} id.
      * @param habitStatisticForUpdateDto {@link UpdateHabitStatisticDto} with habit
@@ -105,17 +124,21 @@ public class HabitStatisticController {
      *                                   items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
-    @ApiOperation(value = "Update habit statistic.")
+    @Operation(summary = "Update habit statistic.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatisticDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = HabitStatisticDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PutMapping("/{id}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
         @PathVariable Long id,
-        @ApiIgnore @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
             .update(id, userVO.getId(), habitStatisticForUpdateDto));
@@ -132,16 +155,17 @@ public class HabitStatisticController {
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
      *         key-value pairs.
      */
-    @ApiOperation(value = "Get today's statistic for all habit items.")
+    @Operation(summary = "Get today's statistic for all habit items.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitItemsAmountStatisticDto.class,
-            responseContainer = "List"),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = HabitItemsAmountStatisticDto.class)))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
     @GetMapping("/todayStatisticsForAllHabitItems")
     @ApiLocale
     public ResponseEntity<List<HabitItemsAmountStatisticDto>> getTodayStatisticsForAllHabitItems(
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatisticService.getTodayStatisticsForAllHabitItems(locale.getLanguage()));
     }
@@ -153,10 +177,11 @@ public class HabitStatisticController {
      * @return amount of acquired habits by {@link UserVO} id.
      * @author Mamchuk Orest
      */
-    @ApiOperation(value = "Get amount of acquired habit")
+    @Operation(summary = "Get amount of acquired habit")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("acquired/count")
     public ResponseEntity<Long> findAmountOfAcquiredHabits(@RequestParam Long userId) {
@@ -172,10 +197,11 @@ public class HabitStatisticController {
      * @return amount of acquired habits by {@link UserVO} id.
      * @author Mamchuk Orest
      */
-    @ApiOperation(value = "Get amount of in progress habit")
+    @Operation(summary = "Get amount of in progress habit")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("in-progress/count")
     public ResponseEntity<Long> findAmountOfHabitsInProgress(@RequestParam Long userId) {

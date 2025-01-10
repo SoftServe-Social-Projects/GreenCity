@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import greencity.dto.location.AddPlaceLocation;
 import greencity.entity.Location;
 

@@ -1,8 +1,17 @@
 package greencity.entity;
 
 import java.time.LocalDateTime;
-import javax.persistence.*;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 @Entity
 @Data

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Drop-advice_translations-table-if-it-exists" author="Maryna Chekhovska">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="advice_translations"/>
+        </preConditions>
+        <dropTable tableName="advice_translations"/>
+    </changeSet>
+
+    <changeSet id="Drop-advices-table-if-it-exists" author="Maryna Chekhovska">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="advices"/>
+        </preConditions>
+        <dropTable tableName="advices"/>
+    </changeSet>
+</databaseChangeLog>

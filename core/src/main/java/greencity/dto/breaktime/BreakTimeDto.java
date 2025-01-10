@@ -1,10 +1,14 @@
 package greencity.dto.breaktime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalTime;
-import javax.validation.constraints.NotNull;
-import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Data;
 
 @Data
 @NoArgsConstructor
@@ -14,11 +18,11 @@ import lombok.*;
 public class BreakTimeDto {
     @NotNull
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(dataType = "java.lang.String")
+    @Schema(type = "java.lang.String")
     private LocalTime startTime;
 
     @NotNull
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(dataType = "java.lang.String")
+    @Schema(type = "java.lang.String")
     private LocalTime endTime;
 }

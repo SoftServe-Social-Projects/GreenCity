@@ -2,7 +2,7 @@ package greencity.entity;
 
 import greencity.enums.HabitRate;
 import java.time.ZonedDateTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder

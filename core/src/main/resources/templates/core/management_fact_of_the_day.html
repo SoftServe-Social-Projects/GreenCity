@@ -4,9 +4,7 @@
     <meta charset="utf-8"/>
     <title>Fact of the day management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -20,118 +18,162 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/factoftheday/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
-<body>
-<div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
+<body th:with="baseUrl='/management/factoftheday/findAll'" th:data-base-url="${baseUrl}">
+<div id="header" th:insert="~{core/header}"></div>
 <div class="main-content">
-    <div class="container-xl">
-        <div class="table-responsive">
-            <div class="table-wrapper">
-                <div class="table-title">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h2>Manage <strong>Fact of the day</strong></h2>
-                        </div>
-                        <div class="col-sm-6">
-                                <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/factoftheday/findAll"
-                                          method="get">
-                                        <i class="material-icons"></i>
-                                        <input type="text" name="query" class="form-control" placeholder="Search…">
-                                    </form>
-                                </span>
-                            <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-success"
-                               data-toggle="modal"><i class="material-icons">&#xE147;</i>
-                                <span>Add New Fact of the day</span></a>
-                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
-                        </div>
+    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6 align-content-center">
+                        <h2><strong>[[#{greenCity.factsOfTheDay.page.h}]]</strong></h2>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="search-box-right fixed-i-position">
+                            <form class="form-inline searching" action="/management/factoftheday/findAll"
+                                  method="get">
+                                <i class="material-icons"></i>
+                                <input type="text" name="query" th:value="${query}" class="form-control" th:placeholder="#{greenCity.pages.search}">
+                            </form>
+                        </span>
+                        <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-secondary"
+                           data-toggle="modal" style="width: 182px;">
+                            <div>[[#{greenCity.factsOfTheDay.page.add.factsOfTheDay}]]</div></a>
+                        <a href="#deleteAllSelectedModal" class="btn btn-remove" data-toggle="modal">
+                            <div>[[#{greenCity.pages.delete}]]</div></a>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr class="table-primary">
-                        <th>
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
+            </div>
+            <table class="table table-bordered">
+                <thead class="text-align-center">
+                    <tr>
+                        <th rowspan="2">
+                            <span class="custom-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <label for="selectAll"></label>
+                            </span>
                         </th>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Translations</th>
-                        <th>Creation date</th>
-                        <th>Actions</th>
+                        <th rowspan="2" class="mobile-hidden" style="min-width: 75px;">[[#{greenCity.pages.table.id}]]
+                            <span onclick="orderByField('id','asc')">
+                                <i id="id-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('id','desc')">
+                                <i id="id-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th rowspan="2" style="min-width: 100px;">[[#{greenCity.pages.table.name}]]
+                            <span onclick="orderByField('name','asc')">
+                                <i id="name-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('name','desc')">
+                                <i id="name-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th colspan="3">[[#{greenCity.pages.table.translations}]]</th>
+                        <th rowspan="2" class="mobile-hidden" style="min-width: 150px;">[[#{greenCity.pages.table.creation.date}]]
+                            <span onclick="orderByField('createDate','asc')">
+                                <i id="date-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('createDate','desc')">
+                                <i id="date-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th rowspan="2">[[#{greenCity.pages.table.tags}]]</th>
+                        <th rowspan="2">[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
-                    </thead>
-                    <th:block th:each="factOfTheDay, iterStatus :${pageable.getPage()}">
-                        <tbody>
-                        <tr>
-                            <td>
-                                    <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${factOfTheDay.getId()}">
-                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
-                                    </span>
-                            </td>
-                            <td th:text="${factOfTheDay.getId()}"></td>
-                            <td th:text="${factOfTheDay.getName()}"></td>
-                            <td>
-                                <table class="table table-borderless m-0">
-                                    <thead>
-                                    <tr class="table-secondary">
-                                        <th class="py-1">TranslationID</th>
-                                        <th class="py-1">Content</th>
-                                        <th class="py-1">LanguageCode</th>
+                    <tr>
+                        <th class="small-column mobile-hidden">[[#{greenCity.pages.table.translation.id}]]</th>
+                        <th>[[#{greenCity.pages.table.content}]]
+                            <span onclick="orderByField('factOfTheDayTranslations.content','asc')">
+                                <i id="content-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('factOfTheDayTranslations.content','desc')">
+                                <i id="content-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th class="small-column">[[#{greenCity.pages.table.language.code}]]</th>
+                    </tr>
+                </thead>
+                <th:block th:each="factOfTheDay, iterStatus :${pageable.getPage()}">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <span class="custom-checkbox">
+                                <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                       name="options[]" th:value="${factOfTheDay.getId()}">
+                                <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                            </span>
+                        </td>
+                        <td class="mobile-hidden" th:text="${factOfTheDay.getId()}"></td>
+                        <td th:text="${factOfTheDay.getName()}"></td>
+                        <td colspan="3">
+                            <table class="table table-borderless m-0 table-child">
+                                <tbody>
+                                <th:block
+                                        th:each="translation : ${pageable.getPage().get(iterStatus.index).getFactOfTheDayTranslations()}">
+                                    <tr>
+                                        <td class="mobile-hidden small-column text-right" th:text="${translation.getId()}">1</td>
+                                        <td th:text="${translation.getContent()}"></td>
+                                        <td class="small-column" th:text="${translation.getLanguage().getCode()}"></td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    <th:block
-                                            th:each="translation : ${pageable.getPage().get(iterStatus.index).getFactOfTheDayTranslations()}">
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td class="mobile-hidden" th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd.MM.yyyy HH:mm')}"></td>
+                        <td>
+                            <table class="table table-borderless m-0">
+                                <tbody id="tag-table-body">
+                                <th:block th:each="tag : ${pageable.getPage().get(iterStatus.index).getTags()}">
                                         <tr>
-                                            <td class="py-1 text-right" th:text="${translation.getId()}">1</td>
-                                            <td class="py-1" th:text="${translation.getContent()}"></td>
-                                            <td class="py-1" th:text="${translation.getLanguage().getCode()}"></td>
+                                            <td th:data-tag-id="${tag.getId()}" th:data="${tag.getLanguageCode()}" th:text="${tag.getName()}"></td>
                                         </tr>
-                                    </th:block>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd/MM/yyyy HH:mm')}"></td>
-                            <td>
-                                <a th:href="@{/factoftheday/find/(id=${factOfTheDay.getId()})}" class="edit eBtn"><i
-                                        class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
-                                <a th:href="@{/management/factoftheday/(id=${factOfTheDay.getId()})}"
-                                   class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
-                                                                                 data-toggle="tooltip"
-                                                                                 th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </th:block>
-                </table>
-                <div class="clearfix">
-                    <div class="hint-text">Showing <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
-                            th:text="${pageable.getTotalElements()}">25</b> entries
-                    </div>
-                    <ul class="pagination">
-                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{factoftheday(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
-                        </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
-                            th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                th:href="@{factoftheday(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
-                        <li class="page-item"
-                            th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                                th:href="@{factoftheday(page=${pageable.getCurrentPage()+1})}"
-                                class="page-link">Next</a></li>
-                    </ul>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <a class="edit eBtn">
+                                <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
+                            <a th:href="@{/management/factoftheday/(id=${factOfTheDay.getId()})}"
+                               class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
+                                                                             data-toggle="tooltip"
+                                                                             th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </th:block>
+            </table>
+            <div class="clearfix text-align-center">
+                <div class="hint-text">Showing <b
+                        th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
+                        th:text="${pageable.getTotalElements()}">25</b> entries
                 </div>
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}">
+                        <a th:href="@{${baseUrl}(page=${pageable.getCurrentPage()-1}, query=${query})}" class="page-link">Previous</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
+                        th:classappend="${pageable.getCurrentPage()==i?'active':''}">
+                        <a th:href="@{${baseUrl}(page=${i}, query=${query})}" class="page-link" th:text="${i+1}">1</a></li>
+                    <li class="page-item"
+                        th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}">
+                        <a th:href="@{${baseUrl}(page=${pageable.getCurrentPage()+1}, query=${query})}"
+                            class="page-link">Next</a></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -141,13 +183,13 @@
             <div class="modal-content">
                 <form th:action="@{factoftheday/save}" method="post" id="addFactOfTheDayForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Fact of the day</h4>
+                        <h4 class="modal-title">[[#{greenCity.factsOfTheDay.page.add.factsOfTheDay}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <label>Fact of the day name</label>
+                            <label>[[#{greenCity.factsOfTheDay.page.name}]]</label>
                             <input type="text" class="form-control" name="name" required>
                             <span th:id="errorModalSavename" class="errorSpan"></span>
                         </div>
@@ -155,14 +197,14 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label>Language code</label>
+                                        <label>[[#{greenCity.pages.table.language.code}]]</label>
                                         <input type="text" class="form-control" th:name="${language.getCode()}"
                                                th:value="${language.getCode()}" readonly required>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
-                                        <label>Content</label>
+                                        <label>[[#{greenCity.pages.table.content}]]</label>
                                         <input type="text" class="form-control" th:name="content+${language.getCode()}">
                                         <span th:id="'errorModalSavefactOfTheDayTranslations['+${iterInfo.index}+'].content'"
                                               class="errorSpan"></span>
@@ -170,10 +212,15 @@
                                 </div>
                             </div>
                         </th:block>
+                        <div class="form-group">
+                            <label>[[#{greenCity.pages.table.tags}]]</label>
+                            <div id="tagsContainerAdd">
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success" value="Add" id="submitAddBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -185,7 +232,7 @@
             <div class="modal-content">
                 <form id="editFactOfTheDayForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Fact of the day</h4>
+                        <h4 class="modal-title">[[#{greenCity.factsOfTheDay.page.edit.factsOfTheDay}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -195,7 +242,7 @@
                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Fact of the day name</label>
+                            <label>[[#{greenCity.factsOfTheDay.page.name}]]</label>
                             <input type="text" class="form-control" id="name" name="name" required>
                             <span th:id="errorModalUpdatename" class="errorSpan"></span>
                         </div>
@@ -203,7 +250,7 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label>Language code</label>
+                                        <label>[[#{greenCity.pages.table.language.code}]]</label>
                                         <input type="text" class="form-control" th:id="${language.getCode()}"
                                                th:name="${language.getCode()}" th:value="${language.getCode()}" readonly
                                                required>
@@ -211,7 +258,7 @@
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
-                                        <label>Content</label>
+                                        <label>[[#{greenCity.pages.table.content}]]</label>
                                         <input type="text" class="form-control eEdit"
                                                th:id="content+${language.getCode()}"
                                                th:name="content+${language.getCode()}">
@@ -221,10 +268,15 @@
                                 </div>
                             </div>
                         </th:block>
+                        <div class="form-group">
+                            <label>[[#{greenCity.pages.table.tags}]]</label>
+                            <div id="tagsContainerEdit">
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-info" value="Save" id="submitEditBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
                     </div>
                 </form>
             </div>
@@ -236,16 +288,16 @@
             <div class="modal-content">
                 <form id="deleteFactOfThedayForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Fact of the day</h4>
+                        <h4 class="modal-title">[[#{greenCity.factsOfTheDay.page.delete.factsOfTheDay}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete that Record?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteOneSubmit" class="btn btn-danger">Delete</a>
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteOneSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
             </div>
@@ -257,22 +309,22 @@
             <div class="modal-content">
                 <form id="">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete all selected</h4>
+                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete these Records?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteAllSubmit" class="btn btn-danger">Delete</a>
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteAllSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<div id="footer" th:insert="core/footer"></div>
+<div id="footer" th:insert="~{core/footer}"></div>
 </body>
 </html>

@@ -1,17 +1,18 @@
 package greencity.dto.filter;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import static greencity.constant.ServiceValidationConstants.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class FilterDistanceDto {
     @Min(value = -90, message = LAT_MIN_VALIDATION)
     @Max(value = 90, message = LAT_MAX_VALIDATION)

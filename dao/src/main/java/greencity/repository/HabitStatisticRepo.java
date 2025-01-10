@@ -7,7 +7,7 @@ import greencity.entity.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -22,19 +22,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     JpaSpecificationExecutor<HabitStatistic> {
     /**
      * Method for finding {@link HabitStatistic} for certain
-     * {@link java.time.LocalDate}.
-     *
-     * @return {@link HabitStatistic} instance, if it doesn't exist returns
-     *         Optional.
-     */
-    @Query(value = "SELECT hs FROM HabitStatistic hs "
-        + "WHERE cast(hs.createDate as date) = cast(:localDate as date) "
-        + "AND hs.habitAssign.id = :habitAssignId")
-    Optional<HabitStatistic> findStatByDateAndId(@Param("localDate") ZonedDateTime localDate,
-        @Param("habitAssignId") Long habitAssignId);
-
-    /**
-     * Method for finding {@link HabitStatistic} for certain
      * {@link java.time.LocalDate} and {@link Habit} with {@link User} id's.
      *
      * @return {@link HabitStatistic} instance, if it doesn't exist returns
@@ -47,20 +34,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     Optional<HabitStatistic> findStatByDateAndHabitIdAndUserId(@Param("localDate") ZonedDateTime localDate,
         @Param("habitId") Long habitId,
         @Param("userId") Long userId);
-
-    /**
-     * Method for finding the sum of all untaken items of one {@link Habit} for
-     * current month.
-     *
-     * @param habitId  {@link Habit} id.
-     * @param firstDay first day of current month.
-     * @return sum of items per month.
-     */
-    @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs "
-        + "WHERE hs.habitAssign.habit.id = :habitId AND cast(hs.createDate as date) <= CURRENT_DATE "
-        + "AND cast(hs.createDate as date) >= cast(:firstDayOfMonth as date)")
-    Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
-        @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
     /**
      * Method for finding all {@link HabitStatistic} by {@link HabitAssign} id
@@ -81,51 +54,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT hs FROM HabitStatistic hs "
         + "WHERE hs.habitAssign.habit.id = :habitId")
     List<HabitStatistic> findAllByHabitId(@Param("habitId") Long habitId);
-
-    /**
-     * Method for finding amount of items for one {@link HabitAssign} for previous
-     * day.
-     *
-     * @param habitAssignId {@link HabitAssign} id.
-     * @return amount of items in Optional in case of absence such info.
-     */
-    @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE cast(hs.createDate as date) = CURRENT_DATE - 1 "
-        + "AND hs.habitAssign.id = :habitAssignId")
-    Optional<Integer> getAmountOfItemsOfAssignedHabitInPreviousDay(@Param("habitAssignId") Long habitAssignId);
-
-    /**
-     * Method for finding general amount of certain {@link Habit} items for the
-     * previous day.
-     *
-     * @param habitId {@link Habit} id.
-     * @return amount of items in Optional in case of absence such info.
-     */
-    @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE cast(hs.createDate as date) = CURRENT_DATE - 1 AND hs.habitAssign.habit.id = :habitId")
-    Optional<Integer> getGeneralAmountOfHabitItemsInPreviousDay(@Param("habitId") Long habitId);
-
-    /**
-     * Method for finding amount of items for one {@link HabitAssign} for current
-     * day.
-     *
-     * @param habitAssignId {@link HabitAssign} id.
-     * @return amount of items in Optional in case of absence such info.
-     */
-    @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE cast(hs.createDate as date) = CURRENT_DATE "
-        + "AND hs.habitAssign.id = :habitAssignId")
-    Optional<Integer> getAmountOfItemsOfAssignedHabitToday(@Param("habitAssignId") Long habitAssignId);
-
-    /**
-     * Method for finding general amount of {@link Habit} items for the current day.
-     *
-     * @param habitId {@link Habit} id.
-     * @return amount of items in Optional in case of absence such info.
-     */
-    @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE cast(hs.createDate as date) = CURRENT_DATE AND hs.habitAssign.habit.id = :habitId")
-    Optional<Integer> getGeneralAmountOfHabitItemsToday(@Param("habitId") Long habitId);
 
     /**
      * Returns {@link Tuple} consisting of habit item name(like 'cup' or 'bag') and

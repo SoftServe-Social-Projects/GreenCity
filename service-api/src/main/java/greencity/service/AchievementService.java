@@ -1,11 +1,12 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.ActionDto;
+import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public interface AchievementService {
@@ -55,15 +56,6 @@ public interface AchievementService {
     void deleteAll(List<Long> ids);
 
     /**
-     * Method find {@link AchievementVO} by id.
-     *
-     * @param id of {@link AchievementVO}
-     * @return {@link AchievementVO}
-     * @author Orest Mamchuk
-     */
-    AchievementVO findById(Long id);
-
-    /**
      * Method updates {@link AchievementVO}.
      *
      * @param achievementManagementDto {@link AchievementManagementDto}
@@ -83,21 +75,41 @@ public interface AchievementService {
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
 
     /**
-     * Method for achievement Calculation.
-     */
-    void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
-        AchievementAction achievementAction);
-
-    /**
      * Retrieves a list of achievements based on the given type and the principal's
      * email.
      *
-     * @param principalEmail    The email of the principal (usually the logged-in
-     *                          user) for whom the achievements need to be fetched.
-     * @param achievementStatus The status of the achievements to filter by (e.g.,
-     *                          "ACHIEVED", "UNACHIEVED").
+     * @param principalEmail        The email of the principal (usually the
+     *                              logged-in user) for whom the achievements need
+     *                              to be fetched.
+     * @param achievementStatus     The status of the achievements to filter by
+     *                              (e.g., "ACHIEVED", "UNACHIEVED").
+     * @param achievementCategoryId The ID of the achievement category to filter by
+     *                              category.
      * @return List AchievementVO Returns a list of achievements matching the given
      *         criteria.
      */
-    List<AchievementVO> findAllByType(String principalEmail, String achievementStatus);
+    List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId);
+
+    /**
+     * Method for achieve.
+     */
+    void achieve(ActionDto user);
+
+    /**
+     * Retrieves a quantity of achievements based on the given type and the
+     * principal's email.
+     *
+     * @param principalEmail        The email of the principal (usually the
+     *                              logged-in user) for whom the achievements need
+     *                              to be fetched.
+     * @param achievementStatus     The status of the achievements to filter by
+     *                              (e.g., "ACHIEVED", "UNACHIEVED").
+     * @param achievementCategoryId The ID of the achievement category to filter by
+     *                              category.
+     * @return Integer Returns a quantity of achievements matching the given
+     *         criteria.
+     */
+    Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId);
 }

@@ -32,5 +32,5 @@ ingress:
   # Only when cors_allow_origin is not "*"
   cors_allow_credentials: "true"
 
-  hostname: greencity.greencity.social
+  hostname: greencity.greencity.cx.ua
   

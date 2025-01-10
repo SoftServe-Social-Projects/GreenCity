@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.socialnetwork.SocialNetworkVO;
-
 import java.util.List;
 
 public interface SocialNetworkService {

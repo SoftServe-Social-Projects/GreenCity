@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="update-sequences" author="Ivan Holotsvan">
+        <sql>
+            SELECT setval('tags_id_seq', (SELECT MAX(id) FROM tags) + 1);
+            SELECT setval('tag_translations_id_seq', (SELECT MAX(id) FROM tag_translations) + 1);
+        </sql>
+    </changeSet>
+
+    <changeSet id="1-add-new-tag" author="Ivan Holotsvan">
+        <insert tableName="tags">
+            <column name="type" value="HABIT"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2-add-tag-translations" author="Ivan Holotsvan">
+        <sql>
+            INSERT INTO tag_translations (tag_id, language_id, name)
+            SELECT id, 1, 'Приватна'
+            FROM tags
+            WHERE type = 'HABIT'
+            ORDER BY id DESC
+                LIMIT 1;
+        </sql>
+        <sql>
+            INSERT INTO tag_translations (tag_id, language_id, name)
+            SELECT id, 2, 'Private'
+            FROM tags
+            WHERE type = 'HABIT'
+            ORDER BY id DESC
+                LIMIT 1;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

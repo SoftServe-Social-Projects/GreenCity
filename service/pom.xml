@@ -15,23 +15,18 @@
     <name>service</name>
 
     <properties>
-        <apache.commons.version>3.10</apache.commons.version>
-        <commons-fileupload.version>1.3</commons-fileupload.version>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.15.0</commons-io.version>
         <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
-        <!-- check actual version on git account google-maps api for java -->
-        <google.maps.version>2.0.0</google.maps.version>
-        <slf4.version>1.7.25</slf4.version>
-        <apache.http.client.version>4.5.12</apache.http.client.version>
+        <google.maps.version>2.2.0</google.maps.version>
+        <apache.http.client.version>5.3-alpha1</apache.http.client.version>
+        <azure.storage.blob.version>12.25.0</azure.storage.blob.version>
+        <jts.core.version>1.19.0</jts.core.version>
+        <commons.collections4.version>4.4</commons.collections4.version>
+        <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
+        <apache.commons.version>3.13.0</apache.commons.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>3.1.6</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>greencity</groupId>
             <artifactId>dao</artifactId>
@@ -47,6 +42,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -69,55 +65,26 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
+                    <groupId>com.jayway.jsonpath</groupId>
+                    <artifactId>json-path</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito-core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>${mockito-core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito-junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
-            <version>1.105.0</version>
+            <version>${google.cloud.storage.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
-            <version>12.7.0</version>
+            <version>${azure.storage.blob.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${commons-fileupload.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.social</groupId>
@@ -128,35 +95,38 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>${apache.commons.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!--Google geocoding Api dependency-->
         <dependency>
             <groupId>com.google.maps</groupId>
             <artifactId>google-maps-services</artifactId>
             <version>${google.maps.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.opencensus</groupId>
+                    <artifactId>opencensus-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
             <version>${apache.http.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.19.0</version>
+            <version>${jts.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
+            <version>${commons.collections4.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>${org.eclipse.jgit.version}</version>
         </dependency>
     </dependencies>
-
 </project>

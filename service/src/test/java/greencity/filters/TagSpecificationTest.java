@@ -14,9 +14,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -61,7 +61,7 @@ class TagSpecificationTest {
         TagTranslation_.tag = tag;
         TagTranslation_.name = name;
         Tag_.id = id;
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         tagViewDto = ModelUtils.getTagViewDto();
         searchCriteriaList = new ArrayList<>();
         searchCriteriaList.add(SearchCriteria.builder()

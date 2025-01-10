@@ -193,8 +193,8 @@ $(document).ready(function () {
             data: result
         });
     });
-    //edit button
 
+    //edit button
     $('.table-edit-translation-icon').on('click', function (event) {
         event.preventDefault();
 

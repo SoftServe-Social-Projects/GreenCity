@@ -3,13 +3,17 @@ package greencity.controller;
 import greencity.ModelUtils;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.service.FavoritePlaceService;
+
 import java.security.Principal;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -17,8 +21,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,16 +63,19 @@ class FavoritePlaceControllerTest {
     @Test
     void updateTest() throws Exception {
         FavoritePlaceDto favoritePlaceDto = ModelUtils.getFavoritePlaceDto();
+        String json = """
+            {
+              "name": "string",
+              "placeId": 1
+            }
+            """;
 
         when(
             modelMapper.map(favoritePlaceService.update(favoritePlaceDto, principal.getName()), FavoritePlaceDto.class))
-                .thenReturn(favoritePlaceDto);
+            .thenReturn(favoritePlaceDto);
 
         mockMvc.perform(put(favoritePlaceLink + "/")
-            .content("{\n" +
-                "  \"name\": \"string\",\n" +
-                "  \"placeId\": 1\n" +
-                "}")
+            .content(json)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 

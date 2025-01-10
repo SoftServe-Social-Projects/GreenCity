@@ -1,11 +1,10 @@
 package greencity.exception.exceptions;
 
-import javax.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintDeclarationException;
+import lombok.experimental.StandardException;
 
+@StandardException
 public class BadSocialNetworkLinksException extends ConstraintDeclarationException {
-    /**
-     * Exception we get when we receive wrong social network links.
-     */
     public BadSocialNetworkLinksException(String message) {
         super(message);
     }

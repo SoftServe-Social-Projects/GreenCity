@@ -1,8 +1,8 @@
 package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

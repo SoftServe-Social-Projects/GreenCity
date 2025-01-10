@@ -1,30 +1,23 @@
 package greencity.config;
 
 import greencity.client.RestClient;
-import greencity.constant.CacheConstants;
 import greencity.dto.user.UserVO;
 import greencity.entity.HabitAssign;
-import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
-
 import static greencity.enums.EmailNotification.*;
-import static greencity.enums.FactOfDayStatus.*;
 
 /**
  * Config for scheduling.
@@ -35,9 +28,8 @@ import static greencity.enums.FactOfDayStatus.*;
 @Slf4j
 @Configuration
 @EnableScheduling
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScheduleConfig {
-    private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
@@ -69,6 +61,7 @@ public class ScheduleConfig {
         List<UserVO> users = restClient.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(restClient.findAllByEmailNotification(DAILY));
         sendHabitNotificationIfNeed(users);
+        log.info("Notification sent at {} about not marked habits to {} users", LocalDateTime.now(), users.size());
     }
 
     /**
@@ -79,6 +72,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryWeek() {
         List<UserVO> users = restClient.findAllByEmailNotification(WEEKLY);
         sendHabitNotificationIfNeed(users);
+        log.info("Notification sent at {} about not marked habits to {} users", LocalDateTime.now(), users.size());
     }
 
     /**
@@ -90,36 +84,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryMonth() {
         List<UserVO> users = restClient.findAllByEmailNotification(MONTHLY);
         sendHabitNotificationIfNeed(users);
-    }
-
-    /**
-     * Once a day randomly chooses new habitfact of day that has not been habitfact
-     * of day during this iteration. factOfDay == 0 - wasn't habitfact of day, 1 -
-     * is today's habitfact of day, 2 - already was habitfact of day.
-     */
-    @CacheEvict(value = CacheConstants.HABIT_FACT_OF_DAY_CACHE, allEntries = true)
-    @Transactional
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
-    public void chooseNewHabitFactOfDay() {
-        List<HabitFactTranslation> list = habitFactTranslationRepo.findRandomHabitFact();
-        if (!list.isEmpty()) {
-            habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
-        } else {
-            habitFactTranslationRepo.updateFactOfDayStatus(USED, POTENTIAL);
-            habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
-            list = habitFactTranslationRepo.findRandomHabitFact();
-        }
-        habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.get(0).getHabitFact().getId());
-    }
-
-    /**
-     * Clear habitfact of the day cache at 0:00 am every day.
-     */
-    @CacheEvict(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME, allEntries = true)
-    @Transactional
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
-    public void chooseNewHabitFactOfTheDay() {
-        // Do nothing to clean cache
+        log.info("Habit notifications has been sent to {} users", users.size());
     }
 
     /**
@@ -147,7 +112,7 @@ public class ScheduleConfig {
         List<HabitAssign> habitsInProgress = habitAssignRepo.findAllInProgressHabitAssigns();
         habitsInProgress.forEach(h -> {
             if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
-                log.info("Set status expired");
+                log.info("Habit status is expired from {}. Count of habits {}", now, habitsInProgress.size());
                 h.setStatus(HabitAssignStatus.EXPIRED);
             }
         });

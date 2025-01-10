@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Drop-habit_fact_translations-table-if-it-exists" author="Maryna Chekhovska">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="habit_fact_translations"/>
+        </preConditions>
+        <dropTable tableName="habit_fact_translations"/>
+    </changeSet>
+
+    <changeSet id="Drop-habit_fact-table-if-it-exists" author="Maryna Chekhovska">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="habit_facts"/>
+        </preConditions>
+        <dropTable tableName="habit_facts"/>
+    </changeSet>
+</databaseChangeLog>

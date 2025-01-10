@@ -15,7 +15,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,23 +52,21 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        SpecificationVO specificationVO = specificationService.findById(anyLong());
+        SpecificationVO expectedVO = specificationService.findById(anyLong());
 
-        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), expectedVO);
     }
 
     @Test
     void findByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            specificationService.findById(null);
-        });
+        assertThrows(NotFoundException.class, () -> specificationService.findById(null));
     }
 
     @Test
     void findAllTest() {
-        List<Specification> expected = new ArrayList<>(Arrays.asList(
+        List<Specification> expected = new ArrayList<>(List.of(
             new Specification(1L, "spec", null)));
-        List<SpecificationVO> expectedVO = Arrays.asList(new SpecificationVO(1L, "spec"));
+        List<SpecificationVO> expectedVO = List.of(new SpecificationVO(1L, "spec"));
 
         when(specificationRepo.findAll()).thenReturn(expected);
         when(modelMapper.map(expected, new TypeToken<List<SpecificationVO>>() {
@@ -82,14 +79,12 @@ class SpecificationServiceImplTest {
     void deleteByIdTest() {
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(new Specification()));
 
-        assertEquals(new Long(1), specificationService.deleteById(1L));
+        assertEquals(1L, specificationService.deleteById(1L));
     }
 
     @Test
     void deleteByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            specificationService.deleteById(null);
-        });
+        assertThrows(NotFoundException.class, () -> specificationService.deleteById(null));
     }
 
     @Test
@@ -98,9 +93,9 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.findByName(anyString())).thenReturn(Optional.of(genericEntity));
 
-        SpecificationVO specificationVO = specificationService.findByName(anyString());
+        SpecificationVO expected = specificationService.findByName(anyString());
 
-        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), expected);
     }
 
     @Test

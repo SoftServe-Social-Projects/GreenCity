@@ -64,7 +64,7 @@
                                  referencedTableName="chat_rooms"/>
 
         <addPrimaryKey tableName="chat_rooms_participants"
-                       columnNames="participant_id, room_id" clustered="true"/>
+                       columnNames="participant_id, room_id" constraintName="pk_chat_rooms_participants" clustered="true"/>
     </changeSet>
 
     <changeSet id="8" author="Kravchenko">

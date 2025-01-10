@@ -1,10 +1,20 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
-import javax.persistence.*;
-
-import greencity.enums.RatingCalculationEnum;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -25,10 +35,6 @@ public class RatingStatistics {
     @Column(name = "create_date", nullable = false)
     private ZonedDateTime createDate;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "event")
-    private RatingCalculationEnum ratingCalculationEnum;
-
     @Column(name = "points_changed")
     private double pointsChanged;
 
@@ -37,4 +43,7 @@ public class RatingStatistics {
 
     @ManyToOne
     private User user;
+
+    @ManyToOne
+    private RatingPoints ratingPoints;
 }

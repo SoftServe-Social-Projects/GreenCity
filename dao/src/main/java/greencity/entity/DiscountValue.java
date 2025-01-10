@@ -1,7 +1,12 @@
 package greencity.entity;
 
-import javax.persistence.*;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor

@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import java.time.LocalTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

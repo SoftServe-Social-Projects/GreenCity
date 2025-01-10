@@ -1,15 +1,14 @@
 package greencity.dto.friends;
 
 import greencity.dto.location.UserLocationDto;
-import greencity.enums.FriendStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 @SuppressWarnings("java:S107")
 public class UserFriendDto {

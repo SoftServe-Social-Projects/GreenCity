@@ -1,16 +1,18 @@
 package greencity.mapping;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UtilsMapper {
-    private static ModelMapper modelMapper;
+    private static final ModelMapper modelMapper;
 
     static {
         modelMapper = new ModelMapper();
@@ -19,9 +21,6 @@ public class UtilsMapper {
             .setFieldMatchingEnabled(true)
             .setSkipNullEnabled(true)
             .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
-    }
-
-    private UtilsMapper() {
     }
 
     /**

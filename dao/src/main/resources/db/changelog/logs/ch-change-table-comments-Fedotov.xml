@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="comments1" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FK8kcum44fvpupyw6f5baccx25c" tableName="comments"/>
+        </preConditions>
+        <dropIndex indexName="FK8kcum44fvpupyw6f5baccx25c"
+                   tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments2" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FKch8bkgqt3v8yjo230lysj668h" tableName="comments"/>
+        </preConditions>
+        <dropIndex indexName="FKch8bkgqt3v8yjo230lysj668h"
+                   tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments3" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FKhvh0e2ybgg16bpu229a5teje7" tableName="comments"/>
+        </preConditions>
+        <dropIndex indexName="FKhvh0e2ybgg16bpu229a5teje7"
+                   tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments4" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="FKpeyqdepr1vru2tsghm3sxwhrr" tableName="comments"/>
+        </preConditions>
+        <dropIndex indexName="FKpeyqdepr1vru2tsghm3sxwhrr"
+                   tableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments5" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK8kcum44fvpupyw6f5baccx25c"/>
+        </preConditions>
+        <dropForeignKeyConstraint
+                constraintName="FK8kcum44fvpupyw6f5baccx25c"
+                baseTableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments6" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FKch8bkgqt3v8yjo230lysj668h"/>
+        </preConditions>
+        <dropForeignKeyConstraint
+                constraintName="FKch8bkgqt3v8yjo230lysj668h"
+                baseTableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments7" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FKhvh0e2ybgg16bpu229a5teje7"/>
+        </preConditions>
+        <dropForeignKeyConstraint
+                constraintName="FKhvh0e2ybgg16bpu229a5teje7"
+                baseTableName="comments"/>
+    </changeSet>
+
+    <changeSet id="comments8" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FKpeyqdepr1vru2tsghm3sxwhrr"/>
+        </preConditions>
+        <dropForeignKeyConstraint
+                constraintName="FKpeyqdepr1vru2tsghm3sxwhrr"
+                baseTableName="comments"/>
+    </changeSet>
+
+</databaseChangeLog>

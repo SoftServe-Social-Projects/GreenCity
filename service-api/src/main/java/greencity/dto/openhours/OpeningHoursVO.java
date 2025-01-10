@@ -4,7 +4,12 @@ import greencity.dto.breaktime.BreakTimeVO;
 import greencity.dto.place.PlaceVO;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @NoArgsConstructor
 @AllArgsConstructor

@@ -2,7 +2,11 @@ package greencity.dto.discount;
 
 import greencity.dto.place.PlaceVO;
 import greencity.dto.specification.SpecificationVO;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @Getter
 @Setter

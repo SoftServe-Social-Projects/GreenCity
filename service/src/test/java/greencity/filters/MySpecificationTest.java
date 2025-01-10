@@ -14,13 +14,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -39,6 +39,8 @@ class MySpecificationTest {
     private Path<Object> objectPath;
     @Mock
     private Expression<String> as;
+    @Mock
+    private SearchCriteria searchCriteriaEmpty;
     TagSpecification tagSpecification;
     List<SearchCriteria> searchCriteriaList;
     TagViewDto tagViewDto;
@@ -48,7 +50,7 @@ class MySpecificationTest {
 
     @BeforeEach
     void init() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         tagViewDto = ModelUtils.getTagViewDto();
         searchCriteriaList = new ArrayList<>();
@@ -110,6 +112,23 @@ class MySpecificationTest {
         when(newsRoot.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
         when(criteriaBuilder.like(any(), eq("%" + searchCriteriaForAll.getValue() + "%"))).thenReturn(expected);
         Predicate actual = ecoNewsSpecification.getAuthorPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getBooleanPredicate() {
+        when(newsRoot.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
+        String searchCriteriaValue = (String) searchCriteriaForAll.getValue();
+        when(criteriaBuilder.equal(any(), eq(Boolean.parseBoolean(searchCriteriaValue)))).thenReturn(expected);
+        Predicate actual = ecoNewsSpecification.getBooleanPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getBooleanPredicateEmptyValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn("");
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = ecoNewsSpecification.getBooleanPredicate(newsRoot, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);
     }
 }

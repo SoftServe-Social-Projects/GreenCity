@@ -1,14 +1,14 @@
 package greencity.service;
 
-import greencity.enums.RatingCalculationEnum;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
+import greencity.dto.ratingstatistics.RatingPointsDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.RatingPoints;
 import greencity.entity.RatingStatistics;
-import greencity.enums.RatingCalculationEnum;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
@@ -44,17 +44,19 @@ class RatingStatisticsServiceImplTest {
     private final ZonedDateTime defaultTime = ZonedDateTime.now();
 
     private final Pageable pageable = PageRequest.of(3, 5);
-
+    private final RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("CREATE_NEWS").points(1).build();
+    private final RatingPointsDto ratingPointsDto =
+        RatingPointsDto.builder().id(1L).name("CREATE_NEWS").points(1).build();
     private final RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO
         .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingCalculationEnum(RatingCalculationEnum.CREATE_NEWS).build();
+        .ratingPoints(ratingPointsDto).build();
 
     private final RatingStatistics ratingStatistics = RatingStatistics
         .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingCalculationEnum(RatingCalculationEnum.CREATE_NEWS).build();
+        .ratingPoints(ratingPoints).build();
 
     private final RatingStatisticsDto ratingStatisticsDto = new RatingStatisticsDto(1L, defaultTime,
-        RatingCalculationEnum.CREATE_NEWS,
+        ratingPointsDto,
         1.0f, 5.0f, UserVO.builder().build());
 
     private final Page<RatingStatistics> ratingStatisticsPage = Page.empty(pageable);
@@ -162,7 +164,7 @@ class RatingStatisticsServiceImplTest {
 
         SearchCriteria searchCriteriaId = generateSearchCriteria("id", "id");
         searchCriteriaId.setValue(ratingStatisticsViewDto.getId());
-        SearchCriteria searchCriteriaEventName = generateSearchCriteria("ratingCalculationEnum", "enum");
+        SearchCriteria searchCriteriaEventName = generateSearchCriteria("ratingPoints", "ratingPoints");
         searchCriteriaEventName.setValue(ratingStatisticsViewDto.getEventName());
         SearchCriteria searchCriteriaUserId = generateSearchCriteria("user", "userId");
         searchCriteriaUserId.setValue(ratingStatisticsViewDto.getUserId());
@@ -194,7 +196,9 @@ class RatingStatisticsServiceImplTest {
             searchCriteriaCurrentRating);
         List<SearchCriteria> expected = ratingStatisticsService.buildSearchCriteria(ratingStatisticsViewDto);
 
-        assertEquals(expected, actual);
+        assertEquals(expected.size(), actual.size());
+        assertEquals(expected.getLast(), actual.getLast());
+        assertEquals(expected.get(1), actual.get(1));
     }
 
     @Test

@@ -2,7 +2,13 @@ package greencity.dto.habit;
 
 import java.time.LocalDate;
 import java.util.List;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @NoArgsConstructor
 @AllArgsConstructor

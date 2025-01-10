@@ -1,11 +1,10 @@
 package greencity.repository;
 
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,16 +43,6 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      */
     @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
-
-    /**
-     * Method finds tags by name.
-     *
-     * @param names {@link String}
-     * @return set of tags {@link Tag}
-     * @author Lilia Mokhnatska
-     */
-    @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names")
-    Set<Tag> findTagsByNames(Set<String> names);
 
     /**
      * Method that allow you to find list of {@link Tag}s with all translations by
@@ -125,4 +114,31 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Modifying
     @Query("DELETE FROM Tag t WHERE t.id in :ids")
     void bulkDelete(List<Long> ids);
+
+    /**
+     * Finds a set of {@link Tag} entities by their IDs.
+     *
+     * @param tagIds list of tag IDs ({@link Long})
+     * @return a set of {@link Tag} objects corresponding to the provided IDs
+     */
+    @Query("select t from Tag t "
+        + "where t.id in :tagIds")
+    Set<Tag> findTagsById(List<Long> tagIds);
+
+    /**
+     * Finds the IDs of tags associated with habits that are in progress for the
+     * user with the specified email.
+     *
+     * @param email the email of the user
+     * @return a set of tag IDs ({@link Long}) associated with the user's
+     *         in-progress habits
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT t.id FROM tags t "
+            + "INNER JOIN habits_tags ht ON t.id = ht.tag_id "
+            + "INNER JOIN habits h ON ht.habit_id = h.id "
+            + "INNER JOIN habit_assign ha ON h.id = ha.habit_id "
+            + "INNER JOIN users u ON ha.user_id = u.id AND ha.status = 'INPROGRESS' "
+            + "WHERE u.email = :email")
+    Set<Long> findTagsIdByUserHabitsInProgress(String email);
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="AddNewTagTranslationsForFactOfTheDay" author="Maryna Chekhovska">
+        <sql>
+            INSERT INTO tag_translations (tag_id, language_id, name)
+            SELECT id, 1, 'Загальний'
+            FROM tags
+            WHERE type = 'FACT_OF_THE_DAY'
+            ORDER BY id DESC
+                LIMIT 1;
+        </sql>
+        <sql>
+            INSERT INTO tag_translations (tag_id, language_id, name)
+            SELECT id, 2, 'General'
+            FROM tags
+            WHERE type = 'FACT_OF_THE_DAY'
+            ORDER BY id DESC
+                LIMIT 1;
+        </sql>
+    </changeSet>
+    <changeSet id="update-sequences-for-tags" author="Maryna Chekhovska">
+        <sql>
+            SELECT setval('tags_id_seq', (SELECT MAX(id) FROM tags) + 1);
+            SELECT setval('tag_translations_id_seq', (SELECT MAX(id) FROM tag_translations) + 1);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

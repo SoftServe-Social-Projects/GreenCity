@@ -4,7 +4,6 @@ import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.repository.SocialNetworkRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

@@ -2,38 +2,44 @@ package greencity;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
-import greencity.dto.event.EventAuthorDto;
+import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.place.PlaceNotificationDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.PlaceAuthorDto;
-import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserToDoListItemResponseDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
-import greencity.message.GeneralEmailMessage;
-import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.enums.ToDoListItemStatus;
+import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
-import greencity.message.AddEcoNewsMessage;
+import java.util.UUID;
+
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static greencity.TestConst.ACCESS_TOKEN;
+import static greencity.TestConst.USER_ID;
+import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
     public static UserVO getUserVO() {
@@ -55,23 +61,6 @@ public class ModelUtils {
             .build();
     }
 
-    private static PlaceAuthorDto getPlaceAuthorDto() {
-        return PlaceAuthorDto.builder()
-            .id(1L)
-            .email("test@gmail.com")
-            .name("taras")
-            .build();
-    }
-
-    public static SendChangePlaceStatusEmailMessage getSendChangePlaceStatusEmailMessage() {
-        return SendChangePlaceStatusEmailMessage.builder()
-            .placeStatus("status")
-            .authorEmail("test@gmail.com")
-            .placeName("placeName")
-            .authorFirstName("taras")
-            .build();
-    }
-
     public static SendHabitNotification getSendHabitNotification() {
         return SendHabitNotification.builder()
             .email("test@gmail.com")
@@ -86,13 +75,6 @@ public class ModelUtils {
         return headers;
     }
 
-    public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
-        return NewsSubscriberResponseDto.builder()
-            .email("test@gmail.com")
-            .unsubscribeToken("someUnsubscribeToken")
-            .build();
-    }
-
     public static CategoryDto getCategoryDto() {
         return CategoryDto.builder()
             .name("name")
@@ -102,10 +84,10 @@ public class ModelUtils {
 
     public static SendReportEmailMessage getSendReportEmailMessage() {
         return SendReportEmailMessage.builder()
-            .emailNotification("notification")
+            .periodicity(EmailPreferencePeriodicity.WEEKLY)
             .categoriesDtoWithPlacesDtoMap(Collections.singletonMap(
                 getCategoryDto(), Collections.singletonList(getPlaceNotificationDto())))
-            .subscribers(Collections.singletonList(getPlaceAuthorDto()))
+            .subscribers(getSubscribers())
             .build();
     }
 
@@ -116,50 +98,28 @@ public class ModelUtils {
             Arrays.asList("Новини", "News", "Новины"));
     }
 
-    public static AddEcoNewsMessage getAddEcoNewsMessage() {
-        return AddEcoNewsMessage.builder()
-            .subscribers(Collections.singletonList(getNewsSubscriberResponseDto()))
-            .addEcoNewsDtoResponse(getAddEcoNewsDtoResponse())
+    public static InterestingEcoNewsDto getInterestingEcoNewsDto() {
+        return InterestingEcoNewsDto.builder()
+            .ecoNewsList(getShortEcoNewsDto())
+            .subscribers(getSubscribers())
             .build();
     }
 
-    public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {
-        return EcoNewsForSendEmailDto.builder()
-            .unsubscribeToken("string")
-            .creationDate(ZonedDateTime.now())
-            .imagePath("string")
-            .author(ModelUtils.getPlaceAuthorDto())
-            .text("string")
-            .source("string")
-            .title("string")
-            .build();
+    private static List<SubscriberDto> getSubscribers() {
+        return List.of(SubscriberDto.builder()
+            .email("email@gmail.com")
+            .name("Ilia")
+            .unsubscribeToken(UUID.randomUUID())
+            .build());
     }
 
-    public static EventCommentForSendEmailDto getEventCommentForSendEmailDto() {
-        return EventCommentForSendEmailDto.builder()
-            .id(1L)
-            .organizer(ModelUtils.getEventAuthorDto())
-            .createdDate(LocalDateTime.now())
-            .author(ModelUtils.getEventCommentAuthorDto())
-            .text("text")
-            .eventId(1L)
-            .build();
-    }
-
-    public static EventAuthorDto getEventAuthorDto() {
-        return EventAuthorDto.builder()
-            .id(1L)
-            .name("Inna")
-            .organizerRating(1.0)
-            .build();
-    }
-
-    public static EventCommentAuthorDto getEventCommentAuthorDto() {
-        return EventCommentAuthorDto.builder()
-            .id(ModelUtils.getUserVO().getId())
-            .name(ModelUtils.getUserVO().getName().trim())
-            .userProfilePicturePath(ModelUtils.getUserVO().getProfilePicturePath())
-            .build();
+    private static List<ShortEcoNewsDto> getShortEcoNewsDto() {
+        return List.of(ShortEcoNewsDto.builder()
+            .ecoNewsId(1L)
+            .imagePath("https://google.com")
+            .text("Text")
+            .title("Title")
+            .build());
     }
 
     public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();
@@ -181,26 +141,26 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
-        return UserShoppingListItemResponseDto.builder()
+    public static UserToDoListItemResponseDto getUserToDoListItemResponseDto() {
+        return UserToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
-        return CustomShoppingListItemResponseDto.builder()
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
+        return CustomToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ShoppingListItemStatus.ACTIVE)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
-        return UserShoppingAndCustomShoppingListsDto.builder()
-            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
-            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
+        return UserToDoAndCustomToDoListsDto.builder()
+            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
+            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
             .build();
     }
 
@@ -223,11 +183,29 @@ public class ModelUtils {
             .build();
     }
 
-    public static GeneralEmailMessage getGeneralEmailNotification() {
-        return GeneralEmailMessage.builder()
+    public static URL getUrl() throws MalformedURLException {
+        return new URL(TestConst.SITE);
+    }
+
+    public static ScheduledEmailMessage getScheduledEmailMessage() {
+        return ScheduledEmailMessage.builder()
+            .username("test")
+            .body("test")
+            .subject("test")
+            .language("en")
+            .baseLink("test")
             .email("test@gmail.com")
-            .subject("Congratulations")
-            .message("You have successfully done something")
             .build();
+    }
+
+    public static UserStatusDto getUserStatusDto() {
+        return UserStatusDto.builder().id(USER_ID).userStatus(ACTIVATED).build();
+    }
+
+    public static HttpEntity<UserStatusDto> getEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(getUserStatusDto(), headers);
     }
 }

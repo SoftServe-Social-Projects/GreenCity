@@ -2,11 +2,11 @@ package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemDto;
 import java.util.List;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import greencity.enums.HabitAssignStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,9 +31,13 @@ public class HabitDto {
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     private Integer complexity;
     private List<String> tags;
-    private List<ShoppingListItemDto> shoppingListItems;
-    private List<CustomShoppingListItemResponseDto> customShoppingListItems;
+    private List<ToDoListItemDto> toDoListItems;
+    private List<CustomToDoListItemResponseDto> customToDoListItems;
     private Boolean isCustomHabit;
     private Long usersIdWhoCreatedCustomHabit;
     private HabitAssignStatus habitAssignStatus;
+    private Boolean isAssigned;
+    private Boolean isFavorite;
+    private int likes;
+    private int dislikes;
 }

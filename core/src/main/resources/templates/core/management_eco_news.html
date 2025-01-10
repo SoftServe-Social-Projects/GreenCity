@@ -5,11 +5,7 @@
     <meta charset="utf-8"/>
     <title>Eco news management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -27,10 +23,7 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
-
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
     <script th:src="@{/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
@@ -50,10 +43,10 @@
 <body>
 <div id="page">
     <div id="header" th:insert="core/header"></div>
-    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="main-content">
+        <div id="sidebar" th:insert="core/sidepanel"></div>
         <div class="container-xl">
-            <div class="table-responsive">
+            <div class="table-responsive eco-news">
                 <div class="table-wrapper">
                     <div class="table-title">
                         <div class="row manager-user">
@@ -72,15 +65,11 @@
                         <div class="row-box-and-sort">
                             <div class="main-search">
                                 <!-- Search Form  -->
-                                <form class="form-inline searching" action="#">
-                                    <input id="habitSearch" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}"
-                                           onkeyup="searchTableFunction()">
+                                <form class="form-inline searching" onsubmit="return searchByQuery(document.getElementById('ecoNewsSearch').value)">
+                                    <input id="ecoNewsSearch" type="text"  class="form-search" name="query" th:value="${query}" th:placeholder="#{greenCity.pages.search}">
+                                    <label for="ecoNewsSearch" class="search-icon" style="transform: translateY(-50%);"><i class="material-icons">&#xE8B6;</i></label>
                                     <input class="search-submit-btn" type="submit">
                                 </form>
-                                    <button id="econews-filter-button" class="filter-button">  <!--onclick="openForm()"  -->
-                                        <img src="/img/filter-icon.svg" alt="Filter icon">Filter
-                                    </button>
-                                    <!-- todo-->
                             </div>
 
                             <div class="filter-list-grid">
@@ -95,47 +84,219 @@
                                 </div>
                             </div>
                         </div>
-
-
+                    </div>
                         <table class="table table-bordered" id="tabElement">
                             <thead>
-                            <tr class="table-primary">
+                            <tr>
                                 <th>
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
-                                </th>
-                                <th>
-                                    [[#{greenCity.pages.table.id}]]
-                                    <span class="table-filter-icon filter"></span>
+                                    <span class="custom-checkbox">
+                                        <input type="checkbox" id="selectAll">
+                                        <label for="selectAll"></label>
+                                    </span>
                                 </th>
                                 <th>
-                                    [[#{greenCity.pages.table.userName}]]
-                                    <span class="table-filter-icon filter"></span>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.id}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'id')" data-field="id" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'id')" data-field="id" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-id" type="text" class="form-search" th:value="${fields.id}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-eco-news-by-id" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('id')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-id" onclick="searchByNameField(document.getElementById('search-eco-news-by-id').value, 'id')">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.author}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'author')" data-field="author" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'author')" data-field="author" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-author" type="text" class="form-search" th:value="${fields.author}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-eco-news-by-author" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('author')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-author" onclick="searchByNameField(document.getElementById('search-eco-news-by-author').value, 'author')">
+                                        </div>
+                                    </div>
                                 </th>
 
-                                <th>[[#{greenCity.pages.table.title}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.title}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'title')" data-field="title" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'title')" data-field="title" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-title" type="text" class="form-search" th:value="${fields.title}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-eco-news-by-title" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('title')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-title" onclick="searchByNameField(document.getElementById('search-eco-news-by-title').value, 'title')">
+                                        </div>
+                                    </div>
                                 </th>
 
-                                <th>[[#{greenCity.pages.table.text}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.text}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'text')" data-field="text" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'text')" data-field="text" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-text" type="text" class="form-search" th:value="${fields.text}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-eco-news-by-text" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('text')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-text" onclick="searchByNameField(document.getElementById('search-eco-news-by-text').value, 'text')">
+                                        </div>
+                                    </div>
                                 </th>
 
-                                <th>[[#{greenCity.pages.table.image}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <span class="header-text">[[#{greenCity.pages.table.image}]]</span>
                                 </th>
-                                <th>[[#{greenCity.pages.table.tags}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.date}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'creationDate')" data-field="creationDate" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'creationDate')" data-field="creationDate" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search date">
+                                            <div class="custom-checkbox date">
+                                                <input type="checkbox" id="period-of-dates" onclick="toggleEndDate()">
+                                                <label for="period-of-dates"></label>
+                                                <span>[[#{greenCity.pages.table.dateRange}]]</span>
+                                            </div>
+                                            <input type="date" id="search-eco-news-by-startDate" class="form-control">
+                                            <input type="date" id="search-eco-news-by-endDate" class="form-control end-date">
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('startDate')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-date" onclick="searchByNameField(document.getElementById('search-eco-news-by-startDate').value, 'startDate', document.getElementById('search-eco-news-by-endDate').value, 'endDate')">
+                                        </div>
+                                    </div>
                                 </th>
-                                <th>[[#{greenCity.pages.table.likes}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.time}]]</span>
+                                    </div>
                                 </th>
-                                <th>[[#{greenCity.pages.table.dislikes}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.tags}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search tags">
+                                            <div class="custom-checkbox tag" id="search-eco-news-by-tags" th:each="tag: ${ecoNewsTag}">
+                                                <input type="checkbox" name="tags" th:id="${tag.name}" th:value="${tag.name}">
+                                                <label th:for="${tag.name}"></label>
+                                                <span th:text="${tag.name}"></span>
+                                            </div>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('tags')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-tags" onclick="applyTagFilter()">
+                                        </div>
+                                    </div>
                                 </th>
-
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.likes}]]</span>
+                                        <span onclick="orderByNameField('asc', 'likes')" data-field="likes" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'likes')" data-field="likes" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.dislikes}]]</span>
+                                        <span onclick="orderByNameField('asc', 'dislikes')" data-field="dislikes" data-order="asc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'dislikes')" data-field="dislikes" data-order="desc" class="sort-icon">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.visibility}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container radio-buttons">
+                                        <div class="filter-container__search">
+                                            <input type="radio" class="visibility" name="hidden" id="visible" value="false">
+                                            <label class="visibility-label" for="visible">[[#{greenCity.pages.table.visible}]]</label>
+                                            <input type="radio" class="visibility" name="hidden" id="hidden" value="true">
+                                            <label class="visibility-label" for="hidden">[[#{greenCity.pages.table.hidden}]]</label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('hidden')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="-visibility" onclick="searchByNameField(getSelectedRadioButton('hidden'), 'hidden')">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <span>[[#{greenCity.pages.table.actions}]]</span>
+                                </th>
                             </tr>
                             </thead>
 
@@ -163,23 +324,43 @@
                                             <img src="/img/eco-news-default-large.png" style="height:inherit; max-width: 51px">
                                         </div>
                                     </td>
+                                    <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalDate(), 'dd.MM.yyyy')}"></td>
+                                    <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalTime(), 'HH:mm:ss')}"></td>
                                     <td style = "width: 173px">
-                                        <div th:switch="${econew.tags.isEmpty()}">
-                                            <div th:case="false">
-                                                <div class="dropdown role">
-                                                    <button class="dropbtn role" th:text="${econew.tags.get(0)}">
-                                                    </button>
-                                                    <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                                    <div class="dropdown-content role" style="width:173px; height: auto;">
-                                                        <a th:each="tag, iterStatus :${econew.tags.subList(1, econew.tags.size())}" th:text="${tag}"></a>
+                                        <div th:switch="${#locale.language}">
+                                            <div th:case="en">
+                                                <div th:switch="${econew.tags.isEmpty()}">
+                                                    <div th:case="false">
+                                                        <div class="dropdown role" style="position: inherit">
+                                                            <button class="dropbtn role" th:text="${econew.tags.get(0)}">
+                                                            </button>
+                                                            <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                                            <div class="dropdown-content role" style="width:173px; height: auto;">
+                                                                <a th:each="tag, iterStatus :${econew.tags.subList(1, econew.tags.size())}" th:text="${tag}"></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text" th:case="true">
+                                                        <span class="text" th:text="#{greenCity.pages.table.noTags}"></span>
                                                     </div>
                                                 </div>
-                                                <!--<div th:each="tag, iterStatus : ${econew.tags}">
-                                                    <span class="text" th:text="${tag}"></span>&nbsp;
-                                                </div>-->
                                             </div>
-                                            <div class="text" th:case="true">
-                                                <span class="text">No tags</span>
+                                            <div th:case="ua">
+                                                <div th:switch="${econew.tagsUa.isEmpty()}">
+                                                    <div th:case="false">
+                                                        <div class="dropdown role" style="position: inherit">
+                                                            <button class="dropbtn role" th:text="${econew.tagsUa.get(0)}">
+                                                            </button>
+                                                            <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                                            <div class="dropdown-content role" style="width:173px; height: auto;">
+                                                                <a th:each="tag, iterStatus :${econew.tagsUa.subList(1, econew.tagsUa.size())}" th:text="${tag}"></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text" th:case="true">
+                                                        <span class="text" th:text="#{greenCity.pages.table.noTags}"></span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -198,6 +379,35 @@
                                                 <span th:text="${econew.dislikes}"></span>
                                             </a>
                                         </span>
+                                    </td>
+                                    <td class="text">
+                                        <div th:if="${econew.hidden eq false}">
+                                            [[#{greenCity.pages.table.visible}]]
+                                        </div>
+                                        <div th:if="${econew.hidden eq true}">
+                                            [[#{greenCity.pages.table.hidden}]]
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex">
+                                            <div th:if="${econew.hidden eq false}">
+                                                <a class="edit eHideBtn" th:href="@{/management/eco-news/hide(id=${econew.id})}">
+                                                    <i class="material-icons" data-toggle="tooltip" style="opacity: 1"
+                                                       th:title="#{greenCity.pages.hide}">&#xE8F5;</i>
+                                                </a>
+                                            </div>
+                                            <div th:if="${econew.hidden eq true}">
+                                                <a class="edit eShowBtn" th:href="@{/management/eco-news/show(id=${econew.id})}">
+                                                    <i class="material-icons" data-toggle="tooltip" style="opacity: 1"
+                                                       th:title="#{greenCity.pages.show}">&#xE8F4;</i>
+                                                </a>
+                                            </div>
+                                            <a class="delete eDelBtn" data-toggle="modal"
+                                                th:href="@{/management/eco-news/delete(id=${econew.id})}">
+                                                <i class="material-icons" data-toggle="tooltip" style="opacity: 1"
+                                                   th:title="#{greenCity.pages.delete}">&#xE872;</i>
+                                            </a>
+                                        </div>
                                     </td>
 
 <!--                                    <td th:if="${econew.likes < 100}">
@@ -224,40 +434,41 @@
                                 </tbody>
                             </th:block>
                         </table>
-                        <!-- Start of Paging -->
-                        <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
-                            <div class="d-flex justify-content-center">
-                                <ul class="pagination">
-                                    <li class="page-item"
-                                        th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
-                                        <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${0}, sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
-                                                class="arrow fas fa-chevron-left"></i></a>
-                                        <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
-                                                class="arrow fas fa-chevron-left"></i></a>
-                                    </li>
+                    <!-- Start of Paging -->
+                    <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
+                        <div class="d-flex justify-content-center">
+                            <ul class="pagination">
+                                <li class="page-item"
+                                    th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
+                                    <a class="page-link" rel="tooltip" id="prevPageLink" th:if="${!pageable.isFirst()}"
+                                       onclick="buildUrlPage(0)"><i
+                                            class="arrow fas fa-chevron-left"></i></a>
+                                    <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
+                                            class="arrow fas fa-chevron-left"></i></a>
+                                </li>
 
-                                    <li class="page-item"
-                                        th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
-                                        th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
-                                        th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                                        <a class="page-link"
-                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}">[[${pageNumber}+1]]</a>
-                                    </li>
+                                <li class="page-item"
+                                    th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
+                                    th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
+                                    th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
+                                    <a class="page-link"
+                                       href="javascript:void(0)"
+                                       th:onclick="'buildUrlPage(' + ${pageNumber} + ')'">[[${pageNumber}+1]]</a>
+                                </li>
 
-                                    <li class="page-item"
-                                        th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
-                                        <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                                           th:href="@{/management/eco-news?&page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageable.getTotalPages()-1},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
-                                                class="arrow fas fa-chevron-right"></i></a>
-                                        <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
-                                                class="arrow fas fa-chevron-right"></i></a>
-                                    </li>
-                                </ul>
-                            </div>
+                                <li class="page-item"
+                                    th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
+                                    <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
+                                       th:onclick="'buildUrlPage(' + (${pageable.getTotalPages()} - 1) + ')'"
+                                    ><i
+                                            class="arrow fas fa-chevron-right"></i></a>
+                                    <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
+                                            class="arrow fas fa-chevron-right"></i></a>
+                                </li>
+                            </ul>
                         </div>
-                        <!-- End of Paging -->
                     </div>
+                    <!-- End of Paging -->
                 </div>
             </div>
 
@@ -385,6 +596,73 @@
                                        th:value="#{greenCity.pages.popup.cancel.}">
                                 <a href="" id="deleteAllSubmit" class="btn btn-danger">
                                     <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="deleteEcoNewsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="deleteEcoNewsForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.places.page.delete.ecoNews}]]</h4>
+                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                                <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="deleteOneSubmit">
+                                    <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="hideEcoNewsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="hideEcoNewsForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.places.page.hide.ecoNews}]]</h4>
+                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.hide.h2}]]</p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="hideOneSubmit">
+                                    <div>[[#{greenCity.pages.hide}]]</div>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="showEcoNewsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="showEcoNewsForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.places.page.show.ecoNews}]]</h4>
+                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.show.h2}]]</p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="showOneSubmit">
+                                    <div>[[#{greenCity.pages.show}]]</div>
                                 </a>
                             </div>
                         </form>

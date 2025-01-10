@@ -1,8 +1,7 @@
 package greencity.entity.event;
 
 import lombok.*;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "events_images")

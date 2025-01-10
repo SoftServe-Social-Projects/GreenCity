@@ -1,8 +1,18 @@
 package greencity.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import lombok.*;
+import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor

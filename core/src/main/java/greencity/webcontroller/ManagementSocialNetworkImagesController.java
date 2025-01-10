@@ -8,9 +8,12 @@ import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.service.SocialNetworkImageService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,13 +21,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
-
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
@@ -36,18 +44,15 @@ public class ManagementSocialNetworkImagesController {
     /**
      * Method that returns management page with all {@link SocialNetworkImageVO}.
      *
-     * @param query    Query for searching related data
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      * @author Orest Mamchuk
      */
     @GetMapping
-    public String getAllSocialNetworkImages(@RequestParam(required = false, name = "query") String query, Model model,
-        @ApiIgnore Pageable pageable) {
-        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = query == null || query.isEmpty()
-            ? socialNetworkImageService.findAll(pageable)
-            : socialNetworkImageService.searchBy(pageable, query);
+    public String getAllSocialNetworkImages(Model model,
+        @Parameter(hidden = true) Pageable pageable) {
+        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = socialNetworkImageService.findAll(pageable);
         model.addAttribute("pageable", socialNetworkImages);
         return "core/management_social_network_images";
     }
@@ -60,10 +65,11 @@ public class ManagementSocialNetworkImagesController {
      * @param file                         of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @ApiOperation(value = "Save SocialNetworkImages.")
+    @Operation(summary = "Save SocialNetworkImages.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PostMapping("/")
@@ -119,10 +125,10 @@ public class ManagementSocialNetworkImagesController {
      * @param file                          of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @ApiOperation(value = "Update Econews.")
+    @Operation(summary = "Update Econews.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")

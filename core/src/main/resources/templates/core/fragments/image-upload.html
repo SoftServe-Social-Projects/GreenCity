@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="imageUpload">
+    <div class="form-group">
+        <label for="imageUpload" class="file-upload-btn">
+            <span class="file-upload-icon">+</span>
+            <input type="file" id="imageUpload" name="images" accept="image/*" multiple>
+        </label>
+    </div>
+
+    <div id="proposedImagesContainer" class="mb-3">
+        <h4>[[#{greenCity.imageUpload.proposed}]]</h4>
+        <div id="proposedImages" class="preview-container">
+        </div>
+    </div>
+    <h4>[[#{greenCity.imageUpload.preview}]]</h4>
+    <div id="previewContainer" class="preview-container mb-3"></div>
+    <div id="uploadImagesErrorMessage" class="error mb-3"></div>
+</div>

@@ -1,6 +1,11 @@
 package greencity.dto.tag;
 
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -11,4 +16,5 @@ import lombok.*;
 public class TagDto {
     private Long id;
     private String name;
+    private String languageCode;
 }

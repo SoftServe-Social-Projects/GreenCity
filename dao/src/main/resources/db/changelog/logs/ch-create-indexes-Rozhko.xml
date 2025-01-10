@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="Rozhko-1" author="Ilia Rozhko">
+        <createIndex indexName="events_followers_event_id_index" tableName="events_followers">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex indexName="events_followers_user_id_index" tableName="events_followers">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="events_attenders_event_id_index" tableName="events_attenders">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex indexName="events_attenders_user_id_index" tableName="events_attenders">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="events_organizer_id_index" tableName="events">
+            <column name="organizer_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

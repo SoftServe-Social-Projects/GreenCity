@@ -1,51 +1,43 @@
 package greencity.achievement;
 
 import greencity.ModelUtils;
-import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
+import greencity.entity.RatingPoints;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
-import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.rating.RatingCalculation;
-import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
 import greencity.repository.HabitRepo;
-import greencity.service.UserService;
+import greencity.repository.RatingPointsRepo;
 import greencity.service.UserActionService;
 import greencity.service.AchievementService;
 import greencity.service.AchievementCategoryService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
 import greencity.entity.Achievement;
-
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementCalculationTest {
     @Mock
     private HabitRepo habitRepo;
-    @Mock
-    private RestClient restClient;
     @Mock
     private UserActionService userActionService;
     @Mock
@@ -59,15 +51,9 @@ class AchievementCalculationTest {
     @Mock
     private AchievementRepo achievementRepo;
     @Mock
-    private UserRepo userRepo;
-    @Mock
-    private AchievementCategoryRepo achievementCategoryRepo;
-    @Mock
-    private RatingCalculationEnum ratingCalculationEnum;
+    private RatingPointsRepo ratingPointsRepo;
     @InjectMocks
     private AchievementCalculation achievementCalculation;
-    @Mock
-    private UserService userService;
     @Mock
     private RatingCalculation ratingCalculation;
 
@@ -83,7 +69,9 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
@@ -91,6 +79,8 @@ class AchievementCalculationTest {
             .thenReturn(Optional.of(achievement));
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
+        when(ratingPointsRepo.findByNameOrThrow("bla bla"))
+            .thenThrow(new NotFoundException(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_NAME + "bla bla"));
 
         assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
@@ -99,6 +89,7 @@ class AchievementCalculationTest {
         verify(achievementRepo).findByAchievementCategoryIdAndCondition(anyLong(), any());
         verify(achievementCategoryService).findByName("CREATE_NEWS");
         verify(achievementService).findByCategoryIdAndCondition(2L, 1);
+        verify(ratingPointsRepo).findByNameOrThrow("bla bla");
     }
 
     @Test
@@ -112,7 +103,11 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
+                0);
+        RatingPoints ratingPoints = ModelUtils.getRatingPointsAcquiredHabit14Days();
+        when(ratingPointsRepo.findByNameOrThrow("ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
@@ -147,7 +142,11 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
+                0);
+        RatingPoints ratingPoints = ModelUtils.getRatingPointsAcquiredHabit14Days();
+        when(ratingPointsRepo.findByNameOrThrow("ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
@@ -191,21 +190,21 @@ class AchievementCalculationTest {
     void calculateAchievement_UNDO() {
         AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
         AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
+        RatingPoints ratingPoints = ModelUtils.getRatingPointsUndoAcquiredHabit14Days();
         UserVO userVO = ModelUtils.getUserVO();
         UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
         User user = ModelUtils.getUser();
-        Achievement achievement = ModelUtils.getAchievement();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
-        AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementRepo.findUnAchieved(1L, 2L)).thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(achievementRepo.findUnAchieved(1L, 2L)).thenReturn(List.of(ModelUtils.getAchievement()));
         when(achievementRepo.findUnAchieved(1L, 1L)).thenReturn(Collections.emptyList());
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
+        doNothing().when(userAchievementRepo).deleteByUserAndAchievementId(anyLong(), anyLong());
 
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
             AchievementAction.DELETE);
@@ -253,7 +252,9 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any(), any())).thenReturn(userActionVO);
@@ -281,7 +282,10 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
+                0);
+        RatingPoints ratingPoints = ModelUtils.getRatingPointsAcquiredHabit14Days();
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any(), any())).thenReturn(userActionVO);
@@ -294,6 +298,7 @@ class AchievementCalculationTest {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(ModelUtils.getHabit()));
         when(userActionService.createUserAction(any(), any(), any()))
             .thenReturn(userActionVO);
+        when(ratingPointsRepo.findByNameOrThrow("ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
             AchievementAction.ASSIGN, 1L);
 
@@ -334,12 +339,14 @@ class AchievementCalculationTest {
         User user = ModelUtils.getUser();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
+        RatingPoints ratingPoints = ModelUtils.getRatingPointsUndoAcquiredHabit14Days();
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any(), any())).thenReturn(userActionVO);
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementRepo.findUnAchieved(1L, 2L, 1L)).thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(achievementRepo.findUnAchieved(1L, 2L, 1L)).thenReturn(List.of(ModelUtils.getAchievement()));
         when(achievementRepo.findUnAchieved(1L, 1L)).thenReturn(Collections.emptyList());
         when(userActionService.createUserAction(any(), any(), any()))
             .thenReturn(userActionVO);

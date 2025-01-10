@@ -6,7 +6,6 @@ import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
-
 import java.util.List;
 
 public interface FavoritePlaceService {

@@ -2,10 +2,13 @@ package greencity.dto.openhours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.dto.breaktime.BreakTimeDto;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
-
-import javax.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import jakarta.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
@@ -17,12 +20,12 @@ import java.time.LocalTime;
 public class OpeningHoursDto {
     @NotNull
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(dataType = "java.lang.String")
+    @Schema(type = "java.lang.String")
     private LocalTime openTime;
 
     @NotNull
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(dataType = "java.lang.String")
+    @Schema(type = "java.lang.String")
     private LocalTime closeTime;
 
     @NotNull

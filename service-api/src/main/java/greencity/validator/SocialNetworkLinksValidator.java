@@ -4,19 +4,13 @@ import greencity.annotations.ValidSocialNetworkLinks;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ServiceValidationConstants;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class SocialNetworkLinksValidator implements ConstraintValidator<ValidSocialNetworkLinks, List<String>> {
-    @Override
-    public void initialize(ValidSocialNetworkLinks constraint) {
-        // Initializes the validator in preparation for #isValid calls
-    }
-
     @Override
     public boolean isValid(List<String> links, ConstraintValidatorContext context) {
         if (links.size() > ServiceValidationConstants.MAX_AMOUNT_OF_SOCIAL_NETWORK_LINKS) {

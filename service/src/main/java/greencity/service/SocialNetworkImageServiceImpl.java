@@ -13,21 +13,25 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.SocialNetworkImageRepo;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -36,7 +40,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Service
 @Slf4j
@@ -56,7 +59,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     @Override
     public SocialNetworkImageVO getSocialNetworkImageByUrl(String url) {
         try {
-            URL checkUrl = new URL(url);
+            URL checkUrl = URI.create(url).toURL();
             Optional<SocialNetworkImageVO> optionalSocialNetworkImageVO =
                 findByHostPath(checkUrl.getHost());
             return modelMapper.map(optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
@@ -79,29 +82,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         Page<SocialNetworkImage> pages = socialNetworkImageRepo.findAll(pageable);
         List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = pages.stream()
             .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-            .collect(Collectors.toList());
+            .toList();
         return new PageableDto<>(socialNetworkImageResponseDTOS,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
-    @Override
-    public PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query) {
-        Page<SocialNetworkImage> page = socialNetworkImageRepo.searchBy(paging, query);
-        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = page.stream()
-            .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-            .collect(Collectors.toList());
-        return new PageableDto<>(
-            socialNetworkImageResponseDTOS,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages());
     }
 
     /**
@@ -111,7 +96,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     @Override
     public void delete(Long id) {
+        SocialNetworkImage image = socialNetworkImageRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));
+        String path = image.getImagePath();
         socialNetworkImageRepo.deleteById(id);
+        fileService.delete(path);
     }
 
     /**
@@ -121,7 +110,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     @Override
     public void deleteAll(List<Long> listId) {
+        List<SocialNetworkImage> images = socialNetworkImageRepo.findAllById(listId);
+        List<String> paths = images.stream().map(image -> image.getImagePath()).toList();
         listId.forEach(socialNetworkImageRepo::deleteById);
+        paths.forEach(fileService::delete);
     }
 
     @Override
@@ -131,7 +123,6 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         if (image != null) {
             toSave.setImagePath(fileService.upload(image));
         }
-
         try {
             socialNetworkImageRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
@@ -229,9 +220,9 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     private String uploadImageToCloud(URL url) throws IOException {
         String preparedUrlHost = url.getHost();
-        String preparedFaviconUrl = String.format("http://www.google.com/s2/favicons?sz=64&domain_url=%s", URLEncoder
-            .encode(preparedUrlHost, "UTF-8"));
-        URL faviconUrl = new URL(preparedFaviconUrl);
+        String preparedFaviconUrl = "http://www.google.com/s2/favicons?sz=64&domain_url=%s".formatted(URLEncoder
+            .encode(preparedUrlHost, StandardCharsets.UTF_8));
+        URL faviconUrl = URI.create(preparedFaviconUrl).toURL();
         BufferedImage bufferedImage = ImageIO.read(faviconUrl);
         File tempFile = new File("tempImage.png");
         ImageIO.write(bufferedImage, "png", tempFile);
@@ -252,7 +243,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             IOUtils.copy(inputStream, outputStream);
             outputStream.flush();
         }
-        CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+        MultipartFile multipartFile = new MultipartFileImpl("mainFile", tempFile.getName(),
+            Files.probeContentType(tempFile.toPath()), Files.readAllBytes(tempFile.toPath()));
         return fileService.upload(multipartFile);
     }
 }

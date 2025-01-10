@@ -2,7 +2,7 @@ package greencity.dto.discount;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.specification.SpecificationNameDto;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

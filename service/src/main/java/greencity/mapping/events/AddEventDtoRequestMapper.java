@@ -2,16 +2,17 @@ package greencity.mapping.events;
 
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventDateLocationDto;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class that used by {@link ModelMapper} to map
@@ -34,10 +35,11 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
         Event event = new Event();
         event.setTitle(addEventDtoRequest.getTitle());
         event.setDescription(addEventDtoRequest.getDescription());
+        event.setCreationDate(LocalDate.now());
         event.setOpen(addEventDtoRequest.isOpen());
 
         List<EventDateLocation> eventDateLocations = new ArrayList<>();
-        for (var date : addEventDtoRequest.getDatesLocations()) {
+        for (EventDateLocationDto date : addEventDtoRequest.getDatesLocations()) {
             if (date.getCoordinates() == null && date.getOnlineLink() == null
                 || date.getCoordinates() != null && addressIsNotValid(date.getCoordinates())) {
                 throw new BadRequestException("Coordinates or link should be set!");

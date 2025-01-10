@@ -3,18 +3,26 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.dto.user.*;
+import greencity.dto.user.UserFilterDtoRequest;
+import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserManagementViewDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +32,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Validated
@@ -43,24 +59,33 @@ public class ManagementUserController {
     /**
      * Method that returns management page with all {@link UserVO}.
      *
-     * @param query    Query for searching related data
+     * @param request  request for searching related data
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
+     *
      * @return View template path {@link String}.
-     * @author Vasyl Zhovnir
+     *
+     * @author Vasyl Zhovnir, Anton Bondar
      */
     @GetMapping
-    public String getAllUsers(
-        @RequestParam(required = false, name = "status") String status,
-        @RequestParam(required = false, name = "role") String role,
-        @RequestParam(required = false, name = "query") String query,
-        @CurrentUser UserVO currentUser,
-        Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(query, role, status, pageable);
-        model.addAttribute("users", found);
+    public String getAllUsers(@ModelAttribute UserFilterDto request, @CurrentUser UserVO currentUser, Model model,
+        @Parameter(hidden = true) Pageable pageable) {
+        PageableDetailedDto<UserManagementVO> users = userService.getAllUsersByCriteria(request, pageable);
+        List<UserFilterDtoResponse> filters = filterService.getAllFilters(currentUser.getId());
+
+        model.addAttribute("request", request);
+        model.addAttribute("users", users);
         model.addAttribute("paging", pageable);
-        model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
+        model.addAttribute("filters", filters);
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isFirst", users.isFirst());
+        model.addAttribute("isLast", users.isLast());
+        model.addAttribute("pageNumbers", users.getPageNumbers());
+        model.addAttribute("pageSize", pageable.getPageSize());
+        model.addAttribute("pageNumber", users.getPageNumber());
+        model.addAttribute("sortModel", users.getSortModel());
+        model.addAttribute("previousPage", Math.max(0, users.getPageNumber() - 1));
+        model.addAttribute("nextPage", Math.min(users.getTotalPages() - 1, users.getPageNumber() + 1));
 
         return "core/management_user";
     }
@@ -85,7 +110,7 @@ public class ManagementUserController {
      * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
-    @PutMapping
+    @PutMapping("/")
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
@@ -138,6 +163,21 @@ public class ManagementUserController {
     }
 
     /**
+     * Method that change user's Status {@link UserStatus} by given id.
+     *
+     * @param id   {@link Long} - user's id.
+     * @param body map with new user's Status.
+     *
+     * @author Anton Bondar.
+     */
+    @PatchMapping("/{id}/status")
+    @ResponseBody
+    public void changeStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        UserStatus status = UserStatus.valueOf(body.get("userStatus"));
+        restClient.updateStatus(id, status);
+    }
+
+    /**
      * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
      * not be able to log in into the system.
      *
@@ -166,7 +206,7 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting {@link UserVO}'s status to ACTIVATED.
+     * Method for setting {@link UserVO}'s status to ACTIVATE.
      *
      * @param id of the searched {@link UserVO}.
      * @author Vasyl Zhovnir
@@ -200,11 +240,13 @@ public class ManagementUserController {
      *
      * @param listId {@link List} populated with ids of {@link UserVO} to be
      *               deleted.
-     * @author Vasyl Zhovnir
+     * @return {@link ResponseEntity} containing an array of deactivated user IDs
+     *         {@link Long}.
+     * @author Vasyl Zhovnir, Anton Bondar
      */
     @PostMapping("/deactivateAll")
-    public void deactivateAll(@RequestBody List<Long> listId) {
-        restClient.deactivateAllUsers(listId);
+    public ResponseEntity<Long[]> deactivateAll(@RequestBody List<Long> listId) {
+        return restClient.deactivateAllUsers(listId);
     }
 
     /**
@@ -216,7 +258,7 @@ public class ManagementUserController {
      * @return path to html view.
      */
     @PostMapping("/search")
-    public String search(Model model, @ApiIgnore Pageable pageable, UserManagementViewDto userViewDto) {
+    public String search(Model model, @Parameter(hidden = true) Pageable pageable, UserManagementViewDto userViewDto) {
         PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
         model.addAttribute("users", found);
         model.addAttribute("fields", userViewDto);
@@ -225,16 +267,16 @@ public class ManagementUserController {
     }
 
     /**
-     * Method update shopping item by habitAssign id and shoppingListItem id.
+     * Method update to-do item by habitAssign id and toDoListItem id.
      *
      * @param habitId {@link Long} habitAssignId.
-     * @param itemId  {@link Long} shoppingListItemId.
+     * @param itemId  {@link Long} toDoListItemId.
      */
-    @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
+    @PutMapping(value = "/updateToDoItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void updateShoppingItem(@PathVariable("itemId") Long itemId,
+    public void updateToDoItem(@PathVariable("itemId") Long itemId,
         @PathVariable("habitId") Long habitId) {
-        habitAssignService.updateShoppingItem(habitId, itemId);
+        habitAssignService.updateToDoItem(habitId, itemId);
     }
 
     /**

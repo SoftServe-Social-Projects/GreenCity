@@ -1,10 +1,7 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
+@StandardException
 public class UserAlreadyHasEnrolledHabitAssign extends BadRequestException {
-    /**
-     * Constructor.
-     */
-    public UserAlreadyHasEnrolledHabitAssign(String message) {
-        super(message);
-    }
 }

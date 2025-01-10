@@ -79,7 +79,7 @@
 | CLIENT_ADDRESS |  |
 | DATABASE_PASSWORD |  |
 | DATABASE_USER |  |
-| DIALECT | "org.hibernate.dialect.PostgreSQL9Dialect" |
+| DIALECT | "org.hibernate.dialect.PostgreSQLDialect" |
 | DRIVER | "org.postgresql.Driver" |
 | ECO_NEWS_ADDRESS |  |
 | FACEBOOK_APP_ID |  |

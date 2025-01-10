@@ -2,7 +2,7 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.dto.comment.AddCommentDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -23,8 +23,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
 
 import static greencity.ModelUtils.getUserVO;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,33 +39,23 @@ class PlaceCommentControllerTest {
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
-    private AddCommentDto addCommentDto;
+    private PlaceCommentRequestDto placeCommentRequestDto;
     private static final String placeCommentLinkFirstPart = "/place";
     private static final String placeCommentLinkSecondPart = "/comments";
 
-    private static final String content = "{\n" +
-        "  \"estimate\": {\n" +
-        "    \"rate\": 1\n" +
-        "  },\n" +
-        "  \"photos\": [\n" +
-        "    {\n" +
-        "      \"name\": \"string\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"text\": \"string\"\n" +
-        "}";
-
-    private static final String getContent = "{\n" +
-        "  \"estimate\": {\n" +
-        "    \"rate\": 1\n" +
-        "  },\n" +
-        "  \"photos\": [\n" +
-        "    {\n" +
-        "      \"name\": \"test\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"text\": \"test\"\n" +
-        "}";
+    private static final String content = """
+            {
+                "estimate": {
+                    "rate": 1
+                },
+                "photos": [
+                    {
+                        "name": "string"
+                    }
+                ],
+                "text": "string"
+            }
+        """;
 
     @BeforeEach
     void setup() {
@@ -87,26 +75,26 @@ class PlaceCommentControllerTest {
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-                .principal(principal)
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
-        addCommentDto = mapper.readValue(content, AddCommentDto.class);
+        placeCommentRequestDto = mapper.readValue(content, PlaceCommentRequestDto.class);
 
-        verify(placeCommentService).save(1L, addCommentDto, principal.getName());
+        verify(placeCommentService).save(1L, placeCommentRequestDto, principal.getName());
     }
 
     @Test
     void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
             .andExpect(status().isBadRequest());
 
-        verify(placeCommentService, times(0)).save(1L, addCommentDto, "fail@ukr.net");
+        verify(placeCommentService, times(0)).save(1L, placeCommentRequestDto, "fail@ukr.net");
     }
 
     @Test

@@ -21,7 +21,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -59,13 +59,11 @@ class ManagementRatingStatisticsControllerTest {
 
     @Test
     void getUserRatingStatisticsTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 3, new Sort(Sort.Direction.DESC, "createDate"));
-        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-            Sort.by("createDate").descending());
+        Pageable pageable = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createDate"));
         List<RatingStatisticsDtoForTables> list = Collections.singletonList(new RatingStatisticsDtoForTables());
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto = new PageableAdvancedDto<>(list,
             3, 0, 3, 1, false, true, true, false);
-        when(ratingStatisticsService.getRatingStatisticsForManagementByPage(paging)).thenReturn(pageableDto);
+        when(ratingStatisticsService.getRatingStatisticsForManagementByPage(pageable)).thenReturn(pageableDto);
         this.mockMvc.perform(get(managementRatingStatisticsLink)
             .param("page", "0")
             .param("size", "3"))

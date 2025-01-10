@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Mladonov-1" author="Volodymyr Mladonov">
+        <createTable tableName="notifications">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="custom_message" type="VARCHAR" />
+            <column name="second_message" type="VARCHAR" />
+            <column name="notification_type" type="VARCHAR(255)" />
+            <column name="project_name" type="VARCHAR(255)" />
+            <column name="target_id" type="BIGINT" />
+            <column name="second_message_id" type="BIGINT" />
+            <column name="time" type="TIMESTAMP" />
+            <column name="viewed" type="BOOLEAN" />
+            <column name="target_user_id" type="BIGINT">
+                <constraints foreignKeyName="FK_notification_target_user" references="users (id)" />
+            </column>
+        </createTable>
+
+        <createTable tableName="notifications_users">
+            <column name="notification_id"  type="BIGINT">
+                <constraints foreignKeyName="FK_event_action_user_id" references="notifications (id)"/>
+            </column>
+            <column name="user_id"  type="BIGINT">
+                <constraints foreignKeyName="FK_action_user_notifications" references="users (id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

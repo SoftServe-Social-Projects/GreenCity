@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Add status column to rating_points table" author="Maryna Chekhovska">
+        <addColumn tableName="rating_points">
+            <column name="status" type="varchar(255)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <update tableName="rating_points">
+            <column name="status" value="ACTIVE"/>
+        </update>
+    </changeSet>
+</databaseChangeLog>

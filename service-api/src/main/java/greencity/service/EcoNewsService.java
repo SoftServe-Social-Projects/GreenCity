@@ -2,15 +2,22 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface EcoNewsService {
     /**
@@ -32,53 +39,28 @@ public interface EcoNewsService {
     EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
-     * Method for getting last three eco news.
-     *
-     * @return list of {@link EcoNewsDto} instances.
-     */
-    List<EcoNewsDto> getThreeLastEcoNews();
-
-    /**
      * Method for getting three recommended eco news.
      *
-     * @param openedEcoNewsId don't include into the list
+     * @param ecoNewsId don't include into the list
      * @return list of three {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId);
+    List<EcoNewsDto> getThreeRecommendedEcoNews(Long ecoNewsId);
 
     /**
-     * Method for getting all eco news by page.
+     * Method for getting eco news by filter params.
      *
-     * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsDto> findAll(Pageable page);
-
-    /**
-     * Method for getting all eco news by page.
-     *
-     * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsGenericDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsGenericDto> findGenericAll(Pageable page);
-
-    /**
-     * Method for getting all users eco news by page.
-     *
-     * @param user author of news.
-     * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsGenericDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsGenericDto> findAllByUser(UserVO user, Pageable page);
-
-    /**
-     * Method for getting eco news by params.
-     *
-     * @param page parameters of to search.
-     * @param tags tags to search.
+     * @param page  parameters of to search.
+     * @param tags  tags to search.
+     * @param title title to search.
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags);
+    PageableAdvancedDto<EcoNewsGenericDto> find(
+        Pageable page,
+        List<String> tags,
+        String title,
+        Long authorId,
+        boolean favorite,
+        String email);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
@@ -89,18 +71,10 @@ public interface EcoNewsService {
     EcoNewsVO findById(Long id);
 
     /**
-     * Method for getting the {@link EcoNewsDto} instance by its id.
-     *
-     * @param id {@link EcoNewsDto} instance id.
-     * @return {@link EcoNewsDto} instance.
-     */
-    EcoNewsDto getById(Long id);
-
-    /**
      * Method for getting the{@link EcoNewsDto} instance by its id and language of
      * tags.
      *
-     * @param id       {@link Long} econews id.
+     * @param id       {@link Long} ecoNews id.
      * @param language {@link String} language for searching tags.
      * @return {@link EcoNewsDto} instance
      */
@@ -122,32 +96,13 @@ public interface EcoNewsService {
     void deleteAll(List<Long> listId);
 
     /**
-     * Method for getting EcoNews by searchQuery.
-     *
-     * @param searchQuery query to search
-     * @return list of {@link SearchNewsDto}
-     * @author Vadym Makitra
-     */
-    PageableDto<SearchNewsDto> search(String searchQuery, String languageCode);
-
-    /**
      * Method for getting all EcoNews by searchQuery.
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
-     * @author Vadym Maktra
      */
-    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
-
-    /**
-     * Method for getting all published news by user id.
-     *
-     * @param userId {@link Long} user id.
-     * @return list of {@link EcoNewsDto} instances.
-     * @author Vira Maksymets
-     */
-    List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId);
+    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method for getting all published news by authorised user.
@@ -155,42 +110,15 @@ public interface EcoNewsService {
      * @param user {@link UserVO}.
      * @return list of {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getAllPublishedNewsByUser(UserVO user);
+    List<EcoNewsDto> getAllByUser(UserVO user);
 
     /**
-     * Method for getting amount of published news by user id.
+     * Method for getting amount of all published news or only for one user.
      *
-     * @param id {@link Long} user id.
-     * @return amount of published news by user id.
+     * @param id {@link Long} user id. May be null.
+     * @return amount of published news by user id or all news.
      */
-    Long getAmountOfPublishedNewsByUserId(Long id);
-
-    /**
-     * Method to mark comment as liked by User.
-     *
-     * @param user    {@link UserVO}.
-     * @param comment {@link EcoNewsCommentVO}
-     * @author Dovganyuk Taras
-     */
-    void likeComment(UserVO user, EcoNewsCommentVO comment);
-
-    /**
-     * Method to mark comment as unliked by User.
-     *
-     * @param user    {@link UserVO}.
-     * @param comment {@link EcoNewsCommentVO}
-     * @author Dovganyuk Taras
-     */
-    void unlikeComment(UserVO user, EcoNewsCommentVO comment);
-
-    /**
-     * Method returns {@link EcoNewsDto} by search query and page.
-     *
-     * @param paging {@link Pageable}.
-     * @param query  query to search.
-     * @return list of {@link EcoNewsDto}.
-     */
-    PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
+    Long getAmountOfPublishedNews(Long id);
 
     /**
      * Method for updating {@link EcoNewsVO} instance.
@@ -203,18 +131,33 @@ public interface EcoNewsService {
      * Method for updating {@link EcoNewsVO} instance.
      *
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
-     * @return instance of {@link EcoNewsDto};=.
+     * @return instance of {@link EcoNewsGenericDto}.
      */
     EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
+
+    /**
+     * Method for adding an eco new to favorites by ecoNewsId.
+     *
+     * @param ecoNewsId - eco-news id.
+     * @param email     - user email.
+     */
+    void addToFavorites(Long ecoNewsId, String email);
+
+    /**
+     * Method for removing an eco new from favorites by ecoNewsId.
+     *
+     * @param ecoNewsId - eco-News id.
+     * @param email     - user email.
+     */
+    void removeFromFavorites(Long ecoNewsId, String email);
 
     /**
      * Find {@link EcoNewsVO} for management.
      *
      * @return a dto of {@link PageableDto}.
-     * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(Pageable pageable,
-        EcoNewsViewDto ecoNewsViewDto);
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query, Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto, Locale locale);
 
     /**
      * Method to mark news as liked by User.
@@ -251,20 +194,11 @@ public interface EcoNewsService {
     /**
      * Method to check if user liked news.
      *
-     * @param id   - id of {@link EcoNewsVO} to check liked or not.
-     * @param user - current {@link UserVO}.
+     * @param id     - id of {@link EcoNewsVO} to check liked or not.
+     * @param userId - id of {@link UserVO}.
      * @return user liked news or not.
      */
-
-    Boolean checkNewsIsLikedByUser(Long id, UserVO user);
-
-    /**
-     * Method to upload news images.
-     *
-     * @param images - array of eco news images
-     * @return array of images path
-     */
-    String[] uploadImages(MultipartFile[] images);
+    Boolean checkNewsIsLikedByUser(Long id, Long userId);
 
     /**
      * Method for getting some fields in eco news by id.
@@ -278,7 +212,7 @@ public interface EcoNewsService {
      * Method for getting list of users who liked post by post id.
      *
      * @param id - {@link Long} eco news id.
-     * @return list of {@link UserVO} instances.
+     * @return set of {@link UserVO} instances.
      */
     Set<UserVO> findUsersWhoLikedPost(Long id);
 
@@ -286,7 +220,23 @@ public interface EcoNewsService {
      * Method for getting list of users who disliked post by post id.
      *
      * @param id - {@link Long} eco news id.
-     * @return list of {@link UserVO} instances.
+     * @return set of {@link UserVO} instances.
      */
     Set<UserVO> findUsersWhoDislikedPost(Long id);
+
+    /**
+     * Method for hiding/unhiding the {@link EcoNewsVO} instance by its id.
+     *
+     * @param id    - {@link EcoNewsVO} instance id which will be hidden/unhidden.
+     * @param user  current {@link UserVO} that wants to hide.
+     * @param value value to be set to hidden field.
+     */
+    void setHiddenValue(Long id, UserVO user, boolean value);
+
+    /**
+     * Method for getting 3 eco-news sorted by likes and then by comments.
+     *
+     * @return list of {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getThreeInterestingEcoNews();
 }

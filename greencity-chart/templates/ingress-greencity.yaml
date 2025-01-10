@@ -33,3 +33,5 @@ spec:
             name: {{ .Release.Name }}-greencity-service
             port: 
               number: 80
+              
+

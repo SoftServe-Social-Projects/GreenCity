@@ -12,7 +12,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @Getter
 @Setter
@@ -20,7 +25,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(
     exclude = {"discountValues", "author", "openingHoursList", "photos",
-        "location", "category", "status", "discountValues"})
+        "location", "category", "status"})
 @Builder
 public class PlaceVO {
     private Long id;
@@ -29,10 +34,14 @@ public class PlaceVO {
     private ZonedDateTime modifiedDate;
     private String name;
     private String phone;
+    @Builder.Default
     private PlaceStatus status = PlaceStatus.PROPOSED;
     private CategoryVO category;
+    @Builder.Default
     private List<PhotoVO> photos = new ArrayList<>();
+    @Builder.Default
     private Set<DiscountValueVO> discountValues = new HashSet<>();
+    @Builder.Default
     private Set<OpeningHoursVO> openingHoursList = new HashSet<>();
     private LocationVO location;
     private UserVO author;

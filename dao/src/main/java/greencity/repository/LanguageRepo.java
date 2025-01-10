@@ -24,16 +24,4 @@ public interface LanguageRepo extends JpaRepository<Language, Long> {
      */
     @Query("SELECT code FROM Language")
     List<String> findAllLanguageCodes();
-
-    /**
-     * method, that returns {@link Language} by tagTranslationId.
-     *
-     * @author Vira Maksymets
-     * @return {@link Language} by tagTranslationId.
-     */
-    @Query(nativeQuery = true,
-        value = "SELECT DISTINCT l.* FROM languages AS l "
-            + "INNER JOIN tag_translations AS tt ON l.id = tt.language_id "
-            + "WHERE tt.id=:tagTranslationId")
-    Optional<Language> findByTagTranslationId(Long tagTranslationId);
 }

@@ -26,11 +26,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -57,7 +55,7 @@ class ManagementTagsControllerTest {
     @InjectMocks
     private ManagementTagsController tagsController;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -161,15 +159,14 @@ class ManagementTagsControllerTest {
         PageableAdvancedDto<TagVO> tags = ModelUtils.getPageableAdvancedDtoForTag();
         TagViewDto tagViewDto = ModelUtils.getTagViewDto();
         String tagViewDtoAsJson = objectMapper.writeValueAsString(tagViewDto);
-        String pageableAsJson = objectMapper.writeValueAsString(pageable);
 
         when(tagsService.search(pageable, tagViewDto)).thenReturn(tags);
         when(languageService.getAllLanguages()).thenReturn(languages);
 
         mockMvc.perform(post(managementTagsLink + "/search?lang=" + language +
             "&page=" + page + "&size=" + size)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(tagViewDtoAsJson))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(tagViewDtoAsJson))
             .andExpect(status().isOk());
     }
 }

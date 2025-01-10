@@ -32,15 +32,6 @@ public interface SocialNetworkImageService {
     PageableDto<SocialNetworkImageResponseDTO> findAll(Pageable pageable);
 
     /**
-     * Method for getting User by search query.
-     *
-     * @param paging {@link Pageable}.
-     * @param query  query to search,
-     * @return PageableDto of {@link SocialNetworkImageResponseDTO} instances.
-     */
-    PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query);
-
-    /**
      * Method for deleting the {@link SocialNetworkImageVO} instance by its id.
      *
      * @param id - {@link SocialNetworkImageVO} instance id which will be deleted.

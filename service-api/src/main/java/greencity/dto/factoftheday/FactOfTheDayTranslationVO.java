@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public class FactOfTheDayTranslationVO extends TranslationVO {
     private FactOfTheDayVO factOfTheDay;
 }

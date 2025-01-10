@@ -3,8 +3,12 @@ package greencity.dto.openhours;
 import greencity.dto.breaktime.BreakTimeDto;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import javax.validation.constraints.NotNull;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Data;
+import lombok.Builder;
 
 @Data
 @NoArgsConstructor

@@ -44,7 +44,7 @@ class TagsControllerTest {
     @Test
     void findAllEcoNewsTags() throws Exception {
         String tagsLink = "/tags";
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         TagType type = TagType.ECO_NEWS;
 
         mockMvc.perform(get(tagsLink + "/search?type=" + type))

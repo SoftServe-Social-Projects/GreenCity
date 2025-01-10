@@ -1,7 +1,10 @@
 package greencity.dto.ownsecurity;
 
 import greencity.dto.user.UserVO;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Builder;
 
 @Data
 @NoArgsConstructor

@@ -4,12 +4,14 @@ import greencity.dto.breaktime.BreakTimeDto;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class OpenHoursDto implements Comparable<OpenHoursDto> {
     private Long id;
     private LocalTime openTime;

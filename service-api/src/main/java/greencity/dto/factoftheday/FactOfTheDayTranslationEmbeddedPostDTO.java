@@ -1,7 +1,7 @@
 package greencity.dto.factoftheday;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FactOfTheDayTranslationEmbeddedPostDTO {
-    @Size(min = 0, max = 300)
+    @Size(max = 300)
     private String content;
     @NotNull
     private String languageCode;

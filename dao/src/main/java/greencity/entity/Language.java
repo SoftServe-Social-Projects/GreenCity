@@ -1,9 +1,8 @@
 package greencity.entity;
 
-import greencity.entity.localization.AdviceTranslation;
-import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.entity.localization.ToDoListItemTranslation;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -12,9 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(
-    exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
+    exclude = {"adviceTranslations", "toDoListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
 @ToString(
-    exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
+    exclude = {"adviceTranslations", "toDoListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
 @Builder
 public class Language {
     @Id
@@ -25,13 +24,10 @@ public class Language {
     private String code;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<AdviceTranslation> adviceTranslations;
-
-    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<ShoppingListItemTranslation> shoppingListItemTranslations;
+    private List<ToDoListItemTranslation> toDoListItemTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;

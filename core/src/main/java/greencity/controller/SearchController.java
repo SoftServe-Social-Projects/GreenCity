@@ -1,76 +1,58 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageableWithLocale;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.CurrentUser;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.search.SearchResponseDto;
+import greencity.dto.search.SearchPlacesDto;
+import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.service.SearchService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.AllArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/search")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SearchController {
     private final SearchService searchService;
 
     /**
-     * Method for search.
-     *
-     * @param searchQuery query to search.
-     * @return list of {@link SearchResponseDto}.
-     */
-    @ApiOperation(value = "Search.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @ApiLocale
-    @GetMapping("")
-    public ResponseEntity<SearchResponseDto> search(
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(searchService.search(searchQuery, locale.getLanguage()));
-    }
-
-    /**
-     * Method for searching.
+     * Method for searching eco news.
      *
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
-    @ApiOperation(value = "Search Eco news.")
+    @Operation(summary = "Search Eco News.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
-    @GetMapping("/econews")
+    @GetMapping("/eco-news")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchNewsDto>> searchEcoNews(
-        @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestParam(required = false) Boolean isFavorite,
+        String searchQuery) {
+        validateIsFavoriteUsage(isFavorite, user);
+        Long userId = user != null ? user.getId() : null;
+        return ResponseEntity.ok().body(searchService.searchAllNews(pageable, searchQuery, isFavorite, userId));
     }
 
     /**
@@ -78,20 +60,52 @@ public class SearchController {
      *
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchEventsDto} instances.
-     * @author Anton Bondar
      */
-    @ApiOperation(value = "Search Events.")
+    @Operation(summary = "Search Events.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
     @GetMapping("/events")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchEventsDto>> searchEvents(
-        @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(searchService.searchAllEvents(pageable, searchQuery, locale.getLanguage()));
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestParam(required = false) Boolean isFavorite,
+        String searchQuery) {
+        validateIsFavoriteUsage(isFavorite, user);
+        Long userId = user != null ? user.getId() : null;
+        return ResponseEntity.ok().body(searchService.searchAllEvents(pageable, searchQuery, isFavorite, userId));
+    }
+
+    /**
+     * Method for searching places.
+     *
+     * @param searchQuery query to search.
+     * @return PageableDto of {@link SearchPlacesDto} instances.
+     */
+    @Operation(summary = "Search Places.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @GetMapping("/places")
+    @ApiPageableWithLocale
+    public ResponseEntity<PageableDto<SearchPlacesDto>> searchPlaces(
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestParam(required = false) Boolean isFavorite,
+        String searchQuery) {
+        validateIsFavoriteUsage(isFavorite, user);
+        Long userId = user != null ? user.getId() : null;
+        return ResponseEntity.ok().body(searchService.searchAllPlaces(pageable, searchQuery, isFavorite, userId));
+    }
+
+    private void validateIsFavoriteUsage(Boolean isFavorite, UserVO user) {
+        if (Boolean.TRUE.equals(isFavorite) && user == null) {
+            throw new BadRequestException(ErrorMessage.IS_FAVORITE_PARAM_REQUIRE_AUTHENTICATED_USER);
+        }
     }
 }

@@ -1,0 +1,316 @@
+.page-title h1 {
+    padding-left: 7px;
+    font-weight: bold;
+    font-size: 32px;
+    color: var(--green);
+}
+
+.user-info {
+    width: 261px;
+    min-width: 261px;
+    height: 100%;
+    padding: 24px;
+    margin-right: 16px;
+    overflow-x: auto;
+    box-shadow: 1px 4px 8px rgba(100, 114, 125, 0.18);
+}
+
+.online-status {
+    position: relative;
+    left: 60px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50px;
+    background: var(--green);
+    border: 1px solid var(--white);
+}
+
+.profile-picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    margin-top: 20px;
+}
+
+.profile-picture.default {
+    background: linear-gradient(180deg, #abe64d 0%, #4b9b25 100%);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 42px;
+    color: var(--white);
+    box-sizing: border-box;
+}
+
+.profile-picture.friend {
+    margin: 7px;
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+    line-height: 30px
+}
+
+.friends-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-info-text {
+    margin-top: 10px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: var(--gray-asphalt);
+}
+
+.username-text {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 28px;
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 0.2px;
+    color: var(--gray-dark-asphalt);
+}
+
+.info-title-text span {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.1px;
+    color: var(--gray-dark-asphalt);
+}
+
+.info-title-text h4 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 11px;
+    margin-top: 5px;
+    color: var(--gray-gull);
+}
+
+.info-title-text a {
+    float: right;
+    text-decoration: none;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 24px;
+    color: var(--gray-gull);
+}
+
+.block-green {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    width: 89px;
+    height: 24px;
+    margin-top: 12px;
+    background: var(--green-light);
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--green-shadow);
+}
+
+.social-networks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.social-networks img {
+    width: 35px;
+    height: 35px;
+    padding: 4px;
+}
+
+.divider {
+    margin: 12px auto auto;
+    height: 2px;
+    background-color: var(--white-blue);
+}
+
+.user-tables {
+    display: flex;
+    min-width: 800px;
+}
+
+
+.tooltip-container {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    padding: 32px;
+    background: var(--white);
+    box-shadow: 1px 4px 8px rgba(100, 114, 125, 0.18);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--gray-dark-asphalt);
+}
+
+.tooltip-container h2 {
+    font-size: 13px;
+    line-height: 28px;
+    font-weight: bold;
+    letter-spacing: 0.1px;
+    color: var(--gray-dark-asphalt);
+    margin: 0
+}
+
+.tooltip-container table {
+    margin-right: 30px;
+    font-size: 13px;
+}
+
+
+.table-bordered.userpage {
+    margin-bottom: 0;
+}
+
+table.table td a.deactivate-user {
+    color: var(--black);
+}
+
+.button-container {
+    width: 79px;
+    align-items: center;
+    display: flex;
+}
+
+.modal-title-deac {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0.002em;
+    color: var(--black-ash);
+    padding-top: 40px;
+    margin-bottom: 0;
+}
+
+.deactivation-reasons {
+    color: var(--black);
+    margin-bottom: 0;
+    margin-left: 12px;
+}
+
+.modal-reasons {
+    display: flex;
+    align-items: center;
+}
+
+.modal-title-act {
+    text-align: center !important;
+    padding-top: 40px;
+    padding-bottom: 25px;
+}
+
+.modal-body-act1 {
+    margin: 0 !important;
+    padding-left: 7px;
+}
+
+.modal-body-act {
+    margin: 0 !important;
+}
+
+.user-lang {
+    width: 100%;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.custom-reason {
+    width: 100%;
+    padding: 8px;
+    height: 94px;
+    background: var(--white);
+    border: 1px solid var(--gray-gull);
+    border-radius: 4px;
+    order: 1;
+    margin-bottom: 24px;
+}
+
+.custom-reason:focus {
+    border-color: red;
+}
+
+a#deactivateAllSubmit.btn.btn-danger {
+    height: 59px;
+}
+
+a#deactivateOneSubmit.btn.btdeactivateUserModaln-danger {
+    vertical-align: middle;
+}
+
+.table-primary {
+    position: sticky;
+    top: 0;
+}
+
+.table-primary > th {
+    background-color: var(--white-smoke);
+    height: 39px;
+}
+
+.deactivate-warning {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--gray-asphalt);
+    padding-top: 25px;
+    margin-bottom: 0;
+}
+
+.deactivate-checkbox {
+    height: 16px;
+    width: 16px;
+    margin: 10px 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.table-hover thead tr:hover th {
+    background-color: var(--green) !important;
+    color: var(--white);
+}
+
+.column-credo-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 39px;
+    max-width: 195px;
+}
+
+.cyan {
+    background-color: var(--white-blue);
+}
+
+.lightgreen {
+    background-color: var(--white-green);
+}
+
+.lightmustard {
+    background-color: var(--light-mustard);
+}
+
+.lightpink {
+    background-color: var(--light-pink);
+}
+
+.lightgreen:hover, .lightpink:hover, .lightmustard:hover, .cyan:hover {
+    background: var(--white);
+}

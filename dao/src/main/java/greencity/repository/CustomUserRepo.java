@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.dto.friends.UserFriendDto;
 import greencity.entity.User;
-
 import java.util.List;
 
 public interface CustomUserRepo {

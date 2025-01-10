@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,5 +27,5 @@ public class Estimate {
     private Place place;
 
     @OneToOne
-    private Comment comment;
+    private PlaceComment comment;
 }

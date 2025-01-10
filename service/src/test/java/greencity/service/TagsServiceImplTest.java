@@ -10,7 +10,9 @@ import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.TagNotFoundException;
 import greencity.filters.TagSpecification;
 import greencity.repository.TagTranslationRepo;
 import greencity.repository.TagsRepo;
@@ -19,18 +21,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -63,7 +64,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.findAll(pageable)).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.findAll(pageable, null);
@@ -78,7 +79,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.filterByAllFields(pageable, filter)).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.findAll(pageable, filter);
@@ -95,7 +96,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.findAll(any(TagSpecification.class), eq(pageable))).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.search(pageable, tagViewDto);
@@ -112,7 +113,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.findAll(any(TagSpecification.class), eq(pageable))).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.search(pageable, tagViewDto);
@@ -272,30 +273,6 @@ class TagsServiceImplTest {
         List<String> expected = tagsService.findAllHabitsTags(UKRAINIAN_LANGUAGE);
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsReturnTrue() {
-        List<String> tagNames = Arrays.asList("News", "Education");
-        boolean expected = tagsService.isValidNumOfUniqueTags(tagNames);
-
-        assertTrue(expected);
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsThrowsDuplicatedTagsException() {
-        List<String> tagNames = Arrays.asList("News", "News");
-
-        assertThrows(DuplicatedTagException.class,
-            () -> tagsService.isValidNumOfUniqueTags(tagNames));
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsThrowsInvalidNumOfTagsException() {
-        List<String> tagNames = Arrays.asList("News", "Education", "Ads", "Events");
-
-        assertThrows(InvalidNumOfTagsException.class,
-            () -> tagsService.isValidNumOfUniqueTags(tagNames));
     }
 
     @Test

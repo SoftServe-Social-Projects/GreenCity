@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class PageableConfig implements WebMvcConfigurer {
     /**
-     * Sets max page size for pageables objects.
+     * Sets max page size for pageable objects.
      */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {

@@ -5,8 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 @Constraint(validatedBy = LanguageTranslationValidator.class)
 @Target({ElementType.FIELD})
@@ -17,7 +17,7 @@ public @interface LanguageTranslationConstraint {
      *
      * @return message
      */
-    String message() default "Invalid translation. You must have 3 translation: ua, en";
+    String message() default "Invalid translation. You must have 2 translation: ua, en";
 
     /**
      * Let you select to split the annotations into different groups to apply

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.7.RELEASE</version>
+        <version>3.2.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -24,23 +24,27 @@
     </modules>
 
     <properties>
-        <junit-jupiter.version>5.7.0</junit-jupiter.version>
-        <mockito-junit-jupiter.version>3.4.0</mockito-junit-jupiter.version>
-        <mockito-core.version>3.4.0</mockito-core.version>
-        <modelmapper.version>2.3.5</modelmapper.version>
-        <java.version>11</java.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <checkstyle-maven-plugin.version>3.1.0</checkstyle-maven-plugin.version>
+        <spring.boot.version>3.2.2</spring.boot.version>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.surefire.plugin.version>3.2.2</maven.surefire.plugin.version>
+        <checkstyle.maven.plugin.version>3.3.1</checkstyle.maven.plugin.version>
+        <formatter.maven.plugin.version>2.23.0</formatter.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.11</jacoco.maven.plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.exclusions>**/config/*</sonar.exclusions>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
-        <test.containers.version>1.15.1</test.containers.version>
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
-        <net.java.dev.jna.version>4.5.2</net.java.dev.jna.version>
-        <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
+        <modelmapper.version>3.0.0</modelmapper.version>
+        <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>
+        <commons.dbcp2.version>2.10.0</commons.dbcp2.version>
+        <liquibase.version>4.25.0</liquibase.version>
+        <jjwt.version>0.12.3</jjwt.version>
+        <commons.collections4.version>4.4</commons.collections4.version>
+        <commons.lang3.version>3.13.0</commons.lang3.version>
+        <org.eclipse.jgit.version>7.1.0.202411261347-r</org.eclipse.jgit.version>
     </properties>
 
     <profiles>
@@ -60,8 +64,8 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
-                 <configuration>
+                <version>${jacoco.maven.plugin.version}</version>
+                <configuration>
                     <excludes>
                         <exclude>**/config/*</exclude>
                         <exclude>**/enums/*</exclude>
@@ -96,7 +100,7 @@
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <version>2.13.0</version>
+                <version>${formatter.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -111,7 +115,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle-maven-plugin.version}</version>
+                <version>${checkstyle.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>check</id>
@@ -128,3 +132,4 @@
         </plugins>
     </build>
 </project>
+

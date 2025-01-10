@@ -1,7 +1,11 @@
 package greencity.dto.location;
 
 import greencity.dto.place.PlaceVO;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @NoArgsConstructor
 @AllArgsConstructor

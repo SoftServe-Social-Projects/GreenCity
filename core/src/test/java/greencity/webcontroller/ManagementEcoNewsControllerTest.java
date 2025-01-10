@@ -1,7 +1,7 @@
 package greencity.webcontroller;
 
 import com.google.gson.Gson;
-import greencity.client.RestClient;
+import com.google.gson.GsonBuilder;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -10,6 +10,7 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
+import greencity.converters.ZonedDateTimeTypeAdapter;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -19,12 +20,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -33,13 +35,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import org.springframework.validation.Validator;
 import static greencity.ModelUtils.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -57,19 +57,19 @@ class ManagementEcoNewsControllerTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private RestClient restClient;
-    @Mock
     private TagsService tagsService;
     @Mock
     private UserService userService;
-
-    private Principal principal = getPrincipal();
+    @Mock
+    private Validator mockValidator;
+    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
+            .setValidator(mockValidator)
             .build();
     }
 
@@ -83,19 +83,21 @@ class ManagementEcoNewsControllerTest {
         List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
             .id(1L)
             .name("News").build());
-        when(tagsService.findAllEcoNewsTags("en")).thenReturn(tagDtoList);
-        when(ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto))
+        when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
+        when(ecoNewsService.getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault()))
             .thenReturn(ecoNewsDtoPageableDto);
-        when(ecoNewsService.findAll(pageable)).thenReturn(ecoNewsDtoPageableDto);
 
         this.mockMvc.perform(get(managementEcoNewsLink)
             .param("page", "0")
-            .param("size", "10"))
+            .param("size", "10")
+            .locale(Locale.getDefault()))
             .andExpect(view().name("core/management_eco_news"))
             .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
+            .andExpect(model().attribute("fields", ecoNewsViewDto))
+            .andExpect(model().attribute("ecoNewsTag", tagDtoList))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(pageable);
+        verify(ecoNewsService).getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault());
     }
 
     @Test
@@ -149,7 +151,6 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void saveEcoNews() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
         AddEcoNewsDtoRequest addEcoNewsDtoRequest = new AddEcoNewsDtoRequest();
         addEcoNewsDtoRequest.setText("TextTextTextTextTextText");
         addEcoNewsDtoRequest.setTitle("Title");
@@ -174,19 +175,18 @@ class ManagementEcoNewsControllerTest {
         EcoNewsDtoManagement ecoNewsDtoManagement = new EcoNewsDtoManagement();
         ecoNewsDtoManagement.setId(1L);
         ecoNewsDtoManagement.setTags(Collections.singletonList("News"));
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
+            .create();
         String json = gson.toJson(ecoNewsDtoManagement);
         MockMultipartFile jsonFile =
             new MockMultipartFile("ecoNewsDtoManagement", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementEcoNewsLink + "/")
             .file(jsonFile)
-            .with(new RequestPostProcessor() {
-                @Override
-                public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
-                    mockHttpServletRequest.setMethod("PUT");
-                    return mockHttpServletRequest;
-                }
+            .with(mockHttpServletRequest -> {
+                mockHttpServletRequest.setMethod("PUT");
+                return mockHttpServletRequest;
             })).andExpect(status().isOk());
 
         verify(ecoNewsService, never()).update(ecoNewsDtoManagement, jsonFile);
@@ -194,19 +194,87 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void getAllEcoNewsSearchByQueryTest() throws Exception {
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto();
         Pageable pageable = PageRequest.of(0, 10);
         List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
         PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
                 true, true, true, true);
-        when(ecoNewsService.searchEcoNewsBy(pageable, "query")).thenReturn(ecoNewsDtoPageableDto);
-        this.mockMvc.perform(get(managementEcoNewsLink + "?query=query")
+        String query = "some query";
+        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
+            .id(1L)
+            .name("News").build());
+        when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
+        when(ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault()))
+            .thenReturn(ecoNewsDtoPageableDto);
+        this.mockMvc.perform(get(managementEcoNewsLink + "?query=" + query)
             .param("page", "0")
-            .param("size", "10"))
+            .param("size", "10")
+            .locale(Locale.getDefault()))
             .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
             .andExpect(view().name("core/management_eco_news"))
+            .andExpect(model().attribute("query", query))
+            .andExpect(model().attribute("fields", ecoNewsViewDto))
+            .andExpect(model().attribute("ecoNewsTag", tagDtoList))
             .andExpect(status().isOk());
-        verify(ecoNewsService).searchEcoNewsBy(pageable, "query");
+        verify(ecoNewsService).getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault());
+    }
+
+    @Test
+    void getAllEcoNewsSearchByEcoNewsViewDtoTest() throws Exception {
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("1", "title", null, null, "2024-08-20", null, null, "true");
+        Pageable pageable = PageRequest.of(0, 10);
+        List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
+        PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
+            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
+                true, true, true, true);
+        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
+            .id(1L)
+            .name("News").build());
+        when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
+        when(ecoNewsService.getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault()))
+            .thenReturn(ecoNewsDtoPageableDto);
+        this.mockMvc.perform(get(managementEcoNewsLink + "?id=1&title=title&startDate=2024-08-20&hidden=true")
+            .param("page", "0")
+            .param("size", "10")
+            .locale(Locale.getDefault()))
+            .andExpect(view().name("core/management_eco_news"))
+            .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
+            .andExpect(model().attribute("fields", ecoNewsViewDto))
+            .andExpect(model().attribute("ecoNewsTag", tagDtoList))
+            .andExpect(status().isOk());
+        verify(ecoNewsService).getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault());
+    }
+
+    @Test
+    void getAllEcoNewsSorted() throws Exception {
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto();
+        List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
+        PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
+            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
+        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
+            .id(1L)
+            .name("News").build());
+        when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
+        when(ecoNewsService.getFilteredDataForManagementByPage(eq(""), any(Pageable.class), eq(ecoNewsViewDto),
+            eq(Locale.getDefault())))
+            .thenReturn(ecoNewsDtoPageableDto);
+
+        String sortModel = "id,ASC&sort=text,DESC";
+        this.mockMvc.perform(get(managementEcoNewsLink + "?sort=" + sortModel)
+            .param("page", "0")
+            .param("size", "10")
+            .param("query", "")
+            .locale(Locale.getDefault()))
+            .andExpect(view().name("core/management_eco_news"))
+            .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
+            .andExpect(model().attribute("fields", ecoNewsViewDto))
+            .andExpect(model().attribute("ecoNewsTag", tagDtoList))
+            .andExpect(model().attribute("sortModel", sortModel))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).getFilteredDataForManagementByPage(eq(""), any(), eq(ecoNewsViewDto),
+            eq(Locale.getDefault()));
     }
 
     @Test
@@ -217,30 +285,47 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void getAllEcoNewsSearchByForm() throws Exception {
-        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("1", "", "", "", "", "", "");
-        Pageable pageable = PageRequest.of(0, 10);
-        List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
-        PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
-            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
-                true, true, true, true);
-        when(ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto))
-            .thenReturn(ecoNewsDtoPageableDto);
-        this.mockMvc.perform(get(managementEcoNewsLink + "?id=1")
+        EcoNewsDto ecoNewsDto = new EcoNewsDto();
+        ecoNewsDto.setCreationDate(ZonedDateTime.now());
+        when(ecoNewsService.findDtoByIdAndLanguage(1L, "en")).thenReturn(ecoNewsDto);
+        this.mockMvc.perform(get(managementEcoNewsLink + "/1")
             .param("page", "0")
             .param("size", "10"))
-            .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
-            .andExpect(view().name("core/management_eco_news"))
+            .andExpect(view().name("core/management_eco_new"))
             .andExpect(status().isOk());
-        verify(ecoNewsService).getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
+        verify(ecoNewsService).findDtoByIdAndLanguage(anyLong(), anyString());
     }
 
     @Test
     void getLikesByEcoNewsId() throws Exception {
-        // given
-        // when
         mockMvc.perform(get(managementEcoNewsLink + "/1/likes"))
             .andExpect(status().isOk());
-        // then
         verify(ecoNewsService).findUsersWhoLikedPost(1L);
+    }
+
+    @Test
+    void hide() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, true);
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .patch(managementEcoNewsLink + "/hide?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, true);
+    }
+
+    @Test
+    void show() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, false);
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .patch(managementEcoNewsLink + "/show?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, false);
     }
 }

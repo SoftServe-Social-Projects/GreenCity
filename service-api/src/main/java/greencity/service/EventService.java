@@ -3,18 +3,20 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
+import java.security.Principal;
+import java.util.List;
+import java.util.Set;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import java.security.Principal;
-import java.util.Set;
 
 public interface EventService {
     /**
@@ -42,43 +44,18 @@ public interface EventService {
     EventDto getEvent(Long eventId, Principal principal);
 
     /**
-     * Method for getting all Event instances.
+     * Method for getting all Event instances filtered.
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
+    PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId);
 
     /**
      * Method for getting all Event instances filtered.
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
-        String title);
-
-    /**
-     * Method for getting all Event instances that user attended.
-     *
-     * @return List of {@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
-        String longitude, String eventType);
-
-    /**
-     * Method for getting page of events which were created user.
-     *
-     * @return a page of{@link EventDto} instance.
-     * @author Nikita Korzh.
-     */
-    PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable pageable, String email);
-
-    /**
-     * Method for getting pages of users events and events which were created by
-     * this user.
-     *
-     * @return a page of{@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable pageable, String name);
+    PageableAdvancedDto<EventDto> getEventsManagement(Pageable page, FilterEventDto filterEventDto, Long userId);
 
     /**
      * Add an attender to the Event by id.
@@ -100,7 +77,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     * @author Anton Bondar.
      */
     void addToFavorites(Long eventId, String email);
 
@@ -109,7 +85,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     * @author Anton Bondar.
      */
     void removeFromFavorites(Long eventId, String email);
 
@@ -129,7 +104,7 @@ public interface EventService {
      * @param images   - new images of event
      * @return EventDto
      */
-    EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images);
+    EventDto update(UpdateEventRequestDto eventDto, String email, MultipartFile[] images);
 
     /**
      * Rate Event.
@@ -155,55 +130,86 @@ public interface EventService {
     EventVO findById(Long eventId);
 
     /**
-     * Method for getting all user's favorite events.
+     * Method for getting Events by searchQuery.
      *
-     * @param pageable {@link Pageable}
-     * @param email    {@link String}
-     * @return a page of {@link EventDto} instance.
-     * @author Midianyi Yurii.
+     * @param pageable    {@link Pageable}
+     * @param searchQuery query to search
+     * @return PageableDto of {@link SearchEventsDto} instances
      */
-    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
+    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId);
 
     /**
      * Method for getting all events' addresses.
      *
-     * @return set of {@link AddressDto} instances.
-     * @author Olena Sotnik.
+     * @return list of {@link AddressDto} instances.
      */
-    Set<AddressDto> getAllEventsAddresses();
+    List<AddressDto> getAllEventsAddresses();
 
     /**
-     * Method for getting Events by searchQuery.
-     *
-     * @param searchQuery  query to search
-     * @param languageCode {@link String}
-     *
-     * @return PageableDto of {@link SearchEventsDto} instances
-     * @author Anton Bondar
-     */
-    PageableDto<SearchEventsDto> search(String searchQuery, String languageCode);
-
-    /**
-     * Method for getting Events by searchQuery.
-     *
-     * @param pageable     {@link Pageable}
-     * @param searchQuery  query to search
-     * @param languageCode {@link String}
-     *
-     * @return PageableDto of {@link SearchEventsDto} instances
-     * @author Anton Bondar
-     */
-    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
-
-    /**
-     * Method for getting amount of events organized and attended by user id.
+     * Method for getting amount of attended events by user id.
      *
      * @param userId {@link Long} user id.
-     * @return {@link Long} amount of organized and attended events by user id.
-     *
-     * @author Olena Sotnik
+     * @return {@link Long} amount of attended events by user id.
      */
-    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
+    Long getCountOfAttendedEventsByUserId(Long userId);
+
+    /**
+     * Method for getting amount of organized events by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return {@link Long} amount of organized events by user id.
+     */
+    Long getCountOfOrganizedEventsByUserId(Long userId);
+
+    /**
+     * Method to like or unlike {@link EventVO} specified by id.
+     *
+     * @param eventId id of {@link EventVO} to like/dislike.
+     * @param userVO  current {@link UserVO} who wants to like/dislike.
+     */
+    void like(Long eventId, UserVO userVO);
+
+    /**
+     * Method to mark event as disliked by User.
+     *
+     * @param user - instance of {@link UserVO}
+     * @param id   - {@link Long} event id.
+     */
+    void dislike(UserVO user, Long id);
+
+    /**
+     * Method to get amount of likes by event id.
+     *
+     * @param eventId - {@link Integer} event id.
+     * @return amount of likes by event id.
+     */
+    int countLikes(Long eventId);
+
+    /**
+     * Method to get amount of dislikes by event id.
+     *
+     * @param eventId - {@link Integer} event id.
+     * @return amount of dislikes by event id.
+     */
+    int countDislikes(Long eventId);
+
+    /**
+     * Method to check if user liked an event.
+     *
+     * @param eventId - id of {@link EventDto} to check liked or not.
+     * @param userVO  - instance of {@link UserVO}.
+     * @return user liked event or not.
+     */
+    boolean isEventLikedByUser(Long eventId, UserVO userVO);
+
+    /**
+     * Method to check if user disliked an event.
+     *
+     * @param eventId - id of {@link EventDto} to check disliked or not.
+     * @param userVO  - instance of {@link UserVO}.
+     * @return user liked event or not.
+     */
+    boolean isEventDislikedByUser(Long eventId, UserVO userVO);
 
     /**
      * Method for adding an event to requested by event id.

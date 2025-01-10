@@ -1,10 +1,7 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
+@StandardException
 public class UserHasReachedOutOfEnrollRange extends BadRequestException {
-    /**
-     * Constructor.
-     */
-    public UserHasReachedOutOfEnrollRange(String message) {
-        super(message);
-    }
 }
