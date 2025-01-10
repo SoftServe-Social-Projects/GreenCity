@@ -1,19 +1,14 @@
 package greencity.service;
 
-import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.language.LanguageVO;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
-import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -30,12 +25,13 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
+import greencity.dto.specification.SpecificationNameDto;
+import greencity.dto.specification.SpecificationVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.DiscountValue;
 import greencity.entity.Language;
 import greencity.entity.Location;
-import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -60,11 +56,8 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.lang.reflect.Method;
 import java.security.Principal;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -91,7 +84,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
@@ -100,7 +92,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.mockito.Mockito;
@@ -123,9 +114,6 @@ class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
         .name("test").build();
-    private final CategoryDto categoryDto = CategoryDto.builder()
-        .name("test")
-        .build();
     private final Language language = Language.builder()
         .id(2L)
         .code("en")
@@ -133,13 +121,6 @@ class PlaceServiceImplTest {
     private final LanguageVO languageVO = LanguageVO.builder()
         .id(2L)
         .code("en")
-        .build();
-    private final Location location = Location.builder()
-        .id(1L)
-        .lat(42.57)
-        .lng(46.53)
-        .address("Location")
-        .addressUa("Локація")
         .build();
     private final User user =
         User.builder()
@@ -1025,5 +1006,25 @@ class PlaceServiceImplTest {
         Assertions.assertThrows(RuntimeException.class,
             () -> placeServiceImpl.updateDiscount(discounts, updatedPlace),
             "Expected updateDiscount to throw an exception");
+    }
+
+    @Test
+    void updateOpeningExecutesCorrectlyForValidInputTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        Set<OpeningHoursDto> hoursUpdateDtoSet = new HashSet<>();
+        OpeningHoursDto openingHoursDto = new OpeningHoursDto();
+        hoursUpdateDtoSet.add(openingHoursDto);
+        Set<OpeningHoursVO> existingOpeningHoursVO = new HashSet<>();
+        OpeningHoursVO openingHoursVO = new OpeningHoursVO();
+        existingOpeningHoursVO.add(openingHoursVO);
+
+        Mockito.when(openingHoursService.findAllByPlaceId(updatedPlace.getId()))
+                .thenReturn(existingOpeningHoursVO);
+
+        placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace);
+        Mockito.verify(openingHoursService).deleteAllByPlaceId(updatedPlace.getId());
+        Mockito.verify(openingHoursService, Mockito.times(hoursUpdateDtoSet.size()))
+                .save(Mockito.any(OpeningHoursVO.class));
     }
 }
