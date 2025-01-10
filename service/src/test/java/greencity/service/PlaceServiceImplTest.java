@@ -170,7 +170,6 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-
     @Mock
     private PlaceRepo placeRepo;
     @Mock
