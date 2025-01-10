@@ -130,4 +130,47 @@ class PlaceServiceImplPrivateMethodsTet {
         Mockito.verify(modelMapper).map(Mockito.eq(discountValue), Mockito.eq(DiscountValueVO.class));
         Mockito.verify(discountService).save(Mockito.eq(discountValueVO));
     }
+
+    @Test
+    void updateDiscountCoversFullLogicTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        SpecificationNameDto specificationNameDto = new SpecificationNameDto();
+        specificationNameDto.setName("TestSpecification");
+        DiscountValueDto discountValueDto = new DiscountValueDto();
+        discountValueDto.setSpecification(specificationNameDto);
+        Set<DiscountValueDto> discounts = Set.of(discountValueDto);
+        SpecificationVO specificationVO = SpecificationVO.builder().name("TestSpecification").build();
+        Specification specification = Specification.builder().name("TestSpecification").build();
+        DiscountValue discountValue = new DiscountValue();
+        DiscountValueVO discountValueVO = new DiscountValueVO();
+        Mockito.when(specificationService.findByName("TestSpecification")).thenReturn(specificationVO);
+        Mockito.when(modelMapper.map(Mockito.eq(specificationVO), Mockito.eq(Specification.class)))
+            .thenReturn(specification);
+        Mockito.when(modelMapper.map(Mockito.eq(discountValueDto), Mockito.eq(DiscountValue.class)))
+            .thenReturn(discountValue);
+        Mockito.when(modelMapper.map(Mockito.eq(discountValue), Mockito.eq(DiscountValueVO.class)))
+            .thenReturn(discountValueVO);
+
+        Set<DiscountValueVO> discountValueVOSet = new HashSet<>();
+        discountValueVOSet.add(discountValueVO);
+        Mockito.when(discountService.findAllByPlaceId(Mockito.anyLong())).thenReturn(discountValueVOSet);
+
+        Set<DiscountValue> newDiscounts = new HashSet<>();
+        discounts.forEach(d -> {
+            DiscountValue discount = modelMapper.map(d, DiscountValue.class);
+            discount.setSpecification(
+                modelMapper.map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
+            discount.setPlace(updatedPlace);
+            discountService.save(modelMapper.map(discount, DiscountValueVO.class));
+            newDiscounts.add(discount);
+        });
+
+        assertEquals(1, newDiscounts.size(), "New discounts set should contain one element.");
+        Mockito.verify(specificationService).findByName("TestSpecification");
+        Mockito.verify(modelMapper).map(Mockito.eq(specificationVO), Mockito.eq(Specification.class));
+        Mockito.verify(modelMapper).map(Mockito.eq(discountValueDto), Mockito.eq(DiscountValue.class));
+        Mockito.verify(modelMapper).map(Mockito.eq(discountValue), Mockito.eq(DiscountValueVO.class));
+        Mockito.verify(discountService).save(Mockito.eq(discountValueVO));
+    }
 }
