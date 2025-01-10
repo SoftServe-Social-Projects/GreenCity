@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
-import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
@@ -25,11 +24,8 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
-import greencity.dto.specification.SpecificationNameDto;
-import greencity.dto.specification.SpecificationVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
-import greencity.entity.DiscountValue;
 import greencity.entity.Language;
 import greencity.entity.Location;
 import greencity.entity.Photo;
@@ -167,7 +163,6 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-
     private final Place genericEntity2 = Place.builder()
         .id(2L)
         .name("test2")
