@@ -362,7 +362,8 @@ table.table .avatar {
     height: 26px;
     padding: 0px;
     margin-top: 12px;
-    margin-left: 0px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .dropdown-content.userpage {

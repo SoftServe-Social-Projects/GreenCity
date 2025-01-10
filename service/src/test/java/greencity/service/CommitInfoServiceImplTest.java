@@ -53,6 +53,7 @@ class CommitInfoServiceImplTest {
 
     private void configureFileRepositoryBuilderMock(FileRepositoryBuilder builderMock) {
         when(builderMock.setGitDir(new File(GIT_PATH))).thenReturn(builderMock);
+        when(builderMock.setMustExist(true)).thenReturn(builderMock);
         when(builderMock.readEnvironment()).thenReturn(builderMock);
         when(builderMock.findGitDir()).thenReturn(builderMock);
     }

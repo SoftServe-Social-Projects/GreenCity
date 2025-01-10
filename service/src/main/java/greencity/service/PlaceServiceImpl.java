@@ -150,6 +150,7 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public List<PlaceVO> getAllCreatedPlacesByUserId(Long userId) {
         return placeRepo.findAllByUserId(userId).stream()
             .map(place -> modelMapper.map(place, PlaceVO.class))
