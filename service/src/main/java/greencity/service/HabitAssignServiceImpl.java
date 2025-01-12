@@ -701,6 +701,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             }).toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public List<UserToDoListItemResponseDto> getListOfUserToDoListsWithStatusInprogress(

@@ -4,7 +4,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.todolistitem.*;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -100,12 +99,12 @@ public interface ToDoListItemService {
         String language);
 
     /**
-     * Method returns user to-do list by habitAssignId for specific language.
+     * Method returns to-do list items by habitAssignId for specific language.
      *
      * @param userId        id of the {@link UserVO} current user.
      * @param habitAssignId {@link greencity.dto.habit.HabitAssignVO} id.
      * @param language      needed language code.
-     * @return List of {@link UserToDoListItemResponseDto}.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
     List<ToDoListItemResponseDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
         String language);

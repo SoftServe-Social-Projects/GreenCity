@@ -27,7 +27,7 @@ public interface ToDoListItemRepo
     Page<ToDoListItem> searchBy(Pageable paging, String query);
 
     /**
-     * Method returns ToDoList id which are not in the habit.
+     * Method returns list of to-do list item ids which are not in the habit.
      *
      * @param habitId habit id
      * @return list of id.
@@ -39,7 +39,7 @@ public interface ToDoListItemRepo
     List<Long> getAllToDoListItemsByHabitIdNotContained(@Param("habitId") Long habitId);
 
     /**
-     * Method returns to-do list items id which are in the habit.
+     * Method returns list of to-do list item ids which are in the habit.
      *
      * @param habitId habit id
      * @return list of id.
@@ -67,6 +67,13 @@ public interface ToDoListItemRepo
     @Query("select g from ToDoListItem g where g.id in( :listId )")
     List<ToDoListItem> getToDoListByListOfId(List<Long> listId);
 
+    /**
+     * Method returns list of {@link ToDoListItem} by habit assign id.
+     *
+     * @param habitAssignId id of {@link greencity.entity.HabitAssign} current habit
+     *                      assign
+     * @return list of {@link ToDoListItem}.
+     */
     @Query(nativeQuery = true,
         value = "SELECT tdli.* FROM to_do_list_items tdli "
             + "JOIN user_to_do_list ustdl ON ustdl.to_do_list_item_id = tdli.id "

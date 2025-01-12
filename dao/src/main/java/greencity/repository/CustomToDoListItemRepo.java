@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem, Long> {
     /**
-     * Method returns list of available (not ACTIVE) custom to-do list items for
-     * user.
+     * Method returns list of available custom to-do list items for user by habit
+     * id.
      *
      * @param userId id of the {@link User} current user
      * @return list of {@link CustomToDoListItem}
@@ -30,6 +30,13 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
     List<CustomToDoListItem> findAllAvailableCustomToDoListItemsForUserId(@Param("userId") Long userId,
         @Param("habitId") Long habitId);
 
+    /**
+     * Method returns list of custom to-do list items by habit assign id.
+     *
+     * @param habitAssignId id of the {@link greencity.entity.HabitAssign} current
+     *                      habit assign
+     * @return list of {@link CustomToDoListItem}
+     */
     @Query(nativeQuery = true,
         value = "SELECT ctdl.* FROM custom_to_do_list_items ctdl "
             + "JOIN user_to_do_list ustdl ON ustdl.to_do_list_item_id = ctdl.id "
@@ -82,7 +89,7 @@ public interface CustomToDoListItemRepo extends JpaRepository<CustomToDoListItem
     List<Long> getAllCustomToDoListItemIdByUserIdAndByHabitIdAndNotDefault(Long habitId, Long userId);
 
     /**
-     * Method delete selected items from custom to-do list.
+     * Method delete not default selected items from custom to-do list.
      *
      * @param habitId id of needed habit
      * @author Anton Bondar

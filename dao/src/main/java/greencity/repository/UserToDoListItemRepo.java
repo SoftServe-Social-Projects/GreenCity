@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Long> {
     /**
-     * Method returns list of {@link UserToDoListItem} for specific user.
+     * Method returns list of {@link UserToDoListItem} for specific habit assign.
      *
      * @param habitAssignId - id of habit assign.
      * @return list of {@link UserToDoListItem}
@@ -19,9 +19,10 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<UserToDoListItem> findAllByHabitAssingId(Long habitAssignId);
 
     /**
-     * Method delete selected items from users to-do list.
+     * Method delete items from users to-do list by habit assign id.
      *
-     * @param habitAssignId id of needed habit assign
+     * @param habitAssignId id of {@link greencity.entity.HabitAssign} needed habit
+     *                      assign
      */
     @Modifying
     @Transactional
@@ -32,25 +33,25 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     /**
      * Method returns default UserToDoListItem list by habit assign id.
      *
-     * @param id id of needed habit assign
+     * @param habitAssignId id of needed habit assign
      * @return List of {@link Long}
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = false")
-    List<UserToDoListItem> getAllAssignedToDoListItemsFull(Long id);
+        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :habitAssignId AND is_custom_item = false")
+    List<UserToDoListItem> getAllAssignedToDoListItemsFull(Long habitAssignId);
 
     /**
      * Method returns custom UserToDoListItem list by habit assign id.
      *
-     * @param id id of needed habit assign
+     * @param habitAssignId id of needed habit assign
      * @return List of {@link Long}
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :id AND is_custom_item = true")
-    List<UserToDoListItem> getAllAssignedCustomToDoListItemsFull(Long id);
+        value = "SELECT * FROM user_to_do_list WHERE habit_assign_id = :habitAssignId AND is_custom_item = true")
+    List<UserToDoListItem> getAllAssignedCustomToDoListItemsFull(Long habitAssignId);
 
     /**
-     * Method returns to-do list with statuses DONE.
+     * Method returns to-do list item ids with specific status.
      *
      * @param habitAssignId id of needed habit assign
      * @param status        status of needed items

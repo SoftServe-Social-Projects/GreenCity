@@ -315,6 +315,9 @@ public class HabitServiceImpl implements HabitService {
             habitTranslationsPage.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addToDoListItemToHabit(Long habitId, Long itemId) {
         habitRepo.addToDoListItemToHabit(habitId, itemId);
@@ -337,6 +340,9 @@ public class HabitServiceImpl implements HabitService {
         return listId;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public CustomHabitDtoResponse addCustomHabit(

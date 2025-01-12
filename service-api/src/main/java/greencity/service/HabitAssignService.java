@@ -158,8 +158,7 @@ public interface HabitAssignService {
         Long userId, Long currentUserId, Pageable pageable);
 
     /**
-     * Method that return user to-do list and custom to-do list by habitAssignId for
-     * specific language.
+     * Method that return user to-do list by habitAssignId for specific language.
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssignId} id.
