@@ -23,4 +23,17 @@ public class FilterEventDto {
     private EventType type;
     private ZonedDateTime from;
     private ZonedDateTime to;
+
+    public static final String defaultJson = """
+        {
+          "time": null,
+          "cities": [],
+          "statuses": [],
+          "tags": [],
+          "title": null,
+          "type": null,
+          "from": null,
+          "to": null
+        }
+        """;
 }

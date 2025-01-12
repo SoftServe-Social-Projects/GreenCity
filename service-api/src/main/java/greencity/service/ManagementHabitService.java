@@ -60,12 +60,23 @@ public interface ManagementHabitService {
     void deleteAll(List<Long> listId);
 
     /**
-     * Method switches the `isDeleted` status of a {@code Habit} instance.
+     * Updates the `isDeleted` status of a {@code Habit}. If `isDeleted` is
+     * {@code null}, it is set to the provided {@code newStatus}. Otherwise, it is
+     * updated directly to {@code newStatus}.
      *
-     * @param id {@code Habit} id. - If the current value of `isDeleted` is
-     *           {@code false}, it will be updated to {@code true}. - If the current
-     *           value of `isDeleted` is {@code true}, it will be updated to
-     *           {@code false}.
+     * @param id        the ID of the {@code Habit} to update.
+     * @param newStatus the new `isDeleted` status, {@code true} or {@code false}.
      */
-    void switchIsDeletedStatus(Long id);
+    void switchIsDeletedStatus(Long id, Boolean newStatus);
+
+    /**
+     * Updates the `isCustom` status of a {@code Habit}. If `isCustom` is
+     * {@code null}, it is set to the provided {@code newIsCustomStatus}. Otherwise,
+     * it is updated directly to {@code newIsCustomStatus}.
+     *
+     * @param id                the ID of the {@code Habit} to update.
+     * @param newIsCustomStatus the new `isCustom` status, {@code true} or
+     *                          {@code false}.
+     */
+    void switchIsCustomStatus(Long id, Boolean newIsCustomStatus);
 }

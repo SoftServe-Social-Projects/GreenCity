@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,4 +106,7 @@ public class Habit {
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> followers = new HashSet<>();
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }

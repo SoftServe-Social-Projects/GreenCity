@@ -1,6 +1,7 @@
 package greencity.dto.habittranslation;
 
 import java.io.Serializable;
+import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,9 +16,12 @@ import lombok.Builder;
 @EqualsAndHashCode
 @Builder
 public class HabitTranslationDto implements Serializable {
+    @NotBlank
     private String description;
     private String habitItem;
+    @NotBlank
     private String languageCode;
+    @NotBlank
     private String name;
     private String descriptionUa;
     private String nameUa;

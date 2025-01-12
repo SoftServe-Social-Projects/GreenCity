@@ -215,12 +215,24 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         ZonedDateTime from = filterEventDto.getFrom();
         ZonedDateTime to = filterEventDto.getTo();
         ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates, JoinType.LEFT);
-        if (from != null) {
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from));
+        Predicate finalPredicate = criteriaBuilder.conjunction();
+
+        if (from != null && to != null) {
+            Predicate dateRangePredicate = criteriaBuilder.and(
+                criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), to),
+                criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.FINISH_DATE), from));
+            finalPredicate = criteriaBuilder.and(finalPredicate, dateRangePredicate);
+        } else if (from != null) {
+            Predicate startDatePredicate =
+                criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from);
+            finalPredicate = criteriaBuilder.and(finalPredicate, startDatePredicate);
+        } else if (to != null) {
+            Predicate finishDatePredicate =
+                criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.FINISH_DATE), to);
+            finalPredicate = criteriaBuilder.and(finalPredicate, finishDatePredicate);
         }
-        if (to != null) {
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), to));
-        }
+
+        predicates.add(finalPredicate);
     }
 
     private void addEventsLikePredicate(String searchingText, Root<Event> root, List<Predicate> predicates) {

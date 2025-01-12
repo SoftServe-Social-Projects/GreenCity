@@ -6,18 +6,19 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceWithUserDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlaceResponse;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.PlaceWithUserDto;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
@@ -303,9 +304,9 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @PatchMapping("/status")
-    public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+    public ResponseEntity<UpdatePlaceStatusWithUserEmailDto> updateStatus(
+        @Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
+        return ResponseEntity.ok(placeService.updatePlaceStatus(dto));
     }
 
     /**

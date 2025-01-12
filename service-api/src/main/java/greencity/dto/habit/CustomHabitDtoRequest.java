@@ -14,9 +14,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Set;
 
+@Validated
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,6 +31,7 @@ public class CustomHabitDtoRequest {
     @NotNull(message = ServiceValidationConstants.HABIT_COMPLEXITY)
     private Integer complexity;
     private Integer defaultDuration;
+    @Valid
     private List<HabitTranslationDto> habitTranslations;
     private String image;
     private List<CustomToDoListItemRequestDto> customToDoListItemDto;

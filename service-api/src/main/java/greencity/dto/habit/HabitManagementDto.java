@@ -29,4 +29,6 @@ public class HabitManagementDto implements Serializable {
     @Min(value = 7, message = ServiceValidationConstants.HABIT_DEFAULT_DURATION)
     @Max(value = 56, message = ServiceValidationConstants.HABIT_DEFAULT_DURATION)
     private Integer defaultDuration;
+    private Boolean isCustomHabit;
+    private Boolean isDeleted;
 }

@@ -32,6 +32,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
+import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
+import static greencity.utils.NotificationUtils.localizeMessage;
 
 /**
  * Implementation of {@link UserNotificationService}.
@@ -351,13 +355,15 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
-        dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
+        String notificationType = dto.getNotificationType();
+        dto.setTitleText(bundle.getString(notificationType + "_TITLE"));
         final List<User> uniqueActionUsers =
             new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
         int size = new HashSet<>(uniqueActionUsers).size();
         dto.setActionUserText(uniqueActionUsers.stream().map(User::getName).toList());
         dto.setActionUserId(uniqueActionUsers.stream().map(User::getId).toList());
-        String bodyTextTemplate = bundle.getString(dto.getNotificationType());
+
+        String bodyTextTemplate = bundle.getString(notificationType);
         String bodyText;
         switch (size) {
             case 1 -> bodyText = bodyTextTemplate;
@@ -376,31 +382,11 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             }
         }
         dto.setBodyText(bodyText);
-        return dto;
-    }
-
-    private String resolveTimesInEnglish(final int number) {
-        return switch (number) {
-            case 1 -> "";
-            case 2 -> "twice";
-            default -> number + " times";
-        };
-    }
-
-    private String resolveTimesInUkrainian(int number) {
-        number = Math.abs(number);
-        final int lastTwoDigits = number % 100;
-        final int lastDigit = number % 10;
-
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-            return number + " разів";
+        String message = dto.getMessage();
+        if (message != null && isMessageLocalizationRequired(notificationType)) {
+            dto.setMessage(localizeMessage(message, bundle));
         }
-
-        return switch (lastDigit) {
-            case 1 -> "";
-            case 2, 3, 4 -> number + " рази";
-            default -> number + " разів";
-        };
+        return dto;
     }
 
     /**

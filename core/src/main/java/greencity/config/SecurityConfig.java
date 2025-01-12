@@ -81,6 +81,7 @@ public class SecurityConfig {
     private static final String NOTIFICATION_ID = "/{notificationId}";
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
+    private static final String COMMIT_INFO = "/commit-info";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -202,7 +203,12 @@ public class SecurityConfig {
                     FRIENDS + "/user/{userId}",
                     "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
-                    "/database/backupFiles")
+                    "/database/backupFiles",
+                    COMMIT_INFO)
+                .permitAll()
+                .requestMatchers(HttpMethod.DELETE,
+                    "/place/{id}",
+                    "/place")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
@@ -275,7 +281,8 @@ public class SecurityConfig {
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     NOTIFICATIONS,
-                    HABIT_ASSIGN_WITH_HABIT_ID + "/friends/habit-duration-info")
+                    HABIT_ASSIGN_WITH_HABIT_ID + "/friends/habit-duration-info",
+                    "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -373,6 +380,8 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/{friendId}/cancelRequest",
+                    "/notification/{notificationId}",
+                    "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
                     HABIT_INVITE + INVITATION_ID + "/reject")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)

@@ -3,6 +3,7 @@ package greencity.client;
 import greencity.annotations.CheckEmailPreference;
 import greencity.constant.AppConstant;
 import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
@@ -425,6 +426,14 @@ public class RestClient {
         HttpEntity<InterestingEcoNewsDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class);
+    }
+
+    public void sendEmailNotificationChangesPlaceStatus(UpdatePlaceStatusWithUserEmailDto message) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UpdatePlaceStatusWithUserEmailDto> entity = new HttpEntity<>(message, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_NOTIFICATION_STATUS_PLACE, HttpMethod.POST, entity, Object.class);
     }
 
     /**

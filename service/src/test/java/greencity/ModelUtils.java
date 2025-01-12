@@ -177,6 +177,7 @@ import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
@@ -228,6 +229,7 @@ import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.currentUserGrade;
 import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
@@ -277,9 +279,12 @@ public class ModelUtils {
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
     public static String habitTranslationName = "use shopper";
+    public static String habitTranslationNameUa = "Назва звички українською";
     public static String habitTranslationDescription = "Description";
+    public static String habitTranslationDescriptionUa = "Опис звички українською";
     public static String toDoListText = "buy a shopper";
     public static String habitItem = "Item";
+    public static String habitItemUa = "Айтем звички українською";
     public static String habitDefaultImage = "img/habit-default.png";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
@@ -443,6 +448,23 @@ public class ModelUtils {
             .build();
     }
 
+    public static User getUserNotCommentOwner() {
+        return User.builder()
+            .id(2L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastActivityTime(localDateTime)
+            .verifyEmail(new VerifyEmail())
+            .dateOfRegistration(localDateTime)
+            .subscribedEvents(new HashSet<>())
+            .favoriteEcoNews(new HashSet<>())
+            .favoriteEvents(new HashSet<>())
+            .language(getLanguage())
+            .build();
+    }
+
     public static User getAttenderUser() {
         return User.builder()
             .id(2L)
@@ -521,6 +543,19 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserVO getUserVONotCommentOwner() {
+        return UserVO.builder()
+            .id(2L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .lastActivityTime(localDateTime)
+            .verifyEmail(new VerifyEmailVO())
+            .dateOfRegistration(localDateTime)
+            .languageVO(getLanguageVO())
+            .build();
+    }
+
     public static UserVO getAuthorVO() {
         return UserVO.builder()
             .id(2L)
@@ -573,9 +608,9 @@ public class ModelUtils {
             .userLocationDto(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .showToDoList(true)
-            .showEcoPlace(true)
-            .showLocation(true)
+            .showToDoList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
@@ -1858,6 +1893,27 @@ public class ModelUtils {
         return event;
     }
 
+    public static Event getEventNotStartedYet() {
+        LocalDate start = LocalDate.now().plusDays(1);
+        LocalDate end = LocalDate.now().plusDays(2);
+        Event event = new Event();
+        event.setDescription("Some event description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Some event title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(start.getYear(), start.getMonthValue(), start.getDayOfMonth(), 1, 1, 1, 1,
+                ZoneId.systemDefault()),
+            ZonedDateTime.of(end.getYear(), end.getMonthValue(), end.getDayOfMonth(), 1, 1, 1, 1,
+                ZoneId.systemDefault()),
+            getAddress(), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
     public static Event getEventWithoutAddress() {
         Event event = new Event();
         event.setDescription("Description");
@@ -1868,11 +1924,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            null, "http://somelink.com"));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null, "url/"));
+            null, "http://somelink.com"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1945,6 +2001,13 @@ public class ModelUtils {
 
     public static AddressDto getAddressDtoWithoutData() {
         return AddressDto.builder().build();
+    }
+
+    public static AddressDto getLongitudeAndLatitude() {
+        return AddressDto.builder()
+            .latitude(ModelUtils.getAddressDto().getLatitude())
+            .longitude(ModelUtils.getAddressDto().getLongitude())
+            .build();
     }
 
     public static EventDto getEventDtoWithoutAddress() {
@@ -2544,6 +2607,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitTranslationDto getHabitTranslationDtoEnAndUa() {
+        return HabitTranslationDto.builder()
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
+            .languageCode("en")
+            .nameUa(habitTranslationNameUa)
+            .descriptionUa(habitTranslationDescriptionUa)
+            .habitItemUa(habitItemUa)
+            .build();
+    }
+
     public static HabitTranslation getHabitTranslationForServiceTest() {
         return HabitTranslation.builder()
             .id(1L)
@@ -2766,6 +2841,19 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserFriendDto getUserFriendDtoListFromUserPage() {
+        return UserFriendDto.builder()
+            .id(1L)
+            .name(TestConst.NAME)
+            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
+            .rating(10.0)
+            .mutualFriends(3L)
+            .profilePicturePath("path-to-picture")
+            .chatId(4L)
+            .build();
+    }
+
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
             .time(PAST)
@@ -2813,7 +2901,8 @@ public class ModelUtils {
                 isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
                 finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
                 cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
-                formattedAddressUa, isRelevant, likes, dislikes, countComments, grade, isOrganizedByFriend,
+                formattedAddressUa, isRelevant, likes, dislikes, countComments, grade, currentUserGrade,
+                isOrganizedByFriend,
                 isSubscribed,
                 isFavorite});
 
@@ -2821,27 +2910,27 @@ public class ModelUtils {
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
-            false,
+            null, false,
             true, true, true};
         Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
-            false,
+            null, false,
             true, true, true};
         Object[] row3 = new Object[] {3L, "test3", "<p>description</p>", 2L, "en", "Social1", true, "ONLINE_OFFLINE",
             2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
-            false,
+            null, false,
             true, true, true};
         Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "ua", "Соціальний1", true,
             "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
-            false,
+            null, false,
             true, true, true};
         return List.of(new TupleImpl(tupleMetadata, row1), new TupleImpl(tupleMetadata, row2),
             new TupleImpl(tupleMetadata, row3), new TupleImpl(tupleMetadata, row4));
@@ -2882,6 +2971,7 @@ public class ModelUtils {
             new TupleElementImpl<>(Long.class, dislikes),
             new TupleElementImpl<>(Long.class, countComments),
             new TupleElementImpl<>(BigDecimal.class, grade),
+            new TupleElementImpl<>(Integer.class, currentUserGrade),
             new TupleElementImpl<>(Boolean.class, isOrganizedByFriend),
             new TupleElementImpl<>(Boolean.class, isSubscribed),
             new TupleElementImpl<>(Boolean.class, isFavorite),
@@ -3180,5 +3270,81 @@ public class ModelUtils {
             .name("Forum")
             .category("Category")
             .build();
+    }
+
+    public static List<EventDateLocationDto> getEventDateLocationDtoWithInvalidDuration() {
+        ZoneId zoneId = ZoneId.of("Europe/Kiev");
+
+        EventDateLocationDto invalidDto1 = new EventDateLocationDto();
+        invalidDto1.setStartDate(LocalDateTime.of(2024, 12, 2, 10, 0).atZone(zoneId));
+        invalidDto1.setFinishDate(LocalDateTime.of(2024, 12, 2, 10, 20).atZone(zoneId));
+
+        EventDateLocationDto invalidDto2 = new EventDateLocationDto();
+        invalidDto2.setStartDate(LocalDateTime.of(2024, 12, 2, 14, 0).atZone(zoneId));
+        invalidDto2.setFinishDate(LocalDateTime.of(2024, 12, 2, 14, 25).atZone(zoneId));
+
+        return List.of(invalidDto1, invalidDto2);
+    }
+
+    public static EventDateLocationDto getEventDateLocationDtoWithLinkAndCoordinates() {
+        return EventDateLocationDto.builder()
+            .id(1L)
+            .startDate(ZonedDateTime.now())
+            .finishDate(ZonedDateTime.now().plusDays(2L))
+            .onlineLink("https://someevents.com")
+            .coordinates(AddressDto.builder()
+                .latitude(50.1234)
+                .latitude(30.1234)
+                .build())
+            .build();
+    }
+
+    public static List<Tuple> getUserFriendInviteHabitDtoTuple1() {
+        Tuple tuple = new TupleImpl(
+            new TupleMetadata(
+                new TupleElement<?>[] {
+                    new TupleElementImpl<>(Long.class, "id"),
+                    new TupleElementImpl<>(String.class, "email"),
+                    new TupleElementImpl<>(String.class, "name"),
+                    new TupleElementImpl<>(String.class, "profile_picture"),
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
+                },
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", true, true});
+
+        return List.of(tuple);
+    }
+
+    public static List<Tuple> getUserFriendInviteHabitDtoTuple2() {
+        Tuple tuple1 = new TupleImpl(
+            new TupleMetadata(
+                new TupleElement<?>[] {
+                    new TupleElementImpl<>(Long.class, "id"),
+                    new TupleElementImpl<>(String.class, "email"),
+                    new TupleElementImpl<>(String.class, "name"),
+                    new TupleElementImpl<>(String.class, "profile_picture"),
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
+                },
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", false, false});
+
+        Tuple tuple2 = new TupleImpl(
+            new TupleMetadata(
+                new TupleElement<?>[] {
+                    new TupleElementImpl<>(Long.class, "id"),
+                    new TupleElementImpl<>(String.class, "email"),
+                    new TupleElementImpl<>(String.class, "name"),
+                    new TupleElementImpl<>(String.class, "profile_picture"),
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
+                },
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false, false});
+        return List.of(tuple1, tuple2);
     }
 }

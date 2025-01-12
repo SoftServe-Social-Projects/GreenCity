@@ -6,12 +6,8 @@ import greencity.ModelUtils;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.repository.HabitTranslationRepo;
 import greencity.service.HabitService;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import greencity.service.TagsService;
 import greencity.service.UserService;
 import lombok.SneakyThrows;
@@ -21,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
@@ -30,17 +25,22 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class HabitControllerTest {
@@ -61,6 +61,9 @@ class HabitControllerTest {
 
     @Mock
     private Validator mockValidator;
+
+    @Mock
+    private HabitTranslationRepo habitTranslationRepo;
 
     private static final String habitLink = "/habit";
 
@@ -446,5 +449,39 @@ class HabitControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
         verify(habitService).removeFromFavorites(habitId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllFavoritesTest() {
+        UserVO userVO = new UserVO();
+        Pageable pageable = PageRequest.of(0, 10);
+        String languageCode = "en";
+
+        mockMvc.perform(get(habitLink + "/favorites")
+            .principal(getPrincipal())
+            .param("page", "0")
+            .param("size", "10")
+            .locale(Locale.forLanguageTag(languageCode)))
+            .andExpect(status().isOk());
+
+        verify(habitService).getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+    }
+
+    @Test
+    @SneakyThrows
+    void findAllFriendsOfUserToBeInvitedTest() {
+        Long habitId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(get(habitLink + "/friends")
+            .principal(getPrincipal())
+            .param("habitId", habitId.toString())
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(status().isOk());
+
+        verify(habitService).findAllFriendsOfUser(userVO, null, pageable, habitId);
     }
 }

@@ -39,6 +39,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.RatingPointsRepo;
@@ -57,6 +58,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -76,6 +78,7 @@ import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.currentUserGrade;
 import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
@@ -114,6 +117,7 @@ public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final EventRepo eventRepo;
     private final ModelMapper modelMapper;
+    private final EventDateLocationDtoMapper eventDateLocationDtoMapper;
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
@@ -131,8 +135,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
-        addAddressToLocation(addEventDtoRequest.getDatesLocations());
+        validateEventRequest(addEventDtoRequest);
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         UserVO userVO = restClient.findByEmail(email);
         User organizer = modelMapper.map(userVO, User.class);
@@ -244,6 +247,12 @@ public class EventServiceImpl implements EventService {
         }
 
         Page<Long> eventIds = eventRepo.findEventsIds(page, filterEventDto, userId);
+
+        if (page.getPageNumber() >= eventIds.getTotalPages() && eventIds.getTotalPages() > 0) {
+            throw new BadRequestException(
+                String.format(ErrorMessage.PAGE_NOT_FOUND_MESSAGE, page.getPageNumber(), eventIds.getTotalPages()));
+        }
+
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
@@ -412,8 +421,12 @@ public class EventServiceImpl implements EventService {
     public void rateEvent(Long eventId, String email, int grade) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
+        if (event.getOrganizer().getId().equals(currentUser.getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
+        }
         if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
         }
@@ -601,6 +614,41 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private void validateEventRequest(AddEventDtoRequest addEventDtoRequest) {
+        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
+        if (!validateCoordinates(addEventDtoRequest.getDatesLocations())) {
+            throw new BadRequestException(ErrorMessage.INVALID_COORDINATES);
+        }
+        addAddressToLocation(addEventDtoRequest.getDatesLocations());
+    }
+
+    private boolean isValidCoordinate(double latitude, double longitude) {
+        return Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
+    }
+
+    public boolean validateCoordinates(List<EventDateLocationDto> eventDateLocationDtos) {
+        for (EventDateLocationDto eventDateLocationDto : eventDateLocationDtos) {
+            AddressDto coordinates = eventDateLocationDto.getCoordinates();
+            EventType eventType = getEventType(eventDateLocationDtoMapper.mapAllToList(eventDateLocationDtos));
+
+            if (EventType.ONLINE == eventType) {
+                return true;
+            }
+            if (Objects.isNull(coordinates) || Objects.isNull(coordinates.getLatitude())
+                || Objects.isNull(coordinates.getLongitude())) {
+                return false;
+            }
+
+            double latitude = coordinates.getLatitude();
+            double longitude = coordinates.getLongitude();
+
+            if (!isValidCoordinate(latitude, longitude)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
         eventDateLocationDtos.stream()
             .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
@@ -667,10 +715,15 @@ public class EventServiceImpl implements EventService {
 
     private EventDto buildEventDto(Event event, Long userId) {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
-
+        Integer currentUserGrade = event.getEventGrades()
+            .stream()
+            .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
+            .map(EventGrade::getGrade)
+            .findFirst()
+            .orElse(null);
         setFollowers(List.of(eventDto), userId);
         setSubscribes(List.of(eventDto), userId);
-
+        eventDto.setCurrentUserGrade(currentUserGrade);
         return eventDto;
     }
 
@@ -728,6 +781,11 @@ public class EventServiceImpl implements EventService {
     public void like(Long eventId, UserVO userVO) {
         Event event = findEventId(eventId);
         User eventAuthor = getEventAuthor(event);
+        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         if (removeLikeIfExists(event, userVO, eventAuthor)) {
             return;
@@ -740,9 +798,7 @@ public class EventServiceImpl implements EventService {
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), userVO);
 
-        if (eventAuthor != null) {
-            sendEventLikeNotification(eventAuthor, userVO, eventId, event);
-        }
+        sendEventLikeNotification(eventAuthor, userVO, eventId, event);
 
         eventRepo.save(event);
     }
@@ -750,17 +806,20 @@ public class EventServiceImpl implements EventService {
     @Override
     public void dislike(UserVO userVO, Long eventId) {
         Event event = findEventId(eventId);
+        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         removeLikeIfExists(event, userVO, getEventAuthor(event));
 
         if (removeDislikeIfExists(event, userVO)) {
+            eventRepo.save(event);
             return;
         }
 
         event.getUsersDislikedEvents().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
-            AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"), userVO);
 
         eventRepo.save(event);
     }
@@ -812,6 +871,7 @@ public class EventServiceImpl implements EventService {
             .newsId(eventId)
             .newsTitle(event.getTitle())
             .notificationType(NotificationType.EVENT_LIKE)
+            .secondMessageText(event.getTitle())
             .isLike(true)
             .build();
         userNotificationService.createOrUpdateLikeNotification(likeNotificationDto);
@@ -847,6 +907,7 @@ public class EventServiceImpl implements EventService {
                     .eventRate(tuple.get(grade, BigDecimal.class) != null
                         ? tuple.get(grade, BigDecimal.class).doubleValue()
                         : 0.0)
+                    .currentUserGrade(tuple.get(currentUserGrade, Integer.class))
                     .dates(new ArrayList<>())
                     .tags(new ArrayList<>())
                     .build();
@@ -926,11 +987,12 @@ public class EventServiceImpl implements EventService {
     private void checkingEqualityDateTimeInEventDateLocationDto(List<EventDateLocationDto> eventDateLocationDtos) {
         if (eventDateLocationDtos != null && !eventDateLocationDtos.isEmpty()) {
             eventDateLocationDtos.stream()
-                .filter(eventDateLocationDto -> eventDateLocationDto.getStartDate()
-                    .isEqual(eventDateLocationDto.getFinishDate()))
+                .filter(eventDateLocationDto -> Duration.between(
+                    eventDateLocationDto.getStartDate(),
+                    eventDateLocationDto.getFinishDate()).toMinutes() < 30)
                 .findAny()
                 .ifPresent(eventDateLocationDto -> {
-                    throw new IllegalArgumentException(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE);
+                    throw new IllegalArgumentException(ErrorMessage.INVALID_DURATION_BETWEEN_START_AND_FINISH);
                 });
         }
     }

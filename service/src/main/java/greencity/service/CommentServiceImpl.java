@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -316,18 +315,10 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
-        String message = null;
-        ResourceBundle bundle = ResourceBundle.getBundle("notification",
-            Locale.forLanguageTag(locale.getLanguage()),
-            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT), articleId);
-        if (commentsCount >= 1) {
-            message = (commentsCount + 1) + " " + bundle.getString("COMMENTS");
-        } else if (commentsCount == 0) {
-            message = bundle.getString("COMMENT");
-        }
+        String message = (commentsCount >= 1) ? (commentsCount + 1) + " COMMENTS" : "COMMENT";
         userNotificationService.createNotification(
             receiver,
             userVO,
@@ -374,12 +365,19 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
         UserVO sender, UserVO receiver, Locale locale) {
+        long replyCount = notificationRepo
+            .countUnviewedRepliesByTargetAndParent(
+                receiver.getId(),
+                getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
+                articleId,
+                comment.getParentComment().getId());
+        String message = (replyCount >= 1) ? (replyCount + 1) + " REPLIES" : "REPLY";
         userNotificationService.createNotification(
             receiver,
             sender,
             getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
             articleId,
-            comment.getParentComment().getText(),
+            message,
             comment.getParentComment().getId(),
             getArticleTitle(articleType, articleId, locale));
     }
@@ -528,13 +526,24 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
+        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
         if (removeLikeIfExists(comment, userVO)) {
             return;
         }
 
         removeDislikeIfExists(comment, userVO);
 
-        comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        User mappedUser = modelMapper.map(userVO, User.class);
+        if (mappedUser.equals(comment.getUser())) {
+            return;
+        }
+
+        comment.getUsersLiked().add(mappedUser);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
@@ -551,11 +560,17 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
-        if (removeDislikeIfExists(comment, userVO)) {
-            return;
+        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
         removeLikeIfExists(comment, userVO);
+
+        if (removeDislikeIfExists(comment, userVO)) {
+            return;
+        }
 
         comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
 

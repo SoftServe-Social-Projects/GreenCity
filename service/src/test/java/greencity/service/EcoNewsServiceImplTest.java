@@ -494,12 +494,14 @@ class EcoNewsServiceImplTest {
     @Test
     void likeTest() {
         UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         ecoNewsVO.getAuthor().setId(2L);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
         ecoNews.getAuthor().setId(2L);
-
+        ecoNews.setUsersLikedNews(new HashSet<>());
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
 
@@ -524,12 +526,14 @@ class EcoNewsServiceImplTest {
     @Test
     void givenEcoNewsLikedByUser_whenLikedByUser_shouldRemoveLike() {
         UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         ecoNewsVO.getAuthor().setId(2L);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
         ecoNews.getAuthor().setId(2L);
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
 
@@ -543,6 +547,8 @@ class EcoNewsServiceImplTest {
         UserVO userVO = ModelUtils.getUserVO();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         ecoNewsVO.setUsersDislikedNews(new HashSet<>());
+        ecoNewsVO.getAuthor().setId(2L);
+        ecoNews.getAuthor().setId(2L);
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
@@ -554,11 +560,26 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void dislikeOwnTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersDislikedNews(new HashSet<>());
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        assertThrows(BadRequestException.class, () -> ecoNewsService.dislike(userVO, 1L));
+    }
+
+    @Test
     void givenEcoNewsLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
         UserVO userVO = ModelUtils.getUserVO();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         ecoNewsVO.setUsersLikedNews(new HashSet<>(Set.of(userVO)));
         ecoNewsVO.setUsersDislikedNews(new HashSet<>());
+        ecoNews.getAuthor().setId(2L);
+        ecoNewsVO.getAuthor().setId(2L);
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
@@ -744,31 +765,33 @@ class EcoNewsServiceImplTest {
 
     @Test
     void testLikeAddLike() {
-        UserVO actionUser = ModelUtils.getUserVO();
-        UserVO targetUser = ModelUtils.getAuthorVO();
+        UserVO actionUserVO = ModelUtils.getUserVO();
+        User actionUser = ModelUtils.getUser();
+        UserVO targetUserVO = ModelUtils.getAuthorVO();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
-        ecoNewsVO.setAuthor(targetUser);
+        ecoNewsVO.setAuthor(targetUserVO);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
         EcoNews ecoNewsWithAuthor = getEcoNews();
         ecoNewsWithAuthor.setAuthor(User.builder()
-            .id(targetUser.getId())
+            .id(targetUserVO.getId())
             .build());
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_NEWS").points(1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS")).thenReturn(ratingPoints);
+        when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNewsWithAuthor);
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNewsWithAuthor));
         when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
-        when(userService.findById(anyLong())).thenReturn(targetUser);
+        when(userService.findById(anyLong())).thenReturn(targetUserVO);
 
-        ecoNewsService.like(actionUser, ecoNewsVO.getId());
+        ecoNewsService.like(actionUserVO, ecoNewsVO.getId());
 
         verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
             any(LikeNotificationDto.class));
-        verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
+        verify(achievementCalculation, times(1)).calculateAchievement(actionUserVO,
             AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
         verify(ratingCalculation, times(1))
-            .ratingCalculation(ratingPoints, actionUser);
+            .ratingCalculation(ratingPoints, actionUserVO);
     }
 
     @Test
@@ -808,8 +831,6 @@ class EcoNewsServiceImplTest {
 
         assertTrue(ecoNewsVO.getUsersLikedNews().contains(actionUser));
 
-        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            any(LikeNotificationDto.class));
         verify(achievementCalculation, times(1))
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_NEWS, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))

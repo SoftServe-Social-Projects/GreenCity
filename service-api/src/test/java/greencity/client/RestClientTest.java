@@ -9,6 +9,7 @@ import static greencity.TestConst.UPDATE_STATUS_URL;
 import static greencity.TestConst.USER_ID;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserManagementDto;
@@ -22,6 +23,7 @@ import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.enums.EmailNotification;
+import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
@@ -55,11 +57,12 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class RestClientTest {
@@ -678,5 +681,22 @@ class RestClientTest {
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendEmailNotificationChangesPlaceStatusTest() {
+        UpdatePlaceStatusWithUserEmailDto message = new UpdatePlaceStatusWithUserEmailDto();
+        message.setPlaceName("TestPlace");
+        message.setNewStatus(PlaceStatus.APPROVED);
+        message.setUserName("TestUser");
+        message.setEmail("test@example.com");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String expectedUrl = GREEN_CITY_USER_ADDRESS + RestTemplateLinks.SEND_NOTIFICATION_STATUS_PLACE;
+        when(restTemplate.exchange(eq(expectedUrl), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
+            .thenReturn(ResponseEntity.ok().build());
+        restClient.sendEmailNotificationChangesPlaceStatus(message);
+        verify(restTemplate, times(1)).exchange(eq(expectedUrl), eq(HttpMethod.POST), any(HttpEntity.class),
+            eq(Object.class));
     }
 }

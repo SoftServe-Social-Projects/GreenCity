@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.google.maps.model.GeocodingResult;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -13,18 +14,19 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.FilterAdminPlaceDto;
-import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.FilterPlaceCategory;
+import greencity.dto.place.FilterAdminPlaceDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
@@ -99,6 +101,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final FavoritePlaceRepo favoritePlaceRepo;
     private final FileService fileService;
     private final UserNotificationService userNotificationService;
+    private final RestClient restClient;
 
     /**
      * {@inheritDoc}
@@ -146,6 +149,7 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public List<PlaceVO> getAllCreatedPlacesByUserId(Long userId) {
         return placeRepo.findAllByUserId(userId).stream()
             .map(place -> modelMapper.map(place, PlaceVO.class))
@@ -634,5 +638,32 @@ public class PlaceServiceImpl implements PlaceService {
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
             page.getTotalPages());
+    }
+
+    /**
+     * Updates the status of a place, validates the user's existence, and sends a
+     * notification if the status changes to APPROVED or DECLINED.
+     *
+     * @param dto The data transfer object containing place name, user email, and
+     *            the new status.
+     * @return The updated UpdatePlaceStatusWithUserEmailDto.
+     * @throws NotFoundException If the place or user is not found.
+     */
+    @Override
+    public UpdatePlaceStatusWithUserEmailDto updatePlaceStatus(UpdatePlaceStatusWithUserEmailDto dto) {
+        Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
+
+        if (userRepo.findByEmail(dto.getEmail()).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
+        }
+
+        place.setStatus(dto.getNewStatus());
+        placeRepo.save(place);
+
+        if (dto.getNewStatus() == PlaceStatus.APPROVED || dto.getNewStatus() == PlaceStatus.DECLINED) {
+            restClient.sendEmailNotificationChangesPlaceStatus(dto);
+        }
+        return dto;
     }
 }

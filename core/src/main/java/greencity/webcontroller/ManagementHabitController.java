@@ -222,8 +222,26 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/switch-deleted-status/{id}")
-    public ResponseEntity<Long> switchIsDeletedStatus(@PathVariable("id") Long id) {
-        managementHabitService.switchIsDeletedStatus(id);
+    public ResponseEntity<Long> switchIsDeletedStatus(@PathVariable("id") Long id, @RequestBody Boolean newStatus) {
+        managementHabitService.switchIsDeletedStatus(id, newStatus);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    /**
+     * Method toggles the status of a Habit from "isCustom" to true or false.
+     *
+     * @param id {@link HabitDto}'s id.
+     * @return {@link ResponseEntity}.
+     */
+    @Operation(summary = "Toggle the isCustom status of a Habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("/switch-custom-status/{id}")
+    public ResponseEntity<Long> switchIsCustomStatus(@PathVariable("id") Long id, @RequestBody Boolean newStatus) {
+        managementHabitService.switchIsCustomStatus(id, newStatus);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }

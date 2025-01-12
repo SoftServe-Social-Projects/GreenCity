@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
@@ -32,6 +33,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,6 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/events")
@@ -79,7 +82,8 @@ public class EventController {
         @Parameter(description = SwaggerExampleModel.ADD_EVENT,
             required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
         @Parameter(hidden = true) Principal principal,
-        @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        @RequestPart(required = false) @Nullable @ImageArrayValidation(
+            allowedTypes = {"image/jpeg", "image/png", "image/jpg"}) MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(eventService.save(addEventDtoRequest, principal.getName(), images));
     }
@@ -175,7 +179,11 @@ public class EventController {
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvents(
         @Parameter(hidden = true) Pageable pageable,
         @RequestParam(required = false, name = "user-id") Long userId,
-        FilterEventDto filterEventDto) {
+        @Schema(
+            description = "Filters for events",
+            name = "FilterEventDto",
+            type = "object",
+            example = FilterEventDto.defaultJson) FilterEventDto filterEventDto) {
         if (filterEventDto != null && filterEventDto.getStatuses() != null) {
             validateStatusesRequireUserId(filterEventDto.getStatuses(), userId);
         }

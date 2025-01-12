@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
@@ -8,6 +9,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
@@ -225,4 +227,18 @@ public interface HabitService {
      * @return Pageable of {@link HabitDto}.
      */
     PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+
+    /**
+     * Retrieves a paginated list of friends of a user with has invitation status.
+     * Optionally filters by friend name.
+     *
+     * @param userVO   The current user's details.
+     * @param name     Optional name filter for friends.
+     * @param pageable .
+     * @param habitId  The ID of the habit.
+     * @return A paginated list of friends (UserFriendHabitInviteDto) who can be
+     *         invited to the habit.
+     */
+    PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, @Nullable String name,
+        Pageable pageable, Long habitId);
 }

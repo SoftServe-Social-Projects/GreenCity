@@ -37,6 +37,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
+import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
+import static greencity.utils.NotificationUtils.localizeMessage;
 
 @Slf4j
 @Service
@@ -347,8 +351,9 @@ public class NotificationServiceImpl implements NotificationService {
     private ScheduledEmailMessage createScheduledEmailMessage(Notification notification, String language) {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
-        String subject = bundle.getString(notification.getNotificationType() + "_TITLE");
-        String bodyTemplate = bundle.getString(notification.getNotificationType().toString());
+        String notificationType = notification.getNotificationType().toString();
+        String subject = bundle.getString(notificationType + "_TITLE");
+        String bodyTemplate = bundle.getString(notificationType);
         String actionUserText;
         long actionUsersSize = notification.getActionUsers().stream().distinct().toList().size();
         if (actionUsersSize > 1) {
@@ -359,11 +364,19 @@ public class NotificationServiceImpl implements NotificationService {
             actionUserText = "";
         }
         String customMessage = notification.getCustomMessage() != null ? notification.getCustomMessage() : "";
+        if (!customMessage.isEmpty() && isMessageLocalizationRequired(notificationType)) {
+            customMessage = localizeMessage(customMessage, bundle);
+        }
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
+        int messagesCount = notification.getActionUsers().size();
+        String times = language.equals("ua")
+            ? resolveTimesInUkrainian(messagesCount)
+            : resolveTimesInEnglish(messagesCount);
         String body = bodyTemplate
             .replace("{user}", actionUserText)
             .replace("{message}", customMessage)
-            .replace("{secondMessage}", secondMessage);
+            .replace("{secondMessage}", secondMessage)
+            .replace("{times}", times);
 
         return ScheduledEmailMessage.builder()
             .email(notification.getTargetUser().getEmail())

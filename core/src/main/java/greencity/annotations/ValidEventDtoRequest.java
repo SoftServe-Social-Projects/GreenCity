@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface ValidEventDtoRequest {
     /**
-     * Defines the message that will be showed when the input data is not valid.
+     * Defines the message that will be shown when the input data is not valid.
      *
      * @return message
      */

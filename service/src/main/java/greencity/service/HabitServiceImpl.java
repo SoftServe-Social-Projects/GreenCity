@@ -5,6 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.HabitTranslationFilterDto;
+import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
@@ -36,6 +37,7 @@ import greencity.mapping.CustomToDoListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
+import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
@@ -52,10 +54,12 @@ import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
+import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -90,6 +94,8 @@ public class HabitServiceImpl implements HabitService {
     private final AchievementCalculation achievementCalculation;
     private final RatingPointsRepo ratingPointsRepo;
     private final HabitInvitationService habitInvitationService;
+    private final FriendService friendService;
+    private final HabitInvitationRepo habitInvitationRepo;
 
     /**
      * Method returns Habit by its id.
@@ -495,21 +501,24 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
-        List<HabitTranslation> habitTranslationListForUa = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
+        List<HabitTranslation> habitTranslationListForUa =
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.LANGUAGE_CODE_UA);
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode("ua").orElseThrow(NoSuchElementException::new)));
+            languageRepo.findByCode(AppConstant.LANGUAGE_CODE_UA).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForUa);
 
-        List<HabitTranslation> habitTranslationListForEn = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
+        List<HabitTranslation> habitTranslationListForEn =
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.DEFAULT_LANGUAGE_CODE);
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode("en").orElseThrow(NoSuchElementException::new)));
+            languageRepo.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForEn);
     }
 
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto) {
-        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations());
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
+        String language) {
+        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language);
     }
 
     private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
@@ -559,9 +568,14 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public void like(Long habitId, UserVO userVO) {
         Habit habit = findHabitById(habitId);
-        User habitAuthor = getHabitAuthor(habit);
+        User author = getHabitAuthor(habit);
+        boolean isAuthor = habit.getUserId().equals(userVO.getId());
 
-        if (removeLikeIfExists(habit, userVO, habitAuthor)) {
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        if (removeLikeIfExists(habit, userVO, author)) {
             return;
         }
 
@@ -572,9 +586,7 @@ public class HabitServiceImpl implements HabitService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
             AchievementAction.ASSIGN);
 
-        if (habitAuthor != null) {
-            sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
-        }
+        sendHabitLikeNotification(author, userVO, habitId, habit);
 
         habitRepo.save(habit);
     }
@@ -582,6 +594,11 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public void dislike(Long habitId, UserVO userVO) {
         Habit habit = findHabitById(habitId);
+        boolean isAuthor = habit.getUserId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         removeLikeIfExists(habit, userVO, getHabitAuthor(habit));
 
@@ -590,10 +607,6 @@ public class HabitServiceImpl implements HabitService {
         }
 
         habit.getUsersDisliked().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
-            AchievementAction.DELETE);
-
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT"), userVO);
 
         habitRepo.save(habit);
     }
@@ -685,6 +698,23 @@ public class HabitServiceImpl implements HabitService {
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, String name, Pageable pageable,
+        Long habitId) {
+        Long userId = userVO.getId();
+        name = Optional.ofNullable(name).orElse("");
+        Page<UserFriendHabitInviteDto> friendsWithIsInvitedStatus =
+            findUserFriendsWithHabitInvitesMapped(userId, name, habitId, pageable);
+        return new PageableDto<>(
+            friendsWithIsInvitedStatus.getContent(),
+            friendsWithIsInvitedStatus.getTotalElements(),
+            friendsWithIsInvitedStatus.getNumber(),
+            friendsWithIsInvitedStatus.getTotalPages());
+    }
+
     private boolean isCurrentUserFollower(Habit habit, Long currentUserId) {
         return habit.getFollowers().stream()
             .anyMatch(user -> user.getId().equals(currentUserId));
@@ -737,5 +767,21 @@ public class HabitServiceImpl implements HabitService {
             return true;
         }
         return false;
+    }
+
+    private Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
+        Long userId, String name, Long habitId, Pageable pageable) {
+        List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
+        List<UserFriendHabitInviteDto> dtoList = tuples.stream()
+            .map(tuple -> UserFriendHabitInviteDto.builder()
+                .id(tuple.get("id", Long.class))
+                .name(tuple.get("name", String.class))
+                .email(tuple.get("email", String.class))
+                .profilePicturePath(tuple.get("profile_picture", String.class))
+                .hasInvitation(tuple.get("has_invitation", Boolean.class))
+                .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
+                .build())
+            .collect(Collectors.toList());
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 }

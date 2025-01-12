@@ -4,11 +4,7 @@
     <meta charset=UTF-8/>
     <title>User management statistic</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -28,6 +24,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/11.0.1/gridstack.min.css"
           integrity="sha512-GEMqAs1Ai2iirp6QhD4N5Qt7tDn1RGgF1CY2xp57LrX3vqTDehSC88IOFewV/L84htjbN7aazcK10FyzH+eXSA=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
     <style>
         .container-xl {
             padding: 25px;
@@ -140,10 +137,8 @@
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
-<div>
-    <div id="sidebar" th:insert="core/sidepanel"></div>
-</div>
 <div class="main-content">
+    <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="container-xl">
         <h2>User Statistics</h2>
         <!-- Menu Button -->
