@@ -1750,8 +1750,10 @@ class EventServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
 
+        Long eventId = event.getId();
+        String email = userVO.getEmail();
         assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> eventService.approveRequest(event.getId(), userVO.getEmail(), null));
+            () -> eventService.approveRequest(eventId, email, null));
 
         verify(restClient).findByEmail(anyString());
         verify(modelMapper).map(userVO, User.class);
@@ -1770,8 +1772,11 @@ class EventServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
 
+        Long eventId = event.getId();
+        Long userToJoinId = userToJoin.getId();
+        String email = userVO.getEmail();
         assertThrows(BadRequestException.class,
-            () -> eventService.approveRequest(event.getId(), userVO.getEmail(), userToJoin.getId()));
+            () -> eventService.approveRequest(eventId, email, userToJoinId));
 
         verify(restClient).findByEmail(anyString());
         verify(modelMapper).map(userVO, User.class);
@@ -1812,8 +1817,10 @@ class EventServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
 
+        Long eventId = event.getId();
+        String email = userVO.getEmail();
         assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> eventService.declineRequest(event.getId(), userVO.getEmail(), null));
+            () -> eventService.declineRequest(eventId, email, null));
 
         verify(restClient).findByEmail(anyString());
         verify(modelMapper).map(userVO, User.class);
@@ -1832,8 +1839,11 @@ class EventServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
 
+        Long eventId = event.getId();
+        Long userToJoinId = userToJoin.getId();
+        String email = userVO.getEmail();
         assertThrows(BadRequestException.class,
-            () -> eventService.declineRequest(event.getId(), userVO.getEmail(), userToJoin.getId()));
+            () -> eventService.declineRequest(eventId, email, userToJoinId));
 
         verify(restClient).findByEmail(anyString());
         verify(modelMapper).map(userVO, User.class);
