@@ -8,5 +8,5 @@ import lombok.experimental.StandardException;
  * @author Rostyslav Khasanov
  */
 @StandardException
-public class BadUpdateRequestException extends RuntimeException {
+public class BadUpdateRequestException extends BadRequestException {
 }
