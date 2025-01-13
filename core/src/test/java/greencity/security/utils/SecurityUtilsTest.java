@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
-public class SecurityUtilsTest {
+class SecurityUtilsTest {
     private MockedStatic<SecurityContextHolder> securityContextHolderMock;
     @Mock
     private SecurityContext mockSecurityContext;
