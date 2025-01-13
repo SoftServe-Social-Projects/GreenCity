@@ -4,7 +4,6 @@ import com.google.maps.*;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
-import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
 import greencity.ModelUtils;
 import greencity.dto.filter.FilterPlacesApiDto;
@@ -19,7 +18,6 @@ import org.mockito.MockedStatic;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 

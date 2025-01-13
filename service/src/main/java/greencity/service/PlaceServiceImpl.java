@@ -455,14 +455,13 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, UserVO userVO) {
         List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
-        List<PlaceByBoundsDto> list = fromPlacesApi.stream()
+        return fromPlacesApi.stream()
             .map(el -> new PlaceByBoundsDto(
                 System.currentTimeMillis(),
                 el.name,
                 new LocationDto(System.currentTimeMillis(), el.geometry.location.lat, el.geometry.location.lng,
                     el.vicinity)))
             .toList();
-        return list;
     }
 
     /**

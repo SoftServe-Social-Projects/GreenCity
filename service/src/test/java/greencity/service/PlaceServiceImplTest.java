@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
 import static greencity.ModelUtils.getSearchPlacesDto;
 import static greencity.ModelUtils.getFilterPlacesApiDto;
-import static greencity.ModelUtils.getPlacesSearchResultList;
+import static greencity.ModelUtils.getPlacesSearchResultEn;
 import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -126,6 +126,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .language(language)
@@ -656,10 +657,9 @@ class PlaceServiceImplTest {
 
     @Test
     void getPlacesByFilterFromApiTest() {
-        UserVO userVO = getUserVO();
         FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
 
-        when(googleApiService.getResultFromPlacesApi(filterDto, userVO)).thenReturn(getPlacesSearchResultList());
+        when(googleApiService.getResultFromPlacesApi(filterDto, userVO)).thenReturn(getPlacesSearchResultEn());
 
         var result = placeService.getPlacesByFilter(filterDto, userVO);
         List<PlaceByBoundsDto> updatedResult = result.stream().map(el -> {
@@ -790,7 +790,6 @@ class PlaceServiceImplTest {
     void addPlaceFromUiSaveAlreadyExistingLocation() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        User user = ModelUtils.getUser();
         String email = user.getEmail();
 
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
