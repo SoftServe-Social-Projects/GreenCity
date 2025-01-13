@@ -2,10 +2,11 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.filter.FilterNotificationDto;
+import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
+import greencity.enums.ProjectName;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.security.Principal;
@@ -14,49 +15,18 @@ import java.util.List;
 @Service
 public interface UserNotificationService {
     /**
-     * Method to return three last new notifications.
-     *
-     * @param principal user to get notifications
-     * @param language  language code
-     * @return set of 3 last new notifications
-     * @author Volodymyr Mladonov
-     */
-    List<NotificationDto> getThreeLastNotifications(Principal principal, String language);
-
-    /**
      * Method for getting Notification instances filtered.
      *
-     * @param pageable              page of notifications
-     * @param principal             user to get notifications
-     * @param filterNotificationDto contains instructions to filter notifications
-     * @param language              language code
+     * @param pageable          page of notifications
+     * @param principal         user to get notifications
+     * @param language          language code
+     * @param projectName       project name
+     * @param notificationTypes types of notification
+     * @param viewed            notification is viewed or not. Can be null
      * @return Page of {@link NotificationDto} instance.
-     * @author Volodymyr Mladonov
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-        FilterNotificationDto filterNotificationDto, String language);
-
-    /**
-     * Method for getting page of Notification instances.
-     *
-     * @param pageable  page of notifications
-     * @param principal user to get notifications
-     * @param language  language code
-     * @return Page of {@link NotificationDto} instance.
-     * @author Volodymyr Mladonov
-     */
-    PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal, String language);
-
-    /**
-     * Method for getting Notification instance and marking Notification as viewed.
-     *
-     * @param notificationId id of requested notification
-     * @param principal      user to get notifications
-     * @param language       language code
-     * @return {@link NotificationDto} instance.
-     * @author Volodymyr Mladonov
-     */
-    NotificationDto getNotification(Principal principal, Long notificationId, String language);
+        String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed);
 
     /**
      * Method for sending socket.
@@ -116,19 +86,39 @@ public interface UserNotificationService {
         Long targetId, String customMessage);
 
     /**
-     * Method to create Notification.
+     * Creates a notification for a target user. Notifications are uniquely
+     * identified by the combination of {@code targetUserId},
+     * {@code notificationType}, {@code targetId}, and {@code secondMessageId}.
      *
-     * @param targetUser        user, that should receive Notification
-     * @param actionUser        user, that performed action
-     * @param notificationType  type of Notification
+     * @param targetUser        the user who will receive the notification
+     * @param actionUser        the user who performed the action triggering the
+     *                          notification
+     * @param notificationType  the type of notification to be created
      * @param targetId          represent the corresponding object's ID
-     * @param customMessage     text of Notification, {message} in template
-     * @param secondMessageId   if to secondMessageText
-     * @param secondMessageText additional text, {secondMessage} in template
-     * @author Volodymyr Mladonov
+     * @param customMessage     a custom message for the notification
+     * @param secondMessageId   a secondary identifier for additional context
+     * @param secondMessageText a secondary text for additional context
+     * @author Vitalii Fedyk
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
         Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
+
+    /**
+     * Creates a notification for a target user. Notifications are uniquely
+     * identified by the combination of {@code targetUserId},
+     * {@code notificationType}, and {@code targetId}.
+     *
+     * @param targetUser        the user who will receive the notification
+     * @param actionUser        the user who performed the action triggering the
+     *                          notification
+     * @param notificationType  the type of notification to be created
+     * @param targetId          represent the corresponding object's ID
+     * @param customMessage     a custom message for the notification
+     * @param secondMessageText a secondary text for additional context
+     * @author Vitalii Fedyk
+     */
+    void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
+        Long targetId, String customMessage, String secondMessageText);
 
     /**
      * Method to create Notification without actionUser.
@@ -137,10 +127,32 @@ public interface UserNotificationService {
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
      * @param customMessage    text to be inserted into Notification {message}
-     * @author Volodymyr Mladonov
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
         String customMessage);
+
+    /**
+     * Method to create Notification without actionUser.
+     *
+     * @param targetUser       user, that should receive Notification
+     * @param notificationType type of Notification
+     * @param targetId         represent the corresponding object's ID
+     * @param customMessage    text to be inserted into Notification {message}
+     * @param secondMessage    text to be inserted into Notification {secondMessage}
+     */
+    void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
+        String customMessage, String secondMessage);
+
+    /**
+     * Method to create Notification without actionUser.
+     *
+     * @param targetUsers   users, that should receive place added notification
+     * @param targetId      represent the corresponding object's ID
+     * @param customMessage text to be inserted into Notification {message}
+     * @param secondMessage text to be inserted into Notification {secondMessage}
+     */
+    void createNewNotificationForPlaceAdded(List<UserVO> targetUsers, Long targetId, String customMessage,
+        String secondMessage);
 
     /**
      * Method to remove ActionUser from Notification or delete Notification if that
@@ -177,4 +189,26 @@ public interface UserNotificationService {
      * @param notificationId id of notification, that should be marked
      */
     void viewNotification(Long notificationId);
+
+    /**
+     * Creates a new like notification or updates an existing one. If a notification
+     * for the specified news article and target user already exists and is not yet
+     * viewed, this method will update the existing notification by adding the
+     * action user to the list of users who liked the article. It will also adjust
+     * the notification message accordingly to reflect the new state. If no such
+     * notification exists, a new notification will be created. If `isLike` is false
+     * and the notification exists, the action user will be removed from the list of
+     * users who liked the article. If the list becomes empty as a result, the
+     * notification will be deleted.
+     *
+     * @param likeNotificationDto the DTO containing information about the like
+     *                            notification
+     */
+    void createOrUpdateLikeNotification(LikeNotificationDto likeNotificationDto);
+
+    /**
+     * Method to send notification on last day of primary duration habit has 20%-79%
+     * successful progress.
+     */
+    void checkLastDayOfHabitPrimaryDurationToMessage();
 }

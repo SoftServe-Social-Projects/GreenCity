@@ -1,7 +1,9 @@
 package greencity.rating;
 
 import greencity.ModelUtils;
-import greencity.enums.RatingCalculationEnum;
+import greencity.dto.ratingstatistics.RatingPointsDto;
+import greencity.entity.RatingPoints;
+import greencity.repository.RatingPointsRepo;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
@@ -32,10 +34,16 @@ class RatingCalculationTest {
     private RatingCalculation ratingCalculation;
     @Mock
     private UserService userService;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
 
     @Test
     void ratingCalculation() {
-        RatingCalculationEnum rating = RatingCalculationEnum.COMMENT_OR_REPLY;
+        RatingPoints rating = RatingPoints.builder()
+            .id(1L)
+            .name("COMMENT_OR_REPLY")
+            .points(5)
+            .build();
         User user = ModelUtils.getUser();
         user.setRating(1D);
         UserVO userVO = ModelUtils.getUserVO();
@@ -43,26 +51,30 @@ class RatingCalculationTest {
         ZonedDateTime now = ZonedDateTime.now();
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
-            .rating(userVO.getRating() + RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints())
-            .ratingCalculationEnum(rating)
+            .rating(userVO.getRating() + rating.getPoints())
+            .ratingPoints(rating)
             .user(user)
-            .pointsChanged(rating.getRatingPoints())
+            .pointsChanged(rating.getPoints())
             .build();
 
         RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO.builder()
             .id(1L)
             .rating(userVO.getRating())
-            .ratingCalculationEnum(RatingCalculationEnum.COMMENT_OR_REPLY)
+            .ratingPoints(RatingPointsDto.builder()
+                .id(rating.getId())
+                .name(rating.getName())
+                .points(rating.getPoints())
+                .build())
             .user(userVO)
             .createDate(now)
-            .pointsChanged(rating.getRatingPoints())
+            .pointsChanged(rating.getPoints())
             .build();
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         doNothing().when(userService).updateUserRating(1L, 6.0d);
         when(modelMapper.map(ratingStatistics, RatingStatisticsVO.class)).thenReturn(ratingStatisticsVO);
         when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
 
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(rating, userVO);
 
         verify(modelMapper).map(userVO, User.class);
         verify(userService).updateUserRating(1L, 6.0d);

@@ -1,5 +1,8 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
+@StandardException
 /**
  * Exception thrown when a user already has a habit assigned.
  *
@@ -7,12 +10,4 @@ package greencity.exception.exceptions;
  */
 
 public class UserAlreadyHasHabitAssignedException extends BadRequestException {
-    /**
-     * Constructor for UserAlreadyHasHabitAssignedException.
-     *
-     * @param message - providing the exception message.
-     */
-    public UserAlreadyHasHabitAssignedException(String message) {
-        super(message);
-    }
 }

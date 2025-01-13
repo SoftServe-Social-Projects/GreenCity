@@ -6,11 +6,11 @@ name: CI/CD GreenCity
 concurrency: Testing
 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push or pull request events but only for the dev branch
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ dev ]
 
 env:
   repository: greencity
@@ -45,7 +45,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           git fetch --unshallow
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.coverage.exclusions=**/config/*,**/entity/*,**/entity/**,**/exceptions/*,**/exception/*,**/SearchCriteria.java,**/EcoNewsSearchRepo.java,**/EventsSearchRepo.java,**/DatabaseBackupServiceImpl.java
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.coverage.exclusions=**/config/*,**/entity/*,**/entity/**,**/exceptions/*,**/exception/*,**/SearchCriteria.java,**/EcoNewsSearchRepo.java,**/EventSearchRepoImpl.java,**/DatabaseBackupServiceImpl.java,**/HabitTranslationFilter.java,**/CustomNotificationRepoImpl.java,**/PlaceFilter.java,**/PlaceSearchRepoImpl.java,**/EcoNewsSearchRepoImpl.java
 
 
       - name: Test Reporter

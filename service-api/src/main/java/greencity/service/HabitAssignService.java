@@ -10,7 +10,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.enums.HabitAssignStatus;
@@ -158,27 +158,27 @@ public interface HabitAssignService {
         Long userId, Long currentUserId, Pageable pageable);
 
     /**
-     * Method that return user shopping list and custom shopping list by
-     * habitAssignId for specific language.
+     * Method that return user to-do list and custom to-do list by habitAssignId for
+     * specific language.
      *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssignId} id.
      * @param language      {@link String} of language code value.
-     * @return {@link UserShoppingAndCustomShoppingListsDto} instance.
+     * @return {@link UserToDoAndCustomToDoListsDto} instance.
      */
-    UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
+    UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoLists(
         Long userId, Long habitAssignId, String language);
 
     /**
-     * Method that finds list of user shopping list items and custom shopping list
-     * items by userId, specific language and INPROGRESS status.
+     * Method that finds list of user to-do list items and custom to-do list items
+     * by userId, specific language and INPROGRESS status.
      *
      * @param userId   {@link Long} id.
      * @param language {@link String} of language code value.
-     * @return {@link UserShoppingAndCustomShoppingListsDto}.
+     * @return {@link UserToDoAndCustomToDoListsDto}.
      * @author Lilia Mokhnatska
      */
-    List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(Long userId,
+    List<UserToDoAndCustomToDoListsDto> getListOfUserAndCustomToDoListsWithStatusInprogress(Long userId,
         String language);
 
     /**
@@ -294,13 +294,6 @@ public interface HabitAssignService {
         LocalDate from, LocalDate to, String language);
 
     /**
-     * Method add default habit.
-     *
-     * @param user {@link UserVO} instance.
-     */
-    void addDefaultHabit(UserVO user, String language);
-
-    /**
      * Method delete HabitAssign by habitAssignId for current User.
      *
      * @param habitAssignId {@link Long} id.
@@ -309,15 +302,15 @@ public interface HabitAssignService {
     void deleteHabitAssign(Long habitAssignId, Long userId);
 
     /**
-     * Method update shopping item by habit id and item id.
+     * Method update to-do item by habit id and item id.
      *
      * @param habitId {@link Long} habit id.
      * @param itemId  {@link Long} item id.
      */
-    void updateShoppingItem(Long habitId, Long itemId);
+    void updateToDoItem(Long habitId, Long itemId);
 
     /**
-     * Method that update UserShoppingList and CustomShopping List.
+     * Method that update UserToDoList and CustomToDo List.
      *
      * <ul>
      * <li>If items are present in the db, method update them;</li>
@@ -329,11 +322,11 @@ public interface HabitAssignService {
      *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
-     * @param listDto  {@link UserShoppingAndCustomShoppingListsDto} User and Custom
-     *                 Shopping lists.
+     * @param listDto  {@link UserToDoAndCustomToDoListsDto} User and Custom To-Do
+     *                 lists.
      * @param language {@link String} of language code value.
      */
-    void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId, UserShoppingAndCustomShoppingListsDto listDto,
+    void fullUpdateUserAndCustomToDoLists(Long userId, Long habitId, UserToDoAndCustomToDoListsDto listDto,
         String language);
 
     /**
@@ -354,14 +347,15 @@ public interface HabitAssignService {
     HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId, Integer duration);
 
     /**
-     * Method invite friend to your habit with email notification.
+     * Method invite friends to your habit with email notification.
      *
-     * @param userVO   {@link UserVO} user.
-     * @param friendId {@link Long} User friend id.
-     * @param habitId  {@link Long} habit id.
-     * @param locale   {@link Locale} language.
+     * @param userVO     {@link UserVO} user.
+     * @param friendsIds {@link Long} User friends ids.
+     * @param habitId    {@link Long} habit id.
+     * @param locale     {@link Locale} language.
      */
-    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId, Locale locale);
+    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
+        Locale locale);
 
     /**
      * Method to confirm friend request to habit.
@@ -371,15 +365,17 @@ public interface HabitAssignService {
     void confirmHabitInvitation(Long habitAssignId);
 
     /**
-     * Retrieves a list of HabitWorkingDaysDto objects that contain information
-     * about the working days of habits for the current user's friends, based on the
-     * given user ID and habit ID.
+     * Retrieves a list of {@link HabitWorkingDaysDto} objects containing
+     * information about the working days of habits tracked by the specified user's
+     * friends for a given habit assignment.
      *
-     * @param userId  the ID of the current user
-     * @param habitId the ID of the habit for which to retrieve working days
-     *                information
-     * @return a list of HabitWorkingDaysDto objects containing the working days
-     *         information for the specified habit and the user's friends
+     * @param userId        The ID of the user for whom friends' habit information
+     *                      is retrieved.
+     * @param habitAssignId The ID of the habit assignment for which to retrieve
+     *                      working days information.
+     * @return A list of {@link HabitWorkingDaysDto} objects containing the working
+     *         days information of the specified habit assignment for the user's
+     *         friends.
      */
-    List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitId);
+    List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitAssignId);
 }

@@ -54,4 +54,6 @@ public class EcoNewsDto {
     private int dislikes;
 
     private int countComments;
+
+    private boolean hidden;
 }

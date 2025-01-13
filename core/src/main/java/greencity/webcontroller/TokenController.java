@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.ValidAccessToken;
 import greencity.constant.HttpStatuses;
 import greencity.security.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +32,8 @@ public class TokenController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping
-    public String passTokenToCookies(@RequestParam String accessToken, HttpServletResponse response) {
+    public String passTokenToCookies(@RequestParam @ValidAccessToken String accessToken, HttpServletResponse response) {
         tokenService.passTokenToCookies(accessToken, response);
-
         return "redirect:/management";
     }
 }

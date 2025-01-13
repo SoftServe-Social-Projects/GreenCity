@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 /**
  * Class that used by {@link ModelMapper} to map {@link Photo} into
  * {@link PhotoVO}.
- *
- * @author Vasyl Zhovnir
  */
 @Component
 public class PhotoVOMapper extends AbstractConverter<Photo, PhotoVO> {
@@ -24,7 +22,7 @@ public class PhotoVOMapper extends AbstractConverter<Photo, PhotoVO> {
         return PhotoVO.builder()
             .id(source.getId())
             .name(source.getName())
-            .commentId(source.getComment().getId())
+            .commentId(source.getComment() == null ? null : source.getComment().getId())
             .placeId(source.getPlace().getId())
             .userId(source.getUser().getId())
             .build();

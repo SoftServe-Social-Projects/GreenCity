@@ -6,16 +6,13 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import greencity.ModelUtils;
-import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.tag.NewTagDto;
-import greencity.entity.HabitFactTranslation;
 import greencity.entity.Tag;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-public class NewTagDtoMapperTest {
+class NewTagDtoMapperTest {
     @InjectMocks
     NewTagDtoMapper newTagDtoMapper;
 

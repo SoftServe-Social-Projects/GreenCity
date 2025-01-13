@@ -27,5 +27,5 @@ public class Photo {
     private Place place;
 
     @ManyToOne
-    private Comment comment;
+    private PlaceComment comment;
 }

@@ -54,4 +54,6 @@ public class EcoNewsGenericDto {
     private int countComments;
 
     private int countOfEcoNews;
+
+    private boolean isFavorite;
 }

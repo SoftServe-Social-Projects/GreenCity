@@ -17,7 +17,7 @@ public @interface LanguageTranslationConstraint {
      *
      * @return message
      */
-    String message() default "Invalid translation. You must have 3 translation: ua, en";
+    String message() default "Invalid translation. You must have 2 translation: ua, en";
 
     /**
      * Let you select to split the annotations into different groups to apply

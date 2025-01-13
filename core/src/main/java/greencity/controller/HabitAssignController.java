@@ -16,7 +16,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
@@ -322,17 +322,17 @@ public class HabitAssignController {
     }
 
     /**
-     * Method that return UserShoppingList and CustomShoppingList.
+     * Method that return UserToDoList and CustomToDoList.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
      * @param userVO        {@link UserVO} instance.
      * @param locale        needed language code.
-     * @return User Shopping List and Custom Shopping List.
+     * @return User To-Dog List and Custom To-Do List.
      */
-    @Operation(summary = "Get user shopping and custom shopping lists by habitAssignId")
+    @Operation(summary = "Get user to-do and custom to-do lists by habitAssignId")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = UserShoppingAndCustomShoppingListsDto.class))),
+            content = @Content(schema = @Schema(implementation = UserToDoAndCustomToDoListsDto.class))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -342,24 +342,24 @@ public class HabitAssignController {
     })
     @ApiLocale
     @GetMapping("{habitAssignId}/allUserAndCustomList")
-    public ResponseEntity<UserShoppingAndCustomShoppingListsDto> getUserShoppingAndCustomShoppingLists(
+    public ResponseEntity<UserToDoAndCustomToDoListsDto> getUserToDoAndCustomToDoLists(
         @PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getUserShoppingAndCustomShoppingLists(userVO.getId(), habitAssignId, locale.getLanguage()));
+                .getUserToDoAndCustomToDoLists(userVO.getId(), habitAssignId, locale.getLanguage()));
     }
 
     /**
-     * Method that update UserShoppingList and CustomShopping List.
+     * Method that update UserToDoList and CustomToDo List.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
      * @param userVO        {@link UserVO} instance.
      * @param locale        needed language code.
-     * @param listsDto      {@link UserShoppingAndCustomShoppingListsDto} instance.
+     * @param listsDto      {@link UserToDoAndCustomToDoListsDto} instance.
      */
-    @Operation(summary = "Update user and custom shopping lists",
+    @Operation(summary = "Update user and custom to-do lists",
         description = """
             If the item is already present in the db, the method updates it
             If item is not present in the db and id is null, the method attempts to add it to the user
@@ -376,28 +376,28 @@ public class HabitAssignController {
     })
     @ApiLocale
     @PutMapping("{habitAssignId}/allUserAndCustomList")
-    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomShoppingLists(
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomToDoLists(
         @PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
-        @Valid @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
-        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitAssignId, listsDto,
+        @Valid @RequestBody UserToDoAndCustomToDoListsDto listsDto) {
+        habitAssignService.fullUpdateUserAndCustomToDoLists(userVO.getId(), habitAssignId, listsDto,
             locale.getLanguage());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
-     * Method that return list of UserShoppingLists and CustomShoppingLists for
-     * current user, specific language and INPROGRESS status.
+     * Method that return list of UserToDoLists and CustomToDoLists for current
+     * user, specific language and INPROGRESS status.
      *
      * @param userVO {@link UserVO} instance.
      * @param locale needed language code.
-     * @return List of User Shopping Lists and Custom Shopping Lists.
+     * @return List of User To-Do Lists and Custom To-Do Lists.
      */
-    @Operation(summary = "Get list of user shopping list items and custom shopping list items with status INPROGRESS")
+    @Operation(summary = "Get list of user to-do list items and custom to-do list items with status INPROGRESS")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
-            array = @ArraySchema(schema = @Schema(implementation = UserShoppingAndCustomShoppingListsDto.class)))),
+            array = @ArraySchema(schema = @Schema(implementation = UserToDoAndCustomToDoListsDto.class)))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -408,12 +408,12 @@ public class HabitAssignController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiLocale
-    @GetMapping("/allUserAndCustomShoppingListsInprogress")
-    public ResponseEntity<List<UserShoppingAndCustomShoppingListsDto>> getListOfUserAndCustomShoppingListsInprogress(
+    @GetMapping("/allUserAndCustomToDoListsInprogress")
+    public ResponseEntity<List<UserToDoAndCustomToDoListsDto>> getListOfUserAndCustomToDoListsInprogress(
         @Parameter(hidden = true) @CurrentUser UserVO userVO, @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getListOfUserAndCustomShoppingListsWithStatusInprogress(userVO.getId(), locale.getLanguage()));
+                .getListOfUserAndCustomToDoListsWithStatusInprogress(userVO.getId(), locale.getLanguage()));
     }
 
     /**
@@ -705,12 +705,13 @@ public class HabitAssignController {
     /**
      * Method send request to assign on habit via email notification.
      *
-     * @param habitId  - id of {@link HabitAssignVO}.
-     * @param friendId - id of user friend {@link UserVO}.
-     * @param userVO   - user who send request {@link UserVO}.
-     * @param locale   - current language {@link greencity.dto.language.LanguageVO}.
+     * @param habitId    - id of {@link HabitAssignVO}.
+     * @param friendsIds - list of ids of user friends {@link UserVO} to invite.
+     * @param userVO     - user who send request {@link UserVO}.
+     * @param locale     - current language
+     *                   {@link greencity.dto.language.LanguageVO}.
      */
-    @Operation(summary = "Inviting friend on habit with email notification")
+    @Operation(summary = "Inviting friends on habit with email notification")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -718,12 +719,12 @@ public class HabitAssignController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PostMapping("/{habitId}/{friendId}/invite")
+    @PostMapping("/{habitId}/invite")
     public ResponseEntity<ResponseEntity.BodyBuilder> inviteFriendRequest(@PathVariable Long habitId,
-        @PathVariable Long friendId,
+        @Parameter(description = "List of friends ids to invite") @RequestParam List<Long> friendsIds,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale);
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendsIds, habitId, locale);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -751,7 +752,7 @@ public class HabitAssignController {
             .build();
     }
 
-    @Operation(summary = "Get all friends habits working days for current habit")
+    @Operation(summary = "Retrieve all friends' habit working days for a specific habit assignment.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
             array = @ArraySchema(schema = @Schema(implementation = HabitWorkingDaysDto.class)))),
@@ -760,10 +761,10 @@ public class HabitAssignController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @GetMapping("/{habitId}/friends/habit-duration-info")
-    public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitId,
+    @GetMapping("/{habitAssignId}/friends/habit-duration-info")
+    public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
-            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitId));
+            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitAssignId));
     }
 }

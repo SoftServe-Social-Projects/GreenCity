@@ -1,13 +1,19 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.*;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitDateCount;
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import java.util.List;
+import java.util.Map;
 
 public interface HabitStatisticService {
     /**
      * Method for creating {@code HabitStatistic} by {@code Habit}, {@code User}
-     * id's and {@link AddHabitStatisticDto} instance.
+     * id's and {@link greencity.dto.habitstatistic.AddHabitStatisticDto} instance.
      *
      * @param habitId              {@code Habit} id.
      * @param userId               {@code User} id.
@@ -89,4 +95,30 @@ public interface HabitStatisticService {
      * @param habitAssign {HabitAssign} instance.
      */
     void deleteAllStatsByHabitAssign(HabitAssignVO habitAssign);
+
+    /**
+     * Calculates user interest statistics, returning the count of interactions or
+     * engagements for each interest type.
+     *
+     * @return A {@link Map} of user interest types and their respective counts.
+     */
+    Map<String, Long> calculateUserInterest();
+
+    /**
+     * Calculates statistics on how users interact with habits, such as creating or
+     * following habits.
+     *
+     * @return A {@link Map} of habit behavior types and their respective counts.
+     */
+    Map<String, Long> calculateHabitBehaviorStatistic();
+
+    /**
+     * Calculates user interactions (creations and subscriptions) within a specified
+     * date range.
+     *
+     * @param range The date range (e.g., "weekly", "monthly", "yearly").
+     * @return A {@link Map} of interaction types ("creations", "subscriptions") and
+     *         their respective counts by date.
+     */
+    Map<String, List<HabitDateCount>> calculateInteractions(String range);
 }

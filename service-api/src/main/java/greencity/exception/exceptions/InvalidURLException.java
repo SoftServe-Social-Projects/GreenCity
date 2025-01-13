@@ -1,6 +1,7 @@
 package greencity.exception.exceptions;
 
 import jakarta.validation.ConstraintDeclarationException;
+import lombok.experimental.StandardException;
 
 /**
  * Exception we get when we receive a malformed URL or received string could not
@@ -8,6 +9,7 @@ import jakarta.validation.ConstraintDeclarationException;
  *
  * @version 1.0
  */
+@StandardException
 public class InvalidURLException extends ConstraintDeclarationException {
     /**
      * Constructor for InvalidURLException.

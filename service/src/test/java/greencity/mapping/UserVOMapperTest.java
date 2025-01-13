@@ -1,8 +1,6 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.socialnetwork.SocialNetworkImageVO;
-import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 
@@ -39,7 +37,6 @@ class UserVOMapperTest {
                     .id(expected.getVerifyEmail().getUser().getId())
                     .name(expected.getVerifyEmail().getUser().getName())
                     .build())
-                .expiryDate(expected.getVerifyEmail().getExpiryDate())
                 .token(expected.getVerifyEmail().getToken())
                 .build() : null)
             .userFriends(expected.getUserFriends() != null ? expected.getUserFriends()
@@ -64,7 +61,7 @@ class UserVOMapperTest {
                     .longitude(expected.getUserLocationDto().getLongitude())
                     .users(null)
                     .build())
-            .showShoppingList(expected.getShowShoppingList())
+            .showToDoList(expected.getShowToDoList())
             .showEcoPlace(expected.getShowEcoPlace())
             .showLocation(expected.getShowLocation())
             .socialNetworks(expected.getSocialNetworks() != null ? expected.getSocialNetworks()
@@ -114,6 +111,10 @@ class UserVOMapperTest {
                         .build())
                     .build())
                 .collect(Collectors.toList()) : new ArrayList<>())
+            .language(Language.builder()
+                .id(1L)
+                .code("ua")
+                .build())
             .build();
 
         assertEquals(expected, mapper.convert(userToBeConverted));

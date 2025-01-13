@@ -3,7 +3,7 @@ package greencity.webcontroller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -19,12 +19,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +38,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
@@ -44,9 +45,7 @@ import java.util.Locale;
 public class ManagementHabitController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
-    private final HabitFactService habitFactService;
-    private final ShoppingListItemService shoppingListItemService;
-    private final AdviceService adviceService;
+    private final ToDoListItemService toDoListItemService;
     private final HabitAssignService habitAssignService;
 
     /**
@@ -56,7 +55,6 @@ public class ManagementHabitController {
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
-
     @GetMapping
     @ApiPageable
     public String findAllHabits(Model model, @Parameter(hidden = true) Pageable pageable,
@@ -66,10 +64,11 @@ public class ManagementHabitController {
         @RequestParam(value = "complexity", required = false) Integer complexity,
         @RequestParam(value = "withoutImage", required = false) Boolean withoutImage,
         @RequestParam(value = "withImage", required = false) Boolean withImage) {
-        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
+        PageableHabitManagementDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
             durationFrom, durationTo, complexity, withoutImage, withImage, pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("sortModel", allHabits.getSortModel());
         return "core/management_user_habits";
     }
 
@@ -108,12 +107,9 @@ public class ManagementHabitController {
     })
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
-        @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) Locale locale, Model model) {
-        model.addAttribute("hfacts", habitFactService.getAllHabitFactsVO(pageable));
-        model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
+        @Parameter(hidden = true) Model model) {
+        model.addAttribute("htodos", toDoListItemService.getToDoListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
-        model.addAttribute("hadvices", adviceService.getAllByHabitIdAndLanguage(id, locale.getLanguage()));
         model.addAttribute("acquired",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));
         model.addAttribute("inProgress",
@@ -140,7 +136,7 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PostMapping("/save")
+    @PostMapping(path = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public GenericResponseDto save(@Valid @RequestPart HabitManagementDto habitManagementDto,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
@@ -167,7 +163,7 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PutMapping("/update")
+    @PutMapping(path = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public GenericResponseDto update(@Valid @RequestPart HabitManagementDto habitManagementDto,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
@@ -211,5 +207,41 @@ public class ManagementHabitController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         managementHabitService.deleteAll(listId);
         return ResponseEntity.status(HttpStatus.OK).body(listId);
+    }
+
+    /**
+     * Method toggles the status of a Habit from "isDeleted" to true or false.
+     *
+     * @param id {@link HabitDto}'s id.
+     * @return {@link ResponseEntity}.
+     */
+    @Operation(summary = "Toggle the status of a Habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("/switch-deleted-status/{id}")
+    public ResponseEntity<Long> switchIsDeletedStatus(@PathVariable("id") Long id, @RequestBody Boolean newStatus) {
+        managementHabitService.switchIsDeletedStatus(id, newStatus);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    /**
+     * Method toggles the status of a Habit from "isCustom" to true or false.
+     *
+     * @param id {@link HabitDto}'s id.
+     * @return {@link ResponseEntity}.
+     */
+    @Operation(summary = "Toggle the isCustom status of a Habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("/switch-custom-status/{id}")
+    public ResponseEntity<Long> switchIsCustomStatus(@PathVariable("id") Long id, @RequestBody Boolean newStatus) {
+        managementHabitService.switchIsCustomStatus(id, newStatus);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }

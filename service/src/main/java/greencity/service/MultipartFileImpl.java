@@ -1,33 +1,23 @@
 package greencity.service;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * The class provides implementation of the {@link MultipartFile}.
  */
+@RequiredArgsConstructor
 public class MultipartFileImpl implements MultipartFile {
     private final String name;
     private final String originalFilename;
     private final String contentType;
     private final byte[] content;
-
-    /**
-     * Constructor for MultipartFileImpl class.
-     *
-     * @author Olena Sotnik
-     */
-    public MultipartFileImpl(String name, String originalFilename, String contentType, byte[] content) {
-        this.name = name;
-        this.originalFilename = originalFilename;
-        this.contentType = contentType;
-        this.content = content;
-    }
 
     @NotNull
     @Override

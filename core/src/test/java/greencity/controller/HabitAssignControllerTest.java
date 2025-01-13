@@ -6,13 +6,14 @@ import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -278,7 +277,7 @@ class HabitAssignControllerTest {
         mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserShoppingAndCustomShoppingLists(userVO.getId(), habitAssignId, "en");
+        verify(habitAssignService).getUserToDoAndCustomToDoLists(userVO.getId(), habitAssignId, "en");
     }
 
     @Test
@@ -290,23 +289,23 @@ class HabitAssignControllerTest {
             .principal(principal)
             .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserShoppingAndCustomShoppingLists(userVO.getId(), habitAssignId, "ua");
+        verify(habitAssignService).getUserToDoAndCustomToDoLists(userVO.getId(), habitAssignId, "ua");
     }
 
     @Test
-    void getListOfUserAndCustomShoppingListsInprogress() throws Exception {
+    void getListOfUserAndCustomToDoListsInprogress() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        mockMvc.perform(get(habitLink + "/allUserAndCustomShoppingListsInprogress")
+        mockMvc.perform(get(habitLink + "/allUserAndCustomToDoListsInprogress")
                 .principal(principal)
                 .locale(Locale.forLanguageTag("en")))
             .andExpect(status().isOk());
-        verify(habitAssignService).getListOfUserAndCustomShoppingListsWithStatusInprogress(userVO.getId(), "en");
+        verify(habitAssignService).getListOfUserAndCustomToDoListsWithStatusInprogress(userVO.getId(), "en");
     }
 
     @Test
-    void updateUserAndCustomShoppingLists() throws Exception {
+    void updateUserAndCustomToDoLists() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
+        UserToDoAndCustomToDoListsDto dto = ModelUtils.getUserToDoAndCustomToDoListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
         mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
@@ -315,7 +314,7 @@ class HabitAssignControllerTest {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).fullUpdateUserAndCustomShoppingLists(userVO.getId(), 1L, dto, "ua");
+        verify(habitAssignService).fullUpdateUserAndCustomToDoLists(userVO.getId(), 1L, dto, "ua");
     }
 
     @Test
@@ -333,11 +332,12 @@ class HabitAssignControllerTest {
     void inviteFriendRequest() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        mockMvc.perform(post(habitLink + "/{habitId}/{friendId}/invite", 1L, 2L)
-                .principal(principal)
-                .locale(Locale.forLanguageTag("ua")))
-            .andExpect(status().isOk());
-        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, 2L, 1L,
+        mockMvc.perform(post(habitLink + "/{habitId}/invite", 1L)
+                        .param("friendsIds", "2", "3", "4")
+                        .principal(principal)
+                        .locale(Locale.forLanguageTag("ua")))
+                .andExpect(status().isOk());
+        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, List.of(2L,3L,4L), 1L,
             Locale.forLanguageTag("ua"));
     }
 

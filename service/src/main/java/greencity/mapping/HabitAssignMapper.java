@@ -1,9 +1,9 @@
 package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.entity.*;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.ToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
@@ -13,15 +13,15 @@ import java.util.List;
 public class HabitAssignMapper extends AbstractConverter<HabitAssignDto, HabitAssign> {
     @Override
     protected HabitAssign convert(HabitAssignDto dto) {
-        List<UserShoppingListItem> listOfShoppingListItem = new ArrayList<>();
-        for (UserShoppingListItemAdvanceDto item : dto.getUserShoppingListItems()) {
-            if (item.getStatus().equals(ShoppingListItemStatus.INPROGRESS)) {
-                listOfShoppingListItem.add(UserShoppingListItem.builder()
+        List<UserToDoListItem> listOfShoppingListItem = new ArrayList<>();
+        for (UserToDoListItemAdvanceDto item : dto.getUserToDoListItems()) {
+            if (item.getStatus().equals(ToDoListItemStatus.INPROGRESS)) {
+                listOfShoppingListItem.add(UserToDoListItem.builder()
                     .id(item.getId())
                     .dateCompleted(item.getDateCompleted())
                     .status(item.getStatus())
-                    .shoppingListItem(ShoppingListItem.builder()
-                        .id(item.getShoppingListItemId())
+                    .toDoListItem(ToDoListItem.builder()
+                        .id(item.getToDoListItemId())
                         .build())
                     .build());
             }
@@ -39,7 +39,7 @@ public class HabitAssignMapper extends AbstractConverter<HabitAssignDto, HabitAs
                 .complexity(dto.getHabit().getComplexity())
                 .defaultDuration(dto.getDuration())
                 .build())
-            .userShoppingListItems(listOfShoppingListItem)
+            .userToDoListItems(listOfShoppingListItem)
             .build();
     }
 }

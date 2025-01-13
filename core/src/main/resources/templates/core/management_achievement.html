@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Achievement management</title>
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet"/>
     <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -23,11 +21,12 @@
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/achievements/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
-<body>
-<div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
+<body th:with="baseUrl='/management/achievement'" th:data-base-url="${baseUrl}">
+<div id="header" th:insert="~{core/header}"></div>
 <div class="main-content">
+    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
     <div class="container-xl">
         <div class="table-responsive">
             <div class="table-wrapper">
@@ -42,7 +41,7 @@
                                         <img alt="search" id="btnSearchImage"
                                              src="/img/search.png">
                                         <input type="text" name="query" id="inputSearch" class="form-control"
-                                               placeholder="Search…">
+                                               th:value="${query}" th:placeholder="#{greenCity.pages.search}">
                                     </form>
                                 </span>
                             <a class="btn btn-secondary" data-toggle="modal" href="#addAchievementModal"
@@ -56,19 +55,65 @@
                         </div>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
+                <table class="table table-bordered">
                     <thead>
-                    <tr class="table-primary">
+                    <tr>
                         <th>
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
+                            <span class="custom-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <label for="selectAll"></label>
+                            </span>
                         </th>
-                        <th>[[#{greenCity.pages.table.id}]]</th>
-                        <th>[[#{greenCity.pages.table.translations}]]</th>
-                        <th>[[#{greenCity.pages.table.achievement.category}]]</th>
-                        <th>[[#{greenCity.pages.table.condition}]]</th>
+                        <th>[[#{greenCity.pages.table.id}]]
+                            <span onclick="orderByField('id','asc')">
+                                <i id="id-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('id','desc')">
+                                <i id="id-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.title}]]
+                            <span onclick="orderByField('title','asc')">
+                                <i id="title-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('title','desc')">
+                                <i id="title-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.name}]]
+                            <span onclick="orderByField('name','asc')">
+                                <i id="name-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('name','desc')">
+                                <i id="name-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.achievement.category}]]
+                            <span onclick="orderByField('achievementCategory.name','asc')">
+                                <i id="category-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('achievementCategory.name','desc')">
+                                <i id="category-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th>[[#{greenCity.pages.table.condition}]]
+                            <span onclick="orderByField('condition','asc')">
+                                <i id="condition-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('condition','desc')">
+                                <i id="condition-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
                         <th>[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     </thead>
@@ -85,28 +130,10 @@
                                         </span>
                             </td>
                             <td th:text="${allAchievements.getId()}"></td>
+                            <td th:text="${allAchievements.getTitle()}"></td>
                             <td>
-                                <table class="table table-borderless m-0">
-                                    <thead>
-                                    <tr class="table-secondary">
-                                        <th style="width: 8%">[[#{greenCity.pages.table.translation.id}]]</th>
-                                        <th style="width: 12%">[[#{greenCity.pages.table.title}]]</th>
-                                        <th style="width: 20%">[[#{greenCity.pages.table.description}]]</th>
-                                        <th style="width: 60%">[[#{greenCity.pages.table.message}]]</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <th:block
-                                            th:each="translation : ${pageable.getPage().get(iterStatus.index).getTranslations()}">
-                                        <tr>
-                                            <td th:text="${translation.getId()}"></td>
-                                            <td th:text="${translation.getTitle()}"></td>
-                                            <td th:text="${translation.getDescription()}"></td>
-                                            <td th:text="${translation.getMessage()}"></td>
-                                        </tr>
-                                    </th:block>
-                                    </tbody>
-                                </table>
+                                <span th:text="${allAchievements.getName()}"></span><br>
+                                <span th:text="${allAchievements.getNameEng()}"></span>
                             </td>
                             <td th:text="${allAchievements.getAchievementCategory().getName()}"></td>
                             <td th:text="${allAchievements.getCondition()}"></td>
@@ -139,7 +166,7 @@
                         <li class="page-item"
                             th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                               th:href="@{/management/achievement?page={id}(id=${0})}"><i
+                               th:href="@{/management/achievement?page={id}(id=${0}, query=${query})}"><i
                                     class="arrow fas fa-chevron-left"></i></a>
                             <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
                                     class="arrow fas fa-chevron-left"></i></a>
@@ -149,13 +176,13 @@
                             th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
                             th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
                             th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/achievement?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
+                            <a class="page-link" th:href="@{/management/achievement?page={id}(id=${pageNumber}, query=${query})}">[[${pageNumber}+1]]</a>
                         </li>
 
                         <li class="page-item"
                             th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                               th:href="@{/management/achievement?page={id}(id=${pageable.getTotalPages()-1})}"><i
+                               th:href="@{/management/achievement?page={id}(id=${pageable.getTotalPages()-1}, query=${query})}"><i
                                     class="arrow fas fa-chevron-right"></i></a>
                             <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
                                     class="arrow fas fa-chevron-right"></i></a>
@@ -175,74 +202,39 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
-                        <th:block th:each="language, iterInfo : ${languages}">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.language.id}]]</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getId()}" th:value="${language.getId()}"
-                                               type="text"/>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.popup.language.code}]]</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getCode()}" th:value="${language.getCode()}"
-                                               type="text"/>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.title}]]</label>
-                                        <textarea class="form-control"
-                                                  th:name="title+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
-                                        <span class="errorSpan"
-                                              th:id="'errorModalSavetranslations['+${iterInfo.index}+'].title'"></span>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.description}]]</label>
-                                        <textarea class="form-control"
-                                                  th:name="description+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
-                                        <span class="errorSpan"
-                                              th:id="'errorModalSavetranslations['+${iterInfo.index}+'].description'"></span>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.message}]]</label>
-                                        <textarea class="form-control"
-                                                  th:name="message+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
-                                        <span class="errorSpan"
-                                              th:id="'errorModalSavetranslations['+${iterInfo.index}+'].message'"></span>
-                                    </div>
+                        <div class="form-group">
+                            <label>[[#{greenCity.pages.table.title}]]</label>
+                            <input type="text" class="form-control" name="title" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.name}]] UA</label>
+                                    <input type="text" class="form-control" name="name" required>
                                 </div>
                             </div>
-                        </th:block>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.name}]] EN</label>
+                                    <input type="text" class="form-control" name="nameEng" required>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.achievement.category}]]</label>
                             <select class="form-control" name="achievementCategory">
                                 <option selected="selected" id="empty-category"></option>
                                 <th:block th:each="category : ${categoryList}">
-                                    <tr>
-                                        <option>
-                                            <td th:text="${category.getName()}"></td>
-                                        </option>
-                                    </tr>
+                                    <option th:value="${category.getName()}" th:text="${category.getName()}"></option>
                                 </th:block>
                             </select>
                             <span th:id="errorModalSavecategory" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.condition}]]</label>
-                            <input class="form-control" name="condition" required type="number">
+                            <input type="number" class="form-control" name="condition" required>
                             <span th:id="errorModalSavecondition" class="errorSpan"></span>
                         </div>
                     </div>
@@ -260,7 +252,7 @@
     <div id="editAchievementModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editAchievementForm">
+                <form th:action="@{management/achievement/update}" method="post" id="editAchievementForm">
                     <div class="modal-header">
                         <h4 class="modal-title">[[#{greenCity.achievement.page.edit.achievement}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -271,80 +263,48 @@
                             <input type="text" class="form-control" id="id" name="id" readonly required>
                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
-                        <th:block th:each="language, iterInfo : ${languages}">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.language.id}]]</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getId()}" th:value="${language.getId()}"
-                                               type="text"/>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.popup.language.code}]]</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getCode()}" th:value="${language.getCode()}"
-                                               type="text"/>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.title}]]</label>
-                                        <textarea class="form-control"
-                                                  th:id="title+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  th:name="title+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
-                                        <span class="errorSpan"
-                                              th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].title'"></span>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.description}]]</label>
-                                        <textarea class="form-control"
-                                                  th:id="description+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  th:name="description+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
-                                        <span class="errorSpan"
-                                              th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].description'"></span>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.message}]]</label>
-                                        <textarea class="form-control"
-                                                  th:id="message+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  th:name="message+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
-                                        <span class="errorSpan"
-                                              th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].message'"></span>
-                                    </div>
+
+                        <div class="form-group">
+                            <label>[[#{greenCity.pages.table.title}]]</label>
+                            <input type="text" class="form-control" name="title" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.name}]] UA</label>
+                                    <input type="text" class="form-control" name="name" required>
                                 </div>
                             </div>
-                        </th:block>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.name}]] EN</label>
+                                    <input type="text" class="form-control" name="nameEng" required>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.achievement.category}]]</label>
-                            <input type="text" class="form-control" id="achievementCategory" name="achievementCategory"
-                                   readonly required>
-                            <th:block th:each="category : ${categoryList}">
-                                <tr>
-                                    <td th:text="${category.getName()}"></td>
-                                </tr>
-                            </th:block>
+                            <select class="form-control" name="achievementCategory" required>
+                                <option selected="selected"></option>
+                                <th:block th:each="category : ${categoryList}">
+                                    <option th:value="${category.getName()}" th:text="${category.getName()}"></option>
+                                </th:block>
+                            </select>
                             <span th:id="errorModalUpdatecategory" class="errorSpan"></span>
                         </div>
+
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.condition}]]</label>
-                            <input class="form-control" id="condition" name="condition" required type="number">
+                            <input type="number" class="form-control" name="condition" required>
                             <span th:id="errorModalUpdatecondition" class="errorSpan"></span>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
                                th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-info btn-primary" th:value="#{greenCity.pages.popup.save.}"
+                        <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}"
                                id="submitEditBtn">
                     </div>
                 </form>
@@ -400,6 +360,6 @@
         </div>
     </div>
 </div>
-<div id="footer" th:insert="core/footer"></div>
+<div id="footer" th:insert="~{core/footer}"></div>
 </body>
 </html>

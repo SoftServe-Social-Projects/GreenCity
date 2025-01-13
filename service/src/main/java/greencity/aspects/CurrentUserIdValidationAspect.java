@@ -6,6 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotCurrentUserException;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -20,18 +21,9 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class CurrentUserIdValidationAspect {
     private final RestClient restClient;
-
-    /**
-     * Constructor with RestClient dependency declaration. RestClient is used for
-     * current user id acquisition.
-     *
-     * @param restClient {@link RestClient} is used for current user id acquisition.
-     */
-    public CurrentUserIdValidationAspect(RestClient restClient) {
-        this.restClient = restClient;
-    }
 
     /**
      * Validates method parameter which is meant to represent currently

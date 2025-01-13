@@ -51,7 +51,7 @@ public class RatingExcelExporter {
                 row = sheet.createRow(rowCount++);
 
                 setCell(row, 0, dto.getId().toString(), sheet);
-                setCell(row, 1, dto.getRatingCalculationEnum().toString(), sheet);
+                setCell(row, 1, dto.getRatingPoints().getName(), sheet);
                 setCell(row, 2, dto.getCreateDate().toString(), sheet);
                 setCell(row, 3, dto.getUser().getId().toString(), sheet);
                 setCell(row, 4, dto.getUser().getEmail(), sheet);

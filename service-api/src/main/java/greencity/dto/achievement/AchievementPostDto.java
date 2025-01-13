@@ -1,13 +1,15 @@
 package greencity.dto.achievement;
 
 import greencity.dto.achievementcategory.AchievementCategoryDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
+@SuperBuilder
+@Data
 public class AchievementPostDto {
     private String title;
     private String name;

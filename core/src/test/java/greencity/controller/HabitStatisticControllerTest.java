@@ -1,12 +1,10 @@
 package greencity.controller;
 
 import com.google.gson.Gson;
-import static greencity.ModelUtils.getPrincipal;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import static greencity.enums.HabitRate.GOOD;
 import greencity.service.HabitStatisticService;
-import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -36,8 +32,6 @@ class HabitStatisticControllerTest {
     @InjectMocks
     HabitStatisticController habitStatisticController;
 
-    private Principal principal = getPrincipal();
-
     private static final String habitLink = "/habit/statistic";
 
     @BeforeEach
@@ -49,16 +43,20 @@ class HabitStatisticControllerTest {
 
     @Test
     void save() throws Exception {
+        String json = """
+            {
+              "amountOfItems": 1,
+              "createDate": "2020-10-09T16:49:01.020Z",
+              "habitRate": "GOOD"
+            }
+            """;
+
         AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
         addHabitStatisticDto.setAmountOfItems(1);
         addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z"));
         addHabitStatisticDto.setHabitRate(GOOD);
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
-            .content("{\n" +
-                "  \"amountOfItems\": 1,\n" +
-                "  \"createDate\": \"2020-10-09T16:49:01.020Z\",\n" +
-                "  \"habitRate\": \"GOOD\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
         verify(habitStatisticService).saveByHabitIdAndUserId(1L, null, addHabitStatisticDto);

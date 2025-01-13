@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="Herchanivska-6" author="Viktoriia Herchanivska">
+        <update tableName="achievement_categories">
+            <column name="title">Створи Еко Новини.</column>
+            <column name="title_en">Create Eco News.</column>
+            <where>id=1</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Коментуй або відповідай.</column>
+            <column name="title_en">Comment or reply.</column>
+            <where>id=2</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Лайкай коментарі або відповіді.</column>
+            <column name="title_en">Like comment or reply.</column>
+            <where>id=3</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Поширюй Еко Новини.</column>
+            <column name="title_en">Share Eco News.</column>
+            <where>id=4</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Набувай Звички.</column>
+            <column name="title_en">Acquire Habit.</column>
+            <where>id=5</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Отримуй Досягнення.</column>
+            <column name="title_en">Get Achievements.</column>
+            <where>id=6</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Створи Події.</column>
+            <column name="title_en">Create Events.</column>
+            <where>id=7</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Приєднюйся до Подій.</column>
+            <column name="title_en">Join Events.</column>
+            <where>id=8</where>
+        </update>
+        <update tableName="achievement_categories">
+            <column name="title">Лайкай Звички.</column>
+            <column name="title_en">Like Habits.</column>
+            <where>id=9</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Insert into rating_points" author="Roman Kasarab">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM public.rating_points
+                WHERE name IN ('LIKE_EVENT', 'UNDO_LIKE_EVENT', 'LIKE_NEWS', 'UNDO_LIKE_NEWS');
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_EVENT"/>
+            <column name="points" value="1"/>
+        </insert>
+
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_EVENT"/>
+            <column name="points" value="-1"/>
+        </insert>
+
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_NEWS"/>
+            <column name="points" value="1"/>
+        </insert>
+
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_NEWS"/>
+            <column name="points" value="-1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="Herchanivska-2" author="Viktoriia Herchanivska">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="eco_news" columnName="hidden"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="eco_news">
+            <column name="hidden" type="BOOLEAN" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

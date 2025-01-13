@@ -4,8 +4,12 @@ import greencity.constant.RepoConstants;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.PlaceStatus;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -16,25 +20,22 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
  * The class implements {@link Specification}. Each constructor takes a
  * {@code DTO} class the type of which determines the further creation of a new
  * {@link Predicate} object.
- *
- * @author Roman Zahouri, Nazar Stasyuk
  */
+@RequiredArgsConstructor
 public class PlaceFilter implements Specification<Place> {
     private final transient FilterPlaceDto filterPlaceDto;
+    private final transient Long userId;
 
-    /**
-     * The constructor takes {@link FilterPlaceDto} object.
-     *
-     * @param filterPlaceDto object contains fields to filter by.
-     */
     public PlaceFilter(FilterPlaceDto filterPlaceDto) {
         this.filterPlaceDto = filterPlaceDto;
+        this.userId = null;
     }
 
     /**
@@ -52,6 +53,7 @@ public class PlaceFilter implements Specification<Place> {
             predicates.add(isNowOpen(root, cb, filterPlaceDto.getTime()));
             predicates.add(hasFieldLike(root, cb, filterPlaceDto.getSearchReg()));
             predicates.add(hasCategory(root, cb, filterPlaceDto.getCategories()));
+            predicates.add(isSaved(root, cb, filterPlaceDto.getIsSaved(), userId));
         }
         return cb.and(predicates.toArray(new Predicate[0]));
     }
@@ -64,7 +66,6 @@ public class PlaceFilter implements Specification<Place> {
      * @param cb     must not be {@literal null}.
      * @param status of {@link Place} to filter by.
      * @return a {@link Predicate}, may be {@literal null}.
-     * @author Roman Zahouri
      */
     private Predicate hasStatus(Root<Place> r, CriteriaBuilder cb, PlaceStatus status) {
         if (status == null) {
@@ -81,7 +82,6 @@ public class PlaceFilter implements Specification<Place> {
      * @param cb         must not be {@literal null}.
      * @param categories of {@link Place}'s to filter by.
      * @return a {@link Predicate} may be {@literal null}.
-     * @author Pavlo Skolozdra
      */
     private Predicate hasCategory(Root<Place> r, CriteriaBuilder cb, String[] categories) {
         if (categories == null) {
@@ -95,6 +95,25 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
+     * Returns a predicate where favorite place is saved.
+     *
+     * @param root    must not be {@literal null}.
+     * @param cb      must not be {@literal null}.
+     * @param isSaved is saved place or not.
+     * @param userId  user id.
+     * @return a {@link Predicate}.
+     */
+    private Predicate isSaved(Root<Place> root, CriteriaBuilder cb, Boolean isSaved, Long userId) {
+        if (isSaved == null || userId == null) {
+            return cb.conjunction();
+        } else {
+            Join<Place, FavoritePlace> favoriteJoin = root.join(RepoConstants.FAVORITE_PLACES, JoinType.LEFT);
+            Join<FavoritePlace, User> userJoin = favoriteJoin.join(RepoConstants.USER);
+            return cb.equal(userJoin.get(RepoConstants.ID), userId);
+        }
+    }
+
+    /**
      * Returns a predicate where {@link greencity.entity.Location}'s lat and lng are
      * in bounds of {@param bounds}.
      *
@@ -102,7 +121,6 @@ public class PlaceFilter implements Specification<Place> {
      * @param cb     must not be {@literal null}.
      * @param bounds dto should contain lat and lng bounds values.
      * @return a {@link Predicate}, may be {@literal null}.
-     * @author Roman Zahouri
      */
     private Predicate hasPositionInBounds(Root<Place> r, CriteriaBuilder cb, MapBoundsDto bounds) {
         if (bounds == null) {
@@ -124,7 +142,6 @@ public class PlaceFilter implements Specification<Place> {
      * @param r           must not be {@literal null}.
      * @param cb          must not be {@literal null}.
      * @param currentTime a string contains current date and time.
-     * @author Roman Zahouri
      */
     private Predicate isNowOpen(Root<Place> r, CriteriaBuilder cb, String currentTime) {
         if (null == currentTime) {
@@ -145,7 +162,6 @@ public class PlaceFilter implements Specification<Place> {
      * @param discount a dto describes information about discount of a
      *                 {@link Place}.
      * @return a {@link Predicate}, may be {@literal null}.
-     * @author Roman Zahouri
      */
     private Predicate hasDiscount(Root<Place> r, CriteriaBuilder cb, FilterDiscountDto discount) {
         if (discount == null) {
@@ -169,7 +185,6 @@ public class PlaceFilter implements Specification<Place> {
      * @param r  must not be {@literal null}.
      * @param cb must not be {@literal null}.
      * @return a {@link Predicate}, may be {@literal null}.
-     * @author Rostyslav Khasanov
      */
     private Predicate hasFieldLike(Root<Place> r, CriteriaBuilder cb, String reg) {
         if (filterPlaceDto.getSearchReg() == null) {

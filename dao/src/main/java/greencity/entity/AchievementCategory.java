@@ -24,6 +24,13 @@ public class AchievementCategory {
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true)
+    private String title;
+
+    @Column(nullable = false, unique = true)
+    private String titleEn;
+
     @OneToMany(mappedBy = "achievementCategory")
     private List<Achievement> achievementList;
 }

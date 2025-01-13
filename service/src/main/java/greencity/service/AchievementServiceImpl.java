@@ -1,32 +1,36 @@
 package greencity.service;
 
-import greencity.achievement.AchievementCalculation;
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
+import greencity.dto.habit.HabitVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.User;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitTranslation;
 import greencity.entity.UserAchievement;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
+import greencity.entity.UserAction;
+import greencity.enums.AchievementStatus;
+import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitTranslationRepo;
 import greencity.repository.UserAchievementRepo;
-import lombok.AllArgsConstructor;
+import greencity.repository.UserActionRepo;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -37,154 +41,84 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EnableCaching
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
     private final ModelMapper modelMapper;
-    private final RestClient restClient;
-    private final AchievementCategoryService achievementCategoryService;
-    private final UserActionService userActionService;
-    private AchievementCalculation achievementCalculation;
-    private UserService userService;
+    private final UserService userService;
     private final UserAchievementRepo userAchievementRepo;
-    private static final String ACHIEVED = "ACHIEVED";
-    private static final String UNACHIEVED = "UNACHIEVED";
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final AchievementCategoryRepo achievementCategoryRepo;
+    private final UserActionRepo userActionRepo;
+    private final HabitAssignRepo habitAssignRepo;
+    private final HabitTranslationRepo habitTranslationRepo;
+    private final RatingPointsService ratingPointsService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void achieve(ActionDto user) {
-        List<UserAchievement> userAchievements =
-            userAchievementRepo.getUserAchievementByUserId(user.getUserId())
-                .stream()
-                .filter(userAchievement -> !userAchievement.isNotified())
-                .toList();
-        messagingTemplate.convertAndSend("/topic/" + user.getUserId() + "/notification", !userAchievements.isEmpty());
+        List<UserAchievement> userAchievements = userAchievementRepo.getUserAchievementByUserId(user.getUserId())
+            .stream()
+            .filter(userAchievement -> !userAchievement.isNotified())
+            .toList();
+        messagingTemplate.convertAndSend("/topic/" + user.getUserId() + "/notification",
+            !userAchievements.isEmpty());
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public AchievementVO save(AchievementPostDto achievementPostDto) {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
-        AchievementCategoryVO achievementCategoryVO =
-            achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
-        achievement.setTitle(achievementPostDto.getTitle());
-        achievement.setName(achievementPostDto.getName());
-        achievement.setNameEng(achievementPostDto.getNameEng());
-        achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
-        AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
-        UserAchievementVO userAchievementVO = new UserAchievementVO();
-        UserActionVO userActionVO = new UserActionVO();
-        userAchievementVO.setAchievement(achievementVO);
-        List<UserVO> all = restClient.findAll();
-        all.forEach(userVO -> {
-            UserActionVO userActionByUserIdAndAchievementCategory =
-                userActionService.findUserAction(userVO.getId(),
-                    achievementCategoryVO.getId());
-            if (userActionByUserIdAndAchievementCategory == null) {
-                userActionVO.setAchievementCategory(achievementCategoryVO);
-                userActionVO.setUser(userVO);
-                userActionService.save(userActionVO);
-            }
-            userVO.getUserAchievements().add(userAchievementVO);
-            userAchievementVO.setUser(userVO);
-            userService.updateUserRating(userVO.getId(), userVO.getRating());
-        });
-        return achievementVO;
+        AchievementCategory achievementCategory =
+            findCategoryByName(achievementPostDto.getAchievementCategory().getName());
+        populateAchievement(achievement, achievementPostDto, achievementCategory);
+        ratingPointsService.createRatingPoints(achievement.getTitle());
+        return mapToVO(achievementRepo.save(achievement));
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
         Page<Achievement> pages = achievementRepo.findAll(page);
-        List<AchievementVO> achievementVOS = pages
-            .stream()
-            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-            .collect(Collectors.toList());
-        return createPageable(achievementVOS, pages);
-    }
-
-    private List<AchievementVO> findAll() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-            .collect(Collectors.toList());
+        return createPageable(pages);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Oksana Spodaryk
      */
     @Override
-    public List<AchievementVO> findAllByType(String principalEmail, String achievementStatus) {
-        User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
-        Long userId = currentUser.getId();
-        if (ACHIEVED.equalsIgnoreCase(achievementStatus)) {
-            return findAllAchieved(userId);
-        } else if (UNACHIEVED.equalsIgnoreCase(achievementStatus)) {
-            return achievementRepo.searchAchievementsUnAchieved(userId).stream()
-                .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-                .collect(Collectors.toList());
-        }
-        return findAll();
-    }
-
-    private List<AchievementVO> findAllAchieved(Long userId) {
-        List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(userId)
-            .stream()
-            .map(userAchievement -> userAchievement.getAchievement().getId())
-            .collect(Collectors.toList());
-        return achievemnetsId
-            .stream()
-            .map(achievementRepo::findById)
-            .flatMap(Optional::stream)
-            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-            .collect(Collectors.toList());
-    }
-
-    private PageableAdvancedDto<AchievementVO> createPageable(List<AchievementVO> achievementVOS,
-        Page<Achievement> pages) {
-        return new PageableAdvancedDto<>(
-            achievementVOS,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages(),
-            pages.getNumber(),
-            pages.hasPrevious(),
-            pages.hasNext(),
-            pages.isFirst(),
-            pages.isLast());
+    public List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId) {
+        Long userId = userService.findByEmail(principalEmail).getId();
+        Long searchAchievementCategoryId =
+            achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
+        List<AchievementVO> achievements = switch (achievementStatus) {
+            case ACHIEVED -> findAllAchieved(userId, searchAchievementCategoryId);
+            case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
+            case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
+        };
+        return setAchievementsProgress(userId, achievementCategoryId, achievements);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public PageableAdvancedDto<AchievementVO> searchAchievementBy(Pageable paging, String query) {
         Page<Achievement> page = achievementRepo.searchAchievementsBy(paging, query);
-
-        List<AchievementVO> achievementVOS = page.stream()
-            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-            .collect(Collectors.toList());
-        return createPageable(achievementVOS, page);
+        return createPageable(page);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public Long delete(Long id) {
@@ -198,8 +132,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public void deleteAll(List<Long> listId) {
@@ -208,51 +140,233 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
-    @Override
-    public AchievementVO findById(Long id) {
-        return modelMapper.map(
-            achievementRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + id)),
-            AchievementVO.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public AchievementPostDto update(AchievementManagementDto achievementManagementDto) {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
                 + achievementManagementDto.getId()));
-        Achievement updated = achievementRepo.save(achievement);
-        return modelMapper.map(updated, AchievementPostDto.class);
+        if (!achievement.getTitle().equals(achievementManagementDto.getTitle())) {
+            ratingPointsService.updateRatingPointsName(achievement.getTitle(), achievementManagementDto.getTitle());
+        }
+        AchievementCategory achievementCategory = findCategoryByName(
+            achievementManagementDto.getAchievementCategory().getName());
+        populateAchievement(achievement, achievementManagementDto, achievementCategory);
+        return modelMapper.map(achievementRepo.save(achievement), AchievementPostDto.class);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
     @Override
     @Transactional
     public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
-        Achievement achievement =
-            achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
-        return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
+        return achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition)
+            .map(this::mapToVO)
+            .orElse(null);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void calculateAchievements(Long id,
-        AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
-        UserVO userVO = userService.findById(id);
-        achievementCalculation.calculateAchievement(userVO, achievementCategory, achievementAction);
+    public Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId) {
+        Long userId = userService.findByEmail(principalEmail).getId();
+        Long searchAchievementCategoryId =
+            achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
+        List<AchievementVO> achievements = switch (achievementStatus) {
+            case ACHIEVED -> findAllAchieved(userId, searchAchievementCategoryId);
+            case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
+            case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
+        };
+        return achievements.size();
+    }
+
+    private AchievementCategory findCategoryByName(String name) {
+        return achievementCategoryRepo.findByName(name)
+            .orElseThrow(() -> new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME));
+    }
+
+    private AchievementCategory findCategoryById(Long id) {
+        return achievementCategoryRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+    }
+
+    private void populateAchievement(Achievement achievement, AchievementPostDto achievementPostDto,
+        AchievementCategory achievementCategory) {
+        achievement.setTitle(achievementPostDto.getTitle());
+        achievement.setName(achievementPostDto.getName());
+        achievement.setNameEng(achievementPostDto.getNameEng());
+        achievement.setAchievementCategory(achievementCategory);
+        achievement.setCondition(achievementPostDto.getCondition());
+    }
+
+    private List<AchievementVO> findAllAchievementsWithAnyStatus(Long userId, Long achievementCategoryId) {
+        List<AchievementVO> achievements = new ArrayList<>();
+        achievements.addAll(findAllAchieved(userId, achievementCategoryId));
+        achievements.addAll(findUnachieved(userId, achievementCategoryId));
+        return achievements;
+    }
+
+    private List<AchievementVO> findAllAchieved(Long userId, Long achievementCategoryId) {
+        List<UserAchievement> achievements;
+        if (achievementCategoryId == null) {
+            achievements = userAchievementRepo.getUserAchievementByUserId(userId);
+        } else {
+            achievements =
+                userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId);
+        }
+        return achievements.stream()
+            .map(userAchievement -> {
+                Long achievementId = userAchievement.getAchievement().getId();
+                Achievement achievement = achievementRepo.findById(achievementId).orElse(null);
+                AchievementVO achievementVO = mapToVO(achievement);
+                if (userAchievement.getHabit() != null) {
+                    HabitTranslation translationUa =
+                        habitTranslationRepo.getHabitTranslationByUaLanguage(userAchievement.getHabit().getId());
+                    HabitTranslation translationEn =
+                        habitTranslationRepo.getHabitTranslationByEnLanguage(userAchievement.getHabit().getId());
+                    achievementVO.setHabit(mapHabitToVO(userAchievement.getHabit()));
+                    achievementVO.setName(achievementVO.getName() + " " + translationUa.getName());
+                    achievementVO.setNameEng(achievementVO.getName() + " " + translationEn.getName());
+                }
+                return achievementVO;
+            })
+            .toList();
+    }
+
+    private List<AchievementVO> findUnachieved(Long userId, Long achievementCategoryId) {
+        List<Achievement> achievements;
+        if (achievementCategoryId == null) {
+            achievements = achievementRepo.searchAchievementsUnAchieved(userId);
+        } else {
+            achievements = achievementRepo.searchAchievementsUnAchievedByCategory(userId, achievementCategoryId);
+        }
+        List<AchievementVO> achievementsToReturn = new ArrayList<>(achievements.stream()
+            .map(this::mapToVO)
+            .toList());
+
+        Long habitAchievementCategory = findCategoryByName("HABIT").getId();
+        if (achievementCategoryId == null || achievementCategoryId.equals(habitAchievementCategory)) {
+            findUnachievedHabitAchievements(userId, habitAchievementCategory, achievementsToReturn);
+        }
+
+        return achievementsToReturn;
+    }
+
+    private void findUnachievedHabitAchievements(Long userId, Long categoryId, List<AchievementVO> achievements) {
+        List<AchievementVO> unachievedHabitAchievements = new ArrayList<>();
+        List<HabitAssign> habitInProgress = habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(userId);
+        List<Integer> habitAchievementsDurations = achievementRepo.findAllByAchievementCategoryId(categoryId)
+            .stream()
+            .map(Achievement::getCondition)
+            .toList();
+        Map<Integer, List<HabitAssign>> achievementConditionUserHabitMap = new HashMap<>();
+        for (Integer duration : habitAchievementsDurations) {
+            achievementConditionUserHabitMap.put(duration, habitInProgress
+                .stream()
+                .filter(habitAssign -> habitAssign.getDuration().equals(duration)
+                    || habitAssign.getDuration().compareTo(duration) < 0)
+                .toList());
+        }
+        for (Integer duration : habitAchievementsDurations) {
+            AchievementVO achievementByDuration = findByCategoryIdAndCondition(categoryId, duration);
+            if (!achievementConditionUserHabitMap.get(duration).isEmpty()) {
+                achievements.remove(achievementByDuration);
+            }
+            for (HabitAssign habitAssign : achievementConditionUserHabitMap.get(duration)) {
+                HabitTranslation translationUa =
+                    habitTranslationRepo.getHabitTranslationByUaLanguage(habitAssign.getHabit().getId());
+                HabitTranslation translationEn =
+                    habitTranslationRepo.getHabitTranslationByEnLanguage(habitAssign.getHabit().getId());
+                AchievementVO achievementByHabit = AchievementVO.builder()
+                    .id(achievementByDuration.getId())
+                    .title(achievementByDuration.getTitle())
+                    .name(achievementByDuration.getName() + " " + translationUa.getName())
+                    .nameEng(achievementByDuration.getNameEng() + " " + translationEn.getName())
+                    .achievementCategory(achievementByDuration.getAchievementCategory())
+                    .condition(achievementByDuration.getCondition())
+                    .habit(mapHabitToVO(habitAssign.getHabit()))
+                    .build();
+                unachievedHabitAchievements.add(achievementByHabit);
+            }
+        }
+        achievements.addAll(unachievedHabitAchievements);
+    }
+
+    private PageableAdvancedDto<AchievementVO> createPageable(Page<Achievement> pages) {
+        List<AchievementVO> achievementVOS = pages
+            .stream()
+            .map(this::mapToVO)
+            .collect(Collectors.toList());
+        return new PageableAdvancedDto<>(
+            achievementVOS,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages(),
+            pages.getNumber(),
+            pages.hasPrevious(),
+            pages.hasNext(),
+            pages.isFirst(),
+            pages.isLast());
+    }
+
+    private AchievementVO mapToVO(Achievement achievement) {
+        return modelMapper.map(achievement, AchievementVO.class);
+    }
+
+    private HabitVO mapHabitToVO(Habit habit) {
+        return modelMapper.map(habit, HabitVO.class);
+    }
+
+    private List<AchievementVO> setAchievementsProgress(Long userId, Long achievementCategoryId,
+        List<AchievementVO> achievements) {
+        if (achievementCategoryId == null) {
+            return setAchievementsProgressForAllCategories(userId, achievements);
+        } else {
+            return setAchievementsProgressForOneCategory(userId, achievementCategoryId, achievements);
+        }
+    }
+
+    private List<AchievementVO> setAchievementsProgressForAllCategories(Long userId, List<AchievementVO> achievements) {
+        List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
+        return achievements.stream().map(achievementVO -> {
+            int achievementCategoryProgress = 0;
+            for (UserAction action : allActions) {
+                if ((action.getHabit() == null && action.getAchievementCategory().getId()
+                    .equals(achievementVO.getAchievementCategory().getId()))
+                    || (action.getHabit() != null && achievementVO.getHabit() != null
+                        && action.getHabit().getId().equals(achievementVO.getHabit().getId()))) {
+                    achievementCategoryProgress = action.getCount();
+                    break;
+                }
+            }
+            return achievementVO.setProgress(achievementCategoryProgress);
+        })
+            .toList();
+    }
+
+    private List<AchievementVO> setAchievementsProgressForOneCategory(Long userId, Long categoryId,
+        List<AchievementVO> achievements) {
+        Long habitAchievementCategory = findCategoryByName("HABIT").getId();
+        if (categoryId.equals(habitAchievementCategory)) {
+            return achievements.stream()
+                .map(achievementVO -> {
+                    int achievementCategoryProgress = 0;
+                    if (achievementVO.getHabit() != null) {
+                        UserAction achievementAction =
+                            userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId,
+                                categoryId, achievementVO.getHabit().getId());
+                        achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
+                    }
+                    return achievementVO.setProgress(achievementCategoryProgress);
+                })
+                .toList();
+        } else {
+            UserAction achievementAction =
+                userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
+            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
+            return achievements.stream()
+                .map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
+                .toList();
+        }
     }
 }

@@ -6,7 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,13 +19,13 @@ public class NotificationDto {
     private Long notificationId;
     private String projectName;
     private String notificationType;
-    private LocalDateTime time;
+    private ZonedDateTime time;
     private Boolean viewed;
 
     private String titleText;
     private String bodyText;
-    private Long actionUserId;
-    private String actionUserText;
+    private List<Long> actionUserId;
+    private List<String> actionUserText;
     private Long targetId;
     private String message;
     private String secondMessage;

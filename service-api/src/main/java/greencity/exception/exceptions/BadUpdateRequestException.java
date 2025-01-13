@@ -1,17 +1,12 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
 /**
  * Exception that we get when admin/moderator trying to update himself.
  *
  * @author Rostyslav Khasanov
  */
+@StandardException
 public class BadUpdateRequestException extends BadRequestException {
-    /**
-     * Constructor for BadUpdateRequestException.
-     *
-     * @param message - giving message.
-     */
-    public BadUpdateRequestException(String message) {
-        super(message);
-    }
 }

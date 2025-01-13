@@ -10,8 +10,6 @@ import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.DuplicatedTagException;
-import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
@@ -25,7 +23,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -276,30 +273,6 @@ class TagsServiceImplTest {
         List<String> expected = tagsService.findAllHabitsTags(UKRAINIAN_LANGUAGE);
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsReturnTrue() {
-        List<String> tagNames = Arrays.asList("News", "Education");
-        boolean expected = tagsService.isValidNumOfUniqueTags(tagNames);
-
-        assertTrue(expected);
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsThrowsDuplicatedTagsException() {
-        List<String> tagNames = Arrays.asList("News", "News");
-
-        assertThrows(DuplicatedTagException.class,
-            () -> tagsService.isValidNumOfUniqueTags(tagNames));
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsThrowsInvalidNumOfTagsException() {
-        List<String> tagNames = Arrays.asList("News", "Education", "Ads", "Events");
-
-        assertThrows(InvalidNumOfTagsException.class,
-            () -> tagsService.isValidNumOfUniqueTags(tagNames));
     }
 
     @Test

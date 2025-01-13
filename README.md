@@ -36,7 +36,7 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 ### 4.1. Required to install
 
-* Java 8
+* Java 21
 * PostgreSQL 9.5 or higher
 
 ### 4.2. How to run
@@ -58,7 +58,7 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 * `Name` : `GreenCityApplication`.
 * `Use classpath of modules`:`core`
-* `JRE` : `11`.
+* `JRE` : `21`.
 
 6. `Enviroment variables`:
 
@@ -87,9 +87,9 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
    ![Authentication-button-swagger](./docs-photos/authentication-swagger.png)
 
-   Insert the given token into input field. The scheme should be like this `Bearer <given_token>`. Press **Authorize** button.
+   Insert the given token into input field. The scheme should be like this `<given_token>`. Press **Authorize** button.
 
-   ![Bearer-examle](./docs-photos/auth-bearer.png)
+   ![Bearer-examle](./docs-photos/auth.png)
 
 6. Now you can use swagger UI to test REST API. Some controllers require *ADMIN* role. By default, new registered users have role *USER*. To overcome this you need to update record that corresponds to your user in the local database. For example, `UPDATE users SET role = 1 WHERE id = <your_user_id>`.
 

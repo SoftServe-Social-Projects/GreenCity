@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="habit-followers" author="Ivan Holotsvan">
+        <createTable tableName="habits_followers">
+            <column name="habit_id" type="BIGINT" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="habits_followers"
+                       columnNames="habit_id, user_id"/>
+        <addForeignKeyConstraint baseTableName="habits_followers"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habits_followers_habit_id"
+                                 referencedTableName="habits"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="habits_followers"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_habits_followers_user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

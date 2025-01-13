@@ -10,11 +10,11 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserAchievementRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
@@ -36,6 +36,7 @@ public class AchievementCalculation {
     private final RatingCalculation ratingCalculation;
     private final ModelMapper modelMapper;
     private final HabitRepo habitRepo;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * Constructor for initializing the required services and repositories.
@@ -46,7 +47,7 @@ public class AchievementCalculation {
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
         AchievementRepo achievementRepo, RatingCalculation ratingCalculation, ModelMapper modelMapper,
-        HabitRepo habitRepo) {
+        HabitRepo habitRepo, RatingPointsRepo ratingPointsRepo) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -55,6 +56,7 @@ public class AchievementCalculation {
         this.ratingCalculation = ratingCalculation;
         this.modelMapper = modelMapper;
         this.habitRepo = habitRepo;
+        this.ratingPointsRepo = ratingPointsRepo;
     }
 
     /**
@@ -114,8 +116,7 @@ public class AchievementCalculation {
                 userAchievement.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NotFoundException(
                     ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
             }
-            RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
-            ratingCalculation.ratingCalculation(reason, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(achievement.getTitle()), userVO);
             userAchievementRepo.save(userAchievement);
 
             if (!ac.getName().equals(SELF_ACHIEVEMENT_CATEGORY)) {
@@ -135,8 +136,9 @@ public class AchievementCalculation {
         }
         if (!achievements.isEmpty()) {
             achievements.forEach(achievement -> {
-                RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
-                ratingCalculation.ratingCalculation(reason, user);
+                ratingCalculation.ratingCalculation(
+                    ratingPointsRepo.findByNameOrThrow("UNDO_" + achievement.getTitle()),
+                    user);
                 userAchievementRepo.deleteByUserAndAchievementId(user.getId(), achievement.getId());
             });
 

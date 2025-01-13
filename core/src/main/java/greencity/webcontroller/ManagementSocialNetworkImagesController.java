@@ -44,18 +44,15 @@ public class ManagementSocialNetworkImagesController {
     /**
      * Method that returns management page with all {@link SocialNetworkImageVO}.
      *
-     * @param query    Query for searching related data
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      * @author Orest Mamchuk
      */
     @GetMapping
-    public String getAllSocialNetworkImages(@RequestParam(required = false, name = "query") String query, Model model,
+    public String getAllSocialNetworkImages(Model model,
         @Parameter(hidden = true) Pageable pageable) {
-        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = query == null || query.isEmpty()
-            ? socialNetworkImageService.findAll(pageable)
-            : socialNetworkImageService.searchBy(pageable, query);
+        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = socialNetworkImageService.findAll(pageable);
         model.addAttribute("pageable", socialNetworkImages);
         return "core/management_social_network_images";
     }

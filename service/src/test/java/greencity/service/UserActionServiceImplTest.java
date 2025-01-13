@@ -104,6 +104,8 @@ class UserActionServiceImplTest {
             .achievementCategory(AchievementCategory.builder()
                 .id(1L)
                 .name("HABIT")
+                .title("Набудь Звички")
+                .titleEn("Acquire Habits")
                 .achievementList(Collections.emptyList())
                 .build())
             .count(0)

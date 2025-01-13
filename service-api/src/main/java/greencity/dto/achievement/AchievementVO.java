@@ -1,6 +1,7 @@
 package greencity.dto.achievement;
 
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.habit.HabitVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,10 @@ public class AchievementVO {
     @NotEmpty
     private AchievementCategoryVO achievementCategory;
 
+    private HabitVO habit;
+
     @NotEmpty
     private Integer condition;
+
+    private Integer progress;
 }

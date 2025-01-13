@@ -1,26 +1,28 @@
 package greencity.webcontroller;
 
-import greencity.annotations.CurrentUser;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.specification.SpecificationNameDto;
-import greencity.dto.user.UserVO;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,11 +32,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/management/places")
 public class ManagementPlacesController {
     private final PlaceService placeService;
@@ -50,16 +54,26 @@ public class ManagementPlacesController {
      * @return View template path {@link String}.
      * @author Olena Petryshak
      */
-    @GetMapping("")
+    @GetMapping
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable,
+        FilterAdminPlaceDto filterAdminPlaceDto) {
+        if (!filterAdminPlaceDto.isEmpty()) {
+            model.addAttribute("fields", filterAdminPlaceDto);
+        } else {
+            model.addAttribute("fields", new FilterAdminPlaceDto());
+        }
+        if (query != null && !query.isEmpty()) {
+            model.addAttribute("query", query);
+        }
         PageableDto<AdminPlaceDto> allPlaces =
-            query == null || query.isEmpty() ? placeService.findAll(pageable, null)
+            query == null || query.isEmpty() ? placeService.getFilteredPlacesForAdmin(filterAdminPlaceDto, pageable)
                 : placeService.searchBy(pageable, query);
         model.addAttribute("pageable", allPlaces);
         model.addAttribute("categoryList", categoryService.findAllCategoryDto());
-        List<String> discountSpecifications = specificationService.findAllSpecificationDto().stream().map(
-            SpecificationNameDto::getName).collect(Collectors.toList());
+        List<String> discountSpecifications = specificationService.findAllSpecificationDto().stream()
+            .map(SpecificationNameDto::getName)
+            .collect(Collectors.toList());
         model.addAttribute("discountSpecifications", discountSpecifications);
         return "core/management_places";
     }
@@ -77,17 +91,19 @@ public class ManagementPlacesController {
     /**
      * Method which saves {@link PlaceVO}.
      *
-     * @param placeAddDto dto with info for registering place.
-     * @param user        {@link UserVO} is an admin
+     * @param addPlaceDto dto with info for registering place.
+     * @param principal   {@link Principal} is an admin
      * @return {@link GenericResponseDto}
      */
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
-    public GenericResponseDto savePlace(@Valid @RequestBody PlaceAddDto placeAddDto,
-        BindingResult bindingResult,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
+    public GenericResponseDto savePlace(
+        @RequestPart("addPlaceDto") AddPlaceDto addPlaceDto,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images,
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            placeService.save(placeAddDto, user.getEmail());
+            placeService.addPlaceFromUi(addPlaceDto, principal.getName(), images);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -129,7 +145,6 @@ public class ManagementPlacesController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         placeService.bulkDelete(listId);
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(listId);
+        return ResponseEntity.status(HttpStatus.OK).body(listId);
     }
 }

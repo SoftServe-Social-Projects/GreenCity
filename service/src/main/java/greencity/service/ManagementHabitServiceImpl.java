@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
@@ -14,11 +14,14 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.UserActionRepo;
 import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,8 +41,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     private final LanguageService languageService;
     private final FileService fileService;
     private final HabitAssignService habitAssignService;
-    private final HabitFactService habitFactService;
-    private final AdviceService adviceService;
+    private final UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -56,10 +58,17 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+    public PageableHabitManagementDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
         Integer durationTo, Integer complexity, Boolean withoutImage,
         Boolean withImage,
         Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
+        }
+
         if (withImage == null) {
             withImage = false;
         }
@@ -75,12 +84,13 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
-            .collect(Collectors.toList());
-        return new PageableDto<>(
+            .toList();
+        return new PageableHabitManagementDto<>(
             habitDtos,
             habits.getTotalElements(),
             habits.getPageable().getPageNumber(),
-            habits.getTotalPages());
+            habits.getTotalPages(),
+            getSortModel(pageable));
     }
 
     /**
@@ -91,6 +101,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
         Habit habit = buildHabitWithTranslations(habitManagementDto);
         uploadImageForHabit(habitManagementDto, image, habit);
+        habit.setIsDeleted(false);
+        habit.setIsCustomHabit(true);
         habitRepo.save(habit);
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);
@@ -116,28 +128,25 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
                             languageService.findByCode(habitTranslationDto.getLanguageCode()),
                             Language.class))
                         .build())
-                    .collect(Collectors.toList()))
+                    .toList())
             .build();
         habit.getHabitTranslations().forEach(habitTranslation -> habitTranslation.setHabit(habit));
         return habit;
     }
 
     /**
-     * Method sets new image path for {@link Habit}.
+     * Handles image assignment or uploading for the {@link Habit}.
      *
      * @param habitManagementDto {@link HabitManagementDto} instance.
      * @param image              {@link MultipartFile} image.
      * @param habit              {@link Habit} instance.
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        if (image == null) {
-            if (habitManagementDto.getImage() == null) {
-                habit.setImage(AppConstant.DEFAULT_HABIT_IMAGE);
-            } else {
-                habit.setImage(habitManagementDto.getImage());
-            }
+        if (image != null && !image.isEmpty()) {
+            habit.setImage(fileService.upload(image));
         } else {
-            fileService.upload(image);
+            habit.setImage(habitManagementDto.getImage() != null ? habitManagementDto.getImage()
+                : AppConstant.DEFAULT_HABIT_IMAGE);
         }
     }
 
@@ -156,6 +165,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setComplexity(habitManagementDto.getComplexity());
+        habit.setDefaultDuration(habitManagementDto.getDefaultDuration());
         habitRepo.save(habit);
     }
 
@@ -196,9 +206,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
         HabitVO habitVO = modelMapper.map(habit, HabitVO.class);
 
+        userActionRepo.deleteAllByHabitId(id);
         habitTranslationRepo.deleteAllByHabit(habit);
-        habitFactService.deleteAllByHabit(habitVO);
-        adviceService.deleteAllByHabit(habitVO);
         habitAssignService.deleteAllHabitAssignsByHabit(habitVO);
         habitRepo.delete(habit);
     }
@@ -210,5 +219,34 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     @Transactional
     public void deleteAll(List<Long> listId) {
         listId.forEach(this::delete);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void switchIsDeletedStatus(Long id, Boolean newStatus) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        habit.setIsDeleted(newStatus);
+        habitRepo.save(habit);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void switchIsCustomStatus(Long id, Boolean newIsCustomStatus) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        habit.setIsCustomHabit(newIsCustomStatus);
+        habitRepo.save(habit);
+    }
+
+    private String getSortModel(Pageable pageable) {
+        return pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
     }
 }

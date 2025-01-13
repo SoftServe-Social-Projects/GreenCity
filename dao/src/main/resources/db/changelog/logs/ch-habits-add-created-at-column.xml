@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-created-at-columnt" author="Ivan Holotsvan">
+        <addColumn tableName="habits">
+            <column name="created_at" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-default-value" author="Ivan Holotsvan">
+        <addDefaultValue tableName="habits_followers" columnName="created_at" defaultValueComputed="CURRENT_TIMESTAMP"/>
+    </changeSet>
+</databaseChangeLog>

@@ -3,15 +3,14 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentAdminDto;
-import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Comment;
+import greencity.entity.PlaceComment;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -19,6 +18,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
+import greencity.repository.RatingPointsRepo;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,6 +49,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private AchievementCalculation achievementCalculation;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * {@inheritDoc}
@@ -56,9 +57,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public CommentReturnDto findById(Long id) {
-        Comment comment = placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException(""));
-        return modelMapper.map(comment, CommentReturnDto.class);
+    public PlaceCommentResponseDto findById(Long id) {
+        PlaceComment comment = placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException(""));
+        return modelMapper.map(comment, PlaceCommentResponseDto.class);
     }
 
     /**
@@ -67,14 +68,14 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
+    public PlaceCommentResponseDto save(Long placeId, PlaceCommentRequestDto placeCommentRequestDto, String email) {
         UserVO userVO = restClient.findByEmail(email);
         if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         Place place = modelMapper.map(placeService.findById(placeId), Place.class);
         User user = modelMapper.map(userVO, User.class);
-        Comment comment = modelMapper.map(addCommentDto, Comment.class);
+        PlaceComment comment = modelMapper.map(placeCommentRequestDto, PlaceComment.class);
         comment.setPlace(place);
         comment.setUser(user);
         if (comment.getEstimate() != null) {
@@ -89,11 +90,11 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setComment(comment);
             photo.setPlace(place);
         });
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
-        return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
+        return modelMapper.map(placeCommentRepo.save(comment), PlaceCommentResponseDto.class);
     }
 
     /**
@@ -107,7 +108,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserVO userVO = restClient.findByEmail(authentication.getName());
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
@@ -116,14 +117,14 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<CommentAdminDto> getAllComments(Pageable pageable) {
-        Page<Comment> comments;
-        List<CommentAdminDto> commentList;
+    public PageableDto<PlaceCommentAdminDto> getAllComments(Pageable pageable) {
+        Page<PlaceComment> comments;
+        List<PlaceCommentAdminDto> commentList;
         try {
             comments = placeCommentRepo.findAll(pageable);
             commentList =
                 comments.getContent()
-                    .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
+                    .stream().map(comment -> modelMapper.map(comment, PlaceCommentAdminDto.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundException(ErrorMessage.COMMENT_PROPERTY_TYPE_NOT_FOUND + pageable.getSort());

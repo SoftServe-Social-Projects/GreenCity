@@ -1,22 +1,24 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceWithUserDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlaceResponse;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.PlaceWithUserDto;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
@@ -33,7 +35,9 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,8 +48,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -67,7 +73,6 @@ public class PlaceController {
      *
      * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
-     * @author Kateryna Horokh
      */
     @Operation(summary = "Propose new place.")
     @ApiResponses(value = {
@@ -94,7 +99,6 @@ public class PlaceController {
      *
      * @param dto - Place dto for updating with all parameters.
      * @return new {@code Place}.
-     * @author Kateryna Horokh
      */
     @Operation(summary = "Update place")
     @ApiResponses(value = {
@@ -123,7 +127,6 @@ public class PlaceController {
      *
      * @param id place
      * @return info about place
-     * @author Dmytro Dovhal
      */
     @Operation(summary = "Get info about place")
     @ApiResponses(value = {
@@ -146,7 +149,6 @@ public class PlaceController {
      *
      * @param placeId - {@code Place} id
      * @return info about {@code Place} with name as in {@code FavoritePlace}
-     * @author Zakhar Skaletskyi
      */
     @Operation(summary = "Get info about favourite place")
     @ApiResponses(value = {
@@ -170,7 +172,6 @@ public class PlaceController {
      *
      * @param favoritePlaceDto -{@link FavoritePlaceDto}
      * @return principal - user e,ail
-     * @author Zakhar Skaletskyi
      */
     @Operation(summary = "Save place as favourite.")
     @ApiResponses(value = {
@@ -200,7 +201,6 @@ public class PlaceController {
      *
      * @param filterPlaceDto Contains South-West and North-East bounds of map .
      * @return a list of {@code PlaceByBoundsDto}
-     * @author Marian Milian
      */
     @Operation(summary = "Get list of places by Map Bounds.")
     @ApiResponses(value = {
@@ -231,7 +231,6 @@ public class PlaceController {
      * @param pageable pageable configuration.
      * @return response {@link PageableDto} object. Contains a list of
      *         {@link AdminPlaceDto}.
-     * @author Roman Zahorui
      */
     @Operation(summary = "Get places by status(APPROVED, PROPOSED, DECLINED, DELETED).")
     @ApiResponses(value = {
@@ -261,7 +260,6 @@ public class PlaceController {
      *
      * @param filterDto contains all information about the filtering of the list.
      * @return a list of {@code PlaceByBoundsDto}
-     * @author Roman Zahorui
      */
     @Operation(summary = "Return a list places filtered by values contained "
         + "in the incoming FilterPlaceDto object")
@@ -279,9 +277,9 @@ public class PlaceController {
     })
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
-        @Valid @RequestBody FilterPlaceDto filterDto) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.getPlacesByFilter(filterDto));
+        @Valid @RequestBody FilterPlaceDto filterDto,
+        @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 
     /**
@@ -291,7 +289,6 @@ public class PlaceController {
      *            {@link PlaceStatus}.
      * @return response object with {@link UpdatePlaceStatusDto} and OK status if
      *         everything is ok.
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Update status of place")
     @ApiResponses(value = {
@@ -307,9 +304,9 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @PatchMapping("/status")
-    public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+    public ResponseEntity<UpdatePlaceStatusWithUserEmailDto> updateStatus(
+        @Valid @RequestBody UpdatePlaceStatusWithUserEmailDto dto) {
+        return ResponseEntity.ok(placeService.updatePlaceStatus(dto));
     }
 
     /**
@@ -321,7 +318,6 @@ public class PlaceController {
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
      * @return a list of {@link PageableDto}
-     * @author Rostyslav Khasanov
      */
     @Operation(summary = "Return a list places filtered by values contained "
         + "in the incoming FilterPlaceDto object")
@@ -353,7 +349,6 @@ public class PlaceController {
      *
      * @param id place
      * @return response {@link PlaceUpdateDto} object.
-     * @author Kateryna Horokh
      */
     @Operation(summary = "Get place by id.")
     @ApiResponses(value = {
@@ -379,7 +374,6 @@ public class PlaceController {
      *            updated {@link PlaceStatus}
      * @return list of {@link UpdatePlaceStatusDto} with updated {@link PlaceVO}'s
      *         and {@link PlaceStatus}'s
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Bulk update place statuses")
     @ApiResponses(value = {
@@ -405,7 +399,6 @@ public class PlaceController {
      * The method which return array of {@link PlaceStatus}.
      *
      * @return array of statuses
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Get array of available place statuses")
     @ApiResponses(value = {
@@ -426,7 +419,6 @@ public class PlaceController {
      * DELETED).
      *
      * @param id - {@link PlaceVO} id
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Delete place")
     @ApiResponses(value = {
@@ -453,7 +445,6 @@ public class PlaceController {
      * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to
      *            be deleted
      * @return count of deleted {@link PlaceVO}'s
-     * @author Nazar Vladyka
      */
     @Operation(summary = "Bulk delete places")
     @ApiResponses(value = {
@@ -495,16 +486,19 @@ public class PlaceController {
      */
     @Operation(summary = "Create new place from Ui")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @PostMapping("/v2/save")
-    public ResponseEntity<PlaceResponse> saveEcoPlaceFromUi(@RequestBody AddPlaceDto dto,
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.addPlaceFromUi(dto, principal.getName()));
+    @PostMapping(value = "/v2/save",
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<PlaceResponse> saveEcoPlaceFromUi(@Parameter(required = true) @RequestPart AddPlaceDto dto,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(placeService.addPlaceFromUi(dto, principal.getName(), images));
     }
 
     /**
@@ -512,7 +506,6 @@ public class PlaceController {
      * loggedIn User.
      *
      * @return pageableDto of {@link AdminPlaceDto}.
-     * @author Olena Sotnik.
      */
     @Operation(summary = "Get all places with info if place isFavorite")
     @ApiResponses(value = {

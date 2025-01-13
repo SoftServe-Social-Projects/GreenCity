@@ -101,41 +101,46 @@ $(document).ready(function () {
         });
     });
 
-    //submit button in addAchievementModal
+    // submit button in addAchievementModal
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
+
         var formData = $('#addAchievementForm').serializeArray().reduce(function (obj, item) {
             obj[item.name] = item.value;
             return obj;
         }, {});
+
         var payload = {
-            "id": formData.id,
-            "translations": getTranslationsFormFormData(formData),
-            "achievementCategory": formData.achievementCategory,
+            "title": formData.title,
+            "name": formData.name,
+            "nameEng": formData.nameEng,
+            "achievementCategory": {
+                "name": formData.achievementCategory
+            },
             "condition": formData.condition
         };
 
-        //save request in addAchievementModal
+        // AJAX request to save achievement
         $.ajax({
             url: '/management/achievement',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
+            data: JSON.stringify(payload),
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
                         $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
-                    })
+                    });
                 } else {
                     location.reload();
                 }
-            },
-            data: JSON.stringify(payload)
+            }
         });
     });
 
-    //edit button on the right in the table
+// edit button on the right in the table
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();
         $("#editAchievementModal").each(function () {
@@ -143,76 +148,150 @@ $(document).ready(function () {
         });
         clearAllErrorsSpan();
         $('#editAchievementModal').modal();
-        var href = $(this).attr('href');
-        $.get(href, function (achievement, status) {
-            $('#id').val(achievement.id);
-            achievement.translations.forEach(function (translation, index) {
-                $(`#title_${translation.language.id}_${translation.language.code}`)
-                    .val(translation.title);
-                $(`#description_${translation.language.id}_${translation.language.code}`)
-                    .val(translation.description);
-                $(`#message_${translation.language.id}_${translation.language.code}`)
-                    .val(translation.message);
-            });
-            $('#achievementCategory').val(achievement.achievementCategory.name);
-            $('#condition').val(achievement.condition);
-        });
+        var $row = $(this).closest('tr');
+
+        var achievementId = $row.find('td:nth-child(2)').text();
+        var title = $row.find('td:nth-child(3)').text();
+        var nameUa = $row.find('td:nth-child(4) span:nth-child(1)').text();
+        var nameEng = $row.find('td:nth-child(4) span:nth-child(3)').text();
+        var achievementCategory = $row.find('td:nth-child(5)').text();
+        var condition = $row.find('td:nth-child(6)').text();
+
+        $('#id').val(achievementId);
+        $('input[name="title"]').val(title);
+        $('input[name="name"]').val(nameUa);
+        $('input[name="nameEng"]').val(nameEng);
+        $('input[name="condition"]').val(condition);
+        $('select[name="achievementCategory"]').val(achievementCategory.trim());
     });
-    //submit button in editEcoNewsModal
+
+// Submit button in the editAchievementModal
     $('#submitEditBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
+
         var formData = $('#editAchievementForm').serializeArray().reduce(function (obj, item) {
             obj[item.name] = item.value;
             return obj;
         }, {});
         var payload = {
             "id": formData.id,
-            "translations": getTranslationsFormFormData(formData),
-            "achievementCategory": formData.achievementCategory,
+            "title": formData.title,
+            "name": formData.name,
+            "nameEng": formData.nameEng,
+            "achievementCategory": {
+                "name": formData.achievementCategory
+            },
             "condition": formData.condition
         };
-        //save request in editAchievementModal
+
+        // Send the AJAX request to update the achievement
         $.ajax({
             url: '/management/achievement',
-            type: 'put',
+            type: 'PUT',
             dataType: 'json',
             contentType: 'application/json',
+            data: JSON.stringify(payload),
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
                         $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
-                    })
+                    });
                 } else {
                     location.reload();
                 }
-            },
-            data: JSON.stringify(payload)
+            }
         });
-    })
-});
+    });
+ });
 
-function getTranslationsFormFormData(formData) {
-    var translations = [];
-    for (var key in formData) {
-        if (key.startsWith("title")) {
-            var contentAndLanguage = key.split("_");
-            var langId = contentAndLanguage[1];
-            var langCode = contentAndLanguage[2];
-            var title = formData["title_" + langId + "_" + langCode];
-            var description = formData["description_" + langId + "_" + langCode];
-            var message = formData["message_" + langId + "_" + langCode];
-            translations.push({
-                "title": title,
-                "description": description,
-                "message": message,
-                "language": {
-                    "code": langCode,
-                    "id": langId
-                }
-            });
+function orderByField(fieldName = null, sortOrder = null) {
+    let urlSearch = new URLSearchParams(window.location.search);
+    let sortParams = [];
+    const baseUrl = document.body.getAttribute('data-base-url');
+    urlSearch.forEach((value, key) => {
+        if (key === "sort" && value !== "") {
+            sortParams.push(value);
         }
+    });
+
+    if (fieldName && sortOrder) {
+        let updated = false;
+
+        for (let i = 0; i < sortParams.length; i++) {
+            let [field, order] = sortParams[i].split(',');
+            if (field === fieldName) {
+                if (order === sortOrder) {
+                    sortParams.splice(i, 1);
+                } else {
+                    sortParams[i] = `${fieldName},${sortOrder}`;
+                }
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            sortParams.push(`${fieldName},${sortOrder}`);
+        }
+
+        urlSearch.delete("sort");
+        sortParams.forEach(param => urlSearch.append("sort", param));
+
+        const url = baseUrl + `?${urlSearch.toString()}`;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function () {
+                window.location.href = url;
+            }
+        });
     }
 
-    return translations;
+    const fieldMapping = {
+        'id': ['id-icon-asc', 'id-icon-desc'],
+        'title': ['title-icon-asc', 'title-icon-desc'],
+        'name': ['name-icon-asc', 'name-icon-desc'],
+        'achievementCategory.name': ['category-icon-asc', 'category-icon-desc'],
+        'condition': ['condition-icon-asc', 'condition-icon-desc']
+    };
+
+    sortParams.forEach(param => {
+        let [field, order] = param.split(',');
+        const icons = fieldMapping[field];
+        if (icons) {
+            const direction = order.toLowerCase() === 'asc' ? 0 : 1;
+            document.getElementById(icons[direction]).style.color = 'green';
+        }
+    });
+
+    updatePaginationLinks(urlSearch);
 }
+
+function updatePaginationLinks(urlSearch) {
+    const paginationLinks = document.querySelectorAll('.pagination a.page-link');
+
+    paginationLinks.forEach(link => {
+        const url = new URL(link.getAttribute('href'), window.location.origin);
+        const pageParam = url.searchParams.get('page');
+        const queryParam = url.searchParams.get('query');
+
+        urlSearch.delete('page');
+        urlSearch.delete('query');
+
+        url.search = urlSearch.toString();
+
+        if (pageParam) {
+            url.searchParams.set('page', pageParam);
+        }
+        if (queryParam) {
+            url.searchParams.set('query', queryParam);
+        }
+
+        link.setAttribute('href', url.toString());
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    orderByField();
+});

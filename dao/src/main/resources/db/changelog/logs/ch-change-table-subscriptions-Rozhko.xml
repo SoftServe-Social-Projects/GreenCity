@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="Rozhko-1" author="Ilia Rozhko">
+        <modifyDataType tableName="news_subscribers" columnName="unsubscribe_token" newDataType="uuid"/>
+    </changeSet>
+
+    <changeSet id="Rozhko-2" author="Ilia Rozhko">
+        <addColumn tableName="news_subscribers">
+            <column name="subscription_type" type="varchar(8)" defaultValue="ECO_NEWS"/>
+        </addColumn>
+
+        <addNotNullConstraint columnName="subscription_type" tableName="news_subscribers" />
+    </changeSet>
+
+    <changeSet id="Rozhko-3" author="Ilia Rozhko">
+        <renameColumn tableName="news_subscribers" oldColumnName="email_address" newColumnName="email"/>
+    </changeSet>
+
+    <changeSet id="Rozhko-4" author="Ilia Rozhko">
+        <modifyDataType tableName="news_subscribers" columnName="email" newDataType="varchar(50)"/>
+    </changeSet>
+
+    <changeSet id="Rozhko-5" author="Ilia Rozhko">
+        <renameTable oldTableName="news_subscribers" newTableName="subscriptions"/>
+    </changeSet>
+
+</databaseChangeLog>

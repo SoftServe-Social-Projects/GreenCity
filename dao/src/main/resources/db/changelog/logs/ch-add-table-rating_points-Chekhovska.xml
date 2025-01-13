@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Add table rating_points" author="Maryna Chekhovska">
+        <createTable tableName="rating_points">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points" type="INT" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Insert table rating_points" author="Maryna Chekhovska">
+        <insert tableName="rating_points">
+            <column name="name" value="DAYS_OF_HABIT_IN_PROGRESS"/>
+            <column name="points" valueNumeric="1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_NEWS"/>
+            <column name="points" valueNumeric="30"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY"/>
+            <column name="points" valueNumeric="5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY"/>
+            <column name="points" valueNumeric="1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS"/>
+            <column name="points" valueNumeric="20"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT"/>
+            <column name="points" valueNumeric="40"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT"/>
+            <column name="points" valueNumeric="20"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_HABIT"/>
+            <column name="points" valueNumeric="1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="ACQUIRED_HABIT_14_DAYS"/>
+            <column name="points" valueNumeric="20"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="ACQUIRED_HABIT_21_DAYS"/>
+            <column name="points" valueNumeric="30"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="ACQUIRED_HABIT_30_DAYS"/>
+            <column name="points" valueNumeric="40"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY_1_TIMES"/>
+            <column name="points" valueNumeric="5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY_5_TIMES"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY_10_TIMES"/>
+            <column name="points" valueNumeric="15"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY_25_TIMES"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY_50_TIMES"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="COMMENT_OR_REPLY_100_TIMES"/>
+            <column name="points" valueNumeric="100"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT_1_TIMES"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT_5_TIMES"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT_10_TIMES"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT_25_TIMES"/>
+            <column name="points" valueNumeric="150"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT_50_TIMES"/>
+            <column name="points" valueNumeric="250"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATE_EVENT_100_TIMES"/>
+            <column name="points" valueNumeric="500"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATED_1_NEWS"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATED_5_NEWS"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATED_10_NEWS"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATED_25_NEWS"/>
+            <column name="points" valueNumeric="150"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATED_50_NEWS"/>
+            <column name="points" valueNumeric="250"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="CREATED_100_NEWS"/>
+            <column name="points" valueNumeric="500"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="FIRST_5_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="FIRST_10_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="FIRST_25_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="FIRST_50_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="100"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="FIRST_100_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="200"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT_1_TIMES"/>
+            <column name="points" valueNumeric="5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT_5_TIMES"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT_10_TIMES"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT_25_TIMES"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT_50_TIMES"/>
+            <column name="points" valueNumeric="100"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="JOIN_EVENT_100_TIMES"/>
+            <column name="points" valueNumeric="200"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY_1_TIMES"/>
+            <column name="points" valueNumeric="1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY_5_TIMES"/>
+            <column name="points" valueNumeric="5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY_10_TIMES"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY_25_TIMES"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY_50_TIMES"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_COMMENT_OR_REPLY_100_TIMES"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS_1_TIMES"/>
+            <column name="points" valueNumeric="10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS_5_TIMES"/>
+            <column name="points" valueNumeric="25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS_10_TIMES"/>
+            <column name="points" valueNumeric="50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS_25_TIMES"/>
+            <column name="points" valueNumeric="150"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS_50_TIMES"/>
+            <column name="points" valueNumeric="250"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="SHARE_NEWS_100_TIMES"/>
+            <column name="points" valueNumeric="500"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_DAYS_OF_HABIT_IN_PROGRESS"/>
+            <column name="points" valueNumeric="-1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_NEWS"/>
+            <column name="points" valueNumeric="-30"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY"/>
+            <column name="points" valueNumeric="-5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY"/>
+            <column name="points" valueNumeric="-1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS"/>
+            <column name="points" valueNumeric="-20"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT"/>
+            <column name="points" valueNumeric="-40"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT"/>
+            <column name="points" valueNumeric="-20"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_HABIT"/>
+            <column name="points" valueNumeric="-1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_ACQUIRED_HABIT_14_DAYS"/>
+            <column name="points" valueNumeric="-20"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_ACQUIRED_HABIT_21_DAYS"/>
+            <column name="points" valueNumeric="-30"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_ACQUIRED_HABIT_30_DAYS"/>
+            <column name="points" valueNumeric="-40"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY_1_TIMES"/>
+            <column name="points" valueNumeric="-5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY_5_TIMES"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY_10_TIMES"/>
+            <column name="points" valueNumeric="-15"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY_25_TIMES"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY_50_TIMES"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_COMMENT_OR_REPLY_100_TIMES"/>
+            <column name="points" valueNumeric="-100"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT_1_TIMES"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT_5_TIMES"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT_10_TIMES"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT_25_TIMES"/>
+            <column name="points" valueNumeric="-150"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT_50_TIMES"/>
+            <column name="points" valueNumeric="-250"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATE_EVENT_100_TIMES"/>
+            <column name="points" valueNumeric="-500"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATED_1_NEWS"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATED_5_NEWS"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATED_10_NEWS"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATED_25_NEWS"/>
+            <column name="points" valueNumeric="-150"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATED_50_NEWS"/>
+            <column name="points" valueNumeric="-250"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_CREATED_100_NEWS"/>
+            <column name="points" valueNumeric="-500"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_FIRST_5_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_FIRST_10_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_FIRST_25_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_FIRST_50_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="-100"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_FIRST_100_ACHIEVEMENTS"/>
+            <column name="points" valueNumeric="-200"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT_1_TIMES"/>
+            <column name="points" valueNumeric="-5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT_5_TIMES"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT_10_TIMES"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT_25_TIMES"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT_50_TIMES"/>
+            <column name="points" valueNumeric="-100"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_JOIN_EVENT_100_TIMES"/>
+            <column name="points" valueNumeric="-200"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY_1_TIMES"/>
+            <column name="points" valueNumeric="-1"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY_5_TIMES"/>
+            <column name="points" valueNumeric="-5"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY_10_TIMES"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY_25_TIMES"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY_50_TIMES"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_COMMENT_OR_REPLY_100_TIMES"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS_1_TIMES"/>
+            <column name="points" valueNumeric="-10"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS_5_TIMES"/>
+            <column name="points" valueNumeric="-25"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS_10_TIMES"/>
+            <column name="points" valueNumeric="-50"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS_25_TIMES"/>
+            <column name="points" valueNumeric="-150"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS_50_TIMES"/>
+            <column name="points" valueNumeric="-250"/>
+        </insert>
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_SHARE_NEWS_100_TIMES"/>
+            <column name="points" valueNumeric="-500"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="replace_event_column_with_rating_points" author="Maryna Chekhovska">
+        <addColumn tableName="rating_statistics">
+            <column name="rating_points_id" type="BIGINT"/>
+        </addColumn>
+
+        <sql>
+            UPDATE rating_statistics
+            SET rating_points_id = (
+                SELECT rp.id FROM rating_points rp
+                WHERE rp.name = rating_statistics.event
+            );
+        </sql>
+
+        <dropColumn tableName="rating_statistics" columnName="event"/>
+
+        <addForeignKeyConstraint baseTableName="rating_statistics"
+                                 baseColumnNames="rating_points_id"
+                                 constraintName="fk_rating_statistics_rating_points"
+                                 referencedTableName="rating_points"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>

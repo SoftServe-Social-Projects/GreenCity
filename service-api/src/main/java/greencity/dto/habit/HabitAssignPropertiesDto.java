@@ -24,5 +24,8 @@ public class HabitAssignPropertiesDto {
     @Max(AppConstant.MAX_DAYS_DURATION)
     private Integer duration;
 
-    private List<Long> defaultShoppingListItems;
+    @NotNull
+    private Boolean isPrivate;
+
+    private List<Long> defaultToDoListItems;
 }

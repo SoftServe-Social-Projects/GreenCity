@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="Fedotov-1" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_name = 'habits_users_likes';
+            </sqlCheck>
+        </preConditions>
+        <createTable tableName="habits_users_likes">
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Fedotov-2" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE constraint_name = 'fk_habits_users_likes_habits';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habits_users_likes"
+                                 constraintName="fk_habits_users_likes_habits"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+
+    <changeSet id="Fedotov-3" author="Dmytro Fedotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE constraint_name = 'fk_habits_users_likes_users';
+            </sqlCheck>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habits_users_likes"
+                                 constraintName="fk_habits_users_likes_users"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

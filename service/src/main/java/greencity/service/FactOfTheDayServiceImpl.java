@@ -7,16 +7,19 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.dto.factoftheday.FactOfTheDayVO;
+import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.Language;
+import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import greencity.repository.TagsRepo;
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,11 +29,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import static greencity.enums.TagType.FACT_OF_THE_DAY;
 
 /**
  * Implementation of {@link FactOfTheDayService}.
- *
- * @author Mykola Lehkyi
  */
 @AllArgsConstructor
 @Service
@@ -40,15 +42,12 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
+    private final TagsRepo tagsRepo;
     @Resource
     private FactOfTheDayService self;
 
     /**
-     * Method finds all {@link FactOfTheDay} with pageable configuration.
-     *
-     * @param pageable {@link Pageable}
-     * @return {@link PageableDto} with list of all {@link FactOfTheDayDTO}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
     public PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable) {
@@ -59,6 +58,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             factOfTheDayDTOs =
                 factsOfTheDay.getContent().stream()
                     .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+                    .map(factOfTheDay -> factOfTheDay
+                        .setTags(factOfTheDayRepo.findTagsByFactOfTheDayId(factOfTheDay.getId())))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_PROPERTY_NOT_FOUND + pageable.getSort());
@@ -68,19 +69,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             factsOfTheDay.getTotalElements(),
             factsOfTheDay.getPageable().getPageNumber(),
             factsOfTheDay.getTotalPages());
-    }
-
-    /**
-     * Method find {@link FactOfTheDay} by id.
-     *
-     * @param id of {@link FactOfTheDay}
-     * @return {@link FactOfTheDay}
-     * @author Mykola Lehkyi
-     */
-    @Override
-    public FactOfTheDayDTO getFactOfTheDayById(Long id) {
-        return modelMapper.map(factOfTheDayRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayDTO.class);
     }
 
     /**
@@ -97,6 +85,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
                         .build())
                     .collect(Collectors.toList()))
+            .tags(tagsRepo.findTagsById(factPost.getTags()))
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
@@ -132,6 +121,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                         .build())
                     .collect(Collectors.toList()))
             .createDate(ZonedDateTime.now())
+            .tags(tagsRepo.findTagsById(factPost.getTags()))
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
@@ -147,25 +137,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayVO update(FactOfTheDayPostDTO fact) {
-        FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(fact.getId())
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.FACT_OF_THE_DAY_NOT_UPDATED));
-        return modelMapper.map(factOfTheDayRepo.save(factOfTheDay), FactOfTheDayVO.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Long deleteFactOfTheDayAndTranslations(Long id) {
-        FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
-        factOfTheDayRepo.deleteById(id);
-        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOS = factOfTheDay.getFactOfTheDayTranslations()
-            .stream()
-            .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
-            .collect(Collectors.toList());
-        factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationVOS);
+        deleteAllFactOfTheDayAndTranslations(List.of(id));
         return id;
     }
 
@@ -193,10 +166,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Override
     public PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery) {
         Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.searchBy(pageable, searchQuery);
-        List<FactOfTheDayDTO> factOfTheDayDTOs =
-            factsOfTheDay.getContent().stream()
-                .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
-                .collect(Collectors.toList());
+        List<FactOfTheDayDTO> factOfTheDayDTOs = factsOfTheDay.getContent().stream()
+            .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+            .map(factOfTheDay -> factOfTheDay
+                .setTags(factOfTheDayRepo.findTagsByFactOfTheDayId(factOfTheDay.getId())))
+            .collect(Collectors.toList());
         return new PageableDto<>(
             factOfTheDayDTOs,
             factsOfTheDay.getTotalElements(),
@@ -209,22 +183,39 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME)
-    public FactOfTheDayVO getRandomFactOfTheDay() {
-        return (modelMapper.map(factOfTheDayRepo.getRandomFactOfTheDay()
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayVO.class));
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByTags(Set<Long> tagIds) {
+        FactOfTheDay factOfTheDay = factOfTheDayRepo.getRandomFactOfTheDay(tagIds)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+        return modelMapper.map(factOfTheDay, FactOfTheDayTranslationDTO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode) {
-        FactOfTheDay factOfTheDay = modelMapper.map(self.getRandomFactOfTheDay(), FactOfTheDay.class);
-        FactOfTheDayTranslation factOfTheDayTranslation = factOfTheDay.getFactOfTheDayTranslations()
-            .stream()
-            .filter(fact -> fact.getLanguage().getCode().equals(languageCode))
-            .findAny()
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
-        return modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class);
+    public FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay() {
+        List<Tag> tags = tagsRepo.findTagsByType(FACT_OF_THE_DAY);
+        return getRandomFactOfTheDayByTags(tags.stream().map(Tag::getId).collect(Collectors.toSet()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String userEmail) {
+        Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userEmail);
+        try {
+            return getRandomFactOfTheDayByTags(userTagIds);
+        } catch (NotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<TagDto> getAllFactOfTheDayTags() {
+        return factOfTheDayRepo.findAllFactOfTheDayAndHabitTags();
     }
 }

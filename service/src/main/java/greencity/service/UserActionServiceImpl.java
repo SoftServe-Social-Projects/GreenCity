@@ -8,20 +8,20 @@ import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserActionRepo;
 import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserActionServiceImpl implements UserActionService {
-    private UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
     private final UserRepo userRepo;
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final HabitRepo habitRepo;
+    private final UserActionRepo userActionRepo;
 
     @Override
     public UserActionVO save(UserActionVO userActionVO) {
@@ -87,10 +87,10 @@ public class UserActionServiceImpl implements UserActionService {
                 () -> new NotFoundException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
             .build();
         if (habitId != null) {
-            userAction.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
+            userAction.setHabit(habitRepo.findById(habitId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
         }
         userActionRepo.save(userAction);
-        return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
+        return modelMapper.map(userAction, UserActionVO.class);
     }
 }

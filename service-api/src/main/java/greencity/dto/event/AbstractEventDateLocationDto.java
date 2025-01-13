@@ -1,26 +1,19 @@
 package greencity.dto.event;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode
-@Getter
-@Setter
+@Data
 public abstract class AbstractEventDateLocationDto {
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "Start date must not be null or empty")
     private ZonedDateTime startDate;
 
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "Finish date must not be null or empty")
     private ZonedDateTime finishDate;
 
     private String onlineLink;

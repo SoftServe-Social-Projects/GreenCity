@@ -1,6 +1,7 @@
 package greencity.exception.exceptions;
 
 import jakarta.validation.ValidationException;
+import lombok.experimental.StandardException;
 
 /**
  * Exception thrown when an invalid EventDto is passed in a request. This
@@ -8,13 +9,6 @@ import jakarta.validation.ValidationException;
  * validation constraints.
  *
  */
+@StandardException
 public class EventDtoValidationException extends ValidationException {
-    /**
-     * Constructs for EventDtoValidationException.
-     *
-     * @param message - giving message.
-     */
-    public EventDtoValidationException(String message) {
-        super(message);
-    }
 }

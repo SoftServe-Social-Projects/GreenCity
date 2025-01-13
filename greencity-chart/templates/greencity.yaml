@@ -19,245 +19,251 @@ spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-      - name: {{ .Release.Name }}-greencity
-        image: {{ .Values.deployment.image }}
-        resources:
-          requests:
-            cpu: {{ .Values.deployment.requests.cpu }}
-            memory: {{ .Values.deployment.requests.memory }}
-          limits:
-            cpu: {{ .Values.deployment.limits.cpu }}
-            memory: {{ .Values.deployment.limits.memory }}
-        startupProbe:
-          httpGet:
+        - name: {{ .Release.Name }}-greencity
+          image: {{ .Values.deployment.image }}
+          resources:
+            requests:
+              cpu: {{ .Values.deployment.requests.cpu }}
+              memory: {{ .Values.deployment.requests.memory }}
+            limits:
+              cpu: {{ .Values.deployment.limits.cpu }}
+              memory: {{ .Values.deployment.limits.memory }}
+          startupProbe:
+            httpGet:
               path: /swagger-ui.html
               port: 8080
-          periodSeconds: 10
-          failureThreshold: 20
-        env:
+            periodSeconds: 10
+            failureThreshold: 20
+          env:
 
-        - name: AZURE_CONNECTION_STRING
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: AZURE-CONNECTION-STRING
+            - name: AZURE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: AZURE-CONNECTION-STRING
 
-        - name: AZURE_CONTAINER_NAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: AZURE-CONTAINER-NAME
+            - name: AZURE_CONTAINER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: AZURE-CONTAINER-NAME
 
-        - name: BACKEND_ADDRESS
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: BACKEND-ADDRESS
+            - name: BACKEND_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: BACKEND-ADDRESS
 
-        - name: CACHE_SPEC
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: CACHE-SPEC
+            - name: CACHE_SPEC
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: CACHE-SPEC
 
-        - name: CLIENT_ADDRESS
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: CLIENT-ADDRESS
+            - name: CLIENT_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: CLIENT-ADDRESS
 
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: DATABASE-PASSWORD
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: DATABASE-PASSWORD
 
-        - name: DATABASE_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: DATABASE-USER
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: DATABASE-USER
 
-        # - name: DIALECT
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: {{ .Values.externalSecret.secretName }}
-        #       key: DIALECT
+            # - name: DIALECT
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: {{ .Values.externalSecret.secretName }}
+            #       key: DIALECT
 
-        - name: DRIVER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: DRIVER
+            - name: DRIVER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: DRIVER
 
-        - name: ECO_NEWS_ADDRESS
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: ECO-NEWS-ADDRESS
+            - name: ECO_NEWS_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: ECO-NEWS-ADDRESS
 
-        - name: FACEBOOK_APP_ID
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: FACEBOOK-APP-ID
+            - name: FACEBOOK_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: FACEBOOK-APP-ID
 
-        - name: FACEBOOK_APP_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: FACEBOOK-APP-SECRET
+            - name: FACEBOOK_APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: FACEBOOK-APP-SECRET
 
-        - name: GREENCITYUSER_SERVER_ADDRESS
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: GREENCITYUSER-SERVER-ADDRESS
+            - name: GREENCITYUSER_SERVER_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: GREENCITYUSER-SERVER-ADDRESS
 
-        - name: HIBERNATE_CONFIG
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: HIBERNATE-CONFIG
+            - name: HIBERNATE_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: HIBERNATE-CONFIG
 
-        - name: JAWSDB_URL
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: {{ if eq .Values.environment "prod" }}JAWSDB-URL{{ else }}JAWSDB-URL-TEST{{ end }}
+            - name: JAWSDB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: {{ if eq .Values.environment "prod" }}JAWSDB-URL{{ else }}JAWSDB-URL-TEST{{ end }}
 
-        - name: JDBC_LOB
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: JDBC-LOB
+            - name: JDBC_LOB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: JDBC-LOB
 
-        - name: LIQUIBASE_ENABLE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LIQUIBASE-ENABLE
+            - name: LIQUIBASE_ENABLE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LIQUIBASE-ENABLE
 
-        - name: LIQUIBASE_LOG
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LIQUIBASE-LOG
+            - name: LIQUIBASE_LOG
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LIQUIBASE-LOG
 
-        - name: LOG_EXCEPTION_HANDLER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LOG-EXCEPTION-HANDLER
+            - name: LOG_EXCEPTION_HANDLER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LOG-EXCEPTION-HANDLER
 
-        - name: LOG_FILE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LOG-FILE
+            - name: LOG_FILE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LOG-FILE
 
-        - name: LOG_LEVEL_ROOT
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LOG-LEVEL-ROOT
+            - name: LOG_LEVEL_ROOT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LOG-LEVEL-ROOT
 
-        - name: LOG_PATH
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LOG-PATH
+            - name: LOG_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LOG-PATH
 
-        - name: LOG_PATTERN
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: LOG-PATTERN
+            - name: LOG_PATTERN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LOG-PATTERN
 
-        - name: MAIL_HOST
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: MAIL-HOST
+            - name: MAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: MAIL-HOST
 
-        - name: MAIL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: MAIL-PASSWORD
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: MAIL-PASSWORD
 
-        - name: MAIL_PORT
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: MAIL-PORT
+            - name: MAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: MAIL-PORT
 
-        - name: MAIL_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: MAIL-USER
+            - name: MAIL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: MAIL-USER
 
-        - name: POOL_SIZE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: POOL-SIZE
+            - name: POOL_SIZE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: POOL-SIZE
 
-        - name: SHOW_SQL
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: SHOW-SQL
+            - name: SHOW_SQL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: SHOW-SQL
 
-        - name: SMTP_AUTH
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: SMTP-AUTH
-              
-        - name: SMTP_ENABLE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: SMTP-ENABLE
+            - name: SMTP_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: SMTP-AUTH
 
-        - name: SPRING_PROFILES_ACTIVE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: SPRING-PROFILES-ACTIVE
+            - name: SMTP_ENABLE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: SMTP-ENABLE
 
-        - name: TOKEN_ACCESS_TIME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: TOKEN-ACCESS-TIME
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: SPRING-PROFILES-ACTIVE
 
-        - name: TOKEN_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: TOKEN-KEY
+            - name: TOKEN_ACCESS_TIME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: TOKEN-ACCESS-TIME
 
-        - name: TOKEN_REFRESH_TIME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: TOKEN-REFRESH-TIME
+            - name: TOKEN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: TOKEN-KEY
 
-        - name: VERIFY_EMAIL
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: VERIFY-EMAIL
+            - name: TOKEN_REFRESH_TIME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: TOKEN-REFRESH-TIME
 
-        - name: GOOGLE_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: GOOGLE-API-KEY
+            - name: VERIFY_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: VERIFY-EMAIL
 
-        ports:
-        - containerPort: 8080
-          name: tomcat
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: GOOGLE-API-KEY
+
+            - name: OPEN_AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: OPEN-AI-API-KEY
+
+          ports:
+            - containerPort: 8080
+              name: tomcat

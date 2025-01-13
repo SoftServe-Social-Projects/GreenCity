@@ -9,6 +9,8 @@ import greencity.dto.specification.SpecificationNameDto;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
+
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,21 +19,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -60,23 +68,21 @@ class ManagementPlacesControllerTest {
 
     @Test
     void getAllPlaces() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
         List<AdminPlaceDto> placeDtos = Collections.singletonList(new AdminPlaceDto());
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
-        when(placeService.findAll(pageable, null)).thenReturn(adminPlaceDtoPageableDto);
+        when(placeService.getFilteredPlacesForAdmin(any(), any())).thenReturn(adminPlaceDtoPageableDto);
         when(categoryService.findAllCategoryDto())
             .thenReturn(Collections.singletonList(new CategoryDto("test", "test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
         this.mockMvc.perform(get("/management/places")
-            .param("page", "0")
-            .param("size", "10"))
+            .param("page", "0"))
             .andExpect(view().name("core/management_places"))
             .andExpect(model().attribute("pageable", adminPlaceDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(placeService).findAll(pageable, null);
+        verify(placeService).getFilteredPlacesForAdmin(any(), any());
         verify(categoryService).findAllCategoryDto();
         verify(specificationService).findAllSpecificationDto();
     }
@@ -89,26 +95,39 @@ class ManagementPlacesControllerTest {
 
     @Test
     void savePlace() throws Exception {
-        this.mockMvc.perform(post("/management/places/")
-            .content("{\n" +
-                "  \"category\": {\n" +
-                "   \"name\": \"Food\"\n" +
-                "  },\n" +
-                "  \"status\": \"APPROVED\",\n" +
-                "  \"discountValues\": null,\n" +
-                "  \"location\": {\n" +
-                "    \"address\": \"string\",\n" +
-                "    \"lat\": 111,\n" +
-                "    \"lng\": 111\n" +
-                "  },\n" +
-                "  \"name\": \"string\",\n" +
-                "  \"openingHoursList\":null,\n" +
-                "  \"photos\": null\n" +
-                "}")
-            .contentType(MediaType.APPLICATION_JSON))
+        Principal principal = Mockito.mock(Principal.class);
+        String json = """
+            {
+                "placeName": "Тестове місце",
+                "locationName": "смиків, південна 7",
+                "status": "APPROVED",
+                "categoryName": "Recycling points",
+                "discountValues": null,
+                "openingHoursList": [
+                    {
+                        "weekDay": "MONDAY",
+                        "openTime": "17:34",
+                        "closeTime": "19:34",
+                        "breakTime": null
+                    }
+                ]
+            }
+            """;
+
+        MockMultipartFile addPlaceDto = new MockMultipartFile(
+            "addPlaceDto",
+            "",
+            "application/json",
+            (json)
+                .getBytes());
+
+        this.mockMvc.perform(multipart("/management/places/")
+            .file(addPlaceDto)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
-        verify(placeService).save(any(), any());
+        verify(placeService).addPlaceFromUi(any(), any(), any());
     }
 
     @Test
@@ -126,18 +145,23 @@ class ManagementPlacesControllerTest {
 
     @Test
     void updatePlaceWithoutIdTest() throws Exception {
+        String json = """
+                {
+                    "name": "test",
+                    "category": {
+                        "name": "Food"
+                    },
+                    "discountValues": null,
+                    "location": {
+                        "address": "address",
+                        "lat": 111.1,
+                        "lng": 111.1
+                    }
+                }
+            """;
+
         mockMvc.perform(put("/management/places/")
-            .content("{\n" +
-                "  \"name\":\"test\",\n" +
-                "  \"category\": {\n" +
-                "   \"name\": \"Food\"\n" +
-                "  },\n" +
-                "  \"discountValues\": null,\n" +
-                "  \"location\": {\n" +
-                "    \"address\": \"address\",\n" +
-                "    \"lat\": 111.1,\n" +
-                "    \"lng\": 111.1\n" +
-                "}}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 

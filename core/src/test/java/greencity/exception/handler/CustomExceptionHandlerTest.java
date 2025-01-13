@@ -14,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -133,20 +132,6 @@ class CustomExceptionHandlerTest {
     }
 
     @Test
-    void handleAuthenticationException() {
-        AuthenticationException authenticationException = new AuthenticationException("test") {
-        };
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
-
-        assertEquals(customExceptionHandler.handleAuthenticationException(
-            authenticationException, webRequest),
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse));
-    }
-
-    @Test
     void handleStatusException() {
         InvalidStatusException statusException = new InvalidStatusException("test");
 
@@ -184,19 +169,6 @@ class CustomExceptionHandlerTest {
     }
 
     @Test
-    void handleImageUrlParseException() {
-        ImageUrlParseException imageUrlParseException = new ImageUrlParseException("test");
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
-
-        assertEquals(customExceptionHandler.handleImageUrlParseException(
-            imageUrlParseException, webRequest),
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
-    }
-
-    @Test
     void handleMethodArgumentNotValid() {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         FieldError fieldError = new FieldError("G", "field", "default");
@@ -212,12 +184,23 @@ class CustomExceptionHandlerTest {
     }
 
     @Test
-    void handleBadEmailException() {
-        UserAlreadyRegisteredException actual = new UserAlreadyRegisteredException("email");
-        ValidationExceptionDto validationDto = new ValidationExceptionDto(actual.getMessage(), "email");
-        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.BAD_REQUEST);
-        ResponseEntity<Object> body = status.body(Collections.singletonList(validationDto));
-        assertEquals(customExceptionHandler.handleBadEmailException(actual), body);
+    void handleBadSocialNetworkLinkException() {
+        InvalidURLException invalidURLException = new InvalidURLException("test");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(), any())).thenReturn(objectMap);
+        assertEquals(customExceptionHandler.handleBadSocialNetworkLinkException(invalidURLException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void testHandleBadSocialNetworkLinkException() {
+        BadSocialNetworkLinksException badSocialNetworkLinksException = new BadSocialNetworkLinksException("test");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class), any(ErrorAttributeOptions.class)))
+            .thenReturn(objectMap);
+        assertEquals(
+            customExceptionHandler.handleBadSocialNetworkLinkException(badSocialNetworkLinksException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
     }
 
     @Test

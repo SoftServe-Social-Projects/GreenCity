@@ -73,7 +73,7 @@ class DataBaseBackupServiceImplTest {
         LocalDateTime start = LocalDateTime.now().minusHours(1);
         LocalDateTime end = LocalDateTime.now();
 
-        when(dataBaseBackUpFilesRepo.findAllByCreatedAtBetween(start, end)).thenReturn(Arrays.asList());
+        when(dataBaseBackUpFilesRepo.findAllByCreatedAtBetween(start, end)).thenReturn(List.of());
 
         assertThrows(NotFoundException.class, () -> databaseBackupService.getBackUpDBUrls(start, end));
     }

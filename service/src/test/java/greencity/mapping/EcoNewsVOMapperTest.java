@@ -4,15 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
-import greencity.enums.CommentStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,9 +21,7 @@ class EcoNewsVOMapperTest {
 
     @Test
     void convert() {
-        EcoNewsComment ecoNewsCommentExample = ModelUtils.getEcoNewsComment();
         EcoNews ecoNews = ModelUtils.getEcoNews();
-        ecoNews.setEcoNewsComments(Collections.singletonList(ecoNewsCommentExample));
 
         EcoNewsVO expected = EcoNewsVO.builder()
             .id(ecoNews.getId())
@@ -58,22 +52,6 @@ class EcoNewsVOMapperTest {
                     .id(user.getId())
                     .build())
                 .collect(Collectors.toSet()))
-            .ecoNewsComments(ecoNews.getEcoNewsComments().stream()
-                .map(ecoNewsComment -> EcoNewsCommentVO.builder()
-                    .id(ecoNewsComment.getId())
-                    .createdDate(ecoNewsComment.getCreatedDate())
-                    .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
-                    .status(ecoNewsComment.getStatus())
-                    .text(ecoNewsComment.getText())
-                    .modifiedDate(ecoNewsComment.getModifiedDate())
-                    .user(UserVO.builder()
-                        .id(ecoNewsComment.getUser().getId())
-                        .name(ecoNewsComment.getUser().getName())
-                        .userStatus(ecoNewsComment.getUser().getUserStatus())
-                        .role(ecoNewsComment.getUser().getRole())
-                        .build())
-                    .build())
-                .collect(Collectors.toList()))
             .build();
 
         assertEquals(expected, ecoNewsVOMapper.convert(ecoNews));
