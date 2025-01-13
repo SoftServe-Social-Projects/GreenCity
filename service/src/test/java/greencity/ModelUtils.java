@@ -208,12 +208,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static greencity.TestConst.ROLE_ADMIN;
@@ -3381,5 +3376,30 @@ public class ModelUtils {
         placesSearchResult.geometry = new Geometry();
         placesSearchResult.geometry.location = new LatLng(1d, 1d);
         return List.of(placesSearchResult);
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponse() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
+        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponseEn() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponseUk() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
     }
 }

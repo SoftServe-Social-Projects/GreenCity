@@ -64,6 +64,7 @@ public class GoogleApiService {
      *
      * @author Hrenevych Ivan
      */
+    // TODO: write tests for coverage
     public List<PlacesSearchResult> getResultFromPlacesApi(FilterPlacesApiDto filterDto, UserVO userVO) {
         List<PlacesSearchResult> placesResults = new ArrayList<>();
         LOCALES.forEach(locale -> {
