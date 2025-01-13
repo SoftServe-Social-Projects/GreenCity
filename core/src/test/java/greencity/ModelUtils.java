@@ -28,12 +28,12 @@ import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
@@ -46,6 +46,8 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserToDoListItemRequestDto;
+import greencity.dto.user.UserToDoListItemRequestWithStatusDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
@@ -71,8 +73,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+import greencity.enums.UserToDoListItemStatus;
 import org.springframework.data.domain.Pageable;
-
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.enums.PlaceStatus.PROPOSED;
@@ -203,7 +205,7 @@ public class ModelUtils {
 
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
         return HabitAssignPropertiesDto.builder()
-            .defaultToDoListItems(List.of(1L, 2L))
+            .defaultToDoListItemIds(List.of(1L, 2L))
             .duration(20)
             .build();
     }
@@ -215,26 +217,33 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
-        return CustomToDoListItemResponseDto.builder()
-            .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
-            .text("text")
+    public static UserToDoListItemRequestDto getUserToDoListItemRequestDto() {
+        return UserToDoListItemRequestDto.builder()
+            .targetId(1L)
+            .isCustomItem(true)
+            .build();
+    }
+
+    public static UserToDoListItemRequestWithStatusDto getUserToDoListItemRequestWithStatusDto() {
+        return UserToDoListItemRequestWithStatusDto.builder()
+            .targetId(1L)
+            .isCustomItem(true)
+            .status(UserToDoListItemStatus.DONE)
             .build();
     }
 
     public static UserToDoListItemResponseDto getUserToDoListItemResponseDto() {
         return UserToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
+            .status(UserToDoListItemStatus.INPROGRESS)
             .text("text")
             .build();
     }
 
-    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
-            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
+    public static ToDoListItemResponseDto getToDoListItemResponseDto() {
+        return ToDoListItemResponseDto.builder()
+            .id(1L)
+            .text("item text")
             .build();
     }
 
@@ -341,9 +350,9 @@ public class ModelUtils {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customToDoListItemDto(List.of(
-                CustomToDoListItemResponseDto.builder()
+                CustomToDoListItemRequestDto.builder()
                     .id(1L)
-                    .status(ToDoListItemStatus.ACTIVE)
+                    .status(ToDoListItemStatus.ACTIVE.toString())
                     .text("buy a shopper")
                     .build()))
             .defaultDuration(7)

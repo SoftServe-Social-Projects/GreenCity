@@ -1,29 +1,32 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
+import greencity.converters.UserArgumentResolver;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.enums.ToDoListItemStatus;
+import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.CustomToDoListItemService;
-import java.util.*;
+import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
-
+import java.util.List;
 import static greencity.ModelUtils.getPrincipal;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static greencity.ModelUtils.getUserVO;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,91 +35,120 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CustomToDoListItemControllerTest {
     private MockMvc mockMvc;
 
-    @Mock
-    CustomToDoListItemService customToDoListItemService;
-
     @InjectMocks
-    CustomToDoListItemController customController;
-    ObjectMapper objectMapper;
+    private CustomToDoListItemController customController;
 
-    private Principal principal = getPrincipal();
+    @Mock
+    private CustomToDoListItemService customToDoListItemService;
 
-    private static final String customLink = "/custom/to-do-list-items";
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     private CustomToDoListItemResponseDto dto;
 
+    private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+
+    private final Principal principal = getPrincipal();
+
+    private static final String customLink = "/habits/custom-to-do-list-items";
+
     @BeforeEach
     void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(customController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        mockMvc = MockMvcBuilders.standaloneSetup(customController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
             .build();
-        objectMapper = new ObjectMapper();
 
-        dto = new CustomToDoListItemResponseDto(3L, "text",
-            ToDoListItemStatus.ACTIVE);
+        dto = new CustomToDoListItemResponseDto(3L, "text");
     }
 
     @Test
-    void getAllAvailableCustomToDoListItems() throws Exception {
-        Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/" + id)
+    void getAllAvailableCustomToDoListItemsIsOk() throws Exception {
+        Long habitId = 1L;
+        UserVO userVO = getUserVO();
+        List<CustomToDoListItemResponseDto> expected = List.of(dto);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(customToDoListItemService.findAllHabitCustomToDoList(userVO.getId(), habitId))
+            .thenReturn(expected);
+        this.mockMvc.perform(get(customLink + "/" + habitId)
             .principal(principal)).andExpect(status().isOk());
-        when(customToDoListItemService.findAllAvailableCustomToDoListItems(1L, 1L))
-            .thenReturn(Collections.singletonList(dto));
-        verify(customToDoListItemService).findAllAvailableCustomToDoListItems(id, id);
-        assertEquals(dto,
-            customController.getAllAvailableCustomToDoListItems(id, id).getBody().get(0));
+        verify(customToDoListItemService).findAllHabitCustomToDoList(userVO.getId(), habitId);
     }
 
     @Test
-    void save() throws Exception {
-        Long id = 1L;
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto = new BulkSaveCustomToDoListItemDto();
-        String content = objectMapper.writeValueAsString(bulkSaveCustomToDoListItemDto);
-        this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-to-do-list-items")
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
-        when(customToDoListItemService.save(bulkSaveCustomToDoListItemDto, id, id))
-            .thenReturn(Collections.singletonList(dto));
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, id, id);
-        assertEquals(dto, customController
-            .saveUserCustomToDoListItems(bulkSaveCustomToDoListItemDto, id, id).getBody().get(0));
+    void getAllAvailableCustomToDoListItemsIsBadRequest() throws Exception {
+        Long habitId = 0L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        this.mockMvc.perform(get(customLink + "/" + habitId)
+            .principal(principal)).andExpect(status().isBadRequest());
+        verifyNoInteractions(customToDoListItemService);
     }
 
     @Test
-    void updateItemStatus() throws Exception {
-        this.mockMvc.perform(patch(customLink + "/{userId}/custom-to-do-list-items/?itemId=1&status=DONE", 1)
+    void getAllAvailableCustomToDoListItemsIsNotFound() throws Exception {
+        Long habitId = 1L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(customToDoListItemService.findAllHabitCustomToDoList(userVO.getId(), habitId))
+            .thenThrow(NotFoundException.class);
+        this.mockMvc.perform(get(customLink + "/" + habitId)
             .principal(principal))
-            .andExpect(status().isOk());
-        verify(customToDoListItemService).updateItemStatus(1L, 1L, "DONE");
+            .andExpect(status().isNotFound());
+        verify(customToDoListItemService).findAllHabitCustomToDoList(userVO.getId(), habitId);
     }
 
     @Test
-    void delete() throws Exception {
-        String ids = "1,2";
-        this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-            .delete(customLink + "/{userId}/custom-to-do-list-items", 1)
-            .param("ids", ids)).andExpect(status().isOk());
-        verify(customToDoListItemService).bulkDelete(ids);
+    void getAllNotAddedCustomToDoListItemsForHabitAssignIsOk() throws Exception {
+        Long habitAssignId = 1L;
+        UserVO userVO = getUserVO();
+        List<CustomToDoListItemResponseDto> expected = List.of(dto);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId))
+            .thenReturn(expected);
+        this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
+            .principal(principal)).andExpect(status().isOk());
+        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId);
     }
 
     @Test
-    void updateItemStatusToDoneTest() throws Exception {
-        this.mockMvc.perform(patch(customLink + "/{userId}/done", 1)
-            .param("userId", "1")
-            .param("itemId", "1"))
-            .andExpect(status().isOk());
-        verify(customToDoListItemService).updateItemStatusToDone(1L, 1L);
+    void getAllNotAddedCustomToDoListItemsForHabitAssignIsBadRequest() throws Exception {
+        Long habitAssignId = 0L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
+            .principal(principal)).andExpect(status().isBadRequest());
+        verifyNoInteractions(customToDoListItemService);
     }
 
     @Test
-    void getAllCustomToDoItemsByStatus() throws Exception {
-        Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/custom-to-do-list-items")).andExpect(status().isOk());
-        when(customToDoListItemService.findAllUsersCustomToDoListItemsByStatus(anyLong(), anyString()))
-            .thenReturn(Collections.singletonList(dto));
+    void getAllNotAddedCustomToDoListItemsForHabitAssignIsForbidden() throws Exception {
+        Long habitAssignId = 1L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId))
+            .thenThrow(UserHasNoPermissionToAccessException.class);
+        this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
+            .principal(principal)).andExpect(status().isForbidden());
+        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId);
+    }
 
-        assertEquals(dto,
-            customController.getAllCustomToDoItemsByStatus(id, "ACTIVE").getBody().get(0));
+    @Test
+    void getAllNotAddedCustomToDoListItemsForHabitAssignIsNotFound() throws Exception {
+        Long habitAssignId = 1L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(customToDoListItemService.findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId))
+            .thenThrow(NotFoundException.class);
+        this.mockMvc.perform(get(customLink + "/assign/" + habitAssignId)
+            .principal(principal)).andExpect(status().isNotFound());
+        verify(customToDoListItemService).findAvailableCustomToDoListForHabitAssign(userVO.getId(), habitAssignId);
     }
 }

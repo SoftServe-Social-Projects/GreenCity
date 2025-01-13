@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -20,16 +20,10 @@ import java.time.LocalDateTime;
 @Builder
 public class UserToDoListItemAdvanceDto {
     private Long id;
-    private Long toDoListItemId;
-    private ToDoListItemStatus status;
+    private Long targetId;
+    private Boolean isCustomItem;
+    private UserToDoListItemStatus status;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateCompleted;
     private String content;
-
-    /**
-     * Method returns status in Boolean.
-     */
-    public Boolean getBoolStatus() {
-        return status.equals(ToDoListItemStatus.INPROGRESS);
-    }
 }

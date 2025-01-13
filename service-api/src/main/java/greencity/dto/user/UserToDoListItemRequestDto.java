@@ -1,26 +1,25 @@
-package greencity.dto.todolistitem;
+package greencity.dto.user;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @EqualsAndHashCode
-public class ToDoListItemResponseDto {
+@SuperBuilder
+public class UserToDoListItemRequestDto {
     @NotNull
-    @Min(value = 1)
-    private Long id;
+    @Min(1)
+    private Long targetId;
 
-    @NotEmpty
-    private String text;
+    @NotNull
+    private Boolean isCustomItem;
 }

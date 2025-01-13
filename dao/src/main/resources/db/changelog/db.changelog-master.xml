@@ -260,4 +260,8 @@
     <include file="/db/changelog/logs/ch-habits-add-created-at-column.xml"/>
     <include file="db/changelog/logs/ch-change-user-profile-columns-type-Haliara.xml"/>
     <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
+    <include file="db/changelog/logs/ch-refactor-column-to_do_list_id-in-user_to_do_list-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-update-values-status-in-user_to_do_list-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-update-table-custom_to_do_list-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-update-values-status-in-habit_to_do_list_items-Herchanivska.xml"/>
 </databaseChangeLog>

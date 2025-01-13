@@ -2,13 +2,12 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import greencity.enums.ToDoListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -42,18 +41,23 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
             .tags(habit.getTags().stream()
                 .flatMap(tag -> tag.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .map(TagTranslation::getName).toList())
             .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
-                .map(shoppingListItem -> ToDoListItemDto.builder()
-                    .id(shoppingListItem.getId())
-                    .status(ToDoListItemStatus.ACTIVE.toString())
-                    .text(shoppingListItem.getTranslations().stream()
-                        .filter(shoppingListItemTranslation -> shoppingListItemTranslation
+                .map(toDoListItem -> ToDoListItemResponseDto.builder()
+                    .id(toDoListItem.getId())
+                    .text(toDoListItem.getTranslations().stream()
+                        .filter(toDoListItemTranslation -> toDoListItemTranslation
                             .getLanguage().equals(language))
                         .map(ToDoListItemTranslation::getContent)
                         .findFirst().orElse(null))
                     .build())
-                .collect(Collectors.toList()) : new ArrayList<>())
+                .toList() : new ArrayList<>())
+            .customToDoListItems(habit.getCustomToDoListItems() != null ? habit.getCustomToDoListItems().stream()
+                .map(customItem -> CustomToDoListItemResponseDto.builder()
+                    .id(customItem.getId())
+                    .text(customItem.getText())
+                    .build())
+                .toList() : new ArrayList<>())
             .build();
     }
 }

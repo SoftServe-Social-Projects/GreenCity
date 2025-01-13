@@ -1,15 +1,14 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.entity.CustomToDoListItem;
+import greencity.enums.ToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -19,30 +18,30 @@ class CustomToDoListMapperTests {
 
     @Test
     void convertTest() {
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDto();
+        CustomToDoListItemRequestDto customToDoListItemRequestDto =
+            ModelUtils.getCustomToDoListItemRequestDto();
 
         CustomToDoListItem expected = CustomToDoListItem.builder()
-            .id(customToDoListItemResponseDto.getId())
-            .status(customToDoListItemResponseDto.getStatus())
-            .text(customToDoListItemResponseDto.getText())
+            .id(customToDoListItemRequestDto.getId())
+            .status(ToDoListItemStatus.valueOf(customToDoListItemRequestDto.getStatus()))
+            .text(customToDoListItemRequestDto.getText())
             .build();
-        assertEquals(expected, customToDoListMapper.convert(customToDoListItemResponseDto));
+        assertEquals(expected, customToDoListMapper.convert(customToDoListItemRequestDto));
     }
 
     @Test
     void mapAllToListTest() {
-        CustomToDoListItemResponseDto customToDoListItemResponseDto =
-            ModelUtils.getCustomToDoListItemResponseDto();
-        List<CustomToDoListItemResponseDto> customToDoListItemResponseDtoList =
-            List.of(ModelUtils.getCustomToDoListItemResponseDto());
+        CustomToDoListItemRequestDto customToDoListItemRequestDto =
+            ModelUtils.getCustomToDoListItemRequestDto();
+        List<CustomToDoListItemRequestDto> customToDoListItemRequestDtoList =
+            List.of(ModelUtils.getCustomToDoListItemRequestDto());
 
         CustomToDoListItem expected = CustomToDoListItem.builder()
-            .id(customToDoListItemResponseDto.getId())
-            .status(customToDoListItemResponseDto.getStatus())
-            .text(customToDoListItemResponseDto.getText())
+            .id(customToDoListItemRequestDto.getId())
+            .status(ToDoListItemStatus.valueOf(customToDoListItemRequestDto.getStatus()))
+            .text(customToDoListItemRequestDto.getText())
             .build();
         List<CustomToDoListItem> expectedList = List.of(expected);
-        assertEquals(expectedList, customToDoListMapper.mapAllToList(customToDoListItemResponseDtoList));
+        assertEquals(expectedList, customToDoListMapper.mapAllToList(customToDoListItemRequestDtoList));
     }
 }

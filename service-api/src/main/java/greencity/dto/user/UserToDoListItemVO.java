@@ -1,9 +1,8 @@
 package greencity.dto.user;
 
-import greencity.dto.todolistitem.ToDoListItemVO;
 import greencity.dto.habit.HabitAssignVO;
-import greencity.enums.ToDoListItemStatus;
 import java.time.LocalDateTime;
+import greencity.enums.UserToDoListItemStatus;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -24,10 +23,12 @@ public class UserToDoListItemVO {
 
     private HabitAssignVO habitAssign;
 
-    private ToDoListItemVO toDoListItemVO;
+    private Long targetId;
+
+    private Boolean isCustomItem;
 
     @Builder.Default
-    private ToDoListItemStatus status = ToDoListItemStatus.ACTIVE;
+    private UserToDoListItemStatus status = UserToDoListItemStatus.INPROGRESS;
 
     private LocalDateTime dateCompleted;
 }

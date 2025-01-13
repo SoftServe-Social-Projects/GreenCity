@@ -5,7 +5,6 @@ import greencity.entity.CustomToDoListItem;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class CustomToDoListResponseDtoMapper
@@ -15,7 +14,6 @@ public class CustomToDoListResponseDtoMapper
         return CustomToDoListItemResponseDto.builder()
             .id(customToDoListItem.getId())
             .text(customToDoListItem.getText())
-            .status(customToDoListItem.getStatus())
             .build();
     }
 
@@ -29,6 +27,6 @@ public class CustomToDoListResponseDtoMapper
      */
     public List<CustomToDoListItemResponseDto> mapAllToList(
         List<CustomToDoListItem> itemList) {
-        return itemList.stream().map(this::convert).collect(Collectors.toList());
+        return itemList.stream().map(this::convert).toList();
     }
 }

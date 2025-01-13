@@ -1,148 +1,129 @@
 package greencity.controller;
 
-import greencity.dto.todolistitem.ToDoListItemRequestDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.converters.UserArgumentResolver;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
+import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.ToDoListItemService;
-
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
+import java.util.List;
+import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getToDoListItemResponseDto;
+import static greencity.ModelUtils.getUserVO;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.validation.Validator;
 
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ToDoListItemControllerTest {
-    private static final String toDoListItemLink = "/user/to-do-list-items";
     private MockMvc mockMvc;
+
     @InjectMocks
     private ToDoListItemController toDoListItemController;
+
     @Mock
     private ToDoListItemService toDoListItemService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
     @Mock
     private Validator mockValidator;
 
-    private Principal principal = getPrincipal();
+    private static final String toDoListItemLink = "/habits/to-do-list-items";
+
+    private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+
+    private final Principal principal = getPrincipal();
+
+    private ToDoListItemResponseDto dto;
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(toDoListItemController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
             .setValidator(mockValidator)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
+
+        dto = getToDoListItemResponseDto();
     }
 
     @Test
-    void bulkDeleteUserToDoListItemTest() throws Exception {
-        mockMvc.perform(delete(toDoListItemLink + "/user-to-do-list-items?ids=1,2", 1))
-            .andExpect(status().isOk());
-
-        verify(toDoListItemService).deleteUserToDoListItems("1,2");
-    }
-
-    @Test
-    void updateUserToDoListItemStatusWithLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(toDoListItemLink + "/{userToDoListItemId}", 1, 1)
-            .locale(Locale.of("ua")))
-            .andExpect(status().isCreated());
-
-        verify(toDoListItemService).updateUserToDoListItemStatus(null, 1L, "ua");
-    }
-
-    @Test
-    void updateUserToDoListItemStatus() throws Exception {
-        mockMvc.perform(patch(toDoListItemLink
-            + "/{toDoListItemId}/status/{status}", 1, "DONE")
-            .locale(Locale.of("en")))
-            .andExpect(status().isOk());
-
-        verify(toDoListItemService)
-            .updateUserToDoListItemStatus(null, 1L, "en", "DONE");
-    }
-
-    @Test
-    void updateUserToDoListItemStatusWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(toDoListItemLink + "/{userToDoListItemId}", 1, 1))
-            .andExpect(status().isCreated());
-
-        verify(toDoListItemService).updateUserToDoListItemStatus(null, 1L, "en");
-    }
-
-    @Test
-    void saveUserToDoListItemWithoutLanguageParamTest() throws Exception {
-        String content = """
-            [
-                {
-                    "id": 1
-                }
-            ]
-            """;
-
-        mockMvc.perform(post(toDoListItemLink + "?habitId=1&lang=en", 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isCreated());
-
-        ToDoListItemRequestDto dto = new ToDoListItemRequestDto(1L);
-        verify(toDoListItemService).saveUserToDoListItems(null, 1L, Collections.singletonList(dto), "en");
-    }
-
-    @Test
-    void getUserToDoListItemsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(toDoListItemLink + "/habits/1/to-do-list?lang=en", 1))
-            .andExpect(status().isOk());
-
-        verify(toDoListItemService).getUserToDoList(null, 1L, "en");
-    }
-
-    @Test
-    void getUserToDoListItemWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(toDoListItemLink + "/habits/1/to-do-list", 1))
-            .andExpect(status().isOk());
-
-        verify(toDoListItemService).getUserToDoList(null, 1L, "en");
-    }
-
-    @Test
-    void deleteTest() throws Exception {
-
-        mockMvc.perform(delete(toDoListItemLink)
-            .param("toDoListItemId", "1")
-            .param("habitId", "1"))
-            .andExpect(status().isOk());
-
-        verify(toDoListItemService).deleteUserToDoListItemByItemIdAndUserIdAndHabitId(1L, null, 1L);
-    }
-
-    @Test
-    void findAllByUserTest() throws Exception {
-        Long id = 1L;
-        this.mockMvc.perform(get(toDoListItemLink + "/" + id + "/" + "get-all-inprogress")
-            .param("lang", "ua")
+    void getAllToDoListItemsForHabitIsOk() throws Exception {
+        Long habitId = 1L;
+        List<ToDoListItemResponseDto> expected = List.of(dto);
+        when(toDoListItemService.findAllHabitToDoList(eq(habitId), anyString()))
+            .thenReturn(expected);
+        this.mockMvc.perform(get(toDoListItemLink + "/" + habitId)
             .principal(principal)).andExpect(status().isOk());
-        when(toDoListItemService.findInProgressByUserIdAndLanguageCode(id, "ua"))
-            .thenReturn(new ArrayList<>());
-        verify(toDoListItemService).findInProgressByUserIdAndLanguageCode(id, "ua");
-        assertTrue(toDoListItemController.findInProgressByUserId(id, "ua").getBody().isEmpty());
+        verify(toDoListItemService).findAllHabitToDoList(eq(habitId), anyString());
+    }
+
+    @Test
+    void getAllToDoListItemsForHabitIsNotFound() throws Exception {
+        Long habitId = 1L;
+        when(toDoListItemService.findAllHabitToDoList(eq(habitId), anyString()))
+            .thenThrow(NotFoundException.class);
+        this.mockMvc.perform(get(toDoListItemLink + "/" + habitId)
+            .principal(principal)).andExpect(status().isNotFound());
+        verify(toDoListItemService).findAllHabitToDoList(eq(habitId), anyString());
+    }
+
+    @Test
+    void findAvailableToDoListForHabitAssignIsOk() throws Exception {
+        Long habitAssignId = 1L;
+        UserVO userVO = getUserVO();
+        List<ToDoListItemResponseDto> expected = List.of(dto);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(
+            toDoListItemService.findAvailableToDoListForHabitAssign(eq(userVO.getId()), eq(habitAssignId), anyString()))
+            .thenReturn(expected);
+        this.mockMvc.perform(get(toDoListItemLink + "/assign/" + habitAssignId)
+            .principal(principal)).andExpect(status().isOk());
+        verify(toDoListItemService).findAvailableToDoListForHabitAssign(eq(userVO.getId()), eq(habitAssignId),
+            anyString());
+    }
+
+    @Test
+    void findAvailableToDoListForHabitAssignIsNotFound() throws Exception {
+        Long habitAssignId = 1L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(
+            toDoListItemService.findAvailableToDoListForHabitAssign(eq(userVO.getId()), eq(habitAssignId), anyString()))
+            .thenThrow(NotFoundException.class);
+        this.mockMvc.perform(get(toDoListItemLink + "/assign/" + habitAssignId)
+            .principal(principal)).andExpect(status().isNotFound());
+        verify(toDoListItemService).findAvailableToDoListForHabitAssign(eq(userVO.getId()), eq(habitAssignId),
+            anyString());
     }
 }

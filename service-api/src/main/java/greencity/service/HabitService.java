@@ -5,7 +5,6 @@ import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -67,14 +66,6 @@ public interface HabitService {
         String languageCode);
 
     /**
-     * Method returns to-do list in specific language by habit id.
-     *
-     * @return list {@link ToDoListItemDto}.
-     * @author Dmytro Khonko
-     */
-    List<ToDoListItemDto> getToDoListForHabit(Long habitId, String lang);
-
-    /**
      * Method that find all habit's translations by language code and tags.
      *
      * @param pageable        {@link Pageable}
@@ -115,9 +106,11 @@ public interface HabitService {
     void addToDoListItemToHabit(Long habitId, Long itemId);
 
     /**
-     * Method for deleting the {@link ToDoListItemDto} instance by its id.
+     * Method for deleting the {@link greencity.dto.todolistitem.ToDoListItemVO}
+     * instance by its id.
      *
-     * @param itemId  - {@link ToDoListItemDto} instance id which will be deleted.
+     * @param itemId  - {@link greencity.dto.todolistitem.ToDoListItemVO} instance
+     *                id which will be deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @author Marian Diakiv
@@ -125,21 +118,25 @@ public interface HabitService {
     void deleteToDoListItem(Long habitId, Long itemId);
 
     /**
-     * Method deletes all {@link ToDoListItemDto} by list of ids.
+     * Method deletes all {@link greencity.dto.todolistitem.ToDoListItemVO} by list
+     * of ids.
      *
-     * @param listId  list of id {@link ToDoListItemDto}
+     * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance from which it will
-     *                be deleted. return list of id {@link ToDoListItemDto}
+     *                be deleted. return list of id
+     *                {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @author Marian Diakiv
      */
     List<Long> deleteAllToDoListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method add all {@link ToDoListItemDto} by list of ids.
+     * Method add all {@link greencity.dto.todolistitem.ToDoListItemVO} by list of
+     * ids.
      *
-     * @param listId  list of id {@link ToDoListItemDto}
+     * @param listId  list of id {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
-     *                added return list of id {@link ToDoListItemDto}
+     *                added return list of id
+     *                {@link greencity.dto.todolistitem.ToDoListItemVO}
      * @author Marian Diakiv
      */
     List<Long> addAllToDoListItemsByListOfId(Long habitId, List<Long> listId);

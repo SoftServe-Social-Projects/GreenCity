@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Herchanivska-14" author="Viktoriia Herchanivska">
+        <update tableName="habit_to_do_list_items">
+            <column name="status" value="ACTIVE"/>
+            <where>status='ACTUAL'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

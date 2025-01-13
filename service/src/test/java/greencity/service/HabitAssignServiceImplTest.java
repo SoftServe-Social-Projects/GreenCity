@@ -16,13 +16,8 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -32,14 +27,13 @@ import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
-import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.RatingPoints;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.NotificationType;
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -80,6 +74,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import static greencity.ModelUtils.getCustomToDoListItem;
+import static greencity.ModelUtils.getToDoListItemTranslation;
+import static greencity.ModelUtils.getUserToDoListItemResponseDto;
 import static greencity.ModelUtils.getHabitAssignDto;
 import static greencity.ModelUtils.habitAssignInProgress;
 import static greencity.ModelUtils.getFullHabitAssign;
@@ -98,9 +95,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -135,10 +130,6 @@ class HabitAssignServiceImplTest {
     private ToDoListItemTranslationRepo toDoListItemTranslationRepo;
     @InjectMocks
     private HabitAssignServiceImpl habitAssignService;
-    @Mock
-    private ToDoListItemService toDoListItemService;
-    @Mock
-    private CustomToDoListItemService customToDoListItemService;
     @Mock
     private UserService userService;
     @Mock
@@ -186,7 +177,7 @@ class HabitAssignServiceImplTest {
     private List<HabitAssign> fullHabitAssigns = Collections.singletonList(fullHabitAssign);
 
     private HabitAssignPropertiesDto habitAssignPropertiesDto =
-        HabitAssignPropertiesDto.builder().duration(14).defaultToDoListItems(List.of(1L)).isPrivate(false).build();
+        HabitAssignPropertiesDto.builder().duration(14).defaultToDoListItemIds(List.of(1L)).isPrivate(false).build();
 
     private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
         HabitAssignCustomPropertiesDto.builder()
@@ -250,7 +241,7 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habit.getId()))
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habit.getId()))
                 .thenReturn(Collections.emptyList());
 
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
@@ -265,11 +256,12 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(anyLong()))
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(anyLong()))
                 .thenReturn(Arrays.asList(2L, 3L, 4L));
+        when(customToDoListItemRepo.getAllCustomToDoListItemIdByHabitIdIsContained(anyLong())).thenReturn(List.of(2L));
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
-        verify(toDoListItemRepo).getToDoListByListOfId(any());
+
     }
 
     @Test
@@ -463,9 +455,9 @@ class HabitAssignServiceImplTest {
         user.setCustomToDoListItems(new ArrayList<>());
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
-        when(customToDoListItemRepo.save(any())).thenReturn(ModelUtils.getCustomToDoListItem());
+        when(customToDoListItemRepo.save(any())).thenReturn(getCustomToDoListItem());
         when(modelMapper.map(ModelUtils.getCustomToDoListItemSaveRequestDto(), CustomToDoListItem.class))
-            .thenReturn(ModelUtils.getCustomToDoListItem());
+            .thenReturn(getCustomToDoListItem());
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
@@ -486,15 +478,15 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignCustomHabitForUserThrowsCustomToDoListItemNotSavedException() {
-        user.setCustomToDoListItems(List.of(ModelUtils.getCustomToDoListItem()));
+        user.setCustomToDoListItems(List.of(getCustomToDoListItem()));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
         when(modelMapper.map(ModelUtils.getCustomToDoListItemSaveRequestDto(), CustomToDoListItem.class))
-            .thenReturn(ModelUtils.getCustomToDoListItem());
+            .thenReturn(getCustomToDoListItem());
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
 
         String expectedErrorMessage = String.format(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_EXISTS,
-            ModelUtils.getCustomToDoListItem().getText());
+            getCustomToDoListItem().getText());
 
         CustomToDoListItemNotSavedException exception = assertThrows(CustomToDoListItemNotSavedException.class,
             () -> habitAssignService.assignCustomHabitForUser(1L, userVO,
@@ -755,7 +747,7 @@ class HabitAssignServiceImplTest {
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
         verify(userToDoListItemRepo).deleteToDoListItemsByHabitAssignId(habitAssignId);
-        verify(customToDoListItemRepo).deleteCustomToDoListItemsByHabitId(habitId);
+        verify(customToDoListItemRepo).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(habitId, userId);
         verify(habitAssignRepo).delete(habitAssignForDelete);
     }
 
@@ -772,7 +764,8 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
         verify(userToDoListItemRepo, times(0)).deleteToDoListItemsByHabitAssignId(anyLong());
-        verify(customToDoListItemRepo, times(0)).deleteCustomToDoListItemsByHabitId(anyLong());
+        verify(customToDoListItemRepo, times(0)).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(anyLong(),
+            anyLong());
         verify(habitAssignRepo, times(0)).delete(any(HabitAssign.class));
     }
 
@@ -792,7 +785,8 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(userToDoListItemRepo, times(0)).deleteToDoListItemsByHabitAssignId(anyLong());
-        verify(customToDoListItemRepo, times(0)).deleteCustomToDoListItemsByHabitId(anyLong());
+        verify(customToDoListItemRepo, times(0)).deleteNotDefaultCustomToDoListItemsByHabitIdAndUserId(anyLong(),
+            anyLong());
         verify(habitAssignRepo, times(0)).delete(any(HabitAssign.class));
     }
 
@@ -873,8 +867,6 @@ class HabitAssignServiceImplTest {
 
         when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDtoCustom);
-        when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(any()))
-            .thenReturn(List.of(userToDoListItemCustom));
 
         when(habitInvitationService.getInvitedFriendsIdsTrackingHabitList(anyLong(), anyLong()))
             .thenReturn(List.of(1L, 2L));
@@ -884,10 +876,8 @@ class HabitAssignServiceImplTest {
             .thenReturn(ModelUtils.getHabitAssignDtoWithFriendsIds().getHabit());
 
         expected.getFirst().getHabit().setToDoListItems(
-            List.of(ToDoListItemDto.builder()
+            List.of(ToDoListItemResponseDto.builder()
                 .id(userToDoListItemCustom.getId())
-                .status(userToDoListItemCustom.getStatus().toString())
-                .text(userToDoListItemCustom.getToDoListItem().getTranslations().get(0).getContent())
                 .build()));
 
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
@@ -1027,35 +1017,44 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getUserToDoAndCustomToDoLists() {
+    void getToDoAndCustomToDoLists() {
         Long habitAssignId = 2L;
         Long userId = 3L;
+        habitAssign.getUser().setId(userId);
+        userVO.setId(userId);
 
-        List<CustomToDoListItemResponseDto> customToDoListItemResponseDtos =
-            List.of(ModelUtils.getCustomToDoListItemResponseDto());
-        List<UserToDoListItemResponseDto> userToDoListItemResponseDtos =
-            List.of(ModelUtils.getUserToDoListItemResponseDto());
-        UserToDoAndCustomToDoListsDto expected =
-            UserToDoAndCustomToDoListsDto
-                .builder()
-                .customToDoListItemDto(customToDoListItemResponseDtos)
-                .userToDoListItemDto(userToDoListItemResponseDtos)
-                .build();
+        List<UserToDoListItemResponseDto> expected = new ArrayList<>();
+        UserToDoListItemResponseDto fromCustomToDo = getUserToDoListItemResponseDto().setIsCustomItem(true);
+        UserToDoListItemResponseDto fromToDo = getUserToDoListItemResponseDto().setIsCustomItem(false);
+        expected.add(fromToDo);
+        expected.add(fromCustomToDo);
+        ToDoListItemTranslation itemTranslation = getToDoListItemTranslation();
+        fromToDo.setText(itemTranslation.getContent());
+        CustomToDoListItem customToDoListItem = getCustomToDoListItem();
+        fromCustomToDo.setText(customToDoListItem.getText());
+        UserToDoListItem userItemFromCustomToDo = getUserToDoListItem().setIsCustomItem(true);
+        UserToDoListItem userItemFromToDo = getUserToDoListItem().setIsCustomItem(false);
 
-        when(toDoListItemService.getUserToDoListByHabitAssignId(userId, habitAssignId, language))
-            .thenReturn(userToDoListItemResponseDtos);
-        when(
-            customToDoListItemService.findAllAvailableCustomToDoListItemsByHabitAssignId(userId, habitAssignId))
-            .thenReturn(customToDoListItemResponseDtos);
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(userId)).thenReturn(userVO);
+        when(userToDoListItemRepo.findAllByHabitAssingId(habitAssignId))
+            .thenReturn(List.of(userItemFromToDo, userItemFromCustomToDo));
+        when(modelMapper.map(userItemFromToDo, UserToDoListItemResponseDto.class)).thenReturn(fromToDo);
+        when(modelMapper.map(userItemFromCustomToDo, UserToDoListItemResponseDto.class)).thenReturn(fromCustomToDo);
+        when(customToDoListItemRepo.getReferenceById(userItemFromToDo.getTargetId())).thenReturn(customToDoListItem);
+        when(toDoListItemTranslationRepo.findByLangAndToDoListItemId(language, userItemFromToDo.getTargetId()))
+            .thenReturn(itemTranslation);
 
-        UserToDoAndCustomToDoListsDto actual =
-            habitAssignService.getUserToDoAndCustomToDoLists(userId, habitAssignId, language);
+        List<UserToDoListItemResponseDto> actual =
+            habitAssignService.getToDoAndCustomToDoLists(userId, habitAssignId, language);
 
         assertEquals(expected, actual);
 
-        verify(toDoListItemService).getUserToDoListByHabitAssignId(userId, habitAssignId, language);
-        verify(customToDoListItemService).findAllAvailableCustomToDoListItemsByHabitAssignId(userId,
-            habitAssignId);
+        verify(userToDoListItemRepo).findAllByHabitAssingId(habitAssignId);
+        verify(modelMapper).map(userItemFromToDo, UserToDoListItemResponseDto.class);
+        verify(modelMapper).map(userItemFromCustomToDo, UserToDoListItemResponseDto.class);
+        verify(customToDoListItemRepo).getReferenceById(userItemFromToDo.getTargetId());
+        verify(toDoListItemTranslationRepo).findByLangAndToDoListItemId(language, userItemFromToDo.getTargetId());
     }
 
     @Test
@@ -1063,34 +1062,22 @@ class HabitAssignServiceImplTest {
         Habit habit1 = Habit.builder().id(3L)
             .complexity(1).build();
 
+        HabitAssign habitAssign1 = getHabitAssign(2L, habit1, HabitAssignStatus.INPROGRESS);
+        UserToDoListItem userToDoListItem = getUserToDoListItem();
+        habitAssign1.setUserToDoListItems(List.of(userToDoListItem));
         List<HabitAssign> habitAssignList =
-            List.of(ModelUtils.getHabitAssign(2L, habit1, HabitAssignStatus.INPROGRESS));
+            List.of(habitAssign1);
 
-        List<CustomToDoListItemResponseDto> customToDoListItemResponseDtos =
-            List.of(ModelUtils.getCustomToDoListItemResponseDtoWithStatusInProgress());
+        UserToDoListItemResponseDto responseDto = getUserToDoListItemResponseDto();
 
-        List<UserToDoListItemResponseDto> userToDoListItemResponseDtos =
-            List.of(UserToDoListItemResponseDto
-                .builder().id(1L).status(ToDoListItemStatus.INPROGRESS).build());
-
-        List<UserToDoAndCustomToDoListsDto> expected = List.of(
-            UserToDoAndCustomToDoListsDto
-                .builder()
-                .customToDoListItemDto(customToDoListItemResponseDtos)
-                .userToDoListItemDto(userToDoListItemResponseDtos)
-                .build());
+        List<UserToDoListItemResponseDto> expected = List.of(responseDto);
 
         when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(habitAssignList);
-        when(toDoListItemService.getUserToDoListItemsByHabitAssignIdAndStatusInProgress(2L, "en"))
-            .thenReturn(userToDoListItemResponseDtos);
-        when(customToDoListItemService.findAllCustomToDoListItemsWithStatusInProgress(1L, 3L))
-            .thenReturn(customToDoListItemResponseDtos);
+        when(modelMapper.map(any(), eq(UserToDoListItemResponseDto.class))).thenReturn(responseDto);
 
-        assertEquals(expected, habitAssignService.getListOfUserAndCustomToDoListsWithStatusInprogress(1L, "en"));
+        assertEquals(expected, habitAssignService.getListOfUserToDoListsWithStatusInprogress(1L, "en"));
 
         verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
-        verify(toDoListItemService).getUserToDoListItemsByHabitAssignIdAndStatusInProgress(anyLong(), any());
-        verify(customToDoListItemService).findAllCustomToDoListItemsWithStatusInProgress(anyLong(), anyLong());
     }
 
     @Test
@@ -1098,7 +1085,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(Collections.emptyList());
 
         assertThrows(NotFoundException.class, () -> habitAssignService
-                .getListOfUserAndCustomToDoListsWithStatusInprogress(1L, "en"));
+                .getListOfUserToDoListsWithStatusInprogress(1L, "en"));
 
         verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
     }
@@ -1203,8 +1190,6 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo).save(habitAssign);
         verify(modelMapper).map(habitAssign, HabitAssignDto.class);
         verify(modelMapper).map(translation, HabitDto.class);
-        verify(userToDoListItemRepo)
-            .getAllAssignedToDoListItemsFull(habitAssignId);
     }
 
     @Test
@@ -1604,11 +1589,8 @@ class HabitAssignServiceImplTest {
             habitAssignInProgress.getHabit().getHabitTranslations().stream().findFirst().get();
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignInProgress));
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
-            .thenReturn(new ArrayList<>());
         when(modelMapper.map(habitAssignInProgress, HabitAssignDto.class)).thenReturn(habitAssignDtoInProgress);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDtoInProgress.getHabit());
-        when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(habitAssignId)).thenReturn(new ArrayList<>());
 
         var dto = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
 
@@ -1617,8 +1599,6 @@ class HabitAssignServiceImplTest {
         assertEquals(habitWithHabitAssignStatus.getImage(), dto.getImage());
         assertEquals(habitAssignInProgress.getStatus(), dto.getHabitAssignStatus());
         verify(habitAssignRepo).findById(anyLong());
-        verify(toDoListItemTranslationRepo).findToDoListByHabitIdAndByLanguageCode(anyString(), anyLong());
-        verify(userToDoListItemRepo).getAllAssignedToDoListItemsFull(anyLong());
     }
 
     @Test
@@ -1637,15 +1617,12 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(fullHabitAssign));
         when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(fullHabitAssignDto);
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
-            .thenReturn(getToDoListItemTranslationList());
         when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
 
         HabitDto actual = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
         assertNotNull(actual.getAmountAcquiredUsers());
 
         verify(habitAssignRepo, times(1)).findById(habitAssignId);
-        verify(toDoListItemTranslationRepo, times(1)).findToDoListByHabitIdAndByLanguageCode(language, habitId);
         verify(habitAssignRepo, times(1)).findAmountOfUsersAcquired(habitId);
     }
 
@@ -1660,20 +1637,20 @@ class HabitAssignServiceImplTest {
     @Test
     void updateToDoItem() {
         UserToDoListItem userToDoListItem = getUserToDoListItem();
-        userToDoListItem.setStatus(ToDoListItemStatus.ACTIVE);
+        userToDoListItem.setStatus(UserToDoListItemStatus.INPROGRESS);
         when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(any()))
             .thenReturn(List.of(userToDoListItem));
 
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(ToDoListItemStatus.INPROGRESS, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.DONE, userToDoListItem.getStatus());
 
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(ToDoListItemStatus.ACTIVE, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.INPROGRESS, userToDoListItem.getStatus());
     }
 
     @Test
     void updateToDoItemWithNotPresentToDoItem() {
-        ToDoListItemStatus oldStatus = ToDoListItemStatus.ACTIVE;
+        UserToDoListItemStatus oldStatus = UserToDoListItemStatus.INPROGRESS;
         UserToDoListItem userToDoListItem = getUserToDoListItem();
         userToDoListItem.setStatus(oldStatus);
         when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(any()))
@@ -1690,1013 +1667,13 @@ class HabitAssignServiceImplTest {
         when(userToDoListItemRepo.getAllAssignedToDoListItemsFull(any()))
             .thenReturn(List.of(userToDoListItem));
 
-        userToDoListItem.setStatus(ToDoListItemStatus.DONE);
+        userToDoListItem.setStatus(UserToDoListItemStatus.DONE);
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(ToDoListItemStatus.DONE, userToDoListItem.getStatus());
+        assertEquals(UserToDoListItemStatus.INPROGRESS, userToDoListItem.getStatus());
 
-        userToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
+        userToDoListItem.setStatus(UserToDoListItemStatus.DISABLED);
         habitAssignService.updateToDoItem(1L, 1L);
-        assertEquals(ToDoListItemStatus.DISABLED, userToDoListItem.getStatus());
-    }
-
-    @Test
-    void fullUpdateUserAndCustomToDoListsWithNonItem() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService.fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(getFullHabitAssign().getHabit().getId(), List.of(),
-            language);
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void saveUserToDoListWithStatuses() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        String name = "Buy a bamboo toothbrush";
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        responseDto.setId(null);
-        responseDto.setText(name);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        List<String> listOfName = List.of(name);
-        ToDoListItem toDoListItem = ModelUtils.getToDoListItem();
-        ToDoListItemWithStatusRequestDto requestDto = ModelUtils.getToDoListItemWithStatusRequestDto();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(toDoListItemRepo.findByNames(getFullHabitAssign().getHabit().getId(), listOfName, language))
-            .thenReturn(List.of(toDoListItem));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService.fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo).findByNames(getFullHabitAssign().getHabit().getId(), listOfName, language);
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(requestDto), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void saveUserToDoListWithStatusesWithNonExistentItemThrowsNotFoundException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        String name = "Buy a bamboo toothbrush";
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        responseDto.setId(null);
-        responseDto.setText(name);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        List<String> listOfName = List.of(name);
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(toDoListItemRepo.findByNames(getFullHabitAssign().getHabit().getId(), listOfName, language))
-            .thenReturn(List.of());
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> habitAssignService
-                .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-
-        assertEquals(ErrorMessage.TO_DO_LIST_ITEM_NOT_FOUND_BY_NAMES + name, exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo).findByNames(getFullHabitAssign().getHabit().getId(), listOfName, language);
-        verify(toDoListItemService, times(0))
-            .saveUserToDoListItems(anyLong(), anyLong(), anyList(), anyString());
-
-        verify(customToDoListItemRepo, times(0)).findAllByUserIdAndHabitId(userId,
-            getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void saveUserToDoListWithStatusesWithDuplicateThrowsBadRequestException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        responseDto.setId(null);
-        UserToDoListItemResponseDto sameResponse = ModelUtils.getUserToDoListItemResponseDto();
-        sameResponse.setId(null);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto, sameResponse))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-
-        assertEquals(ErrorMessage.DUPLICATED_USER_TO_DO_LIST_ITEM, exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService, times(0))
-            .saveUserToDoListItems(anyLong(), anyLong(), anyList(), anyString());
-
-        verify(customToDoListItemRepo, times(0))
-            .findAllByUserIdAndHabitId(anyLong(), anyLong());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesUpdateItem() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        ToDoListItemStatus newStatus = ToDoListItemStatus.DONE;
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        responseDto.setStatus(newStatus);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        HabitAssign habitAssignWithToDoList = ModelUtils.getHabitAssign();
-
-        UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
-        userToDoListItem.setStatus(ToDoListItemStatus.ACTIVE);
-        userToDoListItem.setHabitAssign(null);
-
-        habitAssignWithToDoList.setUserToDoListItems(List.of(userToDoListItem));
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        UserToDoListItem userToDoListItemToSave = ModelUtils.getUserToDoListItem();
-        userToDoListItemToSave.setStatus(ToDoListItemStatus.DONE);
-        userToDoListItemToSave.setHabitAssign(null);
-
-        verify(userToDoListItemRepo).saveAll(List.of(userToDoListItemToSave));
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesUpdateItemWithDisabledStatus() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        ToDoListItemStatus newStatus = ToDoListItemStatus.DONE;
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        responseDto.setStatus(newStatus);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        HabitAssign habitAssignWithToDoList = ModelUtils.getHabitAssign();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
-        userToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
-        userToDoListItem.setHabitAssign(null);
-
-        habitAssignWithToDoList.setUserToDoListItems(List.of(userToDoListItem));
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        UserToDoListItem userToDoListItemToSave = ModelUtils.getUserToDoListItem();
-        userToDoListItemToSave.setStatus(ToDoListItemStatus.DONE);
-        userToDoListItemToSave.setHabitAssign(null);
-
-        verify(userToDoListItemRepo).saveAll(List.of(userToDoListItemToSave));
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesWithNonExistentItemThrowsNotFoundException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        HabitAssign habitAssignWithToDoList = ModelUtils.getHabitAssign();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
-        userToDoListItem.setId(responseDto.getId() + 1);
-        habitAssignWithToDoList.setUserToDoListItems(List.of(userToDoListItem));
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-
-        assertEquals(ErrorMessage.USER_TO_DO_LIST_ITEM_NOT_FOUND + responseDto.getId(), exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-
-        verify(userToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(userToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService, times(0))
-            .saveUserToDoListItems(anyLong(), anyLong(), anyList(), anyString());
-
-        verify(customToDoListItemRepo, times(0))
-            .findAllByUserIdAndHabitId(anyLong(), anyLong());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesDeleteItem() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        HabitAssign habitAssignWithToDoList = ModelUtils.getHabitAssign();
-
-        UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
-
-        habitAssignWithToDoList.setUserToDoListItems(List.of(userToDoListItem));
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of(userToDoListItem));
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesDeleteItemWithDisabledStatus() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        HabitAssign habitAssignWithToDoList = ModelUtils.getHabitAssign();
-
-        UserToDoListItem userToDoListItem = ModelUtils.getUserToDoListItem();
-        userToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
-
-        habitAssignWithToDoList.setUserToDoListItems(List.of(userToDoListItem));
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesUpdateAndDeleteItems() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        ToDoListItemStatus oldStatus = ToDoListItemStatus.ACTIVE;
-        ToDoListItemStatus newStatus = ToDoListItemStatus.DONE;
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        responseDto.setStatus(newStatus);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        HabitAssign habitAssignWithToDoList = ModelUtils.getHabitAssign();
-
-        UserToDoListItem firstUserToDoListItem = ModelUtils.getUserToDoListItem();
-        firstUserToDoListItem.setStatus(oldStatus);
-        firstUserToDoListItem.setHabitAssign(null);
-
-        UserToDoListItem secondUserToDoListItem = ModelUtils.getUserToDoListItem();
-        secondUserToDoListItem.setId(firstUserToDoListItem.getId() + 1);
-
-        habitAssignWithToDoList
-            .setUserToDoListItems(List.of(firstUserToDoListItem, secondUserToDoListItem));
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssignWithToDoList));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        UserToDoListItem userToDoListItemToSave = ModelUtils.getUserToDoListItem();
-        userToDoListItemToSave.setStatus(newStatus);
-        userToDoListItemToSave.setHabitAssign(null);
-
-        verify(userToDoListItemRepo).saveAll(List.of(userToDoListItemToSave));
-        verify(userToDoListItemRepo).deleteAll(List.of(secondUserToDoListItem));
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveCustomToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesWithDuplicateThrowsBadRequestException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        UserToDoListItemResponseDto responseDto = ModelUtils.getUserToDoListItemResponseDto();
-        UserToDoListItemResponseDto sameResponseDto = ModelUtils.getUserToDoListItemResponseDto();
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(responseDto, sameResponseDto))
-            .customToDoListItemDto(List.of())
-            .build();
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-
-        assertEquals(ErrorMessage.DUPLICATED_USER_TO_DO_LIST_ITEM, exception.getMessage());
-
-        verify(habitAssignRepo, times(0)).findByHabitIdAndUserId(anyLong(), anyLong());
-        verify(userToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(userToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService, times(0))
-            .saveUserToDoListItems(anyLong(), anyLong(), anyList(), anyString());
-
-        verify(customToDoListItemRepo, times(0))
-            .findAllByUserIdAndHabitId(anyLong(), anyLong());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void updateAndDeleteUserToDoListWithStatusesWithNotFoundHabitAssignThrowsNotFoundException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.empty());
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
-            exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-
-        verify(userToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(userToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService, times(0))
-            .saveUserToDoListItems(anyLong(), anyLong(), anyList(), anyString());
-
-        verify(customToDoListItemRepo, times(0))
-            .findAllByUserIdAndHabitId(anyLong(), anyLong());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void saveCustomToDoListWithStatuses() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        responseDto.setId(null);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto))
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of());
-
-        habitAssignService.fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        CustomToDoListItemSaveRequestDto requestDto =
-            ModelUtils.getCustomToDoListItemWithStatusSaveRequestDto();
-        BulkSaveCustomToDoListItemDto bulkSaveUserToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of(requestDto));
-
-        verify(customToDoListItemService).save(bulkSaveUserToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void saveCustomToDoListWithStatusesWithDuplicateThrowsBadRequestException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        responseDto.setId(null);
-        CustomToDoListItemResponseDto sameResponseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        sameResponseDto.setId(null);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto, sameResponseDto))
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        BadRequestException exception = assertThrows(BadRequestException.class,
-            () -> habitAssignService.fullUpdateUserAndCustomToDoLists(userId, habitAssignId,
-                dto, language));
-
-        assertEquals(ErrorMessage.DUPLICATED_CUSTOM_TO_DO_LIST_ITEM, exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(2)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesUpdateItem() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        ToDoListItemStatus newStatus = ToDoListItemStatus.DONE;
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        responseDto.setStatus(newStatus);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto))
-            .build();
-
-        CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItem();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of(customToDoListItem));
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo)
-            .findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-
-        CustomToDoListItem customToDoListItemToSave = ModelUtils.getCustomToDoListItem();
-        customToDoListItemToSave.setStatus(newStatus);
-
-        verify(customToDoListItemRepo).saveAll(List.of(customToDoListItemToSave));
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveUserToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveUserToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesWithNonExistentItemThrowsNotFoundException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto))
-            .build();
-
-        CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItem();
-        customToDoListItem.setId(responseDto.getId() + 1);
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of(customToDoListItem));
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-
-        assertEquals(ErrorMessage.CUSTOM_TO_DO_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + responseDto.getId(),
-            exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(2)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo)
-            .findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesUpdateItemWithDisabledStatus() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        ToDoListItemStatus newStatus = ToDoListItemStatus.DONE;
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        responseDto.setStatus(newStatus);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto))
-            .build();
-
-        CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItem();
-        customToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of(customToDoListItem));
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo)
-            .findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-
-        CustomToDoListItem customToDoListItemToSave = ModelUtils.getCustomToDoListItem();
-        customToDoListItemToSave.setStatus(newStatus);
-
-        verify(customToDoListItemRepo).saveAll(List.of(customToDoListItemToSave));
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveUserToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveUserToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesDeleteItem() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItem();
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of(customToDoListItem));
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo)
-            .findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of(customToDoListItem));
-
-        BulkSaveCustomToDoListItemDto bulkSaveUserToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveUserToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesDeleteItemWithDisabledStatus() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItem();
-        customToDoListItem.setStatus(ToDoListItemStatus.DISABLED);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of())
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of(customToDoListItem));
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo)
-            .findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-        verify(customToDoListItemRepo).saveAll(List.of());
-        verify(customToDoListItemRepo).deleteAll(List.of());
-
-        BulkSaveCustomToDoListItemDto bulkSaveUserToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveUserToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesUpdateAndDeleteItems() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        ToDoListItemStatus newStatus = ToDoListItemStatus.DONE;
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        responseDto.setStatus(newStatus);
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto))
-            .build();
-
-        CustomToDoListItem firstCustomToDoListItem = ModelUtils.getCustomToDoListItem();
-        firstCustomToDoListItem.setStatus(newStatus);
-
-        CustomToDoListItem secondCustomToDoListItem = ModelUtils.getCustomToDoListItem();
-        secondCustomToDoListItem.setId(responseDto.getId() + 1);
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
-            .thenReturn(List.of(firstCustomToDoListItem, secondCustomToDoListItem));
-
-        habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language);
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo, times(3)).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo)
-            .findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId());
-
-        CustomToDoListItem customToDoListItemToSave = ModelUtils.getCustomToDoListItem();
-        customToDoListItemToSave.setStatus(newStatus);
-
-        verify(customToDoListItemRepo).saveAll(List.of(customToDoListItemToSave));
-        verify(customToDoListItemRepo).deleteAll(List.of(secondCustomToDoListItem));
-
-        BulkSaveCustomToDoListItemDto bulkSaveUserToDoListItemDto =
-            new BulkSaveCustomToDoListItemDto(List.of());
-
-        verify(customToDoListItemService).save(bulkSaveUserToDoListItemDto, userId,
-            getFullHabitAssign().getHabit().getId());
-    }
-
-    @Test
-    void updateAndDeleteCustomToDoListWithStatusesWithDuplicateThrowsBadRequestException() {
-        Long userId = 1L;
-        Long habitAssignId = 1L;
-        CustomToDoListItemResponseDto responseDto = ModelUtils.getCustomToDoListItemResponseDto();
-        CustomToDoListItemResponseDto sameResponseDto = ModelUtils.getCustomToDoListItemResponseDto();
-
-        UserToDoAndCustomToDoListsDto dto = UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of())
-            .customToDoListItemDto(List.of(responseDto, sameResponseDto))
-            .build();
-
-        when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
-            .fullUpdateUserAndCustomToDoLists(userId, habitAssignId, dto, language));
-        assertEquals(ErrorMessage.DUPLICATED_CUSTOM_TO_DO_LIST_ITEM, exception.getMessage());
-
-        verify(habitAssignRepo).findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId);
-        verify(habitAssignRepo).findById(habitAssignId);
-
-        verify(userToDoListItemRepo).saveAll(List.of());
-        verify(userToDoListItemRepo).deleteAll(List.of());
-
-        verify(toDoListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
-        verify(toDoListItemService).saveUserToDoListItems(userId, getFullHabitAssign().getHabit().getId(),
-            List.of(), language);
-
-        verify(customToDoListItemRepo, times(0))
-            .findAllByUserIdAndHabitId(anyLong(), anyLong());
-        verify(customToDoListItemRepo, times(0)).saveAll(anyList());
-        verify(customToDoListItemRepo, times(0)).deleteAll(anyList());
-
-        verify(customToDoListItemService, times(0)).save(any(), anyLong(), anyLong());
+        assertEquals(UserToDoListItemStatus.DISABLED, userToDoListItem.getStatus());
     }
 
     @Test
@@ -2813,8 +1790,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
         when(habitInvitationRepo.save(any())).thenReturn(new HabitInvitation().builder().id(1l).build());
-        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
-        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
+        when(toDoListItemRepo.getAllToDoListItemIdByHabitIdIsContained(habitId)).thenReturn(List.of(1L));
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
 
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
@@ -2822,7 +1798,7 @@ class HabitAssignServiceImplTest {
 
         verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
         verify(habitInvitationRepo, times(1)).save(any(HabitInvitation.class));
-        verify(toDoListItemRepo, times(3)).getAllToDoListItemIdByHabitIdISContained(habit.getId());
+        verify(toDoListItemRepo, times(2)).getAllToDoListItemIdByHabitIdIsContained(habit.getId());
         verify(userNotificationService).createNotification(new UserVO(), userVO, NotificationType.HABIT_INVITE,
             habit.getId(), "", 1L, "");
 

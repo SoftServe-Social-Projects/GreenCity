@@ -11,7 +11,6 @@ import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.*;
-import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -168,28 +167,6 @@ public class HabitController {
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
-    }
-
-    /**
-     * Method finds toDoList for habit in specific language.
-     *
-     * @param locale {@link Locale} with needed language code.
-     * @param id     {@link Long} with needed habit id.
-     * @return List of {@link ToDoListItemDto}.
-     */
-    @Operation(summary = "Get to-do list.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-    })
-    @GetMapping("{id}/to-do-list")
-    @ApiLocale
-    public ResponseEntity<List<ToDoListItemDto>> getToDoListItems(
-        @PathVariable Long id,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getToDoListForHabit(id, locale.getLanguage()));
     }
 
     /**

@@ -7,8 +7,8 @@ import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
@@ -20,6 +20,7 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -145,7 +146,9 @@ public class ModelUtils {
         return UserToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ToDoListItemStatus.ACTIVE)
+            .status(UserToDoListItemStatus.INPROGRESS)
+            .targetId(1L)
+            .isCustomItem(true)
             .build();
     }
 
@@ -153,14 +156,14 @@ public class ModelUtils {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
             .text("text")
-            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
-    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
-            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
+    public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
+        return CustomToDoListItemRequestDto.builder()
+            .id(1L)
+            .text("text")
+            .status(ToDoListItemStatus.ACTIVE.toString())
             .build();
     }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Herchanivska-11" author="Viktoriia Herchanivska">
+        <renameColumn tableName="user_to_do_list" oldColumnName="to_do_list_item_id" newColumnName="target_id"/>
+        <dropForeignKeyConstraint baseTableName="user_to_do_list" constraintName="FK_user_shopping_list_item"/>
+        <addColumn tableName="user_to_do_list">
+            <column name="is_custom_item" defaultValue="false" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addUniqueConstraint tableName="user_to_do_list" columnNames="target_id, is_custom_item, habit_assign_id"/>
+    </changeSet>
+</databaseChangeLog>

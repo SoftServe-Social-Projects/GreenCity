@@ -84,6 +84,8 @@ public class ErrorMessage {
     public static final String USER_TO_DO_LIST_ITEM_NOT_FOUND = "UserToDoListItem(s) with this id not found: ";
     public static final String USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID =
         "UserToDoListItem(s) for this user not found";
+    public static final String USER_TO_DO_LIST_ITEMS_NOT_RELATED_TO_PROVIDED_HABIT_ASSIGN =
+        "Provided user to-do list item and habit assign not related to each other";
     public static final String DUPLICATED_USER_TO_DO_LIST_ITEM = "UserToDoListItems should be unique";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";

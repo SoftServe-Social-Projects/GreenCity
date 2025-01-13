@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.ToDoListItem;
 import java.util.List;
-import greencity.entity.localization.ToDoListItemTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,27 +27,27 @@ public interface ToDoListItemRepo
     Page<ToDoListItem> searchBy(Pageable paging, String query);
 
     /**
-     * Method returns ToDoList id which are not in the habit.
+     * Method returns list of to-do list item ids which are not in the habit.
      *
      * @param habitId habit id
      * @return list of id.
      */
     @Query(nativeQuery = true,
-        value = "select to_do_list_items.id from to_do_list_items  where id not in"
+        value = "select to_do_list_items.id from to_do_list_items where id not in"
             + " (select to_do_list_item_id from habit_to_do_list_items where habit_id = :habitId and "
-            + "habit_to_do_list_items.status like 'ACTUAL');")
+            + "habit_to_do_list_items.status like 'ACTIVE');")
     List<Long> getAllToDoListItemsByHabitIdNotContained(@Param("habitId") Long habitId);
 
     /**
-     * Method returns to-do list items id which are in the habit.
+     * Method returns list of to-do list item ids which are in the habit.
      *
      * @param habitId habit id
      * @return list of id.
      */
     @Query(nativeQuery = true,
-        value = "select to_do_list_item_id from habit_to_do_list_items  where habit_id = :habitId and "
-            + " habit_to_do_list_items.status like 'ACTUAL';")
-    List<Long> getAllToDoListItemIdByHabitIdISContained(@Param("habitId") Long habitId);
+        value = "select to_do_list_item_id from habit_to_do_list_items where habit_id = :habitId and "
+            + " habit_to_do_list_items.status like 'ACTIVE';")
+    List<Long> getAllToDoListItemIdByHabitIdIsContained(@Param("habitId") Long habitId);
 
     /**
      * Method returns {@link ToDoListItem} by list item id and pageable.
@@ -69,38 +68,16 @@ public interface ToDoListItemRepo
     List<ToDoListItem> getToDoListByListOfId(List<Long> listId);
 
     /**
-     * Method returns user's to-do list for active items and habits in progress.
+     * Method returns list of {@link ToDoListItem} by habit assign id.
      *
-     * @param userId id of the {@link Long} current user
-     * @param code   language code {@link String}
-     * @return {@link ToDoListItemTranslation}
+     * @param habitAssignId id of {@link greencity.entity.HabitAssign} current habit
+     *                      assign
+     * @return list of {@link ToDoListItem}.
      */
-    @Query("""
-        select translations from UserToDoListItem as usli\s
-        join HabitAssign as ha on ha.id = usli.habitAssign.id
-        join ToDoListItemTranslation as translations on
-        translations.toDoListItem.id = usli.toDoListItem.id
-        join Language as lang on translations.language.id = lang.id
-        where usli.status = 'INPROGRESS'
-        and ha.status = 'INPROGRESS'
-        and ha.user.id = :userId
-        and lang.code = :code""")
-    List<ToDoListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
-        @Param("code") String code);
-
-    /**
-     * Method returns {@link ToDoListItem} by habitId, list of name and language
-     * code.
-     *
-     * @param habitId      habit id
-     * @param itemNames    list of to-do items name
-     * @param languageCode language code
-     * @return list of {@link ToDoListItem}
-     */
-    @Query("SELECT sli FROM ToDoListItem sli "
-        + "JOIN ToDoListItemTranslation slt ON sli.id = slt.toDoListItem.id "
-        + "JOIN sli.habits h ON h.id = :habitId"
-        + " WHERE slt.language.code = :languageCode AND slt.content in :listOfName")
-    List<ToDoListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
-        String languageCode);
+    @Query(nativeQuery = true,
+        value = "SELECT tdli.* FROM to_do_list_items tdli "
+            + "JOIN user_to_do_list ustdl ON ustdl.to_do_list_item_id = tdli.id "
+            + "WHERE ustdl.is_custom_item = false "
+            + "AND ustdl.habit_assign_id = :habitAssignId")
+    List<ToDoListItem> findAllByHabitAssignId(Long habitAssignId);
 }

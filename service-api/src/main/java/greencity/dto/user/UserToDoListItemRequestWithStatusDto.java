@@ -1,13 +1,13 @@
-package greencity.dto.todolistitem;
+package greencity.dto.user;
 
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import jakarta.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class ToDoListItemWithStatusRequestDto extends ToDoListItemRequestDto {
+public class UserToDoListItemRequestWithStatusDto extends UserToDoListItemRequestDto {
     @NotNull
-    private ToDoListItemStatus status;
+    private UserToDoListItemStatus status;
 }

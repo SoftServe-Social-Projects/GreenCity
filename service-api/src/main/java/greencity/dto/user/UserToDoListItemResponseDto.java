@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -23,5 +23,9 @@ public class UserToDoListItemResponseDto {
     @NotEmpty
     private String text;
     @NotNull
-    private ToDoListItemStatus status;
+    private UserToDoListItemStatus status;
+    @NotNull
+    private Long targetId;
+    @NotNull
+    private Boolean isCustomItem;
 }

@@ -4,21 +4,11 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.todolistitem.*;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserToDoListItemResponseDto;
-import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface ToDoListItemService {
-    /**
-     * Method returns to-do list, available for tracking for specific language.
-     *
-     * @param language needed language code
-     * @return List of {@link ToDoListItemDto}.
-     */
-    List<ToDoListItemDto> findAll(String language);
-
     /**
      * Method for saving to-do list item from {@link ToDoListItemPostDto}.
      *
@@ -75,7 +65,7 @@ public interface ToDoListItemService {
      * @param id id of to-do list item you need to find
      * @author Dmytro Khonko
      */
-    ToDoListItemResponseDto findToDoListItemById(Long id);
+    ToDoListItemResponseWithTranslationDto findToDoListItemById(Long id);
 
     /**
      * Method to filter to-do list items.
@@ -87,90 +77,37 @@ public interface ToDoListItemService {
         ToDoListItemViewDto dto);
 
     /**
-     * Method assign to user list of user to-do list items available for habit.
+     * Method returns list of to-do list for habit in specific language.
      *
-     * @param userId   id of the {@link UserVO} current user.
+     * @param habitId  id of the {@link HabitVO} habit.
      * @param language needed language code.
-     * @param habitId  id of the {@link HabitVO}.
-     * @return List of saved {@link UserToDoListItemResponseDto} with specific
-     *         language.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
-    List<UserToDoListItemResponseDto> saveUserToDoListItems(Long userId, Long habitId,
-        List<ToDoListItemRequestDto> dto, String language);
+    List<ToDoListItemResponseDto> findAllHabitToDoList(Long habitId, String language);
 
     /**
-     * Method returns list of user to-do list for specific language.
+     * Method returns list of to-do list items user not added to habit assign in
+     * specific language.
      *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @return List of {@link UserToDoListItemResponseDto}.
-     */
-    List<UserToDoListItemResponseDto> getUserToDoList(Long userId, Long habitId, String language);
-
-    /**
-     * Method returns list of user to-do list items by habitAssignId, specific
-     * language and INPROGRESS status.
-     *
-     * @param habitAssignId id of the {@link Long} current user.
+     * @param userId        id of the {@link UserVO} current user.
+     * @param habitAssignId id of the {@link greencity.dto.habit.HabitAssignVO}
+     *                      habit assign.
      * @param language      needed language code.
-     * @return List of {@link UserToDoListItemResponseDto}.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
-    List<UserToDoListItemResponseDto> getUserToDoListItemsByHabitAssignIdAndStatusInProgress(
-        Long habitAssignId, String language);
+    List<ToDoListItemResponseDto> findAvailableToDoListForHabitAssign(Long userId, Long habitAssignId,
+        String language);
 
     /**
-     * Method returns user to-do list by habitAssignId for specific language.
+     * Method returns to-do list items by habitAssignId for specific language.
      *
      * @param userId        id of the {@link UserVO} current user.
      * @param habitAssignId {@link greencity.dto.habit.HabitAssignVO} id.
      * @param language      needed language code.
-     * @return List of {@link UserToDoListItemResponseDto}.
+     * @return List of {@link ToDoListItemResponseDto}.
      */
-    List<UserToDoListItemResponseDto> getUserToDoListByHabitAssignId(Long userId, Long habitAssignId,
+    List<ToDoListItemResponseDto> getToDoListByHabitAssignId(Long userId, Long habitAssignId,
         String language);
-
-    /**
-     * Method for deleting to-do list item from user`s to-do list.
-     *
-     * @param userId  id of the {@link UserVO} current user.
-     * @param habitId id of the {@link HabitVO}.
-     * @param itemId  id of the {@link ToDoListItemVO}.
-     */
-    void deleteUserToDoListItemByItemIdAndUserIdAndHabitId(Long itemId, Long userId, Long habitId);
-
-    /**
-     * Method update status of user to-do list item to done.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param itemId   - {@link UserToDoListItemVO}'s id that should be updated.
-     * @param language needed language code.
-     * @return {@link UserToDoListItemResponseDto} with specific language.
-     */
-    UserToDoListItemResponseDto updateUserToDoListItemStatus(Long userId, Long itemId, String language);
-
-    /**
-     * Method update status of user to-do list item to do.
-     *
-     * @param userId             id of the {@link UserVO} current user.
-     * @param userToDoListItemId - {@link UserToDoListItemVO}'s id that should be
-     *                           updated.
-     * @param language           needed language code.
-     * @param status             needed language code.
-     * @return {@link UserToDoListItemResponseDto} with specific language.
-     */
-    List<UserToDoListItemResponseDto> updateUserToDoListItemStatus(Long userId,
-        Long userToDoListItemId,
-        String language,
-        String status);
-
-    /**
-     * Method for deleted list of user to-do list items.
-     *
-     * @param ids string with ids object for deleting.
-     * @return list ids of deleted
-     * @author Bogdan Kuzenko
-     */
-    List<Long> deleteUserToDoListItems(String ids);
 
     /**
      * Method returns list of hopping list items for habit.
@@ -191,13 +128,4 @@ public interface ToDoListItemService {
      */
     PageableAdvancedDto<ToDoListItemManagementDto> findAllToDoListItemsForManagementPageNotContained(
         Long habitId, Pageable pageable);
-
-    /**
-     * Method returns user's to-do list for active items and habits in progress.
-     *
-     * @param userId id of the {@link Long} current user
-     * @param code   language code {@link String}
-     * @return {@link ToDoListItemDto}
-     */
-    List<ToDoListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
 }

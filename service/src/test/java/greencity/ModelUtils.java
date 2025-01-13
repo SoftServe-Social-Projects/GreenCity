@@ -69,7 +69,6 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -98,10 +97,11 @@ import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
-import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
-import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
+import greencity.dto.todolistitem.CustomToDoListItemWithStatusResponseDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -120,6 +120,8 @@ import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
+import greencity.dto.user.UserToDoListItemRequestDto;
+import greencity.dto.user.UserToDoListItemRequestWithStatusDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserStatusDto;
@@ -180,6 +182,7 @@ import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
+import greencity.enums.UserToDoListItemStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import org.hibernate.sql.results.internal.TupleElementImpl;
@@ -217,7 +220,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
@@ -726,7 +728,7 @@ public class ModelUtils {
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
             .toDoListItem(
-                new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                new ToDoListItem(1L, Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
             .build();
     }
@@ -738,27 +740,21 @@ public class ModelUtils {
                 new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
             .toDoListItem(
-                new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                new ToDoListItem(1L, Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
-            .build();
-    }
-
-    public static ToDoListItemWithStatusRequestDto getToDoListItemWithStatusRequestDto() {
-        return ToDoListItemWithStatusRequestDto.builder()
-            .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
-            .build();
-    }
-
-    public static CustomToDoListItemWithStatusSaveRequestDto getCustomToDoListItemWithStatusSaveRequestDto() {
-        return CustomToDoListItemWithStatusSaveRequestDto.builder()
-            .text("TEXT")
-            .status(ToDoListItemStatus.INPROGRESS)
             .build();
     }
 
     public static CustomToDoListItemSaveRequestDto getCustomToDoListItemSaveRequestDto() {
         return CustomToDoListItemSaveRequestDto.builder().text("TEXT").build();
+    }
+
+    public static CustomToDoListItemRequestDto getCustomToDoListItemRequestDto() {
+        return CustomToDoListItemRequestDto.builder()
+            .id(1L)
+            .text("TEXT")
+            .status(ToDoListItemStatus.ACTIVE.toString())
+            .build();
     }
 
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
@@ -965,16 +961,17 @@ public class ModelUtils {
         return UserToDoListItem.builder()
             .id(1L)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(ToDoListItemStatus.DONE)
+            .status(UserToDoListItemStatus.DONE)
             .build();
     }
 
     public static UserToDoListItem getFullUserToDoListItem() {
         return UserToDoListItem.builder()
             .id(1L)
-            .toDoListItem(getToDoListItem())
+            .targetId(1L)
+            .isCustomItem(false)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(ToDoListItemStatus.DONE)
+            .status(UserToDoListItemStatus.DONE)
             .build();
     }
 
@@ -1002,7 +999,22 @@ public class ModelUtils {
         return UserToDoListItemResponseDto.builder()
             .id(1L)
             .text("Buy electric car")
-            .status(ToDoListItemStatus.ACTIVE)
+            .status(UserToDoListItemStatus.INPROGRESS)
+            .build();
+    }
+
+    public static UserToDoListItemRequestDto getUserToDoListItemRequestDto() {
+        return UserToDoListItemRequestDto.builder()
+            .targetId(1L)
+            .isCustomItem(false)
+            .build();
+    }
+
+    public static UserToDoListItemRequestWithStatusDto getUserToDoListItemRequestWithStatusDto() {
+        return UserToDoListItemRequestWithStatusDto.builder()
+            .targetId(1L)
+            .isCustomItem(false)
+            .status(UserToDoListItemStatus.DONE)
             .build();
     }
 
@@ -1010,11 +1022,9 @@ public class ModelUtils {
         return UserToDoListItem.builder()
             .id(2L)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(ToDoListItemStatus.ACTIVE)
-            .toDoListItem(ToDoListItem.builder().id(1L).userToDoListItems(Collections.emptyList())
-                .translations(
-                    getToDoListItemTranslations())
-                .build())
+            .status(UserToDoListItemStatus.INPROGRESS)
+            .targetId(1L)
+            .isCustomItem(false)
             .build();
     }
 
@@ -1024,14 +1034,14 @@ public class ModelUtils {
             .habitAssign(HabitAssignVO.builder()
                 .id(1L)
                 .build())
-            .status(ToDoListItemStatus.DONE)
+            .status(UserToDoListItemStatus.DONE)
             .build();
     }
 
     public static UserToDoListItem getUserToDoListItem() {
         return UserToDoListItem.builder()
             .id(1L)
-            .status(ToDoListItemStatus.DONE)
+            .status(UserToDoListItemStatus.DONE)
             .habitAssign(HabitAssign.builder()
                 .id(1L)
                 .status(HabitAssignStatus.ACQUIRED)
@@ -1040,9 +1050,8 @@ public class ModelUtils {
                 .lastEnrollmentDate(ZonedDateTime.now())
                 .workingDays(5)
                 .build())
-            .toDoListItem(ToDoListItem.builder()
-                .id(1L)
-                .build())
+            .targetId(1L)
+            .isCustomItem(false)
             .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
             .build();
     }
@@ -1055,7 +1064,7 @@ public class ModelUtils {
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .toDoListItem(
-                    new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                    new ToDoListItem(1L, Collections.emptySet(), Collections.emptyList()))
                 .build(),
             ToDoListItemTranslation.builder()
                 .id(11L)
@@ -1063,7 +1072,7 @@ public class ModelUtils {
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .toDoListItem(
-                    new ToDoListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                    new ToDoListItem(4L, Collections.emptySet(), Collections.emptyList()))
                 .build());
     }
 
@@ -1644,9 +1653,16 @@ public class ModelUtils {
             .build();
     }
 
+    public static ToDoListItemResponseDto getToDoListItemResponseDto() {
+        return ToDoListItemResponseDto.builder()
+            .id(1L)
+            .text("to-do item")
+            .build();
+    }
+
     public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
         return HabitAssignPropertiesDto.builder()
-            .defaultToDoListItems(List.of(1L))
+            .defaultToDoListItemIds(List.of(1L))
             .duration(20)
             .build();
     }
@@ -1661,8 +1677,9 @@ public class ModelUtils {
             .duration(20)
             .userToDoListItems(List.of(UserToDoListItem.builder()
                 .id(1L)
-                .toDoListItem(ToDoListItem.builder().id(1L).build())
-                .status(ToDoListItemStatus.INPROGRESS)
+                .targetId(1L)
+                .isCustomItem(false)
+                .status(UserToDoListItemStatus.INPROGRESS)
                 .build()))
             .build();
     }
@@ -1688,8 +1705,9 @@ public class ModelUtils {
             .duration(null)
             .userToDoListItems(List.of(UserToDoListItemAdvanceDto.builder()
                 .id(1L)
-                .toDoListItemId(1L)
-                .status(ToDoListItemStatus.INPROGRESS)
+                .targetId(1L)
+                .isCustomItem(false)
+                .status(UserToDoListItemStatus.INPROGRESS)
                 .build()))
             .habitStatusCalendarDtoList(List.of(getHabitStatusCalendarDto()))
             .habitStreak(1)
@@ -1712,11 +1730,8 @@ public class ModelUtils {
             .userToDoListItems(List.of(UserToDoListItem.builder()
                 .id(1L)
                 .habitAssign(null)
-                .toDoListItem(ToDoListItem.builder()
-                    .id(1L)
-                    .habits(null)
-                    .translations(null)
-                    .build())
+                .targetId(1L)
+                .isCustomItem(false)
                 .build()))
             .workingDays(1)
             .duration(null)
@@ -1776,16 +1791,34 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDto() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.INPROGRESS)
             .text("TEXT")
+            .build();
+    }
+
+    public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoWithId2() {
+        return CustomToDoListItemResponseDto.builder()
+            .id(2L)
+            .text("Custom item")
             .build();
     }
 
     public static CustomToDoListItem getCustomToDoListItem() {
         return CustomToDoListItem.builder()
             .id(1L)
-            .status(ToDoListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.ACTIVE)
             .text("TEXT")
+            .habit(getHabit())
+            .user(getUser())
+            .build();
+    }
+
+    public static CustomToDoListItem getCustomToDoListItemWithId2() {
+        return CustomToDoListItem.builder()
+            .id(2L)
+            .status(ToDoListItemStatus.ACTIVE)
+            .text("Custom item")
+            .habit(getHabit())
+            .user(getUser())
             .build();
     }
 
@@ -2558,13 +2591,6 @@ public class ModelUtils {
         return new AddCommentDtoRequest("text", 10L);
     }
 
-    public static UserToDoAndCustomToDoListsDto getUserToDoAndCustomToDoListsDto() {
-        return UserToDoAndCustomToDoListsDto.builder()
-            .userToDoListItemDto(List.of(getUserToDoListItemResponseDto()))
-            .customToDoListItemDto(List.of(getCustomToDoListItemResponseDto()))
-            .build();
-    }
-
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
@@ -2607,9 +2633,9 @@ public class ModelUtils {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customToDoListItemDto(List.of(
-                CustomToDoListItemResponseDto.builder()
+                CustomToDoListItemRequestDto.builder()
                     .id(1L)
-                    .status(ToDoListItemStatus.ACTIVE)
+                    .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(toDoListText)
                     .build()))
             .defaultDuration(7)
@@ -2627,9 +2653,9 @@ public class ModelUtils {
     public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomToDoListItem() {
         return CustomHabitDtoRequest.builder()
             .customToDoListItemDto(List.of(
-                CustomToDoListItemResponseDto.builder()
+                CustomToDoListItemRequestDto.builder()
                     .id(null)
-                    .status(ToDoListItemStatus.ACTIVE)
+                    .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(toDoListText)
                     .build()))
             .tagIds(Set.of(20L))
@@ -2655,9 +2681,9 @@ public class ModelUtils {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customToDoListItemDto(List.of(
-                CustomToDoListItemResponseDto.builder()
+                CustomToDoListItemRequestDto.builder()
                     .id(1L)
-                    .status(ToDoListItemStatus.ACTIVE)
+                    .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(toDoListText)
                     .build()))
             .defaultDuration(7)
@@ -2678,10 +2704,10 @@ public class ModelUtils {
             .id(1L)
             .complexity(2)
             .customToDoListItemDto(List.of(
-                CustomToDoListItemResponseDto.builder()
+                CustomToDoListItemWithStatusResponseDto.builder()
                     .id(1L)
-                    .status(ToDoListItemStatus.ACTIVE)
                     .text(toDoListText)
+                    .status(ToDoListItemStatus.ACTIVE)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
@@ -2705,7 +2731,6 @@ public class ModelUtils {
     public static CustomToDoListItemResponseDto getCustomToDoListItemResponseDtoForServiceTest() {
         return CustomToDoListItemResponseDto.builder()
             .id(1L)
-            .status(ToDoListItemStatus.ACTIVE)
             .text(toDoListText)
             .build();
     }
@@ -2792,7 +2817,7 @@ public class ModelUtils {
                 .build())
             .user(getUser())
             .text("item")
-            .status(ToDoListItemStatus.INPROGRESS)
+            .status(ToDoListItemStatus.ACTIVE)
             .build();
     }
 
@@ -2800,7 +2825,6 @@ public class ModelUtils {
         return CustomToDoListItemResponseDto.builder()
             .id(2L)
             .text("item")
-            .status(ToDoListItemStatus.INPROGRESS)
             .build();
     }
 

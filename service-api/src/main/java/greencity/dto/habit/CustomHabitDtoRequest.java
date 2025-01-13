@@ -2,7 +2,7 @@ package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
+import greencity.dto.todolistitem.CustomToDoListItemRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -34,7 +34,7 @@ public class CustomHabitDtoRequest {
     @Valid
     private List<HabitTranslationDto> habitTranslations;
     private String image;
-    private List<CustomToDoListItemResponseDto> customToDoListItemDto;
+    private List<CustomToDoListItemRequestDto> customToDoListItemDto;
     @Valid
     @Size(min = 1, message = ServiceValidationConstants.TAG_LIST_MIN_LENGTH)
     @Size(max = 3, message = ServiceValidationConstants.TAG_LIST_MAX_LENGTH)

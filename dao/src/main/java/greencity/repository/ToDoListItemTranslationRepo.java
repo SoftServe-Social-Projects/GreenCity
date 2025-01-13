@@ -25,9 +25,9 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      * @return {@link ToDoListItemTranslation}
      */
     @Query(nativeQuery = true, value = "SELECT * FROM to_do_list_item_translations as it "
-        + "where it.to_do_list_item_id = (SELECT utdl.to_do_list_item_id FROM user_to_do_list as utdl WHERE "
-        + "utdl.id=:itemId) AND it.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
-    ToDoListItemTranslation findByLangAndUserToDoListItemId(String languageCode, Long itemId);
+        + "where it.to_do_list_item_id = (SELECT tdli.id FROM to_do_list_items as tdli WHERE "
+        + "tdli.id=:itemId) AND it.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
+    ToDoListItemTranslation findByLangAndToDoListItemId(String languageCode, Long itemId);
 
     /**
      * Method for getting to-do list translations for given habit in specific

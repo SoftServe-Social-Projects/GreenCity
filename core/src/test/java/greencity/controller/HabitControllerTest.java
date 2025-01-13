@@ -334,15 +334,6 @@ class HabitControllerTest {
     }
 
     @Test
-    void getToDoListItems() throws Exception {
-
-        mockMvc.perform(get(habitLink + "/{id}/to-do-list", 1L))
-            .andExpect(status().isOk());
-
-        verify(habitService).getToDoListForHabit(1L, "en");
-    }
-
-    @Test
     void postCustomHabit() throws Exception {
         CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
 

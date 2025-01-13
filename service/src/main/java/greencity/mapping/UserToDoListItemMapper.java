@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.dto.user.UserToDoListItemVO;
-import greencity.entity.ToDoListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.UserToDoListItem;
 import org.modelmapper.AbstractConverter;
@@ -22,9 +21,8 @@ public class UserToDoListItemMapper extends AbstractConverter<UserToDoListItemVO
                 .lastEnrollmentDate(userToDoListItemVO.getHabitAssign().getLastEnrollmentDate())
                 .workingDays(userToDoListItemVO.getHabitAssign().getWorkingDays())
                 .build())
-            .toDoListItem(ToDoListItem.builder()
-                .id(userToDoListItemVO.getToDoListItemVO().getId())
-                .build())
+            .targetId(userToDoListItemVO.getTargetId())
+            .isCustomItem(userToDoListItemVO.getIsCustomItem())
             .dateCompleted(userToDoListItemVO.getDateCompleted())
             .build();
     }

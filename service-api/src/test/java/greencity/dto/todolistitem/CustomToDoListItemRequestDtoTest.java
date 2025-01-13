@@ -1,11 +1,11 @@
-package greencity.dto.user;
+package greencity.dto.todolistitem;
 
 import greencity.ModelUtils;
 import greencity.enums.ToDoListItemStatus;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import jakarta.validation.ConstraintViolation;
@@ -17,51 +17,32 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UserToDoListItemResponseDtoTest {
+class CustomToDoListItemRequestDtoTest {
 
-    void testValid(UserToDoListItemResponseDto dto) {
+    void testValid(CustomToDoListItemRequestDto dto) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<UserToDoListItemResponseDto>> constraintViolations =
+        Set<ConstraintViolation<CustomToDoListItemRequestDto>> constraintViolations =
             validator.validate(dto);
 
         assertTrue(constraintViolations.isEmpty());
     }
 
-    void testInvalid(UserToDoListItemResponseDto dto) {
+    void testInvalid(CustomToDoListItemRequestDto dto) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<UserToDoListItemResponseDto>> constraintViolations =
+        Set<ConstraintViolation<CustomToDoListItemRequestDto>> constraintViolations =
             validator.validate(dto);
 
         assertFalse(constraintViolations.isEmpty());
     }
 
     @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {1L, 100L, Long.MAX_VALUE})
-    void validIdTest(Long id) {
-        var dto = ModelUtils.getUserToDoListItemResponseDto();
-        dto.setId(id);
-
-        testValid(dto);
-    }
-
-    @ParameterizedTest
-    @ValueSource(longs = {0L, -1L, -100L, Long.MIN_VALUE})
-    void invalidIdTest(Long id) {
-        var dto = ModelUtils.getUserToDoListItemResponseDto();
-        dto.setId(id);
-
-        testInvalid(dto);
-    }
-
-    @ParameterizedTest
     @ValueSource(strings = {"t", "text"})
     void validTextTest(String text) {
-        var dto = ModelUtils.getUserToDoListItemResponseDto();
+        var dto = ModelUtils.getCustomToDoListItemRequestDto();
         dto.setText(text);
 
         testValid(dto);
@@ -70,7 +51,7 @@ class UserToDoListItemResponseDtoTest {
     @ParameterizedTest
     @NullAndEmptySource
     void invalidTextTest(String text) {
-        var dto = ModelUtils.getUserToDoListItemResponseDto();
+        var dto = ModelUtils.getCustomToDoListItemRequestDto();
         dto.setText(text);
 
         testInvalid(dto);
@@ -79,17 +60,16 @@ class UserToDoListItemResponseDtoTest {
     @ParameterizedTest
     @EnumSource(ToDoListItemStatus.class)
     void validStatusTest(ToDoListItemStatus status) {
-        var dto = ModelUtils.getUserToDoListItemResponseDto();
-        dto.setStatus(status);
+        var dto = ModelUtils.getCustomToDoListItemRequestDto();
+        dto.setStatus(status.toString());
 
         testValid(dto);
     }
 
-    @ParameterizedTest
-    @NullSource
-    void invalidStatusTest(ToDoListItemStatus status) {
-        var dto = ModelUtils.getUserToDoListItemResponseDto();
-        dto.setStatus(status);
+    @Test
+    void invalidStatusTest() {
+        var dto = ModelUtils.getCustomToDoListItemRequestDto();
+        dto.setStatus(null);
 
         testInvalid(dto);
     }

@@ -1,11 +1,10 @@
 package greencity.mapping;
 
-import greencity.entity.ToDoListItem;
 import greencity.entity.UserToDoListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserToDoListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,11 +21,13 @@ class ToDoListItemRequestDtoMapperTest {
         toDoListItemRequestDto.setId(1L);
 
         UserToDoListItem expected = UserToDoListItem.builder()
-            .toDoListItem(ToDoListItem.builder().id(toDoListItemRequestDto.getId()).build())
-            .status(ToDoListItemStatus.ACTIVE)
+            .targetId(1L)
+            .isCustomItem(false)
+            .status(UserToDoListItemStatus.INPROGRESS)
             .build();
 
         UserToDoListItem actual = toDoListItemRequestDtoMapper.convert(toDoListItemRequestDto);
-        assertEquals(expected.getToDoListItem().getId(), actual.getToDoListItem().getId());
+        assertEquals(expected.getTargetId(), actual.getTargetId());
+        assertFalse(actual.getIsCustomItem());
     }
 }
