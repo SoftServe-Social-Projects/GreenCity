@@ -1053,7 +1053,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void updateFromUI_ShouldUpdatePlaceSuccessfully() {
+    void updateFromUISucceedsForValidPlaceTest() {
         PlaceUpdateDto dto = new PlaceUpdateDto();
         dto.setId(1L);
         dto.setName("Updated Place");
@@ -1096,7 +1096,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void updateFromUI_ShouldThrowException_WhenUserNotFound() {
+    void updateFromUIThrowsNotFoundExceptionForUserTest() {
         PlaceUpdateDto dto = getPlaceUpdateDto();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
 
@@ -1105,7 +1105,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void updateFromUI_ShouldThrowNotFoundException_WhenCategoryNotFound() {
+    void updateFromUIThrowsNotFoundExceptionForCategoryTest() {
         PlaceUpdateDto dto = new PlaceUpdateDto();
         dto.setId(1L);
         dto.setCategory(new CategoryDto("Nonexistent Category", "Nonexistent Category", 1L));
@@ -1115,4 +1115,16 @@ class PlaceServiceImplTest {
         assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, "test@example.com"));
     }
 
+    @Test
+    void updateCategoryThrowsNotFoundExceptionTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setCategory(new CategoryDto("Non-existent Category", "Non-existent Category Ua", 2L));
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
+        when(categoryService.findByName("Non-existent Category")).thenThrow(new NotFoundException("Category not found"));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeServiceImpl.update(dto));
+        assertEquals("Category not found", exception.getMessage());
+        verify(placeRepo, never()).save(any(Place.class));
+    }
 }
