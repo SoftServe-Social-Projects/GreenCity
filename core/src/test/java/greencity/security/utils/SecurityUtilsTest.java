@@ -57,7 +57,7 @@ class SecurityUtilsTest {
     void isAuthenticatedFalseForNullAuthenticationTest() {
         when(mockSecurityContext.getAuthentication()).thenReturn(null);
 
-            boolean result = SecurityUtils.isAuthenticated();
+        boolean result = SecurityUtils.isAuthenticated();
         assertFalse(result);
     }
 
