@@ -179,7 +179,6 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
-import org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.XsiNilLoader;
 import org.hibernate.sql.results.internal.TupleElementImpl;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
@@ -3340,16 +3339,6 @@ public class ModelUtils {
             .name("testx")
             .location(new LocationDto())
             .build());
-    }
-
-    public static List<PlacesSearchResult> getPlacesSearchResultList() {
-        PlacesSearchResult placesSearchResult = new PlacesSearchResult();
-        placesSearchResult.name = "testName";
-        placesSearchResult.vicinity = "testVicinity";
-        placesSearchResult.geometry = new Geometry();
-        placesSearchResult.geometry.location = new LatLng(1d, 1d);
-        return List.of(
-            placesSearchResult);
     }
 
     public static List<PlaceByBoundsDto> getPlaceByBoundsDtoFromApi() {

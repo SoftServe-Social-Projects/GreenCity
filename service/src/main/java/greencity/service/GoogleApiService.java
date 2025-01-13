@@ -64,44 +64,19 @@ public class GoogleApiService {
      *
      * @author Hrenevych Ivan
      */
-    // TODO: write tests for coverage
     public List<PlacesSearchResult> getResultFromPlacesApi(FilterPlacesApiDto filterDto, UserVO userVO) {
         List<PlacesSearchResult> placesResults = new ArrayList<>();
         LOCALES.forEach(locale -> {
             try {
+                LatLng location =
+                    filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO);
                 NearbySearchRequest request = PlacesApi.nearbySearchQuery(
                     context,
-                    filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO))
+                    location)
                     .radius(filterDto.getRadius())
                     .language(locale.getLanguage());
 
-                if (filterDto.getKeyword() != null) {
-                    request.keyword(filterDto.getKeyword());
-                }
-
-                if (filterDto.getType() != null) {
-                    request.type(filterDto.getType());
-                }
-
-                if (filterDto.getRankBy() != null) {
-                    request.rankby(filterDto.getRankBy());
-                }
-
-                if (filterDto.getMinPrice() != null) {
-                    request.minPrice(filterDto.getMinPrice());
-                }
-
-                if (filterDto.getMaxPrice() != null) {
-                    request.maxPrice(filterDto.getMaxPrice());
-                }
-
-                if (filterDto.isOpenNow()) {
-                    request.openNow(true);
-                }
-
-                if (filterDto.getName() != null) {
-                    request.name(filterDto.getName());
-                }
+                applyFiltersToRequest(filterDto, request);
 
                 PlacesSearchResponse response = request.await();
                 Collections.addAll(placesResults, response.results);
@@ -112,6 +87,36 @@ public class GoogleApiService {
         });
 
         return placesResults;
+    }
+
+    private static void applyFiltersToRequest(FilterPlacesApiDto filterDto, NearbySearchRequest request) {
+        if (filterDto.getKeyword() != null) {
+            request.keyword(filterDto.getKeyword());
+        }
+
+        if (filterDto.getType() != null) {
+            request.type(filterDto.getType());
+        }
+
+        if (filterDto.getRankBy() != null) {
+            request.rankby(filterDto.getRankBy());
+        }
+
+        if (filterDto.getMinPrice() != null) {
+            request.minPrice(filterDto.getMinPrice());
+        }
+
+        if (filterDto.getMaxPrice() != null) {
+            request.maxPrice(filterDto.getMaxPrice());
+        }
+
+        if (filterDto.isOpenNow()) {
+            request.openNow(true);
+        }
+
+        if (filterDto.getName() != null) {
+            request.name(filterDto.getName());
+        }
     }
 
     /**
