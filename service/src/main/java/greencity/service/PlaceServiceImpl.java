@@ -551,7 +551,7 @@ public class PlaceServiceImpl implements PlaceService {
         return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
     }
 
-    private AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
+    AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
         List<GeocodingResult> geocodingResults = Optional
             .ofNullable(googleApiService.getResultFromGeoCode(locationName))
             .filter(results -> !results.isEmpty())
@@ -664,28 +664,30 @@ public class PlaceServiceImpl implements PlaceService {
         return dto;
     }
 
-    private void updateLocation(PlaceUpdateDto dto, Place updatedPlace, LocationVO updatable) {
+    void updateLocation(PlaceUpdateDto dto, Place updatedPlace, LocationVO updatable) {
         AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
-        LocationAddressAndGeoForUpdateDto responseDto;
 
-        if (geoDetails != null) {
-            responseDto = new LocationAddressAndGeoForUpdateDto(
+        LocationAddressAndGeoForUpdateDto sourceDto = geoDetails != null
+            ? new LocationAddressAndGeoForUpdateDto(
                 geoDetails.getAddressEng(),
                 geoDetails.getLat(),
                 geoDetails.getLng(),
-                geoDetails.getAddress());
-            LocationVO updatedLocation = new LocationVO();
-            updatedLocation.setId(updatable.getId());
-            updatedLocation.setAddress(responseDto.getAddress());
-            updatedLocation.setLat(responseDto.getLat());
-            updatedLocation.setLng(responseDto.getLng());
-            updatedLocation.setAddressUa(responseDto.getAddressUa());
+                geoDetails.getAddress())
+            : dto.getLocation();
 
-            locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
-        } else {
-            locationService.update(updatedPlace.getLocation().getId(),
-                modelMapper.map(dto.getLocation(), LocationVO.class));
-        }
+        LocationVO updatedLocation = createLocationVO(updatable.getId(), sourceDto);
+
+        locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
+    }
+
+    private LocationVO createLocationVO(Long id, LocationAddressAndGeoForUpdateDto dto) {
+        return LocationVO.builder()
+            .id(id)
+            .address(dto.getAddress())
+            .lat(dto.getLat())
+            .lng(dto.getLng())
+            .addressUa(dto.getAddressUa())
+            .build();
     }
 
     private void updatePlaceProperties(PlaceUpdateDto dto, Place updatedPlace, Category updatedCategory) {

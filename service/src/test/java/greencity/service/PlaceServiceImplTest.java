@@ -1,13 +1,20 @@
 package greencity.service;
 
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
+import greencity.dto.category.CategoryDto;
+import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -65,6 +72,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
+import static greencity.ModelUtils.getPlaceUpdateDto;
 import static greencity.ModelUtils.getSearchPlacesDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -83,6 +91,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -102,6 +111,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -169,6 +179,10 @@ class PlaceServiceImplTest {
         .author(user)
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
+        .build();
+    private final CategoryDtoResponse categoryDtoResponse = CategoryDtoResponse.builder()
+        .id(1L)
+        .name("Caterory")
         .build();
     @Mock
     private PlaceRepo placeRepo;
@@ -1037,4 +1051,68 @@ class PlaceServiceImplTest {
 
         Assertions.assertDoesNotThrow(() -> placeServiceImpl.updateDiscount(discounts, updatedPlace));
     }
+
+    @Test
+    void updateFromUI_ShouldUpdatePlaceSuccessfully() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setName("Updated Place");
+        dto.setCategory(new CategoryDto("Test Category", "Test Category Ua", 1L));
+        dto.setLocation(new LocationAddressAndGeoForUpdateDto("New Address", 50.45, 30.52, "New Address Ua"));
+
+        MultipartFile[] images = new MultipartFile[] {
+            new MockMultipartFile("image1.jpg", "image1.jpg", "image/jpeg", new byte[0])
+        };
+        LocationVO locationVO = LocationVO.builder()
+            .id(1L)
+            .address("New Address")
+            .lat(50.45)
+            .lng(30.52)
+            .addressUa("New Address Ua")
+            .build();
+        when(categoryService.findByName("Test Category")).thenReturn(categoryDtoResponse);
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
+        when(userRepo.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(locationService.findById(1L)).thenReturn(locationVO);
+        List<GeocodingResult> geocodingResults = new ArrayList<>();
+        GeocodingResult ukrLang = new GeocodingResult();
+        ukrLang.formattedAddress = "New Address";
+        ukrLang.geometry = new Geometry();
+        ukrLang.geometry.location = new LatLng(50.45, 30.52);
+        GeocodingResult engLang = new GeocodingResult();
+        engLang.formattedAddress = "New Address Ua";
+        engLang.geometry = new Geometry();
+        engLang.geometry.location = new LatLng(50.45, 30.52);
+        geocodingResults.add(ukrLang);
+        geocodingResults.add(engLang);
+        when(googleApiService.getResultFromGeoCode("New Address")).thenReturn(geocodingResults);
+        PlaceVO result = placeServiceImpl.updateFromUI(dto, images, "test@example.com");
+
+        assertNotNull(result);
+        assertEquals("Updated Place", result.getName());
+        verify(placeRepo, atLeastOnce()).save(any(Place.class));
+        verify(photoRepo, times(1)).save(any(Photo.class));
+        verify(locationService, times(1)).update(anyLong(), any(LocationVO.class));
+    }
+
+    @Test
+    void updateFromUI_ShouldThrowException_WhenUserNotFound() {
+        PlaceUpdateDto dto = getPlaceUpdateDto();
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+            () -> placeService.updateFromUI(dto, null, "invalid_email@example.com"));
+    }
+
+    @Test
+    void updateFromUI_ShouldThrowNotFoundException_WhenCategoryNotFound() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setCategory(new CategoryDto("Nonexistent Category", "Nonexistent Category", 1L));
+
+        when(categoryService.findByName("Nonexistent Category"))
+            .thenThrow(new NotFoundException("Category not found"));
+        assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, "test@example.com"));
+    }
+
 }
