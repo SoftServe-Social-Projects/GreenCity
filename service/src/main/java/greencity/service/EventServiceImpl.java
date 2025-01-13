@@ -47,6 +47,7 @@ import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
@@ -111,6 +112,7 @@ import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
