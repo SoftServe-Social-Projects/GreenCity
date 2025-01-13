@@ -68,7 +68,6 @@ import static greencity.ModelUtils.getSearchPlacesDto;
 import static greencity.ModelUtils.getFilterPlacesApiDto;
 import static greencity.ModelUtils.getPlacesSearchResultEn;
 import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
-import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

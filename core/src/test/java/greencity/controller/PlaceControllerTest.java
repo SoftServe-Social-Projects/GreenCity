@@ -1,6 +1,5 @@
 package greencity.controller;
 
-import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.place.PlaceAddDto;

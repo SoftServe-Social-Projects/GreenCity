@@ -1,6 +1,14 @@
 package greencity;
 
-import com.google.maps.model.*;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.PlacesSearchResult;
+import com.google.maps.model.PlacesSearchResponse;
+import com.google.maps.model.RankBy;
+import com.google.maps.model.PriceLevel;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
