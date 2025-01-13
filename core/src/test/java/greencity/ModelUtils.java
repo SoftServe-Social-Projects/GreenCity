@@ -1,7 +1,6 @@
 package greencity;
 
 import com.google.maps.model.LatLng;
-import com.google.maps.model.PlaceType;
 import com.google.maps.model.PriceLevel;
 import com.google.maps.model.RankBy;
 import greencity.dto.PageableAdvancedDto;
