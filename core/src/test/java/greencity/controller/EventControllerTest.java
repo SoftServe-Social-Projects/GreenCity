@@ -601,7 +601,7 @@ class EventControllerTest {
     }
 
     @SneakyThrows
-    private AddEventDtoRequest getAddEventDtoRequestTest() {
+    private AddEventDtoRequest getAddEventDtoRequest() {
         String json = """
             {
                 "title":"string",
@@ -652,7 +652,7 @@ class EventControllerTest {
     }
 
     @SneakyThrows
-    private EventDto getEventDtoTest() {
+    private EventDto getEventDto() {
         String json = """
             {
               "additionalImages": [
