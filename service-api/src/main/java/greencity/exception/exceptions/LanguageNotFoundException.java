@@ -7,5 +7,5 @@ import lombok.experimental.StandardException;
  * exist in database.
  */
 @StandardException
-public class LanguageNotFoundException extends RuntimeException {
+public class LanguageNotFoundException extends NotFoundException {
 }
