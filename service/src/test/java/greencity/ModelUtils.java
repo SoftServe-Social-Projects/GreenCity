@@ -175,6 +175,7 @@ import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
@@ -605,9 +606,9 @@ public class ModelUtils {
             .userLocationDto(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .showToDoList(true)
-            .showEcoPlace(true)
-            .showLocation(true)
+            .showToDoList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
@@ -2816,6 +2817,19 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserFriendDto getUserFriendDtoListFromUserPage() {
+        return UserFriendDto.builder()
+            .id(1L)
+            .name(TestConst.NAME)
+            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
+            .rating(10.0)
+            .mutualFriends(3L)
+            .profilePicturePath("path-to-picture")
+            .chatId(4L)
+            .build();
+    }
+
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
             .time(PAST)
@@ -3269,10 +3283,12 @@ public class ModelUtils {
                     new TupleElementImpl<>(String.class, "email"),
                     new TupleElementImpl<>(String.class, "name"),
                     new TupleElementImpl<>(String.class, "profile_picture"),
-                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
                 },
-                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
-            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", true});
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", true, true});
 
         return List.of(tuple);
     }
@@ -3285,10 +3301,12 @@ public class ModelUtils {
                     new TupleElementImpl<>(String.class, "email"),
                     new TupleElementImpl<>(String.class, "name"),
                     new TupleElementImpl<>(String.class, "profile_picture"),
-                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
                 },
-                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
-            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", false});
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {2L, "john@example.com", "John", "/image/path/john.png", false, false});
 
         Tuple tuple2 = new TupleImpl(
             new TupleMetadata(
@@ -3297,10 +3315,12 @@ public class ModelUtils {
                     new TupleElementImpl<>(String.class, "email"),
                     new TupleElementImpl<>(String.class, "name"),
                     new TupleElementImpl<>(String.class, "profile_picture"),
-                    new TupleElementImpl<>(Boolean.class, "has_invitation")
+                    new TupleElementImpl<>(Boolean.class, "has_invitation"),
+                    new TupleElementImpl<>(Boolean.class, "has_accepted_invitation")
+
                 },
-                new String[] {"id", "email", "name", "profile_picture", "has_invitation"}),
-            new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false});
+                new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
+            new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false, false});
         return List.of(tuple1, tuple2);
     }
 }

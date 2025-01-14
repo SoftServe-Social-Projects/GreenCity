@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.habitstatistic.HabitStatusCount;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
@@ -441,4 +442,15 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             AND n.id IS NULL
         """)
     List<HabitAssign> getHabitAssignsWithLastDayOfPrimaryDurationToMessage();
+
+    /**
+     * Group HabitAssign records by status and count occurrences.
+     */
+    @Query("""
+            SELECT new greencity.dto.habitstatistic.HabitStatusCount(ha.status, COUNT(ha))
+            FROM HabitAssign ha
+            WHERE ha.user.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
+            GROUP BY ha.status
+        """)
+    List<HabitStatusCount> countHabitAssignsByStatus();
 }

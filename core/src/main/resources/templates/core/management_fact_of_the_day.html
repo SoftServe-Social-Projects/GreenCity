@@ -4,9 +4,7 @@
     <meta charset="utf-8"/>
     <title>Fact of the day management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -20,16 +18,16 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/factoftheday/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 <body th:with="baseUrl='/management/factoftheday/findAll'" th:data-base-url="${baseUrl}">
 <div id="header" th:insert="~{core/header}"></div>
-<div id="sidebar" th:insert="~{core/sidepanel}"></div>
 <div class="main-content">
+    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
     <div class="table-responsive">
-        <div class="table-wrapper" style="margin: 10px;">
+        <div class="table-wrapper">
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-6 align-content-center">
@@ -43,24 +41,24 @@
                                 <input type="text" name="query" th:value="${query}" class="form-control" th:placeholder="#{greenCity.pages.search}">
                             </form>
                         </span>
-                        <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-success"
-                           data-toggle="modal"><i class="material-icons">&#xE147;</i>
-                            <span>[[#{greenCity.factsOfTheDay.page.add.factsOfTheDay}]]</span></a>
-                        <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                class="material-icons">&#xE15C;</i> <span>[[#{greenCity.pages.delete}]]</span></a>
+                        <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-secondary"
+                           data-toggle="modal" style="width: 182px;">
+                            <div>[[#{greenCity.factsOfTheDay.page.add.factsOfTheDay}]]</div></a>
+                        <a href="#deleteAllSelectedModal" class="btn btn-remove" data-toggle="modal">
+                            <div>[[#{greenCity.pages.delete}]]</div></a>
                     </div>
                 </div>
             </div>
-            <table class="table table-striped">
+            <table class="table table-bordered">
                 <thead class="text-align-center">
-                    <tr class="table-primary">
+                    <tr>
                         <th rowspan="2">
-                            <span class="alternative-checkbox">
+                            <span class="custom-checkbox">
                                 <input type="checkbox" id="selectAll">
                                 <label for="selectAll"></label>
                             </span>
                         </th>
-                        <th rowspan="2" class="mobile-hidden" style="min-width: 70px;">[[#{greenCity.pages.table.id}]]
+                        <th rowspan="2" class="mobile-hidden" style="min-width: 75px;">[[#{greenCity.pages.table.id}]]
                             <span onclick="orderByField('id','asc')">
                                 <i id="id-icon-asc" class="material-icons" data-toggle="tooltip"
                                    th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
@@ -94,7 +92,7 @@
                         <th rowspan="2">[[#{greenCity.pages.table.tags}]]</th>
                         <th rowspan="2">[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
-                    <tr class="table-secondary">
+                    <tr>
                         <th class="small-column mobile-hidden">[[#{greenCity.pages.table.translation.id}]]</th>
                         <th>[[#{greenCity.pages.table.content}]]
                             <span onclick="orderByField('factOfTheDayTranslations.content','asc')">
@@ -113,7 +111,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <span class="alternative-checkbox">
+                            <span class="custom-checkbox">
                                 <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                        name="options[]" th:value="${factOfTheDay.getId()}">
                                 <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
@@ -126,7 +124,7 @@
                                 <tbody>
                                 <th:block
                                         th:each="translation : ${pageable.getPage().get(iterStatus.index).getFactOfTheDayTranslations()}">
-                                    <tr class="table-secondary-tr">
+                                    <tr>
                                         <td class="mobile-hidden small-column text-right" th:text="${translation.getId()}">1</td>
                                         <td th:text="${translation.getContent()}"></td>
                                         <td class="small-column" th:text="${translation.getLanguage().getCode()}"></td>
@@ -137,10 +135,10 @@
                         </td>
                         <td class="mobile-hidden" th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd.MM.yyyy HH:mm')}"></td>
                         <td>
-                            <table class="table table-borderless m-0 table-child">
+                            <table class="table table-borderless m-0">
                                 <tbody id="tag-table-body">
                                 <th:block th:each="tag : ${pageable.getPage().get(iterStatus.index).getTags()}">
-                                        <tr class="table-secondary-tr">
+                                        <tr>
                                             <td th:data-tag-id="${tag.getId()}" th:data="${tag.getLanguageCode()}" th:text="${tag.getName()}"></td>
                                         </tr>
                                 </th:block>
@@ -278,7 +276,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-info" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
                     </div>
                 </form>
             </div>

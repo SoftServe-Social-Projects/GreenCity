@@ -177,6 +177,7 @@ class CommentServiceImplTest {
         User user = getUser();
         UserVO userVO = getUserVO();
         User parentCommentCreator = getUser().setId(2L);
+        UserVO parentCommentCreatorVO = getUserVO().setId(2L);
         Comment parentComment = getComment()
             .setUser(parentCommentCreator)
             .setArticleId(1L)
@@ -192,6 +193,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(commentRepo.findById(1L))
             .thenReturn(Optional.of(parentComment));
+        when(modelMapper.map(parentCommentCreator, UserVO.class)).thenReturn(parentCommentCreatorVO);
         when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(modelMapper.map(commentRepo.save(comment), AddCommentDtoResponse.class))

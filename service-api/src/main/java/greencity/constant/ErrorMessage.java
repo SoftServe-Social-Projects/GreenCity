@@ -217,4 +217,9 @@ public class ErrorMessage {
     public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
     public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
     public static final String OPEN_AI_IS_NOT_RESPONDING = "Could not get a response from OpenAI.";
+    public static final String WARNING_GIT_DIRECTORY_NOT_FOUND =
+        "WARNING: .git directory not found. Git commit info will be unavailable.";
+    public static final String GIT_REPOSITORY_NOT_INITIALIZED =
+        "Git repository not initialized. Commit info is unavailable.";
+    public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
 }

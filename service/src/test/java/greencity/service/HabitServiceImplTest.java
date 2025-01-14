@@ -1613,6 +1613,8 @@ class HabitServiceImplTest {
         assertEquals(2, result.getPage().size());
         assertFalse(result.getPage().get(0).getHasInvitation());
         assertFalse(result.getPage().get(1).getHasInvitation());
+        assertFalse(result.getPage().get(0).getHasAcceptedInvitation());
+        assertFalse(result.getPage().get(1).getHasAcceptedInvitation());
         assertEquals("John", result.getPage().get(0).getName());
         assertEquals("Ivan", result.getPage().get(1).getName());
         assertEquals("john@example.com", result.getPage().get(0).getEmail());
@@ -1639,6 +1641,7 @@ class HabitServiceImplTest {
 
         assertNotNull(result);
         assertTrue(result.getPage().getFirst().getHasInvitation());
+        assertTrue(result.getPage().getFirst().getHasAcceptedInvitation());
         assertEquals("John", result.getPage().getFirst().getName());
         assertEquals("john@example.com", result.getPage().getFirst().getEmail());
         assertEquals(2L, result.getPage().getFirst().getId());

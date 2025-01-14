@@ -13,6 +13,7 @@ import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.UserActionRepo;
 import greencity.repository.options.HabitFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +65,8 @@ class ManagementHabitServiceImplTest {
     private ManagementHabitServiceImpl managementHabitService;
     @Mock
     private FileService fileService;
+    @Mock
+    private UserActionRepo userActionRepo;
 
     @Test
     void getByIdTest() {
@@ -181,14 +184,19 @@ class ManagementHabitServiceImplTest {
 
     @Test
     void deleteTest() {
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).build()));
-        Habit habit = habitRepo.findById(1L).orElse(null);
-        when(modelMapper.map(habit, HabitVO.class)).thenReturn(HabitVO.builder().id(1L).build());
-        managementHabitService.delete(1L);
-        verify(habitTranslationRepo, times(1)).deleteAllByHabit(habit);
-        verify(habitAssignService, times(1)).deleteAllHabitAssignsByHabit(modelMapper.map(habit, HabitVO.class));
-        verify(habitRepo, times(1)).delete(habit);
+        Habit habit = Habit.builder().id(1L).build();
+        HabitVO habitVO = HabitVO.builder().id(1L).build();
 
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+        when(modelMapper.map(habit, HabitVO.class)).thenReturn(habitVO);
+
+        managementHabitService.delete(1L);
+
+        verify(habitRepo, times(1)).findById(1L);
+        verify(userActionRepo, times(1)).deleteAllByHabitId(1L);
+        verify(habitTranslationRepo, times(1)).deleteAllByHabit(habit);
+        verify(habitAssignService, times(1)).deleteAllHabitAssignsByHabit(habitVO);
+        verify(habitRepo, times(1)).delete(habit);
     }
 
     @Test
