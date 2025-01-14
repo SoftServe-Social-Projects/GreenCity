@@ -1121,7 +1121,8 @@ class PlaceServiceImplTest {
         dto.setId(1L);
         dto.setCategory(new CategoryDto("Non-existent Category", "Non-existent Category Ua", 2L));
         when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
-        when(categoryService.findByName("Non-existent Category")).thenThrow(new NotFoundException("Category not found"));
+        when(categoryService.findByName("Non-existent Category"))
+            .thenThrow(new NotFoundException("Category not found"));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> placeServiceImpl.update(dto));
         assertEquals("Category not found", exception.getMessage());
