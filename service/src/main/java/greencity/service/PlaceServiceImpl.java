@@ -584,7 +584,6 @@ public class PlaceServiceImpl implements PlaceService {
                         .build();
                     Photo savedPhoto = photoRepo.save(newPhoto);
                     newPhotos.add(savedPhoto);
-                    newPhotos.add(newPhoto);
                 }
             }
             place.getPhotos().addAll(newPhotos);
