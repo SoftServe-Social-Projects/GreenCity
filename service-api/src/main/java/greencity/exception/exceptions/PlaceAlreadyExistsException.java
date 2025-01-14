@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when user trying to add a place that already exists in the database.
+ * Exception that we get when user trying to add a place that already exists in
+ * the database.
  *
  * @author Hrenevych Ivan
  */

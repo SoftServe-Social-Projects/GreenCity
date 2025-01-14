@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import greencity.dto.filter.FilterPlacesApiDto;
+import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,6 +53,11 @@ import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlaceByBoundsDto;
+import static greencity.ModelUtils.getPrincipalForUserVO;
+import static greencity.ModelUtils.getUserVO;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -87,6 +94,9 @@ class PlaceControllerTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    UserService userService;
 
     private final Principal principal = getPrincipal();
 
@@ -433,6 +443,35 @@ class PlaceControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(placeService).getPlacesByFilter(filterPlaceDto);
+    }
+
+    @Test
+    void getFilteredPlacesFromApi() throws Exception {
+        UserVO userVO = new UserVO();
+        Principal principalForUserVO = getPrincipalForUserVO();
+        FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
+        String json = "{\n" +
+            "  \"location\": {\n" +
+            "    \"lat\": 0,\n" +
+            "    \"lng\": 0\n" +
+            "  },\n" +
+            "  \"radius\": 10000,\n" +
+            "  \"rankBy\": \"PROMINENCE\",\n" +
+            "  \"keyword\": \"test\",\n" +
+            "  \"minPrice\": \"0\",\n" +
+            "  \"maxPrice\": \"4\",\n" +
+            "  \"openNow\": true\n" +
+            "}\n";
+        when(userService.findByEmail(userVO.getEmail())).thenReturn(userVO);
+        when(placeService.getPlacesByFilter(filterDto, userVO)).thenReturn(getPlaceByBoundsDto());
+
+        this.mockMvc.perform(post(placeLink + "/filter/api")
+            .content(json)
+            .principal(principalForUserVO)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(placeService).getPlacesByFilter(filterDto, userVO);
     }
 
     @Test

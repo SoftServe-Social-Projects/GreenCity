@@ -497,12 +497,12 @@ public class PlaceServiceImpl implements PlaceService {
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, UserVO userVO) {
         List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
         return fromPlacesApi.stream()
-                .map(el -> new PlaceByBoundsDto(
-                        System.currentTimeMillis(),
-                        el.name,
-                        new LocationDto(System.currentTimeMillis(), el.geometry.location.lat, el.geometry.location.lng,
-                                el.vicinity)))
-                .collect(Collectors.toList());
+            .map(el -> new PlaceByBoundsDto(
+                System.currentTimeMillis(),
+                el.name,
+                new LocationDto(System.currentTimeMillis(), el.geometry.location.lat, el.geometry.location.lng,
+                    el.vicinity)))
+            .collect(Collectors.toList());
     }
 
     /**

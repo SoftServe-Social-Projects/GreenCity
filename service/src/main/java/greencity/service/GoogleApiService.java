@@ -75,12 +75,12 @@ public class GoogleApiService {
         LOCALES.forEach(locale -> {
             try {
                 LatLng location =
-                        filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO);
+                    filterDto.getLocation() != null ? filterDto.getLocation() : getLocationFromUserVO(userVO);
                 NearbySearchRequest request = PlacesApi.nearbySearchQuery(
-                                context,
-                                location)
-                        .radius(filterDto.getRadius())
-                        .language(locale.getLanguage());
+                    context,
+                    location)
+                    .radius(filterDto.getRadius())
+                    .language(locale.getLanguage());
 
                 applyFiltersToRequest(filterDto, request);
 
@@ -141,7 +141,7 @@ public class GoogleApiService {
      */
     private com.google.maps.model.LatLng getLocationFromUserVO(UserVO userVO) {
         return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(),
-                userVO.getUserLocationDto().getLongitude());
+            userVO.getUserLocationDto().getLongitude());
     }
 
     /**

@@ -238,18 +238,18 @@ public class PlaceController {
      * @return a list of {@code PlaceByBoundsDto}
      */
     @ApiOperation(value = "Return a list places from Google Geocoding API filtered by values contained "
-            + "in the incoming FilterPlaceDto object")
+        + "in the incoming FilterPlaceDto object")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = FilterPlacesApiDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = FilterPlacesApiDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/filter/api")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlacesFromApi(
-            @Valid @RequestBody FilterPlacesApiDto filterDto,
-            @ApiIgnore @CurrentUser UserVO userVO) {
+        @Valid @RequestBody FilterPlacesApiDto filterDto,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 

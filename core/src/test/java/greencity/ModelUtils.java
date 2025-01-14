@@ -1,6 +1,9 @@
 package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.maps.model.LatLng;
+import com.google.maps.model.PriceLevel;
+import com.google.maps.model.RankBy;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
@@ -26,6 +29,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
@@ -43,9 +47,12 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
@@ -170,6 +177,12 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .userLocationDto(
+                UserLocationDto.builder()
+                    .latitude(1d)
+                    .longitude(1d)
+                    .build())
             .build();
     }
 
@@ -438,6 +451,10 @@ public class ModelUtils {
 
     public static Principal getPrincipal() {
         return () -> "test@gmail.com";
+    }
+
+    public static Principal getPrincipalForUserVO() {
+        return () -> "taras@gmail.com";
     }
 
     public static NewsSubscriberRequestDto getNewsSubscriberRequestDto() {
@@ -760,5 +777,25 @@ public class ModelUtils {
             .statuses(null)
             .tags(null)
             .build();
+    }
+
+    public static FilterPlacesApiDto getFilterPlacesApiDto() {
+        return FilterPlacesApiDto.builder()
+            .location(new LatLng(0d, 0d))
+            .radius(10000)
+            .keyword("test")
+            .rankBy(RankBy.PROMINENCE)
+            .openNow(true)
+            .minPrice(PriceLevel.FREE)
+            .maxPrice(PriceLevel.VERY_EXPENSIVE)
+            .build();
+    }
+
+    public static List<PlaceByBoundsDto> getPlaceByBoundsDto() {
+        return List.of(PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("testx")
+            .location(new LocationDto())
+            .build());
     }
 }

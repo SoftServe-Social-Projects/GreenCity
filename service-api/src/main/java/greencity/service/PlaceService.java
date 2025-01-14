@@ -181,7 +181,7 @@ public interface PlaceService {
      * @author Hrenevyh Ivan
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto,
-                                             UserVO userVO);
+        UserVO userVO);
 
     /**
      * The method finds all {@link PlaceVO}'s filtered by the parameters contained

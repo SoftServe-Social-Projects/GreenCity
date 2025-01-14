@@ -33,11 +33,11 @@ public interface LocationRepo extends JpaRepository<Location, Long> {
      *         - {@code false}
      * @author Hrenevych Ivan.
      */
-    @Query(value = " SELECT EXISTS (" +
-            "     SELECT 1" +
-            "     FROM locations l" +
-            "     WHERE ROUND(CAST(l.lat AS numeric), 4) = ROUND(CAST(:lat AS numeric), 4)" +
-            "       AND ROUND(CAST(l.lng AS numeric), 4) = ROUND(CAST(:lng AS numeric), 4)" +
-            " )", nativeQuery = true)
+    @Query(value = " SELECT EXISTS ("
+        + "     SELECT 1"
+        + "     FROM locations l"
+        + "     WHERE ROUND(CAST(l.lat AS numeric), 4) = ROUND(CAST(:lat AS numeric), 4)"
+        + "       AND ROUND(CAST(l.lng AS numeric), 4) = ROUND(CAST(:lng AS numeric), 4)"
+        + " )", nativeQuery = true)
     boolean existsByLatAndLng(@Param("lat") double lat, @Param("lng") double lng);
 }
