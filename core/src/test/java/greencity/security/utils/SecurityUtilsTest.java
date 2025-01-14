@@ -62,6 +62,20 @@ class SecurityUtilsTest {
     }
 
     @Test
+    void isAuthenticatedFalseForNullPrincipalTest() {
+        Boolean isAuthenticated = true;
+        when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
+        when(mockAuthentication.isAuthenticated()).thenReturn(isAuthenticated);
+        when(mockAuthentication.getPrincipal()).thenReturn(null);
+
+        boolean result = SecurityUtils.isAuthenticated();
+        assertFalse(result);
+
+        verify(mockAuthentication).isAuthenticated();
+        verify(mockAuthentication).getPrincipal();
+    }
+
+    @Test
     void isAuthenticatedFalseForAnonymousUserTest() {
         Boolean isAuthenticated = true;
         String principal = "anonymousUser";
