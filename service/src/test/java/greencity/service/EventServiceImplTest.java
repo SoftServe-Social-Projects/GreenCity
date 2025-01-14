@@ -1717,7 +1717,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void approveRequest() {
+    void approveRequestTest() {
         UserVO userVO = ModelUtils.getUserVO();
         User user = ModelUtils.getUser();
         User userToJoin = User.builder().build();
@@ -1741,7 +1741,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void approveRequestUserHasNoAccess() {
+    void approveRequestUserHasNoAccessTest() {
         UserVO userVO = ModelUtils.getUserVO();
         User user = ModelUtils.getTestUser();
         Event event = ModelUtils.getEvent();
@@ -1761,7 +1761,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void approveRequestUserDidNotRequest() {
+    void approveRequestUserDidNotRequestTest() {
         UserVO userVO = ModelUtils.getUserVO();
         User user = ModelUtils.getUser();
         User userToJoin = User.builder().build();
@@ -1784,7 +1784,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void declineRequest() {
+    void declineRequestTest() {
         UserVO userVO = ModelUtils.getUserVO();
         User user = ModelUtils.getUser();
         User userToJoin = User.builder().build();
@@ -1808,7 +1808,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void declineRequestUserHasNoAccess() {
+    void declineRequestUserHasNoAccessTest() {
         UserVO userVO = ModelUtils.getUserVO();
         User user = ModelUtils.getTestUser();
         Event event = ModelUtils.getEvent();
@@ -1828,7 +1828,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void declineRequestUserDidNotRequest() {
+    void declineRequestUserDidNotRequestTest() {
         UserVO userVO = ModelUtils.getUserVO();
         User user = ModelUtils.getUser();
         User userToJoin = User.builder().build();
