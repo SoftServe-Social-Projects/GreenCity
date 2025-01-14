@@ -452,6 +452,9 @@ public class PlaceServiceImpl implements PlaceService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, UserVO userVO) {
         List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
@@ -563,6 +566,9 @@ public class PlaceServiceImpl implements PlaceService {
         }.getType());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);

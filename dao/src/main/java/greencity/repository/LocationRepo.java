@@ -23,13 +23,13 @@ public interface LocationRepo extends JpaRepository<Location, Long> {
     Optional<Location> findByLatAndLng(Double lat, Double lng);
 
     /**
-     * Method returns {@param true} if location with such {@param lat} and.
-     * {@param lng} exists
+     * Method checks if {@code Location} with such {@code lat} and {@code lng} exist.
+     * Only first 4 decimal places of {@code lat} and {@code lng} are taken into account
      *
      * @param lat latitude of point of the map
      * @param lng longitude of point of the map
-     * @return boolean
-     * @author Ivan Hrenevych.
+     * @return {@code true} if {@code Location} with such coordinates exist, or else - {@code false}
+     * @author Hrenevych Ivan.
      */
     @Query(value = """
          SELECT EXISTS (

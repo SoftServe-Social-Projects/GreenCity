@@ -256,8 +256,9 @@ public class PlaceController {
     }
 
     /**
-     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * The method which return a list of {@link PlaceByBoundsDto} filtered by values
      * contained in the incoming {@link FilterPlaceDto} object.
+     * {@link PlaceByBoundsDto} are retrieved from the database
      *
      * @param filterDto contains all information about the filtering of the list.
      * @return a list of {@code PlaceByBoundsDto}
@@ -283,6 +284,14 @@ public class PlaceController {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 
+    /**
+     * The method which return a list of {@link PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlacesApiDto} object.
+     * {@link PlaceByBoundsDto} are retrieved from Google Places API
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @return a list of {@code PlaceByBoundsDto}
+     */
     @Operation(summary = "Return a list places from Google Geocoding API filtered by values contained "
         + "in the incoming FilterPlaceDto object")
     @ApiResponses(value = {

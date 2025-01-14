@@ -94,6 +94,14 @@ public class GoogleApiService {
         return placesResults;
     }
 
+    /**
+     * Applies filters to a request from {@link FilterPlacesApiDto}.
+     *
+     * @param filterDto DTO containing filter parameters for the Places API request.
+     * @param request   API request filters are applied to
+     *
+     * @author Hrenevych Ivan
+     */
     private static void applyFiltersToRequest(FilterPlacesApiDto filterDto, NearbySearchRequest request) {
         if (filterDto.getKeyword() != null) {
             request.keyword(filterDto.getKeyword());
