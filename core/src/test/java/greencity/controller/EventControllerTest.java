@@ -601,7 +601,7 @@ class EventControllerTest {
     }
 
     @SneakyThrows
-    private AddEventDtoRequest getAddEventDtoRequest() {
+    private AddEventDtoRequest getAddEventDtoRequestTest() {
         String json = """
             {
                 "title":"string",
@@ -652,7 +652,7 @@ class EventControllerTest {
     }
 
     @SneakyThrows
-    private EventDto getEventDto() {
+    private EventDto getEventDtoTest() {
         String json = """
             {
               "additionalImages": [
@@ -737,7 +737,7 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
-    void approveRequest() {
+    void approveRequestTest() {
         Long eventId = 1L;
         Long userId = 1L;
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users/{userId}/approve", eventId, userId)
@@ -748,7 +748,7 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
-    void declineRequest() {
+    void declineRequestTest() {
         Long eventId = 1L;
         Long userId = 1L;
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users/{userId}/decline", eventId, userId)
