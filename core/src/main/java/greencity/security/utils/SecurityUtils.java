@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import static greencity.constant.SecurityConstants.ANONYMOUS;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
