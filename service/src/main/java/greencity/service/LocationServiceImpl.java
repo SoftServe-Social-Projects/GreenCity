@@ -113,4 +113,14 @@ public class LocationServiceImpl implements LocationService {
         }
         return Optional.empty();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Hrenevych Ivan
+     */
+    @Override
+    public boolean existsByLatAndLng(Double lat, Double lng) {
+        return locationRepo.existsByLatAndLng(lat, lng);
+    }
 }

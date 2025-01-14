@@ -207,6 +207,7 @@ public final class ErrorMessage {
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
+    public static final String PLACE_ALREADY_EXISTS = "Place with such coordinates already exists";
 
     private ErrorMessage() {
     }
