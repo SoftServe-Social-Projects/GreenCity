@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.service.UserService;
 import java.util.List;
@@ -10,6 +11,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
@@ -58,7 +63,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * @return {@link SessionLocaleResolver}
      */
     @Bean
-    public LocaleResolver localeResolver() {
+    public LocaleResolver localeResolvers() {
         SessionLocaleResolver localeResolver = new SessionLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         return localeResolver;
@@ -96,6 +101,35 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.removeIf(resolver -> resolver instanceof PageableHandlerMethodArgumentResolver);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
+        resolvers.add(new PageableHandlerMethodArgumentResolver() {
+            @Override
+            public Pageable resolveArgument(MethodParameter methodParameter,
+                org.springframework.web.method.support.ModelAndViewContainer mavContainer,
+                org.springframework.web.context.request.NativeWebRequest webRequest,
+                org.springframework.web.bind.support.WebDataBinderFactory binderFactory) {
+                String pageParam = webRequest.getParameter("page");
+                String sizeParam = webRequest.getParameter("size");
+
+                int page = 0;
+                int size = 20;
+
+                try {
+                    if (pageParam != null) {
+                        page = Integer.parseInt(pageParam);
+                    }
+                    if (sizeParam != null) {
+                        if (!sizeParam.matches("\\d+")) {
+                            throw new NumberFormatException(ErrorMessage.NEGATIVE_SIZE_VALUE_EXCEPTION);
+                        }
+                        size = Integer.parseInt(sizeParam);
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException(ErrorMessage.INVALID_SIZE_VALUE_EXCEPTION);
+                }
+                return PageRequest.of(page, size);
+            }
+        });
     }
 }
