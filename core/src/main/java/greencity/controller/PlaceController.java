@@ -241,9 +241,7 @@ public class PlaceController {
         + "in the incoming FilterPlaceDto object")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = FilterPlacesApiDto.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/filter/api")

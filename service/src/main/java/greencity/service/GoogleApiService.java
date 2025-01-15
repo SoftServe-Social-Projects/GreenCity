@@ -18,6 +18,7 @@ import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -140,6 +141,12 @@ public class GoogleApiService {
      * @return LatLng object representing the location.
      */
     private com.google.maps.model.LatLng getLocationFromUserVO(UserVO userVO) {
+        if(userVO == null
+            || userVO.getUserLocationDto() ==  null
+            || userVO.getUserLocationDto().getLatitude() == null
+            || userVO.getUserLocationDto().getLongitude() == null) {
+            throw new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND);
+        }
         return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(),
             userVO.getUserLocationDto().getLongitude());
     }

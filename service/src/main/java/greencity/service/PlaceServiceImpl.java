@@ -592,6 +592,9 @@ public class PlaceServiceImpl implements PlaceService {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
+        if (geocodingResults.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.GEOCODING_RESULT_IS_EMPTY);
+        }
         double lat = geocodingResults.get(0).geometry.location.lat;
         double lng = geocodingResults.get(0).geometry.location.lng;
         if (locationService.existsByLatAndLng(lat, lng)) {
