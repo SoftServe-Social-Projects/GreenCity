@@ -24,6 +24,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.bind.support.WebDataBinderFactory;
 
 @Configuration
 @RequiredArgsConstructor
@@ -106,9 +109,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.add(new PageableHandlerMethodArgumentResolver() {
             @Override
             public Pageable resolveArgument(MethodParameter methodParameter,
-                org.springframework.web.method.support.ModelAndViewContainer mavContainer,
-                org.springframework.web.context.request.NativeWebRequest webRequest,
-                org.springframework.web.bind.support.WebDataBinderFactory binderFactory) {
+                ModelAndViewContainer mavContainer,
+                NativeWebRequest webRequest,
+                WebDataBinderFactory binderFactory) {
                 String pageParam = webRequest.getParameter("page");
                 String sizeParam = webRequest.getParameter("size");
 
