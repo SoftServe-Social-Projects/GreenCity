@@ -269,6 +269,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<NotificationType> invites = List.of(
             NotificationType.FRIEND_REQUEST_RECEIVED,
             NotificationType.FRIEND_REQUEST_ACCEPTED,
+            NotificationType.EVENT_INVITE,
             NotificationType.HABIT_INVITE);
         List<NotificationType> systems = List.of(
             NotificationType.ECONEWS_CREATED,
@@ -277,7 +278,9 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationType.EVENT_NAME_UPDATED,
             NotificationType.EVENT_UPDATED,
             NotificationType.EVENT_JOINED,
-            NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION);
+            NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION,
+            NotificationType.EVENT_REQUEST_ACCEPTED,
+            NotificationType.EVENT_REQUEST_DECLINED);
         List<NotificationType> places = List.of(
             NotificationType.PLACE_STATUS,
             NotificationType.PLACE_ADDED);
