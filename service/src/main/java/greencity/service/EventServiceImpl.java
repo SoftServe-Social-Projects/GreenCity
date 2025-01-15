@@ -898,10 +898,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_REQUESTED);
         }
 
-        event.setRequesters(event.getRequesters()
-            .stream()
-            .filter(user -> !user.getId().equals(currentUser.getId()))
-            .collect(Collectors.toSet()));
+        event.getRequesters().remove(currentUser);
         eventRepo.save(event);
     }
 
