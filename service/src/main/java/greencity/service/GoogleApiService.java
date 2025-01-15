@@ -140,10 +140,10 @@ public class GoogleApiService {
      * @return LatLng object representing the location.
      */
     private com.google.maps.model.LatLng getLocationFromUserVO(UserVO userVO) {
-        if(userVO == null
-                || userVO.getUserLocationDto() ==  null
-                || userVO.getUserLocationDto().getLatitude() == null
-                || userVO.getUserLocationDto().getLongitude() == null) {
+        if (userVO == null
+            || userVO.getUserLocationDto() == null
+            || userVO.getUserLocationDto().getLatitude() == null
+            || userVO.getUserLocationDto().getLongitude() == null) {
             throw new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND);
         }
         return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(),
