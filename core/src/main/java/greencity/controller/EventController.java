@@ -507,7 +507,7 @@ public class EventController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/addToRequested/{eventId}")
+    @PostMapping("/{eventId}/addToRequested")
     public ResponseEntity<Object> addToRequested(@PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal) {
         eventService.addToRequested(eventId, principal.getName());
@@ -526,7 +526,7 @@ public class EventController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
-    @DeleteMapping("/removeFromRequested/{eventId}")
+    @DeleteMapping("/{eventId}/removeFromRequested")
     public ResponseEntity<Object> removeFromRequested(@PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal) {
         eventService.removeFromRequested(eventId, principal.getName());

@@ -310,7 +310,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + ATTENDERS,
                     "/events/{eventId}/requested-users/{userId}/decline",
                     "/events/{eventId}/requested-users/{userId}/approve",
-                    EVENTS + "/addToRequested" + EVENT_ID,
+                    EVENTS + EVENT_ID + "/addToRequested",
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
@@ -407,7 +407,7 @@ public class SecurityConfig {
                     "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
                     HABIT_INVITE + INVITATION_ID + "/reject",
-                    EVENTS + "/removeFromRequested" + EVENT_ID)
+                    EVENTS + EVENT_ID + "/removeFromRequested")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
