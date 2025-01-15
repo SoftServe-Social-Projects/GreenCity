@@ -260,4 +260,5 @@
     <include file="/db/changelog/logs/ch-habits-add-created-at-column.xml"/>
     <include file="db/changelog/logs/ch-change-user-profile-columns-type-Haliara.xml"/>
     <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
+    <include file="db/changelog/logs/ch-add-table-events-requesters-Pitsyk.xml"/>
 </databaseChangeLog>

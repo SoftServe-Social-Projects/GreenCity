@@ -13,6 +13,7 @@ import greencity.dto.search.SearchEventsDto;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -209,4 +210,43 @@ public interface EventService {
      * @return user liked event or not.
      */
     boolean isEventDislikedByUser(Long eventId, UserVO userVO);
+
+    /**
+     * Method for adding an event to requested by event id.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     * @author Olha Pitsyk.
+     */
+    void addToRequested(Long eventId, String email);
+
+    /**
+     * Method for removing an event from requested by event id.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     * @author Olha Pitsyk.
+     */
+    void removeFromRequested(Long eventId, String email);
+
+    /**
+     * Method for getting all users who made request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable);
+
+    /**
+     * Method for approving request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    void approveRequest(Long eventId, String email, Long userId);
+
+    /**
+     * Method for declining request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    void declineRequest(Long eventId, String email, Long userId);
 }

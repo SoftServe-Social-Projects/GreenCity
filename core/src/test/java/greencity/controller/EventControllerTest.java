@@ -703,4 +703,57 @@ class EventControllerTest {
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);
     }
+
+    @Test
+    @SneakyThrows
+    void addToRequestedTest() {
+        Long eventId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/addToRequested", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).addToRequested(eventId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void removeFromRequestedTest() {
+        Long eventId = 1L;
+        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/removeFromRequested", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).removeFromRequested(eventId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void getRequestedUsersTest() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).getRequestedUsers(eventId, principal.getName(), pageable);
+    }
+
+    @Test
+    @SneakyThrows
+    void approveRequestTest() {
+        Long eventId = 1L;
+        Long userId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users/{userId}/approve", eventId, userId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).approveRequest(eventId, principal.getName(), userId);
+    }
+
+    @Test
+    @SneakyThrows
+    void declineRequestTest() {
+        Long eventId = 1L;
+        Long userId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users/{userId}/decline", eventId, userId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).declineRequest(eventId, principal.getName(), userId);
+    }
 }

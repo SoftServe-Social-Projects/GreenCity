@@ -900,4 +900,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query("SELECT COUNT(u) FROM User u WHERE u.userStatus IN (greencity.enums.UserStatus.ACTIVATED) ")
     Long countActiveUsers();
+
+    /**
+     * Method for getting all users who made request for joining the event.
+     *
+     * @param eventId  - id of the event
+     * @param pageable
+     *
+     */
+    @Query(nativeQuery = true, value = "SELECT users.* FROM users "
+        + "JOIN events_requesters ON users.id = events_requesters.user_id "
+        + "WHERE events_requesters.event_id = :eventId")
+    Page<User> findUsersByRequestedEvents(Long eventId, Pageable pageable);
 }

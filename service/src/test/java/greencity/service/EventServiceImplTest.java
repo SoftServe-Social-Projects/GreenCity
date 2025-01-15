@@ -1583,4 +1583,271 @@ class EventServiceImplTest {
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
         verify(eventRepo, times(1)).findById(event.getId());
     }
+
+    @Test
+    void addToRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.addToRequested(1L, TestConst.EMAIL);
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void addToRequestedThrowsExceptionWhenEventNotFoundTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.addToRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void addToRequestedThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.addToRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void addToRequestedThrowsExceptionWhenUserHasAlreadyAddedEventToRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> eventService.addToRequested(1L, TestConst.EMAIL));
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void removeFromRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.removeFromRequested(1L, TestConst.EMAIL);
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void removeFromRequestedThrowsExceptionWhenEventNotFoundTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.removeFromRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void removeFromRequestedThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.removeFromRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void removeFromRequestedThrowsExceptionWhenEventIsNotInRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> eventService.removeFromRequested(1L, TestConst.EMAIL));
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void getRequestedUsersTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        Pageable pageable = PageRequest.of(0, 20);
+
+        Page<User> userPage = new PageImpl<>(List.of(user), pageable, 1);
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findUsersByRequestedEvents(any(), any(Pageable.class)))
+            .thenReturn(userPage);
+
+        assertEquals(1, eventService.getRequestedUsers(1L, "", pageable).getTotalElements());
+
+        verify(userRepo).findByEmail(anyString());
+        verify(eventRepo).findById(any());
+        verify(userRepo).findUsersByRequestedEvents(any(), any(Pageable.class));
+    }
+
+    @Test
+    void getRequestedUsersThrowsUserHasNoPermissionExceptionTest() {
+        Event event = ModelUtils.getEvent();
+        User user = User.builder().id(20L).build();
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+
+        assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.getRequestedUsers(1L, "", pageable));
+
+        verify(userRepo).findByEmail(anyString());
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void getRequestedUsersThrowsUserNotFoundExceptionTest() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> eventService.getRequestedUsers(1L, "", null));
+    }
+
+    @Test
+    void approveRequestTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
+        User userToJoin = User.builder().build();
+        Event event = ModelUtils.getEvent();
+        event.getRequesters().add(userToJoin);
+
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findById(any()))
+            .thenReturn(Optional.of(userToJoin));
+        when(eventRepo.save(any())).thenReturn(null);
+
+        eventService.approveRequest(event.getId(), userVO.getEmail(), userToJoin.getId());
+
+        verify(restClient).findByEmail(anyString());
+        verify(modelMapper).map(userVO, User.class);
+        verify(eventRepo).findById(any());
+        verify(userRepo).findById(any());
+        verify(eventRepo).save(any());
+    }
+
+    @Test
+    void approveRequestUserHasNoAccessTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getTestUser();
+        Event event = ModelUtils.getEvent();
+
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+
+        Long eventId = event.getId();
+        String email = userVO.getEmail();
+        assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.approveRequest(eventId, email, null));
+
+        verify(restClient).findByEmail(anyString());
+        verify(modelMapper).map(userVO, User.class);
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void approveRequestUserDidNotRequestTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
+        User userToJoin = User.builder().build();
+        Event event = ModelUtils.getEvent();
+        event.getRequesters().remove(userToJoin);
+
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+
+        Long eventId = event.getId();
+        Long userToJoinId = userToJoin.getId();
+        String email = userVO.getEmail();
+        assertThrows(BadRequestException.class,
+            () -> eventService.approveRequest(eventId, email, userToJoinId));
+
+        verify(restClient).findByEmail(anyString());
+        verify(modelMapper).map(userVO, User.class);
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void declineRequestTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
+        User userToJoin = User.builder().build();
+        Event event = ModelUtils.getEvent();
+        event.getRequesters().add(userToJoin);
+
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findById(any()))
+            .thenReturn(Optional.of(userToJoin));
+        when(eventRepo.save(any())).thenReturn(null);
+
+        eventService.declineRequest(event.getId(), userVO.getEmail(), userToJoin.getId());
+
+        verify(restClient).findByEmail(anyString());
+        verify(modelMapper).map(userVO, User.class);
+        verify(eventRepo).findById(any());
+        verify(userRepo).findById(any());
+        verify(eventRepo).save(any());
+    }
+
+    @Test
+    void declineRequestUserHasNoAccessTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getTestUser();
+        Event event = ModelUtils.getEvent();
+
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+
+        Long eventId = event.getId();
+        String email = userVO.getEmail();
+        assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.declineRequest(eventId, email, null));
+
+        verify(restClient).findByEmail(anyString());
+        verify(modelMapper).map(userVO, User.class);
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void declineRequestUserDidNotRequestTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
+        User userToJoin = User.builder().build();
+        Event event = ModelUtils.getEvent();
+        event.getRequesters().remove(userToJoin);
+
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+
+        Long eventId = event.getId();
+        Long userToJoinId = userToJoin.getId();
+        String email = userVO.getEmail();
+        assertThrows(BadRequestException.class,
+            () -> eventService.declineRequest(eventId, email, userToJoinId));
+
+        verify(restClient).findByEmail(anyString());
+        verify(modelMapper).map(userVO, User.class);
+        verify(eventRepo).findById(any());
+    }
+
 }
