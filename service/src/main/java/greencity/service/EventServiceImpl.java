@@ -943,15 +943,13 @@ public class EventServiceImpl implements EventService {
         User userToJoin = userRepo.findById(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
-        event
-            .setRequesters(event.getRequesters().stream().filter(u -> !Objects.equals(u.getId(), userId))
-                .collect(Collectors.toSet()));
+        event.getRequesters().remove(userToJoin);
         event.getAttenders().add(userToJoin);
 
         eventRepo.save(event);
 
-        userNotificationService.createNotification(userVO, modelMapper.map(userToJoin, UserVO.class),
-            NotificationType.EVENT_REQUEST_ACCEPTED, eventId, event.getTitle());
+        userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
+                NotificationType.EVENT_REQUEST_ACCEPTED, eventId, event.getTitle());
     }
 
     @Override
@@ -971,13 +969,10 @@ public class EventServiceImpl implements EventService {
             userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
-        event
-            .setRequesters(event.getRequesters().stream().filter(u -> !Objects.equals(u.getId(), userId))
-                .collect(Collectors.toSet()));
-
+        event.getRequesters().remove(userToJoin);
         eventRepo.save(event);
 
-        userNotificationService.createNotification(userVO, modelMapper.map(userToJoin, UserVO.class),
+        userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class),userVO,
             NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
     }
 
