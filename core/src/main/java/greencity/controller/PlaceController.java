@@ -297,12 +297,8 @@ public class PlaceController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(example = FilterPlacesApiDto.defaultJson))),
-        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
-            content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
@@ -312,7 +308,7 @@ public class PlaceController {
             description = "Filters for places from API",
             name = "FilterPlacesApiDto",
             type = "object",
-            example = FilterPlacesApiDto.defaultJson) @Valid @RequestBody FilterPlacesApiDto filterDto,
+            example = FilterPlacesApiDto.defaultJson) @RequestBody FilterPlacesApiDto filterDto,
         @CurrentUser @Parameter(hidden = true) UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }

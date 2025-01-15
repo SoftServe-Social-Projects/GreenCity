@@ -51,6 +51,7 @@ public class ErrorMessage {
         "Subscriber with this email address and subscription type is exists.";
     public static final String UBSCRIPTION_BY_TOKEN_NOT_FOUND = "Subscriber with this token not found.";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
+    public static final String LOCATION_NOT_FOUND = "Location must be provided either in filterDto or userVO";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
     public static final String HABIT_IS_NOT_ENROLLED_ON_CURRENT_DATE = "Habit is not enrolled on ";
@@ -223,4 +224,5 @@ public class ErrorMessage {
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
+    public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
 }
