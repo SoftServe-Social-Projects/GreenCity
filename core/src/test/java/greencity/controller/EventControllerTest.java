@@ -708,7 +708,7 @@ class EventControllerTest {
     @SneakyThrows
     void addToRequestedTest() {
         Long eventId = 1L;
-        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addToRequested/{eventId}", eventId)
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/addToRequested", eventId)
             .principal(principal))
             .andExpect(status().isOk());
         verify(eventService).addToRequested(eventId, principal.getName());
@@ -718,7 +718,7 @@ class EventControllerTest {
     @SneakyThrows
     void removeFromRequestedTest() {
         Long eventId = 1L;
-        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeFromRequested/{eventId}", eventId)
+        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/removeFromRequested", eventId)
             .principal(principal))
             .andExpect(status().isOk());
         verify(eventService).removeFromRequested(eventId, principal.getName());
