@@ -196,7 +196,7 @@ public interface PlaceService {
      * @param filterDto contains objects whose values determine the filter
      *                  parameters of the returned list.
      * @return a list of {@link PlaceByBoundsDto}
-     * @author Roman Zahouri
+     * @author Hrenevych Ivan
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto,
         UserVO userVO);
