@@ -407,7 +407,7 @@ public class SecurityConfig {
                     "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
                     HABIT_INVITE + INVITATION_ID + "/reject",
-                    EVENTS + "/removeFromRequested/" + EVENT_ID)
+                    EVENTS + "/removeFromRequested" + EVENT_ID)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
