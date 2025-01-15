@@ -15,6 +15,15 @@ body hr{
     border: none;
     border-bottom: 1px solid rgba(91, 89, 89, 0.25)
 }
+.main-content {
+    flex: 1 0 auto;
+    padding-top: 54px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 800px;
+}
 .container{
     width: 60%;
     margin: 1rem auto;
