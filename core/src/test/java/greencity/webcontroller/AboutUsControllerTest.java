@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 class AboutUsControllerTest {
-    private static final String managementLink = "/management/aboutus";
+    private static final String managementLink = "/management/";
 
     private MockMvc mockMvc;
 

@@ -20,7 +20,12 @@
                         </div>
                     </div>
                     <div class="login">
-                        <button formaction="/management/login">Login</button>
+                        <form th:if="${T(greencity.security.utils.SecurityUtils).isAuthenticated()}" action="/management/logout" method="get" >
+                            <button type="submit">Logout</button>
+                        </form>
+                        <form th:if="${!T(greencity.security.utils.SecurityUtils).isAuthenticated()}" action="/management/login" method="get" >
+                            <button type="submit">Login</button>
+                        </form>
                     </div>
                 </div>
             </div>

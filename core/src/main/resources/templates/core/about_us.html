@@ -25,36 +25,35 @@
     <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 <body>
-<div id="header" th:insert="core/header"></div>
-<div class="main-content">
-    <div id="sidebar" th:insert="core/sidepanel"></div>
-    <div class="container-xl">
-        <div class="container">
-            <img alt="logo" src="/img/logo_L.png">
-        </div>
-        <div class="container">
-            <p>
-                Local or organic? Hybrid or electric? Paper or plastic or neither? Nearly all
-                decisions today affect the environment, and figuring out which choices matter most
-                often feels impossible.
-            </p>
-            <hr>
-            <p>
-                How to help the environment? Find hundreds of easy eco tips and learn how to
-                be more eco friendly, go zero waste, reduce your carbon footprint and many other
-                ways to help the planet.
-            </p>
-            <hr>
-            <p>
-                Find also news, facts, information and quotes to learn more about topics like
-                climate change, global warming, plastic pollution, energy savings, recycling,
-                and many more! We think raising awareness is the first step towards a greener
-                world, so help us share this!
-            </p>
+<div id="header" th:insert="~{core/header}"></div>
+    <div class="main-content">
+        <div class="container-xl">
+            <div class="container">
+                <img alt="logo" src="/img/logo_L.png">
+            </div>
+            <div class="container">
+                <p>
+                    Local or organic? Hybrid or electric? Paper or plastic or neither? Nearly all
+                    decisions today affect the environment, and figuring out which choices matter most
+                    often feels impossible.
+                </p>
+                <hr>
+                <p>
+                    How to help the environment? Find hundreds of easy eco tips and learn how to
+                    be more eco friendly, go zero waste, reduce your carbon footprint and many other
+                    ways to help the planet.
+                </p>
+                <hr>
+                <p>
+                    Find also news, facts, information and quotes to learn more about topics like
+                    climate change, global warming, plastic pollution, energy savings, recycling,
+                    and many more! We think raising awareness is the first step towards a greener
+                    world, so help us share this!
+                </p>
+            </div>
         </div>
     </div>
-</div>
-<div id="footer" th:insert="core/footer"></div>
+<div id="footer" th:insert="~{core/footer}"></div>
 
 </body>
 
