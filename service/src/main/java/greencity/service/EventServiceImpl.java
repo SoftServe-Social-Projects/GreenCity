@@ -949,7 +949,7 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
 
         userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
-                NotificationType.EVENT_REQUEST_ACCEPTED, eventId, event.getTitle());
+            NotificationType.EVENT_REQUEST_ACCEPTED, eventId, event.getTitle());
     }
 
     @Override
@@ -972,7 +972,7 @@ public class EventServiceImpl implements EventService {
         event.getRequesters().remove(userToJoin);
         eventRepo.save(event);
 
-        userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class),userVO,
+        userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
             NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
     }
 
