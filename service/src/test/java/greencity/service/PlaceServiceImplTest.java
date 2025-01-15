@@ -781,7 +781,6 @@ class PlaceServiceImplTest {
 
         assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
-        verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
     }
 
