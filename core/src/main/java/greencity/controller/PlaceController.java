@@ -246,7 +246,7 @@ public class PlaceController {
     })
     @PostMapping("/filter/api")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlacesFromApi(
-        @Valid @RequestBody FilterPlacesApiDto filterDto,
+        @RequestBody FilterPlacesApiDto filterDto,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
