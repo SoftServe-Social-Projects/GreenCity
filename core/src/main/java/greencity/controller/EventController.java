@@ -8,12 +8,14 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
@@ -546,7 +548,7 @@ public class EventController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/{eventId}/requested-users")
-    public ResponseEntity<Object> getRequestedUsers(
+    public ResponseEntity<PageableDto<UserForListDto>> getRequestedUsers(
         @PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal,
         @Parameter(hidden = true) Pageable pageable) {
