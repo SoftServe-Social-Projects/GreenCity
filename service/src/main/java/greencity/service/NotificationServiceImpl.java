@@ -390,6 +390,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private String createBaseLink(Notification notification) {
-        return clientAddress + "/#/profile/" + notification.getTargetUser().getId() + "/notifications";
+        return clientAddress + "/#/events/" + notification.getTargetId();
     }
 }

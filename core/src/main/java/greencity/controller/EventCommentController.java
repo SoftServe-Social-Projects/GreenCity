@@ -51,8 +51,6 @@ import java.util.Locale;
 public class EventCommentController {
     private final CommentService commentService;
 
-    //TODO: research this controller
-    //TODO: find where the e-mail is sent to comment owner
     /**
      * Method for creating {@link CommentVO}.
      *
