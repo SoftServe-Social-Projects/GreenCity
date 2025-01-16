@@ -1,6 +1,12 @@
-
 function clearAllErrorsSpan() {
-    $('.errorSpan').text('');
+    $('.errorSpan').text('').hide();
+}
+
+function getErrorSpanId(fieldName) {
+    if (fieldName.includes('openingHoursList[].')) {
+        fieldName = 'openingHoursList';
+    }
+    return 'errorModalSave' + fieldName;
 }
 
 let map;
@@ -59,25 +65,33 @@ $(document).ready(function () {
     // Activate tooltip
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Select/Deselect checkboxes
     let checkbox = $('table tbody input[type="checkbox"]');
-    $("#selectAll").on('click', function () {
-        if (this.checked) {
-            checkbox.each(function () {
-                if (!this.disabled) {
-                    this.checked = true;
-                }
-            });
+    let actionButtons = $('#btnDelete');
+
+    function toggleActionButtons() {
+        let anyChecked = checkbox.filter(':checked').length > 0;
+        if (anyChecked) {
+            actionButtons.removeClass('disabled').attr('href', '#deleteAllSelectedModal');
         } else {
-            checkbox.each(function () {
-                this.checked = false;
-            });
+            actionButtons.addClass('disabled').removeAttr('href');
         }
+    }
+
+    $("#selectAll").on('click', function () {
+        let isChecked = this.checked;
+        checkbox.each(function () {
+            if (!this.disabled) {
+                this.checked = isChecked;
+            }
+        });
+        toggleActionButtons();
     });
+
     checkbox.on('click', function () {
         if (!this.checked) {
             $("#selectAll").prop("checked", false);
         }
+        toggleActionButtons();
     });
 
     // Add place button (popup)
@@ -125,62 +139,161 @@ $(document).ready(function () {
         event.preventDefault();
         clearAllErrorsSpan();
 
-        let formData = new FormData(document.getElementById('addPlaceForm'));
+        let isValid = validateForm();
+        if (!isValid) {
+            return;
+        }
 
-        let place;
+        let formData = new FormData(document.getElementById('addPlaceForm'));
         let type = $('#id').val() ? 'PUT' : 'POST';
 
         if (type === 'POST') {
-            place = {
-                "placeName": formData.get('name'),
-                "locationName": formData.get('address'),
-                "status": formData.get('status'),
-                "categoryName": formData.get('category')
-            };
+            handlePostRequest(formData);
         } else {
-            place = {
-                "id": formData.get('id'),
-                "placeName": formData.get('name'),
-                "locationName": formData.get('address'),
-                "status": formData.get('status'),
-                "categoryName": formData.get('category')
-            };
+            handlePutRequest(formData);
+        }
+    });
+
+    function handlePostRequest(formData) {
+        const place = {
+            "placeName": formData.get('name'),
+            "locationName": formData.get('address'),
+            "status": formData.get('status'),
+            "categoryName": formData.get('category'),
+            "discountValues": getDiscountValues(),
+            "openingHoursList": getOpeningHours()
+        };
+
+        submitPostFormData('/management/places', 'POST', formData, place);
+    }
+
+    function handlePutRequest(formData) {
+        const place = {
+            id: formData.get('id'),
+            name: formData.get('name'),
+            location: {
+                address: formData.get('address'),
+                lat: formData.get('lat'),
+                lng: formData.get('lng'),
+                addressUa: formData.get('addressUa'),
+            },
+            category: {
+                name: formData.get('category'),
+            },
+            discountValues: getDiscountValues(),
+            openingHoursList: getOpeningHours(),
+        };
+
+        submitPutFormData('/management/places', 'PUT', formData, place);
+    }
+
+    function submitPostFormData(url, method, formData, place) {
+        formData.append('addPlaceDto', JSON.stringify(place));
+        const file = document.getElementById("creationFile").files[0];
+        if (file) {
+            formData.append("images", file);
         }
 
-        place.discountValues = getDiscountValues();
-        place.openingHoursList = getOpeningHours();
+        sendAjaxRequest(url, method, formData);
+    }
 
-        formData.append('addPlaceDto', JSON.stringify(place));
-        var file = document.getElementById("creationFile").files[0];
-        console.log(file);
-        formData.append("images", file);
+    function submitPutFormData(url, method, formData, place) {
+        formData.append('placeUpdateDto', JSON.stringify(place));
+        const fileInput = document.getElementById('creationFile');
+
+        Array.from(fileInput?.files || []).forEach((file) => {
+            formData.append('images', file);
+        });
+
+        sendAjaxRequest(url, method, formData);
+    }
+
+    function sendAjaxRequest(url, method, formData) {
         $.ajax({
-            url: '/management/places',
-            type: type,
+            url: url,
+            type: method,
             data: formData,
             processData: false,
             contentType: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
-                        $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError);
+                        $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError).show();
                     });
                 } else {
                     location.reload();
                 }
             },
             error: function (xhr, status, error) {
-                console.error(error);
-                alert('Error');
+                console.error('XHR Status: ' + xhr.status);
+                console.error('Error: ' + error);
+                console.error('Response Text: ' + xhr.responseText);
+
+                let errorMessage = `Error status: ${xhr.status} - ${error}`;
+                if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMessage += `\nMessage: ${response.message || 'Unknown error'}`;
+                    } catch (e) {
+                        errorMessage += `\nMessage: ${xhr.responseText}`;
+                    }
+                }
+
+                alert(errorMessage);
             }
         });
-    });
+    }
 
-    function getErrorSpanId(fieldName) {
-        if (fieldName.includes('openingHoursList[].')) {
-            fieldName = 'openingHoursList';
+    function validateForm() {
+        let isValid = true;
+
+        const requiredFields = [
+            { id: 'address', errorId: 'errorModalSavelocation', message: messages["greenCity.places.page.add.address"] },
+            { id: 'placeName', errorId: 'errorModalSavename', message: messages["greenCity.places.page.add.place.name"] },
+            { id: 'category', errorId: 'errorModalSavecategory', message: messages["greenCity.places.page.add.category"] },
+        ];
+
+        requiredFields.forEach(field => {
+            let value = $(`#${field.id}`).val();
+            if (!value) {
+                $(`#${field.errorId}`).text(field.message).show();
+                isValid = false;
+            }
+        });
+
+
+        let openingHoursChecked = false;
+        $('input[name="day"]:checked').each(function () {
+            let row = $(this).closest('.form-row');
+            let openTime = row.find('input[name="openTime"]').val();
+            let closeTime = row.find('input[name="closeTime"]').val();
+
+            if (!openTime || !closeTime) {
+                $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.working.hovers"]).show();
+                isValid = false;
+            } else {
+                let openTimeMinutes = timeToMinutes(openTime);
+                let closeTimeMinutes = timeToMinutes(closeTime);
+
+                if (closeTimeMinutes - openTimeMinutes < 30) {
+                    $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.hovers.is.incorrect"]).show();
+                    isValid = false;
+                }
+            }
+            openingHoursChecked = true;
+        });
+
+        if (!openingHoursChecked) {
+            $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.day.hovers"]).show();
+            isValid = false;
         }
-        return 'errorModalSave' + fieldName;
+
+        return isValid;
+    }
+
+    function timeToMinutes(time) {
+        let [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
     }
 
     function getDiscountValues() {
@@ -285,14 +398,10 @@ $(document).ready(function () {
         $.get(href, function (place) {
             $('#id').val(place.id)
             $('#placeName').val(place.name);
+            $('#lng').val(place.location.lng);
+            $('#lat').val(place.location.lat);
+            $('#addressUa').val(place.location.addressUa);
             $('#address').val(place.location.address);
-            $('input[name=latitude]').val(place.location.lat);
-            $('input[name=longitude]').val(place.location.lng);
-            deleteMarkers();
-            let location = {
-                lat: place.location.lat,
-                lng: place.location.lng
-            };
             addMarker(location);
             place.openingHoursList.forEach(function (day) {
                 let dayElement = $(`#${day.weekDay}`);
@@ -310,7 +419,6 @@ $(document).ready(function () {
             place.discountValues.forEach(value => {
                 addDiscountValueForUpdate(value);
             });
-
         });
     });
 
