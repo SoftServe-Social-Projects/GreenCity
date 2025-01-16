@@ -79,6 +79,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
@@ -92,6 +93,7 @@ import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
@@ -3323,5 +3325,29 @@ public class ModelUtils {
                 new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
             new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false, false});
         return List.of(tuple1, tuple2);
+    }
+
+    public static PlaceUpdateDto getPlaceUpdateDto() {
+        return PlaceUpdateDto.builder()
+            .id(1L)
+            .name("Updated Place")
+            .category(getCategoryDto())
+            .location(getLocationAddressAndGeoForUpdateDto())
+            .build();
+    }
+
+    public static LocationAddressAndGeoForUpdateDto getLocationAddressAndGeoForUpdateDto() {
+        return new LocationAddressAndGeoForUpdateDto(
+            "Test Address",
+            50.4501,
+            30.5236,
+            "Тестова адреса");
+    }
+
+    public static CategoryDto getCategoryDto() {
+        return new CategoryDto(
+            "Category",
+            "Category Ua",
+            1L);
     }
 }

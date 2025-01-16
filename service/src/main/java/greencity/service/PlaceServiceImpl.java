@@ -10,6 +10,7 @@ import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.AddPlaceLocation;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
@@ -48,6 +49,7 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
+import greencity.repository.PhotoRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
@@ -102,6 +104,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final FileService fileService;
     private final UserNotificationService userNotificationService;
     private final RestClient restClient;
+    private final PhotoRepo photoRepo;
 
     /**
      * {@inheritDoc}
@@ -174,36 +177,13 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public PlaceVO update(PlaceUpdateDto dto) {
-        log.info(LogMessage.IN_UPDATE, dto.getName());
-
-        Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getName()), Category.class);
-        Place updatedPlace = findPlaceById(dto.getId());
-        locationService.update(updatedPlace.getLocation().getId(),
-            modelMapper.map(dto.getLocation(), LocationVO.class));
-        updatedPlace.setName(dto.getName());
-        updatedPlace.setCategory(updatedCategory);
-        placeRepo.save(updatedPlace);
-
-        updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscountValues(), updatedPlace);
-
-        return modelMapper.map(updatedPlace, PlaceVO.class);
-    }
-
-    /**
      * Method for updating set of {@link DiscountValue} and save with new
      * {@link Category} and {@link Place}.
      *
      * @param discounts    - set of {@link DiscountValue}.
      * @param updatedPlace - {@link Place} entity.
      */
-    private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
+    void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
         Set<DiscountValueVO> discountValuesVO = discountService.findAllByPlaceId(updatedPlace.getId());
@@ -232,7 +212,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param hoursUpdateDtoSet - set of {@code Discount}.
      * @param updatedPlace      - {@link Place} entity.
      */
-    private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
+    void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
         updatedPlace.setOpeningHoursList(null);
         Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());
@@ -554,12 +534,14 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException("User with email " + email + " doesn't exist"));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
-        List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
-        placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
+
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocationName());
+        placeResponse.setLocationAddressAndGeoDto(geoDetails);
+
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
         place.setAuthor(user);
@@ -570,16 +552,13 @@ public class PlaceServiceImpl implements PlaceService {
         return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
     }
 
-    private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
-        if (images != null && images.length > 0 && images[0] != null) {
-            List<Photo> placePhotos = new ArrayList<>();
-            for (MultipartFile image : images) {
-                if (image != null) {
-                    placePhotos.add(Photo.builder().place(place).name(fileService.upload(image)).user(user).build());
-                }
-            }
-            place.setPhotos(placePhotos);
-        }
+    AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
+        List<GeocodingResult> geocodingResults = Optional
+            .ofNullable(googleApiService.getResultFromGeoCode(locationName))
+            .filter(results -> !results.isEmpty())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + locationName));
+
+        return initializeGeoCodingResults(geocodingResults);
     }
 
     private AddPlaceLocation initializeGeoCodingResults(
@@ -592,6 +571,24 @@ public class PlaceServiceImpl implements PlaceService {
             .lat(ukrLang.geometry.location.lat)
             .lng(ukrLang.geometry.location.lng)
             .build();
+    }
+
+    private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
+        if (images != null && images.length > 0 && images[0] != null) {
+            List<Photo> newPhotos = new ArrayList<>();
+            for (MultipartFile image : images) {
+                if (image != null) {
+                    Photo newPhoto = Photo.builder()
+                        .place(place)
+                        .name(fileService.upload(image))
+                        .user(user)
+                        .build();
+                    Photo savedPhoto = photoRepo.save(newPhoto);
+                    newPhotos.add(savedPhoto);
+                }
+            }
+            place.getPhotos().addAll(newPhotos);
+        }
     }
 
     private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
@@ -665,5 +662,69 @@ public class PlaceServiceImpl implements PlaceService {
             restClient.sendEmailNotificationChangesPlaceStatus(dto);
         }
         return dto;
+    }
+
+    void updateLocation(PlaceUpdateDto dto, Place updatedPlace, LocationVO updatable) {
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
+
+        LocationAddressAndGeoForUpdateDto sourceDto = geoDetails != null
+            ? new LocationAddressAndGeoForUpdateDto(
+                geoDetails.getAddressEng(),
+                geoDetails.getLat(),
+                geoDetails.getLng(),
+                geoDetails.getAddress())
+            : dto.getLocation();
+
+        LocationVO updatedLocation = createLocationVO(updatable.getId(), sourceDto);
+
+        locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
+    }
+
+    private LocationVO createLocationVO(Long id, LocationAddressAndGeoForUpdateDto dto) {
+        return LocationVO.builder()
+            .id(id)
+            .address(dto.getAddress())
+            .lat(dto.getLat())
+            .lng(dto.getLng())
+            .addressUa(dto.getAddressUa())
+            .build();
+    }
+
+    private void updatePlaceProperties(PlaceUpdateDto dto, Place updatedPlace, Category updatedCategory) {
+        updatedPlace.setName(dto.getName());
+        updatedPlace.setCategory(updatedCategory);
+        placeRepo.save(updatedPlace);
+        updateOpening(dto.getOpeningHoursList(), updatedPlace);
+        updateDiscount(dto.getDiscountValues(), updatedPlace);
+    }
+
+    @Transactional
+    @Override
+    public PlaceVO update(PlaceUpdateDto dto) {
+        log.info(LogMessage.IN_UPDATE, dto.getName());
+        Category updatedCategory = modelMapper.map(
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
+        Place updatedPlace = findPlaceById(dto.getId());
+        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
+        updateLocation(dto, updatedPlace, updatable);
+        updatePlaceProperties(dto, updatedPlace, updatedCategory);
+        return modelMapper.map(updatedPlace, PlaceVO.class);
+    }
+
+    @Transactional
+    @Override
+    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email) {
+        log.info(LogMessage.IN_UPDATE, dto.getName());
+        Category updatedCategory = modelMapper.map(
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
+        Place updatedPlace = findPlaceById(dto.getId());
+        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
+        updateLocation(dto, updatedPlace, updatable);
+        updatePlaceProperties(dto, updatedPlace, updatedCategory);
+        Place place = modelMapper.map(updatedPlace, Place.class);
+        Optional<User> user = userRepo.findByEmail(email);
+        mapMultipartFilesToPhotos(images, place, user.orElse(null));
+        placeRepo.save(updatedPlace);
+        return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 }

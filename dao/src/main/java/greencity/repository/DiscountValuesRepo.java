@@ -2,7 +2,11 @@ package greencity.repository;
 
 import greencity.entity.DiscountValue;
 import java.util.Set;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -22,5 +26,8 @@ public interface DiscountValuesRepo extends JpaRepository<DiscountValue, Long> {
      *
      * @param placeId to find by.
      */
-    void deleteAllByPlaceId(Long placeId);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DiscountValue d WHERE d.place.id = :placeId")
+    void deleteAllByPlaceId(@Param("placeId") Long placeId);
 }
