@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,7 +48,11 @@ public class ManagementController {
     @GetMapping("/management/login")
     public String login() {
         if (!SecurityUtils.isAuthenticated()) {
-            return "redirect:" + greenCityUserServerAddress + "/management/login";
+            String normalizedUrl = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress)
+                .path("/management/login")
+                .build()
+                .toUriString();
+            return "redirect:" + normalizedUrl;
         } else {
             return "redirect:/management";
         }
