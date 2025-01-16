@@ -113,7 +113,8 @@
                                     </div>
                                     <div class="filter-container">
                                         <div class="filter-container__search">
-                                            <input id="search-places-by-id" type="text" class="form-search" th:value="${fields.id}" th:placeholder="#{greenCity.pages.search}">
+                                            <input id="search-places-by-id" type="text" class="form-search" th:value="${fields.id}" th:placeholder="#{greenCity.pages.search}"
+                                                   th:aria-label="#{greenCity.pages.table.id} + ' ' + #{greenCity.pages.search}">
                                             <label for="search-places-by-id" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
                                         </div>
                                         <div class="filter-container__buttons">
