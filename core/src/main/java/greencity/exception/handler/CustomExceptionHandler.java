@@ -30,9 +30,9 @@ import greencity.exception.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpHeaders;
@@ -62,12 +62,18 @@ import java.util.stream.Collectors;
 /**
  * Custom exception handler.
  */
-@AllArgsConstructor
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
+    @Value("${valid.endpoints}")
+    private List<String> validEndpoints;
+
+    public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper) {
+        this.errorAttributes = errorAttributes;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * ExceptionHandler for intercepting errors from GreenCityUser.
@@ -572,22 +578,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         String method = servletRequest.getMethod();
         List<String> list = headers.getOrEmpty("Allow");
 
-        switch (getCondition(url, method, list)) {
+        switch (getCondition(url, method, list, validEndpoints)) {
             case "extraCharacters":
-                if (!list.contains(method) && !hasExtraCharacters(url)) {
-                    String errorMessage = getErrorMessage(ex, url, list.toString());
-                    Map<String, Object> body =
-                        setResponse(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed", errorMessage, url);
-                    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
-                }
-                String errorMessage1 = String.format("No endpoint found for %s", url);
-                Map<String, Object> body1 = setResponse(HttpStatus.NOT_FOUND, "Not Found", errorMessage1, url);
+                String notFoundErrorMessage = String.format("No endpoint found for %s", url);
+                Map<String, Object> body1 = setResponse(HttpStatus.NOT_FOUND, "Not Found", notFoundErrorMessage, url);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body1);
 
             case "methodNotAllowed":
-                String errorMessage = getErrorMessage(ex, url, list.toString());
+                String methodNotAllowedErrorMessage = getErrorMessage(ex, url, list.toString());
                 Map<String, Object> body =
-                    setResponse(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed", errorMessage, url);
+                    setResponse(HttpStatus.METHOD_NOT_ALLOWED, ErrorMessage.METHOD_NOT_ALLOWED,
+                        methodNotAllowedErrorMessage, url);
                 return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
 
             default:
@@ -595,17 +596,20 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         }
     }
 
-    private boolean hasExtraCharacters(String url) {
-        String validPattern = "^(http://localhost:8080/[a-zA-Z0-9/-]*)$";
-        return !url.matches(validPattern);
+    private boolean hasExtraCharacters(String url, List<String> validEndpoints) {
+        boolean isValidEndpoint = validEndpoints.contains(url);
+        if (!isValidEndpoint) {
+            return true;
+        }
+        return false;
     }
 
     private String getUrlFromRequest(WebRequest request) {
         return request.getDescription(false).replace("uri=", "");
     }
 
-    private String getCondition(String url, String method, List<String> list) {
-        if (hasExtraCharacters(url)) {
+    private String getCondition(String url, String method, List<String> list, List<String> validEndpoints) {
+        if (hasExtraCharacters(url, validEndpoints)) {
             return "extraCharacters";
         } else if (!list.contains(method)) {
             return "methodNotAllowed";
