@@ -48,11 +48,11 @@ public class ManagementController {
     @GetMapping("/management/login")
     public String login() {
         if (!SecurityUtils.isAuthenticated()) {
-            String normalizedUrl = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress)
+            String managementLoginUrl = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress)
                 .path("/management/login")
                 .build()
                 .toUriString();
-            return "redirect:" + normalizedUrl;
+            return "redirect:" + managementLoginUrl;
         } else {
             return "redirect:/management";
         }
