@@ -393,6 +393,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private String createBaseLink(Notification notification) {
+        if (notification.getNotificationType() == NotificationType.EVENT_COMMENT) {
+            return clientAddress + "/#/events/" + notification.getTargetId();
+        }
         return clientAddress + "/#/profile/" + notification.getTargetUser().getId() + "/notifications";
     }
 }
