@@ -27,6 +27,7 @@ import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
@@ -39,10 +40,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
@@ -51,6 +54,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -103,8 +107,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Danylo Hlynskyi
      */
     @ExceptionHandler(MultipartException.class)
-    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex,
-        WebRequest request) {
+    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex, WebRequest request) {
         log.warn(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(exceptionResponse);
@@ -557,5 +560,72 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String url = getUrlFromRequest(request);
+        ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+        HttpServletRequest servletRequest = servletWebRequest.getRequest();
+
+        String method = servletRequest.getMethod();
+        List<String> list = headers.getOrEmpty("Allow");
+
+        switch (getCondition(url, method, list)) {
+            case "extraCharacters":
+                if (!list.contains(method) && !hasExtraCharacters(url)) {
+                    String errorMessage = getErrorMessage(ex, url, list.toString());
+                    Map<String, Object> body =
+                        setResponse(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed", errorMessage, url);
+                    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
+                }
+                String errorMessage1 = String.format("No endpoint found for %s", url);
+                Map<String, Object> body1 = setResponse(HttpStatus.NOT_FOUND, "Not Found", errorMessage1, url);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body1);
+
+            case "methodNotAllowed":
+                String errorMessage = getErrorMessage(ex, url, list.toString());
+                Map<String, Object> body =
+                    setResponse(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed", errorMessage, url);
+                return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
+
+            default:
+                return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+        }
+    }
+
+    private boolean hasExtraCharacters(String url) {
+        String validPattern = "^(http://localhost:8080/[a-zA-Z0-9/-]*)$";
+        return !url.matches(validPattern);
+    }
+
+    private String getUrlFromRequest(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
+    }
+
+    private String getCondition(String url, String method, List<String> list) {
+        if (hasExtraCharacters(url)) {
+            return "extraCharacters";
+        } else if (!list.contains(method)) {
+            return "methodNotAllowed";
+        }
+        return "default";
+    }
+
+    private Map<String, Object> setResponse(HttpStatus httpStatus, String error, String errorMessage, String url) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("timestamp", System.currentTimeMillis());
+        response.put("status", httpStatus.value());
+        response.put("error", error);
+        response.put("message", errorMessage);
+        response.put("path", url);
+        return response;
+    }
+
+    private String getErrorMessage(HttpRequestMethodNotSupportedException ex, String url, String supportedMethods) {
+        return String.format(
+            "Method %s is not allowed for %s. Supported Methods: %s",
+            ex.getMethod(), url, supportedMethods);
     }
 }
