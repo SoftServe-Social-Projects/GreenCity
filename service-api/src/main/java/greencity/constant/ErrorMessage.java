@@ -229,4 +229,5 @@ public class ErrorMessage {
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
     public static final String INVALID_SIZE_VALUE_EXCEPTION = "Invalid value for size: must be an integer";
     public static final String NEGATIVE_SIZE_VALUE_EXCEPTION = "Size must be a positive";
+    public static final String NEGATIVE_PAGE_VALUE_EXCEPTION = "Page must be a positive number";
 }

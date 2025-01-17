@@ -33,6 +33,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private static final Integer DEFAULT_PAGE = 0;
+    private static final Integer DEFAULT_PAGE_SIZE = 20;
 
     /**
      * Method for configuring message source.
@@ -66,7 +68,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * @return {@link SessionLocaleResolver}
      */
     @Bean
-    public LocaleResolver localeResolvers() {
+    public LocaleResolver localeResolver() {
         SessionLocaleResolver localeResolver = new SessionLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         return localeResolver;
@@ -115,11 +117,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 String pageParam = webRequest.getParameter("page");
                 String sizeParam = webRequest.getParameter("size");
 
-                int page = 0;
-                int size = 20;
-
+                int page = DEFAULT_PAGE;
+                int size = DEFAULT_PAGE_SIZE;
                 try {
                     if (pageParam != null) {
+                        if (!pageParam.matches("\\d+")) {
+                            throw new NumberFormatException(ErrorMessage.NEGATIVE_PAGE_VALUE_EXCEPTION);
+                        }
                         page = Integer.parseInt(pageParam);
                     }
                     if (sizeParam != null) {
