@@ -1,6 +1,5 @@
 package greencity.config;
 
-import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.service.UserService;
 import java.util.List;
@@ -11,9 +10,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.MethodParameter;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -24,17 +20,12 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.bind.support.WebDataBinderFactory;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
     private final UserService userService;
     private final ModelMapper modelMapper;
-    private static final Integer DEFAULT_PAGE = 0;
-    private static final Integer DEFAULT_PAGE_SIZE = 20;
 
     /**
      * Method for configuring message source.
@@ -108,35 +99,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.removeIf(resolver -> resolver instanceof PageableHandlerMethodArgumentResolver);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
-        resolvers.add(new PageableHandlerMethodArgumentResolver() {
-            @Override
-            public Pageable resolveArgument(MethodParameter methodParameter,
-                ModelAndViewContainer mavContainer,
-                NativeWebRequest webRequest,
-                WebDataBinderFactory binderFactory) {
-                String pageParam = webRequest.getParameter("page");
-                String sizeParam = webRequest.getParameter("size");
-
-                int page = DEFAULT_PAGE;
-                int size = DEFAULT_PAGE_SIZE;
-                try {
-                    if (pageParam != null) {
-                        if (!pageParam.matches("\\d+")) {
-                            throw new NumberFormatException(ErrorMessage.NEGATIVE_PAGE_VALUE_EXCEPTION);
-                        }
-                        page = Integer.parseInt(pageParam);
-                    }
-                    if (sizeParam != null) {
-                        if (!sizeParam.matches("\\d+")) {
-                            throw new NumberFormatException(ErrorMessage.NEGATIVE_SIZE_VALUE_EXCEPTION);
-                        }
-                        size = Integer.parseInt(sizeParam);
-                    }
-                } catch (NumberFormatException ex) {
-                    throw new IllegalArgumentException(ErrorMessage.INVALID_SIZE_VALUE_EXCEPTION);
-                }
-                return PageRequest.of(page, size);
-            }
-        });
+        resolvers.add(new CustomPageableHandlerMethodArgumentResolver());
     }
 }
