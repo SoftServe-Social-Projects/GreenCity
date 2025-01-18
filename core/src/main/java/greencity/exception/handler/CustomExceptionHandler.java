@@ -578,7 +578,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         String method = servletRequest.getMethod();
         List<String> list = headers.getOrEmpty("Allow");
 
-        switch (getCondition(url, method, list, validEndpoints)) {
+        switch (getCondition(url, method, list)) {
             case "extraCharacters":
                 String notFoundErrorMessage = String.format("No endpoint found for %s", url);
                 Map<String, Object> body1 = setResponse(HttpStatus.NOT_FOUND, "Not Found", notFoundErrorMessage, url);
@@ -596,20 +596,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         }
     }
 
-    private boolean hasExtraCharacters(String url, List<String> validEndpoints) {
-        boolean isValidEndpoint = validEndpoints.contains(url);
-        if (!isValidEndpoint) {
-            return true;
-        }
-        return false;
+    private boolean hasExtraCharacters(String url) {
+        return !validEndpoints.contains(url);
     }
 
     private String getUrlFromRequest(WebRequest request) {
         return request.getDescription(false).replace("uri=", "");
     }
 
-    private String getCondition(String url, String method, List<String> list, List<String> validEndpoints) {
-        if (hasExtraCharacters(url, validEndpoints)) {
+    private String getCondition(String url, String method, List<String> list) {
+        if (hasExtraCharacters(url)) {
             return "extraCharacters";
         } else if (!list.contains(method)) {
             return "methodNotAllowed";
