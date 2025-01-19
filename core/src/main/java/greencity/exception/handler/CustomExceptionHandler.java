@@ -27,12 +27,11 @@ import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.*;
-import jakarta.servlet.http.HttpServletRequest;
+import greencity.exception.helper.EndpointValidationHelper;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpHeaders;
@@ -45,7 +44,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
@@ -54,7 +52,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,8 +64,6 @@ import java.util.stream.Collectors;
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
-    @Value("${valid.endpoints}")
-    private List<String> validEndpoints;
 
     public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper) {
         this.errorAttributes = errorAttributes;
@@ -571,61 +566,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        String url = getUrlFromRequest(request);
-        ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-        HttpServletRequest servletRequest = servletWebRequest.getRequest();
-
-        String method = servletRequest.getMethod();
-        List<String> list = headers.getOrEmpty("Allow");
-
-        switch (getCondition(url, method, list)) {
-            case "extraCharacters":
-                String notFoundErrorMessage = String.format("No endpoint found for %s", url);
-                Map<String, Object> body1 = setResponse(HttpStatus.NOT_FOUND, "Not Found", notFoundErrorMessage, url);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body1);
-
-            case "methodNotAllowed":
-                String methodNotAllowedErrorMessage = getErrorMessage(ex, url, list.toString());
-                Map<String, Object> body =
-                    setResponse(HttpStatus.METHOD_NOT_ALLOWED, ErrorMessage.METHOD_NOT_ALLOWED,
-                        methodNotAllowedErrorMessage, url);
-                return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
-
-            default:
-                return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+        ResponseEntity<Object> response = EndpointValidationHelper.response(ex, headers, status, request);
+        if (response == null) {
+            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
         }
-    }
-
-    private boolean hasExtraCharacters(String url) {
-        return !validEndpoints.contains(url);
-    }
-
-    private String getUrlFromRequest(WebRequest request) {
-        return request.getDescription(false).replace("uri=", "");
-    }
-
-    private String getCondition(String url, String method, List<String> list) {
-        if (hasExtraCharacters(url)) {
-            return "extraCharacters";
-        } else if (!list.contains(method)) {
-            return "methodNotAllowed";
-        }
-        return "default";
-    }
-
-    private Map<String, Object> setResponse(HttpStatus httpStatus, String error, String errorMessage, String url) {
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("timestamp", System.currentTimeMillis());
-        response.put("status", httpStatus.value());
-        response.put("error", error);
-        response.put("message", errorMessage);
-        response.put("path", url);
-        return response;
-    }
-
-    private String getErrorMessage(HttpRequestMethodNotSupportedException ex, String url, String supportedMethods) {
-        return String.format(
-            "Method %s is not allowed for %s. Supported Methods: %s",
-            ex.getMethod(), url, supportedMethods);
+        return EndpointValidationHelper.response(ex, headers, status, request);
     }
 }
