@@ -19,8 +19,7 @@ class EndpointValidatorTest {
 
     @BeforeEach
     void setUp() {
-        endpointValidator =
-            new EndpointValidator(List.of("/api/test", "/api/valid", "friends/{friendId}/request/{id}"));
+        endpointValidator.setValidEndpoints(List.of("/api/test", "/api/valid", "friends/{friendId}/request/{id}"));
         ReflectionTestUtils.setField(EndpointValidator.class, "validEndpoints",
             List.of("/api/test", "/api/valid", "friends/{friendId}/request/{id}"));
     }

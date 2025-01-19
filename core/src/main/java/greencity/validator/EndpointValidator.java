@@ -8,7 +8,11 @@ import java.util.List;
 public class EndpointValidator {
     private static List<String> validEndpoints = List.of();
 
-    public EndpointValidator(@Value("${valid.endpoints}") List<String> validEndpoints) {
+    private EndpointValidator() {
+    }
+
+    @Value("${valid.endpoints}")
+    public void setValidEndpoints(List<String> validEndpoints) {
         EndpointValidator.validEndpoints = validEndpoints;
     }
 

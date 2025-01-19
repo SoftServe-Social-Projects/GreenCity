@@ -50,15 +50,11 @@ class EndpointValidatorHelperTest {
     @Mock
     private HttpHeaders httpHeaders;
 
-    @Mock
-    private EndpointValidationHelper endpointValidationHelper;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         List<String> validEndpointsList = List.of("/api/test", "/api/invalid/extra");
         ReflectionTestUtils.setField(endpointValidator, "validEndpoints", validEndpointsList);
-        endpointValidationHelper = new EndpointValidationHelper();
     }
 
     @Test

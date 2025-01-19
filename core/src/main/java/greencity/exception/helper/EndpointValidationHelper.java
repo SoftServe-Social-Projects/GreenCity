@@ -17,6 +17,9 @@ public class EndpointValidationHelper {
     private static final String METHOD_NOT_ALLOWED = "methodNotAllowed";
     private static final String EXTRA_CHARACTERS = "extraCharacters";
 
+    private EndpointValidationHelper() {
+    }
+
     public static ResponseEntity<Object> response(HttpRequestMethodNotSupportedException ex, HttpHeaders headers,
         WebRequest request) {
         String url = getUrlFromRequest(request);
