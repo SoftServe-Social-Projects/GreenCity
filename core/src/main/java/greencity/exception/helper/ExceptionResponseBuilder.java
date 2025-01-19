@@ -8,6 +8,9 @@ import java.util.Map;
 
 @Component
 public class ExceptionResponseBuilder {
+    private ExceptionResponseBuilder() {
+    }
+
     public static ResponseEntity<Object> buildResponse(HttpStatus httpStatus, String error, String errorMessage,
         String url) {
         Map<String, Object> response = new LinkedHashMap<>();

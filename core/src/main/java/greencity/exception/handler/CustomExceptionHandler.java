@@ -566,10 +566,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ResponseEntity<Object> response = EndpointValidationHelper.response(ex, headers, status, request);
+        ResponseEntity<Object> response = EndpointValidationHelper.response(ex, headers, request);
         if (response == null) {
             return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
         }
-        return EndpointValidationHelper.response(ex, headers, status, request);
+        return EndpointValidationHelper.response(ex, headers, request);
     }
 }

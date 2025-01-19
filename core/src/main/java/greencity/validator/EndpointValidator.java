@@ -6,13 +6,10 @@ import java.util.List;
 
 @Component
 public class EndpointValidator {
-    private final List<String> validEndpoints;
-
-    private static EndpointValidator instance;
+    private static List<String> validEndpoints = List.of();
 
     public EndpointValidator(@Value("${valid.endpoints}") List<String> validEndpoints) {
-        this.validEndpoints = validEndpoints;
-        instance = this;
+        EndpointValidator.validEndpoints = validEndpoints;
     }
 
     public static boolean isValidEndpoint(String endpointTemplate, String actualUrl) {
@@ -39,12 +36,12 @@ public class EndpointValidator {
     }
 
     public static boolean hasExtraCharacters(String url) {
-        return !instance.validEndpoints.contains(url);
+        return !validEndpoints.contains(url);
     }
 
     public static boolean checkUrl(String url) {
         if (hasExtraCharacters(url)) {
-            for (String validEndpoint : instance.validEndpoints) {
+            for (String validEndpoint : validEndpoints) {
                 if (isValidEndpoint(validEndpoint, url)) {
                     return true;
                 }
@@ -52,7 +49,7 @@ public class EndpointValidator {
             return false;
         }
 
-        for (String validEndpoint : instance.validEndpoints) {
+        for (String validEndpoint : validEndpoints) {
             if (isValidEndpoint(validEndpoint, url)) {
                 return true;
             }

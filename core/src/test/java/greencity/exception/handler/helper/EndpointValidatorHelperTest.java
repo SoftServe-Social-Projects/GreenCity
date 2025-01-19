@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class EndpointValidatorHelperTest {
+class EndpointValidatorHelperTest {
 
     @Mock
     private EndpointValidator endpointValidator;
@@ -56,10 +56,9 @@ public class EndpointValidatorHelperTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        endpointValidationHelper = new EndpointValidationHelper(endpointValidator, responseBuilder);
-        endpointValidator = new EndpointValidator(List.of("/api/test", "/api/invalid/extra"));
-        ReflectionTestUtils.setField(EndpointValidator.class, "instance", endpointValidator);
-        endpointValidationHelper = new EndpointValidationHelper(endpointValidator, responseBuilder);
+        List<String> validEndpointsList = List.of("/api/test", "/api/invalid/extra");
+        ReflectionTestUtils.setField(endpointValidator, "validEndpoints", validEndpointsList);
+        endpointValidationHelper = new EndpointValidationHelper();
     }
 
     @Test
@@ -77,7 +76,7 @@ public class EndpointValidatorHelperTest {
             mocked.when(() -> EndpointValidator.hasExtraCharacters(url)).thenReturn(true);
 
             ResponseEntity<Object> response = EndpointValidationHelper.response(
-                null, httpHeaders, HttpStatus.NOT_FOUND, servletWebRequest);
+                null, httpHeaders, servletWebRequest);
 
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
             assertTrue(response.getBody() instanceof Map, "The response body should be a map.");
@@ -102,7 +101,7 @@ public class EndpointValidatorHelperTest {
         when(exception.getMethod()).thenReturn(method);
 
         ResponseEntity<Object> response = EndpointValidationHelper.response(
-            exception, httpHeaders, HttpStatus.METHOD_NOT_ALLOWED, servletWebRequest);
+            exception, httpHeaders, servletWebRequest);
 
         assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
         assertTrue(response.getBody() instanceof Map, "The response body should be a map.");
@@ -125,7 +124,7 @@ public class EndpointValidatorHelperTest {
         ServletWebRequest servletWebRequest = new ServletWebRequest(servletRequest);
         when(httpHeaders.getOrEmpty("Allow")).thenReturn(allowedMethods);
         ResponseEntity<Object> response = EndpointValidationHelper.response(
-            exception, httpHeaders, HttpStatus.METHOD_NOT_ALLOWED, servletWebRequest);
+            exception, httpHeaders, servletWebRequest);
         assertNull(response, "Response should be null when no conditions are met.");
     }
 

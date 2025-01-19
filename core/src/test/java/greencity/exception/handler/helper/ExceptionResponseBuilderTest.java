@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public class ExceptionResponseBuilderTest {
+class ExceptionResponseBuilderTest {
     private HttpStatus status;
     private String error;
     private String errorMessage;
