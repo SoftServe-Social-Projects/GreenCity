@@ -12,7 +12,7 @@ public class EndpointValidator {
     }
 
     @Value("${valid.endpoints}")
-    public void setValidEndpoints(List<String> validEndpoints) {
+    public static void setValidEndpoints(List<String> validEndpoints) {
         EndpointValidator.validEndpoints = validEndpoints;
     }
 

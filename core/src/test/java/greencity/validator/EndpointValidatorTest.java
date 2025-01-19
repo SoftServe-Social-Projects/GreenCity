@@ -3,7 +3,6 @@ package greencity.validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -14,12 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class EndpointValidatorTest {
-    @Mock
-    private EndpointValidator endpointValidator;
 
     @BeforeEach
     void setUp() {
-        endpointValidator.setValidEndpoints(List.of("/api/test", "/api/valid", "friends/{friendId}/request/{id}"));
+        EndpointValidator.setValidEndpoints(List.of("/api/test", "/api/valid", "friends/{friendId}/request/{id}"));
         ReflectionTestUtils.setField(EndpointValidator.class, "validEndpoints",
             List.of("/api/test", "/api/valid", "friends/{friendId}/request/{id}"));
     }
