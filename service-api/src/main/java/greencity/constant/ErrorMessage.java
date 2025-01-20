@@ -58,7 +58,7 @@ public final class ErrorMessage {
         "Subscriber with this email address not found in the database.";
     public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
-    public static final String LOCATION_NOT_FOUND = "Location must be provided either in filterDto or userVO";
+    public static final String LOCATION_NOT_FOUND = "Location must be provided either in filters or in user profile";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
     public static final String HABIT_IS_NOT_ENROLLED_ON_CURRENT_DATE = "Habit is not enrolled on ";
