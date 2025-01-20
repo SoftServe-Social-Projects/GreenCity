@@ -2,6 +2,8 @@ package greencity.dto.user;
 
 import greencity.annotations.ValidSocialNetworkLinks;
 import java.util.List;
+
+import greencity.enums.ProfilePrivacyPolicy;
 import lombok.*;
 
 @AllArgsConstructor
@@ -16,7 +18,7 @@ public class UserProfileDtoRequest {
     private String userCredo;
     @ValidSocialNetworkLinks
     private List<String> socialNetworks;
-    private Boolean showLocation;
-    private Boolean showEcoPlace;
-    private Boolean showShoppingList;
+    private ProfilePrivacyPolicy showLocation;
+    private ProfilePrivacyPolicy showEcoPlace;
+    private ProfilePrivacyPolicy showShoppingList;
 }

@@ -193,5 +193,7 @@
     <include file="db/changelog/logs/ch-add-column-tariffid-chat-rooms-Klopov.xml"/>
     <include file="db/changelog/logs/ch-add-column-chat-status-Klopov.xml"/>
     <include file="/db/changelog/logs/ch-delete-values-positions-authorities-mapping-Kizerov.xml"/>
+    <include file="db/changelog/logs/ch-change-user-profile-columns-type-Haliara.xml"/>
+    <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
 </databaseChangeLog>
 

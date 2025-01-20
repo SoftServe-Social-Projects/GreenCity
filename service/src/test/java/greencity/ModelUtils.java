@@ -179,6 +179,7 @@ import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
@@ -423,9 +424,9 @@ public class ModelUtils {
             .userLocationDto(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .showShoppingList(true)
-            .showEcoPlace(true)
-            .showLocation(true)
+            .showShoppingList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
@@ -1733,9 +1734,9 @@ public class ModelUtils {
                     .ecoNewsLiked(null)
                     .ecoNewsCommentsLiked(null)
                     .firstName("dfsfsdf")
-                    .showLocation(true)
-                    .showEcoPlace(true)
-                    .showShoppingList(true)
+                    .showLocation(ProfilePrivacyPolicy.PUBLIC)
+                    .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+                    .showShoppingList(ProfilePrivacyPolicy.PUBLIC)
                     .lastActivityTime(LocalDateTime.now())
                     .userActions(null)
                     .languageVO(getLanguageVO())
@@ -1751,9 +1752,9 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .showShoppingList(true)
-            .showEcoPlace(true)
-            .showLocation(true)
+            .showShoppingList(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
             .socialNetworks(Collections.singletonList(
                 SocialNetworkVO.builder()
                     .id(10L)
