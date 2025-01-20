@@ -884,8 +884,11 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId) {
-        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersDislikedEvents().stream().map(u->modelMapper.map(u, UserProfilePictureDto.class)).collect(Collectors.toSet());
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersDislikedEvents().stream().map(u -> modelMapper.map(u, UserProfilePictureDto.class))
+            .collect(Collectors.toSet());
+    }
 
     @Override
     public void addToRequested(Long eventId, String email) {
@@ -994,7 +997,6 @@ public class EventServiceImpl implements EventService {
 
         userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
             NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
-
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
