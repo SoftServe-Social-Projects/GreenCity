@@ -213,7 +213,8 @@ public interface EventService {
     boolean isEventDislikedByUser(Long eventId, UserVO userVO);
 
     /**
-     * Retrieves a set of user profile pictures for all users who have liked the event with the given ID.
+     * Retrieves a set of user profile pictures for all users who have liked the
+     * event with the given ID.
      *
      * @param eventId the ID of the event
      * @return a set of user profile picture DTOs
@@ -221,7 +222,8 @@ public interface EventService {
     Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId);
 
     /**
-     * Retrieves a set of user profile pictures for all users who have disliked the event with the given ID.
+     * Retrieves a set of user profile pictures for all users who have disliked the
+     * event with the given ID.
      *
      * @param eventId the ID of the event
      * @return a set of user profile picture DTOs

@@ -873,8 +873,10 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId) {
-        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersLikedEvents().stream().map(u->modelMapper.map(u, UserProfilePictureDto.class)).collect(Collectors.toSet());
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersLikedEvents().stream().map(u -> modelMapper.map(u, UserProfilePictureDto.class))
+            .collect(Collectors.toSet());
     }
 
     /**
