@@ -145,7 +145,7 @@ public class ManagementEventController {
         Set<EventAttenderDto> eventAttenders = eventService.getAllEventAttenders(eventId);
         Pageable pageable = PageRequest.of(page, size);
         Page<EventAttenderDto> attandersPage = new PageImpl<>(eventAttenders.stream()
-            .skip(page * size)
+            .skip((long) page * size)
             .limit(size)
             .toList(), pageable, eventAttenders.size());
         model.addAttribute("attendersPage", attandersPage);
@@ -160,7 +160,7 @@ public class ManagementEventController {
         Set<UserProfilePictureDto> usersLikedEvent = eventService.getUsersLikedByEvent(eventId);
         Pageable pageable = PageRequest.of(page, size);
         Page<UserProfilePictureDto> usersLikedPage = new PageImpl<>(usersLikedEvent.stream()
-            .skip(page * size)
+            .skip((long) page * size)
             .limit(size)
             .toList(), pageable, usersLikedEvent.size());
         model.addAttribute("usersLikedPage", usersLikedPage);
@@ -175,7 +175,7 @@ public class ManagementEventController {
         Set<UserProfilePictureDto> usersDislikedEvent = eventService.getUsersDislikedByEvent(eventId);
         Pageable pageable = PageRequest.of(page, size);
         Page<UserProfilePictureDto> usersLikedPage = new PageImpl<>(usersDislikedEvent.stream()
-            .skip(page * size)
+            .skip((long) page * size)
             .limit(size)
             .toList(), pageable, usersDislikedEvent.size());
         model.addAttribute("usersLikedPage", usersLikedPage);

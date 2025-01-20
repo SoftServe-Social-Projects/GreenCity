@@ -21,11 +21,9 @@ import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +44,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
-import org.testcontainers.shaded.com.github.dockerjava.core.MediaType;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -270,7 +266,6 @@ class ManagementEventControllerTest {
     @SneakyThrows
     void getEventTest() {
         Long eventId = 1L;
-        Principal principal = mock(Principal.class);
 
         EventDateLocationDto date1 = new EventDateLocationDto();
         date1.setStartDate(ZonedDateTime.of(2025, 1, 1, 10, 0, 0, 0, ZoneId.of("UTC")));
