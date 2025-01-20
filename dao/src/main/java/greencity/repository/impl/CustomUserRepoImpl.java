@@ -26,17 +26,17 @@ public class CustomUserRepoImpl implements CustomUserRepo {
         List<User> users) {
         Objects.requireNonNull(users);
 
+        if (users.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         TypedQuery<UserFriendDto> query = entityManager
             .createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
                 UserFriendDto.class);
         query.setParameter("userId", userId);
 
-        List<Long> userIds;
-        if (users.isEmpty()) {
-            userIds = Collections.singletonList(-1L);
-        } else {
-            userIds = users.stream().map(User::getId).collect(Collectors.toList());
-        }
+        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+
         query.setParameter("users", userIds);
 
         List<UserFriendDto> resultList = query.getResultList();

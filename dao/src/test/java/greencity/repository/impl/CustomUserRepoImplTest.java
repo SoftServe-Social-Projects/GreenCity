@@ -10,15 +10,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class CustomUserRepoImplTest {
@@ -48,15 +51,13 @@ class CustomUserRepoImplTest {
     void fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUserWhenUserListIsEmptyTest() {
         long userId = 1L;
         List<User> users = List.of();
-        TypedQuery<UserFriendDto> query = mock(TypedQuery.class);
 
-        when(entityManager.createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
-            UserFriendDto.class)).thenReturn(query);
+        List<UserFriendDto> result =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
-        customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
+        verify(entityManager, never()).createNamedQuery(anyString(), eq(UserFriendDto.class));
 
-        verify(query).setParameter("userId", userId);
-        verify(query).setParameter("users", Collections.singletonList(-1L));
+        assertTrue(result.isEmpty());
     }
 
     @Test
