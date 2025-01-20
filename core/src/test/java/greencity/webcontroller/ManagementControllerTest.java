@@ -55,13 +55,13 @@ class ManagementControllerTest {
     @Test
     void loginTest() throws Exception {
         ReflectionTestUtils.setField(managementController,
-            "greenCityUserServerAddress", TestConst.GREENCITY_USER_SERVER_ADRESS);
+            "greenCityUserServerAddress", TestConst.GREENCITY_USER_SERVER_ADDRESS);
 
         SecurityContextHolder.getContext()
             .setAuthentication(new AnonymousAuthenticationToken("GUEST", "anonymousUser", AuthorityUtils
                 .createAuthorityList("ROLE_ANONYMOUS")));
 
-        String expectedUrl = UriComponentsBuilder.fromHttpUrl(TestConst.GREENCITY_USER_SERVER_ADRESS)
+        String expectedUrl = UriComponentsBuilder.fromHttpUrl(TestConst.GREENCITY_USER_SERVER_ADDRESS)
             .path(link + loginLink)
             .build()
             .toUriString();
