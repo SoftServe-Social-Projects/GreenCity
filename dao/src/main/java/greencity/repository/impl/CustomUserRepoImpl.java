@@ -3,13 +3,13 @@ package greencity.repository.impl;
 import greencity.dto.friends.UserFriendDto;
 import greencity.entity.User;
 import greencity.repository.CustomUserRepo;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 

@@ -94,7 +94,8 @@ class CustomUserRepoImplTest {
         friend3.setId(user1Id);
         when(query.getResultList()).thenReturn(List.of(friend1, friend2, friend3));
 
-        List<UserFriendDto> result = customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
+        List<UserFriendDto> result =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
         verify(query).setParameter("users", List.of(10L, 20L, 30L));
