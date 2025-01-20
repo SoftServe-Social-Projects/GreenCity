@@ -27,4 +27,12 @@ public class EmailNotificationMessagesConstants {
     public static final String FRIEND_REQUEST_RECEIVED_MESSAGE = "%s sent you a friend request";
     public static final String FRIEND_REQUEST_ACCEPTED_SUBJECT = "Your friend request was accepted";
     public static final String FRIEND_REQUEST_ACCEPTED_MESSAGE = "Now you are friends with %s";
+    public static final String JOIN_REQUEST_APPROVED_SUBJECT = "You have successfully joined the event";
+    public static final String JOIN_REQUEST_APPROVED_MESSAGE = "You have successfully joined %s";
+    public static final String JOIN_REQUEST_DECLINED_SUBJECT = "The organizer didn't approve your request";
+    public static final String JOIN_REQUEST_DECLINED_MESSAGE =
+        "While we can't confirm your attendance this time, there's another way to stay connected! Join our "
+            + "organizer's friend list for future updates and opportunities.";
+    public static final String NEW_JOIN_REQUEST_SUBJECT = "New people want to join your event";
+    public static final String NEW_JOIN_REQUEST_MESSAGE = "%s wants to join your event";
 }

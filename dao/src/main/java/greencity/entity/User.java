@@ -190,10 +190,12 @@ import java.util.Set;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
-        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "subscribedEvents"})
+        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
+        "subscribedEvents"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
-        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "subscribedEvents"})
+        "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
+        "subscribedEvents"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -317,4 +319,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<UserNotificationPreference> emailPreference = new HashSet<>();
+
+    @ManyToMany(mappedBy = "requesters", fetch = FetchType.LAZY)
+    private Set<Event> requestedEvents;
 }

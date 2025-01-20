@@ -98,10 +98,10 @@ public class ManagementPlacesController {
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public GenericResponseDto savePlace(
-        @RequestPart("addPlaceDto") AddPlaceDto addPlaceDto,
+        @RequestPart("addPlaceDto") @Valid AddPlaceDto addPlaceDto,
+        BindingResult bindingResult,
         @Parameter(hidden = true) Principal principal,
-        @RequestPart(required = false) @Nullable MultipartFile[] images,
-        BindingResult bindingResult) {
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
             placeService.addPlaceFromUi(addPlaceDto, principal.getName(), images);
         }
@@ -114,13 +114,17 @@ public class ManagementPlacesController {
      * @param placeUpdateDto of {@link PlaceUpdateDto}
      * @return {@link GenericResponseDto}
      */
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    @PutMapping
-    public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto,
-        BindingResult bindingResult) {
+    public GenericResponseDto updatePlace(
+        @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
+        BindingResult bindingResult,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
-            placeService.update(placeUpdateDto);
+            placeService.updateFromUI(placeUpdateDto, images, principal.getName());
         }
+
         return buildGenericResponseDto(bindingResult);
     }
 

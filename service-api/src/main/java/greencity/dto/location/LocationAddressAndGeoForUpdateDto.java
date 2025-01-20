@@ -27,4 +27,11 @@ public class LocationAddressAndGeoForUpdateDto {
 
     @NotNull(message = ServiceValidationConstants.EMPTY_VALUE_OF_LONGITUDE)
     private Double lng;
+
+    @NotBlank
+    @Length(
+        min = ServiceValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
+        max = ServiceValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
+    @Pattern(regexp = "^[^<>]+$")
+    private String addressUa;
 }

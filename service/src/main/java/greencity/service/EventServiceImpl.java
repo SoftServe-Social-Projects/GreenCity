@@ -24,6 +24,7 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -47,6 +48,7 @@ import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
@@ -111,6 +113,7 @@ import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -881,6 +884,115 @@ public class EventServiceImpl implements EventService {
     public Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersDislikedEvents().stream().map(u->modelMapper.map(u, UserProfilePictureDto.class)).collect(Collectors.toSet());
+
+    @Override
+    public void addToRequested(Long eventId, String email) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (event.getRequesters().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED);
+        }
+
+        event.getRequesters().add(currentUser);
+        eventRepo.save(event);
+
+        userNotificationService.createNotification(modelMapper.map(event.getOrganizer(), UserVO.class),
+            modelMapper.map(currentUser, UserVO.class), NotificationType.EVENT_INVITE, eventId, event.getTitle());
+    }
+
+    @Override
+    public void removeFromRequested(Long eventId, String email) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!event.getRequesters().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_REQUESTED);
+        }
+
+        event.getRequesters().remove(currentUser);
+        eventRepo.save(event);
+    }
+
+    @Override
+    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+
+        if (!user.equals(event.getOrganizer())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Page<User> usersPage = userRepo.findUsersByRequestedEvents(eventId, pageable);
+        List<UserForListDto> userList = usersPage.stream()
+            .map(users -> modelMapper.map(users, UserForListDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            userList,
+            usersPage.getTotalElements(),
+            usersPage.getPageable().getPageNumber(),
+            usersPage.getTotalPages());
+    }
+
+    @Override
+    public void approveRequest(Long eventId, String email, Long userId) {
+        UserVO userVO = restClient.findByEmail(email);
+        User currentUser = modelMapper.map(userVO, User.class);
+
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+
+        if (!Objects.equals(currentUser.getId(), event.getOrganizer().getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (event.getRequesters().stream().noneMatch(u -> Objects.equals(u.getId(), userId))) {
+            throw new BadRequestException(ErrorMessage.USER_DID_NOT_REQUEST_FOR_EVENT + userId);
+        }
+        User userToJoin = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        event.getRequesters().remove(userToJoin);
+        event.getAttenders().add(userToJoin);
+
+        eventRepo.save(event);
+
+        userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
+            NotificationType.EVENT_REQUEST_ACCEPTED, eventId, event.getTitle());
+    }
+
+    @Override
+    public void declineRequest(Long eventId, String email, Long userId) {
+        UserVO userVO = restClient.findByEmail(email);
+        User currentUser = modelMapper.map(userVO, User.class);
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+
+        if (!Objects.equals(currentUser.getId(), event.getOrganizer().getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (event.getRequesters().stream().noneMatch(u -> Objects.equals(u.getId(), userId))) {
+            throw new BadRequestException(ErrorMessage.USER_DID_NOT_REQUEST_FOR_EVENT + userId);
+        }
+        User userToJoin =
+            userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        event.getRequesters().remove(userToJoin);
+        eventRepo.save(event);
+
+        userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
+            NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
+
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
