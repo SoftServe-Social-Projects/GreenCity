@@ -5,10 +5,14 @@ import greencity.annotations.ValidEventDtoRequest;
 import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.event.AbstractEventDateLocationDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.enums.TagType;
 import greencity.service.EventService;
 import greencity.service.TagsService;
@@ -23,6 +27,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -42,8 +49,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
 @Slf4j
@@ -108,6 +120,68 @@ public class ManagementEventController {
         return "core/management_events";
     }
 
+    @GetMapping("/{eventId}")
+    public String getEvent(Model model, @PathVariable("eventId") Long eventId,
+        @Parameter(hidden = true) Principal principal) {
+        EventDto eventDto = eventService.getEvent(eventId, principal);
+        Set<EventAttenderDto> eventAttenders = eventService.getAllEventAttenders(eventId);
+        List<String> attendersAvatars = eventAttenders.stream()
+            .map(EventAttenderDto::getImagePath)
+            .filter(Objects::nonNull)
+            .toList();
+        model.addAttribute("eventDto", eventDto);
+        model.addAttribute("formattedDate", getFormattedDates(eventDto.getDates()));
+        model.addAttribute("imageUrls", getImageUrls(eventDto));
+        model.addAttribute("eventAttenders", eventAttenders);
+        model.addAttribute("eventAttendersAvatars", attendersAvatars);
+        return "core/management_event";
+    }
+
+    @GetMapping("/{eventId}/attenders")
+    public String getAttenders(@PathVariable("eventId") Long eventId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        Model model) {
+        Set<EventAttenderDto> eventAttenders = eventService.getAllEventAttenders(eventId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<EventAttenderDto> attandersPage = new PageImpl<>(eventAttenders.stream()
+            .skip(page * size)
+            .limit(size)
+            .toList(), pageable, eventAttenders.size());
+        model.addAttribute("attendersPage", attandersPage);
+        return "core/fragments/attenders-table";
+    }
+
+    @GetMapping("/{eventId}/likes")
+    public String getUsersLikedEvent(@PathVariable("eventId") Long eventId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        Model model) {
+        Set<UserProfilePictureDto> usersLikedEvent = eventService.getUsersLikedByEvent(eventId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserProfilePictureDto> usersLikedPage = new PageImpl<>(usersLikedEvent.stream()
+            .skip(page * size)
+            .limit(size)
+            .toList(), pageable, usersLikedEvent.size());
+        model.addAttribute("usersLikedPage", usersLikedPage);
+        return "core/fragments/likes-table";
+    }
+
+    @GetMapping("/{eventId}/dislikes")
+    public String getUsersDislikedEvent(@PathVariable("eventId") Long eventId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        Model model) {
+        Set<UserProfilePictureDto> usersDislikedEvent = eventService.getUsersDislikedByEvent(eventId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserProfilePictureDto> usersLikedPage = new PageImpl<>(usersDislikedEvent.stream()
+            .skip(page * size)
+            .limit(size)
+            .toList(), pageable, usersDislikedEvent.size());
+        model.addAttribute("usersLikedPage", usersLikedPage);
+        return "core/fragments/likes-table";
+    }
+
     @GetMapping("/create-event")
     public String getEventCreatePage(Model model, Principal principal) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
@@ -169,5 +243,30 @@ public class ManagementEventController {
         model.addAttribute("eventDto", eventService.getEvent(id, principal));
         model.addAttribute("googleMapApiKey", googleMapApiKey);
         return "core/management_edit_event";
+    }
+
+    private String getFormattedDates(List<EventDateLocationDto> dates) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy");
+        EventDateLocationDto firstDateDto = dates.stream()
+            .min(Comparator.comparing(AbstractEventDateLocationDto::getStartDate))
+            .orElseThrow(() -> new IllegalArgumentException("Dates list cannot be empty"));
+
+        EventDateLocationDto lastDateDto = dates.stream()
+            .max(Comparator.comparing(AbstractEventDateLocationDto::getFinishDate))
+            .orElseThrow(() -> new IllegalArgumentException("Dates list cannot be empty"));
+
+        if (firstDateDto.getStartDate().toLocalDate().equals(lastDateDto.getStartDate().toLocalDate())) {
+            return firstDateDto.getStartDate().format(formatter);
+        } else {
+            return firstDateDto.getStartDate().format(formatter) + " - "
+                + lastDateDto.getFinishDate().format(formatter);
+        }
+    }
+
+    private List<String> getImageUrls(EventDto eventDto) {
+        List<String> urls = new ArrayList<>();
+        urls.add(eventDto.getTitleImage());
+        urls.addAll(Objects.nonNull(eventDto.getAdditionalImages()) ? eventDto.getAdditionalImages() : List.of());
+        return urls;
     }
 }

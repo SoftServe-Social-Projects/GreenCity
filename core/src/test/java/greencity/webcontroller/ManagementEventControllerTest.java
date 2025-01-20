@@ -4,10 +4,13 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.event.Event;
 import greencity.enums.TagType;
@@ -15,9 +18,14 @@ import greencity.repository.EventRepo;
 import greencity.service.EventService;
 import greencity.service.TagsService;
 import java.security.Principal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,12 +46,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
+import org.testcontainers.shaded.com.github.dockerjava.core.MediaType;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -154,7 +165,8 @@ class ManagementEventControllerTest {
     }
 
     @Test
-    void testCreateEvent() throws Exception {
+    @SneakyThrows
+    void testCreateEvent() {
         String json =
             "{\"title\":\"asdgasgdgsa\",\"description\":\"<p>asdgadsgagdasdgasdggadsg</p>\",\"tags\":[\"ECONOMIC\"],\"open\":true,\"datesLocations\":[{\"startDate\":\"2024-11-11T00:00:00Z\",\"finishDate\":\"2024-11-11T23:59:00Z\",\"onlineLink\":\"https://www.greencity.cx.ua/#/greenCity\"}]}";
         MockMultipartFile addEventDtoRequestJSON =
@@ -212,7 +224,8 @@ class ManagementEventControllerTest {
     }
 
     @Test
-    void testGetEditPage() throws Exception {
+    @SneakyThrows
+    void testGetEditPage() {
         EventDto mockEventDto = new EventDto();
         when(restClient.findByEmail(anyString())).thenReturn(new UserVO());
         mockEventDto.setId(1L);
@@ -251,5 +264,98 @@ class ManagementEventControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).getEventsManagement(pageable, filterEventDto, null);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventTest() {
+        Long eventId = 1L;
+        Principal principal = mock(Principal.class);
+
+        EventDateLocationDto date1 = new EventDateLocationDto();
+        date1.setStartDate(ZonedDateTime.of(2025, 1, 1, 10, 0, 0, 0, ZoneId.of("UTC")));
+        date1.setFinishDate(ZonedDateTime.of(2025, 1, 1, 12, 0, 0, 0, ZoneId.of("UTC")));
+
+        EventDateLocationDto date2 = new EventDateLocationDto();
+        date2.setStartDate(ZonedDateTime.of(2025, 1, 2, 10, 0, 0, 0, ZoneId.of("UTC")));
+        date2.setFinishDate(ZonedDateTime.of(2025, 1, 2, 12, 0, 0, 0, ZoneId.of("UTC")));
+
+        EventDto eventDto = new EventDto();
+        eventDto.setDates(List.of(date1, date2));
+        eventDto.setTitleImage("title-image.jpg");
+        eventDto.setAdditionalImages(List.of("image1.jpg", "image2.jpg"));
+
+        EventAttenderDto attender1 = EventAttenderDto.builder().id(1L).name("user1").imagePath("avatar1.jpg").build();
+        EventAttenderDto attender2 = EventAttenderDto.builder().id(2L).name("user1").imagePath("avatar2.jpg").build();
+
+        Set<EventAttenderDto> attenders = Set.of(attender1, attender2);
+
+        when(eventService.getEvent(eventId, principal)).thenReturn(eventDto);
+        when(eventService.getAllEventAttenders(eventId)).thenReturn(attenders);
+
+        mockMvc.perform(get(managementEventsLink + "/{eventId}", eventId).principal(principal))
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/management_event"))
+            .andExpect(model().attributeExists("eventDto"))
+            .andExpect(model().attribute("eventDto", eventDto))
+            .andExpect(model().attribute("formattedDate", "Jan 1, 2025 - Jan 2, 2025"))
+            .andExpect(model().attribute("imageUrls", List.of("title-image.jpg", "image1.jpg", "image2.jpg")))
+            .andExpect(model().attribute("eventAttenders", attenders))
+            .andExpect(model().attribute("eventAttendersAvatars", List.of("avatar1.jpg", "avatar2.jpg")));
+    }
+
+    @Test
+    @SneakyThrows
+    void getAttendersTest() {
+        Long eventId = 1L;
+        int page = 0;
+        int size = 1;
+        Set<EventAttenderDto> attenders =
+            Set.of(EventAttenderDto.builder().id(1L).name("user1").imagePath("image1.png").build());
+
+        when(eventService.getAllEventAttenders(eventId)).thenReturn(attenders);
+
+        mockMvc.perform(get(managementEventsLink + "/{eventId}/attenders", eventId)
+            .param("page", String.valueOf(page))
+            .param("size", String.valueOf(size)))
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/fragments/attenders-table"))
+            .andExpect(model().attributeExists("attendersPage"));
+    }
+
+    @Test
+    @SneakyThrows
+    void getUsersLikedEventTest() {
+        Long eventId = 1L;
+        int page = 0;
+        int size = 1;
+        Set<UserProfilePictureDto> usersLiked = Set.of(new UserProfilePictureDto(1L, "user1", "image1.png"));
+
+        when(eventService.getUsersLikedByEvent(eventId)).thenReturn(usersLiked);
+
+        mockMvc.perform(get(managementEventsLink + "/{eventId}/likes", eventId)
+            .param("page", String.valueOf(page))
+            .param("size", String.valueOf(size)))
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/fragments/likes-table"))
+            .andExpect(model().attributeExists("usersLikedPage"));
+    }
+
+    @Test
+    @SneakyThrows
+    void getUsersDislikedEventTest() {
+        Long eventId = 1L;
+        int page = 0;
+        int size = 1;
+        Set<UserProfilePictureDto> usersDisliked = Set.of(new UserProfilePictureDto(1L, "user1", "image1.png"));
+
+        when(eventService.getUsersDislikedByEvent(eventId)).thenReturn(usersDisliked);
+
+        mockMvc.perform(get(managementEventsLink + "/{eventId}/dislikes", eventId)
+            .param("page", String.valueOf(page))
+            .param("size", String.valueOf(size)))
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/fragments/likes-table"))
+            .andExpect(model().attributeExists("usersLikedPage"));
     }
 }

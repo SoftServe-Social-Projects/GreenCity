@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div id="likesTable" style="display:block" th:fragment="likesTable">
+  <div class="table-responsive mb-4">
+    <div class="table-wrapper">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Avatar</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${usersDislikedPage.content}">
+          <td class="text-align-center">
+            <a th:href="@{/management/users/{id}(id=${user.getId()})}" th:text="${user.getId()}"></a>
+          </td>
+          <td th:text="${user.name}"></td>
+          <td>
+            <img th:if="user.profilePicturePath ne null or user.profilePicturePath ne ''" th:src="${user.profilePicturePath}" th:alt="'Avatar for user with id ' + ${user.id}">
+            <p th:if="user.profilePicturePath == null or user.profilePicturePath == ''">No Avatar</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="clearfix" th:if="${usersDislikedPage.content.size() > 0}">
+      <ul class="pagination">
+        <li class="page-item" th:classappend="${usersDislikedPage.isFirst()} ? 'disabled'">
+          <a class="page-link" th:onclick="'loadDropdownContent(\'dislikes\',' +  ${usersDislikedPage.number - 1} + ')'">Previous</a>
+        </li>
+        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, usersDislikedPage.totalPages - 1)}"
+            th:classappend="${pageNumber == usersDislikedPage.number} ? 'active'">
+          <a class="page-link" th:onclick="'loadDropdownContent(\'dislikes\','  + ${pageNumber} + ')'"
+             th:text="${pageNumber + 1}"></a>
+        </li>
+        <li class="page-item" th:classappend="${usersDislikedPage.isLast()} ? 'disabled'">
+          <a class="page-link" th:onclick="'loadDropdownContent(\'dislikes\',' + ${usersDislikedPage.number + 1} + ')'">Next</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -23,6 +23,7 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -862,6 +863,24 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersLikedEvents().stream().map(u->modelMapper.map(u, UserProfilePictureDto.class)).collect(Collectors.toSet());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersDislikedEvents().stream().map(u->modelMapper.map(u, UserProfilePictureDto.class)).collect(Collectors.toSet());
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {

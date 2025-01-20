@@ -13,6 +13,8 @@ import greencity.dto.search.SearchEventsDto;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
+
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -209,4 +211,19 @@ public interface EventService {
      * @return user liked event or not.
      */
     boolean isEventDislikedByUser(Long eventId, UserVO userVO);
-}
+
+
+    /**
+     * Retrieves a set of user profile pictures for all users who have liked the event with the given ID.
+     *
+     * @param eventId the ID of the event
+     * @return a set of user profile picture DTOs
+     */
+    Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId);
+    /**
+     * Retrieves a set of user profile pictures for all users who have disliked the event with the given ID.
+     *
+     * @param eventId the ID of the event
+     * @return a set of user profile picture DTOs
+     */
+    Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId);}

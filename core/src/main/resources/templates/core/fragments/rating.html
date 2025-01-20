@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="rating(rating, maxRating)" class="rating d-flex gap-3">
+        <span th:each="i : ${#numbers.sequence(1, maxRating)}"
+              th:class="'text-success bi bi-star' + (${i <= rating} ? '-fill' : '')"
+              style="font-size: 1.5rem;"></span>
+</div>
+</body>
+</html>

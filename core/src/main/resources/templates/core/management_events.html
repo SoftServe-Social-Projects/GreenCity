@@ -24,10 +24,11 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-    <script th:src="@{/management/events/buttonsAJAX.js}"></script>
-    <script th:src="@{/management/events/confirmationModal.js}"></script>
-    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+    <script type="text/javascript" th:src="@{/management/events/buttonsAJAX.js}"></script>
+    <script type="text/javascript" th:src="@{/management/events/confirmationModal.js}"></script>
+    <script type="text/javascript" th:src="@{/management/events/deleteEvents.js}"></script>
+    <script type="text/javascript" th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -236,7 +237,7 @@
                                 <label th:for="checkbox+${iterStatus.count}"></label>
                             </td>
                             <td style="width: 8%">
-                                <span>[[${event.getId()}]]</span>
+                                <a th:href="@{/management/events/{id}(id=${event.getId()})}" th:text="${event.getId()}"></a>
                             </td>
                             <td th:text="${event.organizer.name}" style="white-space: nowrap; /* Заборона переносу */
                                                                                             overflow: hidden;
@@ -345,6 +346,5 @@
         }
     }
 </script>
-<script th:src="@{/management/events/deleteEvents.js}"></script>
 </body>
 </html>
