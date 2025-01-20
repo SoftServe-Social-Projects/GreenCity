@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ManagementEventControllerTest {
-    private static final String managementEventsLink = "/management/events";
+    private static final String MANAGEMENT_EVENTS_LINK = "/management/events";
     @Mock
     EventService eventService;
     @Mock
@@ -100,7 +100,7 @@ class ManagementEventControllerTest {
         when(eventService.searchEventsBy(pageable, "title")).thenReturn(eventsDtoPageableDto);
         when(eventService.getAllEventsAddresses()).thenReturn(ModelUtils.getAddressesDtoList());
 
-        this.mockMvc.perform(get(managementEventsLink)
+        this.mockMvc.perform(get(MANAGEMENT_EVENTS_LINK)
             .param("query", "title")
             .param("page", "0")
             .locale(Locale.ENGLISH)
@@ -132,7 +132,7 @@ class ManagementEventControllerTest {
         when(eventService.getAllEventsAddresses())
             .thenReturn(ModelUtils.getAddressesDtoList());
 
-        this.mockMvc.perform(get(managementEventsLink)
+        this.mockMvc.perform(get(MANAGEMENT_EVENTS_LINK)
             .param("page", "0")
             .param("size", "10")
             .locale(Locale.of("UA", "ua")))
@@ -154,7 +154,7 @@ class ManagementEventControllerTest {
         when(principal.getName()).thenReturn(principalName);
         when(restClient.findByEmail(principalName)).thenReturn(new UserVO());
 
-        this.mockMvc.perform(get(managementEventsLink + "/create-event").principal(principal))
+        this.mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/create-event").principal(principal))
             .andExpect(view().name("core/management_create_event"))
             .andExpect(status().isOk());
     }
@@ -168,7 +168,7 @@ class ManagementEventControllerTest {
             new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
         MockMultipartFile image =
             new MockMultipartFile("images", "image.jpg", "image/jpeg", "image content".getBytes());
-        mockMvc.perform(multipart(managementEventsLink)
+        mockMvc.perform(multipart(MANAGEMENT_EVENTS_LINK)
             .file(addEventDtoRequestJSON)
             .file(image)
             .principal(() -> "user"))
@@ -185,7 +185,7 @@ class ManagementEventControllerTest {
 
         when(principal.getName()).thenReturn(principalName);
 
-        this.mockMvc.perform(delete(managementEventsLink)
+        this.mockMvc.perform(delete(MANAGEMENT_EVENTS_LINK)
             .contentType("application/json")
             .content("[1, 2, 3]")
             .principal(principal))
@@ -205,7 +205,7 @@ class ManagementEventControllerTest {
             new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
         MockMultipartFile image =
             new MockMultipartFile("images", "image.jpg", "image/jpeg", "image content".getBytes());
-        mockMvc.perform(multipart(managementEventsLink)
+        mockMvc.perform(multipart(MANAGEMENT_EVENTS_LINK)
             .file(editEventDtoRequestJSON)
             .file(image)
             .with(request -> {
@@ -227,7 +227,7 @@ class ManagementEventControllerTest {
 
         when(eventService.getEvent(eq(1L), any(Principal.class))).thenReturn(mockEventDto);
 
-        mockMvc.perform(get(managementEventsLink + "/edit/{id}", 1L)
+        mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/edit/{id}", 1L)
             .principal(() -> "user"))
             .andExpect(status().isOk())
             .andExpect(view().name("core/management_edit_event"))
@@ -249,7 +249,7 @@ class ManagementEventControllerTest {
         when(eventService.getEventsManagement(pageable, filterEventDto, null))
             .thenReturn(eventsDtoPageableDto);
 
-        this.mockMvc.perform(get(managementEventsLink)
+        this.mockMvc.perform(get(MANAGEMENT_EVENTS_LINK)
             .param("page", "0")
             .param("size", "10")
             .param("sort", "title,asc")
@@ -287,7 +287,7 @@ class ManagementEventControllerTest {
         when(eventService.getEvent(eventId, principal)).thenReturn(eventDto);
         when(eventService.getAllEventAttenders(eventId)).thenReturn(attenders);
 
-        mockMvc.perform(get(managementEventsLink + "/{eventId}", eventId).principal(principal))
+        mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}", eventId).principal(principal))
             .andExpect(status().isOk())
             .andExpect(view().name("core/management_event"))
             .andExpect(model().attributeExists("eventDto"))
@@ -309,7 +309,7 @@ class ManagementEventControllerTest {
 
         when(eventService.getAllEventAttenders(eventId)).thenReturn(attenders);
 
-        mockMvc.perform(get(managementEventsLink + "/{eventId}/attenders", eventId)
+        mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}/attenders", eventId)
             .param("page", String.valueOf(page))
             .param("size", String.valueOf(size)))
             .andExpect(status().isOk())
@@ -327,7 +327,7 @@ class ManagementEventControllerTest {
 
         when(eventService.getUsersLikedByEvent(eventId)).thenReturn(usersLiked);
 
-        mockMvc.perform(get(managementEventsLink + "/{eventId}/likes", eventId)
+        mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}/likes", eventId)
             .param("page", String.valueOf(page))
             .param("size", String.valueOf(size)))
             .andExpect(status().isOk())
@@ -345,11 +345,11 @@ class ManagementEventControllerTest {
 
         when(eventService.getUsersDislikedByEvent(eventId)).thenReturn(usersDisliked);
 
-        mockMvc.perform(get(managementEventsLink + "/{eventId}/dislikes", eventId)
+        mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}/dislikes", eventId)
             .param("page", String.valueOf(page))
             .param("size", String.valueOf(size)))
             .andExpect(status().isOk())
-            .andExpect(view().name("core/fragments/likes-table"))
+            .andExpect(view().name("core/fragments/dislikes-table"))
             .andExpect(model().attributeExists("usersLikedPage"));
     }
 }

@@ -179,7 +179,7 @@ public class ManagementEventController {
             .limit(size)
             .toList(), pageable, usersDislikedEvent.size());
         model.addAttribute("usersLikedPage", usersLikedPage);
-        return "core/fragments/likes-table";
+        return "core/fragments/dislikes-table";
     }
 
     @GetMapping("/create-event")
