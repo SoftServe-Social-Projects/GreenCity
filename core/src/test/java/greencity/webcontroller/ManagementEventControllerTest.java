@@ -280,8 +280,8 @@ class ManagementEventControllerTest {
         eventDto.setTitleImage("title-image.jpg");
         eventDto.setAdditionalImages(List.of("image1.jpg", "image2.jpg"));
 
-        EventAttenderDto attender1 = EventAttenderDto.builder().id(1L).name("user1").imagePath("avatar1.jpg").build();
-        EventAttenderDto attender2 = EventAttenderDto.builder().id(2L).name("user1").imagePath("avatar2.jpg").build();
+        EventAttenderDto attender1 = EventAttenderDto.builder().id(1L).name("user1").imagePath("avatar.jpg").build();
+        EventAttenderDto attender2 = EventAttenderDto.builder().id(2L).name("user1").imagePath("avatar.jpg").build();
 
         Set<EventAttenderDto> attenders = Set.of(attender1, attender2);
 
@@ -296,7 +296,7 @@ class ManagementEventControllerTest {
             .andExpect(model().attribute("formattedDate", "Jan 1, 2025 - Jan 2, 2025"))
             .andExpect(model().attribute("imageUrls", List.of("title-image.jpg", "image1.jpg", "image2.jpg")))
             .andExpect(model().attribute("eventAttenders", attenders))
-            .andExpect(model().attribute("eventAttendersAvatars", List.of("avatar1.jpg", "avatar2.jpg")));
+            .andExpect(model().attribute("eventAttendersAvatars", List.of("avatar.jpg", "avatar.jpg")));
     }
 
     @Test
