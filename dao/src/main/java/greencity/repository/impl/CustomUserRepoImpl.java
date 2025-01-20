@@ -3,6 +3,7 @@ package greencity.repository.impl;
 import greencity.dto.friends.UserFriendDto;
 import greencity.entity.User;
 import greencity.repository.CustomUserRepo;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
@@ -29,12 +30,22 @@ public class CustomUserRepoImpl implements CustomUserRepo {
             .createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
                 UserFriendDto.class);
         query.setParameter("userId", userId);
+
+        List<Long> userIds;
         if (users.isEmpty()) {
-            query.setParameter("users", Collections.singletonList(-1L));
+            userIds = Collections.singletonList(-1L);
         } else {
-            List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
-            query.setParameter("users", userIds);
+            userIds = users.stream().map(User::getId).collect(Collectors.toList());
         }
-        return query.getResultList();
+        query.setParameter("users", userIds);
+
+        List<UserFriendDto> resultList = query.getResultList();
+        Map<Long, UserFriendDto> resultMap = resultList.stream()
+            .collect(Collectors.toMap(UserFriendDto::getId, dto -> dto));
+
+        return userIds.stream()
+            .map(resultMap::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 }
