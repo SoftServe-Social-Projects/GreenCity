@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.google.maps.model.PlacesSearchResult;
+import greencity.dto.filter.FilterPlacesApiDto;
+import greencity.dto.location.LocationDto;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -487,6 +491,21 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, UserVO userVO) {
+        List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
+        return fromPlacesApi.stream()
+            .map(el -> new PlaceByBoundsDto(
+                System.currentTimeMillis(),
+                el.name,
+                new LocationDto(System.currentTimeMillis(), el.geometry.location.lat, el.geometry.location.lng,
+                    el.vicinity)))
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Method that filtering places by distance.
      *
      * @param filterDto - {@link FilterPlaceDto} DTO.
@@ -561,6 +580,9 @@ public class PlaceServiceImpl implements PlaceService {
         }.getType());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email) {
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
@@ -570,6 +592,14 @@ public class PlaceServiceImpl implements PlaceService {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
+        if (geocodingResults.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.GEOCODING_RESULT_IS_EMPTY);
+        }
+        double lat = geocodingResults.get(0).geometry.location.lat;
+        double lng = geocodingResults.get(0).geometry.location.lng;
+        if (locationService.existsByLatAndLng(lat, lng)) {
+            throw new PlaceAlreadyExistsException(ErrorMessage.PLACE_ALREADY_EXISTS);
+        }
         placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));

@@ -265,6 +265,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/propose",
                 "/place/save/favorite/",
                 "/place/all",
+                "/place/filter/api",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST,
                 "/user/{userId}/habit",

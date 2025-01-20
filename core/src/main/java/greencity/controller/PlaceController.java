@@ -1,10 +1,12 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -225,6 +227,28 @@ public class PlaceController {
         @Valid @RequestBody FilterPlaceDto filterDto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.getPlacesByFilter(filterDto));
+    }
+
+    /**
+     * The method which return a list of {@link PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlacesApiDto} object.
+     * {@link PlaceByBoundsDto} are retrieved from Google Places API
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @return a list of {@code PlaceByBoundsDto}
+     */
+    @ApiOperation(value = "Return a list places from Google Geocoding API filtered by values contained "
+        + "in the incoming FilterPlaceDto object")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = FilterPlacesApiDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/filter/api")
+    public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlacesFromApi(
+        @RequestBody FilterPlacesApiDto filterDto,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 
     /**

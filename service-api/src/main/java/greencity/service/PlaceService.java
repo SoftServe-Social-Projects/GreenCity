@@ -2,7 +2,9 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.place.*;
+import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import java.util.List;
 import java.util.Optional;
@@ -168,6 +170,18 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
+
+    /**
+     * The method finds all {@link GeocodingResult}'s from {@link GoogleApiService}
+     * filtered by the parameters contained in {@param filterDto} object.
+     *
+     * @param filterDto contains objects whose values determine the filter
+     *                  parameters of the returned list.
+     * @return a list of {@link PlaceByBoundsDto}
+     * @author Hrenevyh Ivan
+     */
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto,
+        UserVO userVO);
 
     /**
      * The method finds all {@link PlaceVO}'s filtered by the parameters contained
