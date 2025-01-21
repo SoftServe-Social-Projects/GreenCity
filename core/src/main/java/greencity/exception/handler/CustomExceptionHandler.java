@@ -27,9 +27,9 @@ import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.*;
+import greencity.exception.helper.EndpointValidationHelper;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -39,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -58,12 +59,16 @@ import java.util.stream.Collectors;
 /**
  * Custom exception handler.
  */
-@AllArgsConstructor
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
+
+    public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper) {
+        this.errorAttributes = errorAttributes;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * ExceptionHandler for intercepting errors from GreenCityUser.
@@ -103,8 +108,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Danylo Hlynskyi
      */
     @ExceptionHandler(MultipartException.class)
-    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex,
-        WebRequest request) {
+    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex, WebRequest request) {
         log.warn(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(exceptionResponse);
@@ -557,5 +561,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ResponseEntity<Object> response = EndpointValidationHelper.response(ex, headers, request);
+        if (response == null) {
+            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+        }
+        return EndpointValidationHelper.response(ex, headers, request);
     }
 }

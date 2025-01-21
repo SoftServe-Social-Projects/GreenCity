@@ -73,7 +73,12 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 9. If you did everything correctly, you should be able to access swagger by this URL: http://localhost:8080/swagger-ui.html#/
 
-### 4.3. How to work with swagger UI in our project
+### 4.3. Additional note for adding new endpoints
+
+If you add a new endpoint, ensure that it is also added to the configuration file (`application.property`) for proper functioning.
+
+
+### 4.4. How to work with swagger UI in our project
 
 1. Run GreenCity project (look up paragraph [How to run](#42-how-to-run)).
 
@@ -93,7 +98,7 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 6. Now you can use swagger UI to test REST API. Some controllers require *ADMIN* role. By default, new registered users have role *USER*. To overcome this you need to update record that corresponds to your user in the local database. For example, `UPDATE users SET role = 1 WHERE id = <your_user_id>`.
 
-### 4.4. Connect with front-end
+### 4.5. Connect with front-end
 
 There is no special configurations required. Just clone [GreenCityClient](https://github.com/ita-social-projects/GreenCityClient) and run it. If you want to sign in with Google account, it's mandatory to set `google.clientId`. Read more about how to obtain [Google client id](https://developers.google.com/adwords/api/docs/guides/authentication), it's free.
 
