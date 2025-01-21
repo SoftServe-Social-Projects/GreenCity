@@ -8,17 +8,23 @@ import java.util.Map;
 
 @Component
 public class ExceptionResponseBuilder {
+    private static final String TIMESTAMP = "timestamp";
+    private static final String STATUS = "status";
+    private static final String ERROR = "error";
+    private static final String MESSAGE = "message";
+    private static final String PATH = "path";
+
     private ExceptionResponseBuilder() {
     }
 
     public static ResponseEntity<Object> buildResponse(HttpStatus httpStatus, String error, String errorMessage,
         String url) {
         Map<String, Object> response = new LinkedHashMap<>();
-        response.put("timestamp", System.currentTimeMillis());
-        response.put("status", httpStatus.value());
-        response.put("error", error);
-        response.put("message", errorMessage);
-        response.put("path", url);
+        response.put(TIMESTAMP, System.currentTimeMillis());
+        response.put(STATUS, httpStatus.value());
+        response.put(ERROR, error);
+        response.put(MESSAGE, errorMessage);
+        response.put(PATH, url);
         return ResponseEntity.status(httpStatus).body(response);
     }
 }

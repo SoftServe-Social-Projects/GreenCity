@@ -16,6 +16,7 @@ import java.util.List;
 public class EndpointValidationHelper {
     private static final String METHOD_NOT_ALLOWED = "methodNotAllowed";
     private static final String EXTRA_CHARACTERS = "extraCharacters";
+    private static final String DEFAULT_CONDITION = "default";
 
     private EndpointValidationHelper() {
     }
@@ -23,47 +24,50 @@ public class EndpointValidationHelper {
     public static ResponseEntity<Object> response(HttpRequestMethodNotSupportedException ex, HttpHeaders headers,
         WebRequest request) {
         String url = getUrlFromRequest(request);
-        ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-        HttpServletRequest servletRequest = servletWebRequest.getRequest();
+        String method;
 
-        String method = servletRequest.getMethod();
-        List<String> list = headers.getOrEmpty("Allow");
+        if (request instanceof ServletWebRequest servletWebRequest) {
+            HttpServletRequest servletRequest = servletWebRequest.getRequest();
+            method = servletRequest.getMethod();
+        } else {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_REQUEST_TYPE);
+        }
+        List<String> allowedMethod = headers.getOrEmpty(HttpHeaders.ALLOW);
 
-        switch (getCondition(url, method, list)) {
-            case EXTRA_CHARACTERS:
-                String notFoundErrorMessage = String.format("No endpoint found for %s", url);
-                return ExceptionResponseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Not Found",
+        return switch (evaluateCondition(url, method, allowedMethod)) {
+            case EXTRA_CHARACTERS -> {
+                String notFoundErrorMessage = String.format(ErrorMessage.NOT_FOUND_ENDPOINT_FOR_URL, url);
+                yield ExceptionResponseBuilder.buildResponse(HttpStatus.NOT_FOUND, ErrorMessage.NOT_FOUND,
                     notFoundErrorMessage, url);
-
-            case METHOD_NOT_ALLOWED:
-                String methodNotAllowedErrorMessage = getErrorMessage(ex, url, list.toString());
-                return ExceptionResponseBuilder.buildResponse(HttpStatus.METHOD_NOT_ALLOWED,
+            }
+            case METHOD_NOT_ALLOWED -> {
+                String methodNotAllowedErrorMessage = getErrorMessage(ex, url, allowedMethod.toString());
+                yield ExceptionResponseBuilder.buildResponse(HttpStatus.METHOD_NOT_ALLOWED,
                     ErrorMessage.METHOD_NOT_ALLOWED,
                     methodNotAllowedErrorMessage, url);
-
-            default:
-                return null;
-        }
+            }
+            default -> null;
+        };
     }
 
     public static String getUrlFromRequest(WebRequest request) {
         return request.getDescription(false).replace("uri=", "");
     }
 
-    public static String getCondition(String url, String method, List<String> list) {
+    public static String evaluateCondition(String url, String method, List<String> allowedMethod) {
         if (!EndpointValidator.checkUrl(url)) {
             return EXTRA_CHARACTERS;
         }
-        if (!list.contains(method)) {
+        if (!allowedMethod.contains(method)) {
             return METHOD_NOT_ALLOWED;
         }
-        return "default";
+        return DEFAULT_CONDITION;
     }
 
     public static String getErrorMessage(HttpRequestMethodNotSupportedException ex, String url,
         String supportedMethods) {
         return String.format(
-            "Method %s is not allowed for %s. Supported Methods: %s",
+            ErrorMessage.METHOD_NOT_ALLOWED_FOR_URL,
             ex.getMethod(), url, supportedMethods);
     }
 }
