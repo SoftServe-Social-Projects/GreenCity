@@ -269,14 +269,14 @@ $(document).ready(function () {
             let closeTime = row.find('input[name="closeTime"]').val();
 
             if (!openTime || !closeTime) {
-                $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.working.hovers"]).show();
+                $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.working.hours"]).show();
                 isValid = false;
             } else {
                 let openTimeMinutes = timeToMinutes(openTime);
                 let closeTimeMinutes = timeToMinutes(closeTime);
 
                 if (closeTimeMinutes - openTimeMinutes < 30) {
-                    $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.hovers.is.incorrect"]).show();
+                    $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.hours.is.incorrect"]).show();
                     isValid = false;
                 }
             }
@@ -284,7 +284,7 @@ $(document).ready(function () {
         });
 
         if (!openingHoursChecked) {
-            $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.day.hovers"]).show();
+            $('#errorModalSaveopeningHoursList').text(messages["greenCity.places.page.add.day.hours"]).show();
             isValid = false;
         }
 
