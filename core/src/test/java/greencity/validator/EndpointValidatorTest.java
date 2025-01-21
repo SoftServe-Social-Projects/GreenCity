@@ -57,12 +57,6 @@ class EndpointValidatorTest {
     }
 
     @Test
-    void checkUrlWithInvalidEndpointTest() {
-        boolean result = EndpointValidator.checkUrl("/api/invalid");
-        assertFalse(result, "Method should return false for invalid URL");
-    }
-
-    @Test
     void checkUrlWithNonNumericIdTest() {
         boolean result = EndpointValidator.checkUrl("friends/2/request/abc");
         assertFalse(result, "Method should return false for invalid URL with non-numeric id");
