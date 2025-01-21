@@ -21,16 +21,18 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
         ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) {
-        int page = parseParameter(webRequest.getParameter(PAGE), DEFAULT_PAGE, PAGE);
-        int size = parseParameter(webRequest.getParameter(SIZE), DEFAULT_PAGE_SIZE, SIZE);
+        int page = parseParameter(webRequest, PAGE, DEFAULT_PAGE);
+        int size = parseParameter(webRequest, SIZE, DEFAULT_PAGE_SIZE);
 
         if (size > MAX_PAGE_SIZE) {
             throw new BadRequestException(ErrorMessage.MAX_PAGE_SIZE_EXCEPTION);
         }
+
         return PageRequest.of(page, size);
     }
 
-    private int parseParameter(String paramValue, int defaultValue, String param) {
+    private int parseParameter(NativeWebRequest webRequest, String param, int defaultValue) {
+        String paramValue = webRequest.getParameter(param);
         if (paramValue == null) {
             return defaultValue;
         }
@@ -38,17 +40,12 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
             int value = Integer.parseInt(paramValue);
 
             if (value < 0) {
-                String errorMessage = param.equals(PAGE)
-                    ? ErrorMessage.NEGATIVE_PAGE_VALUE_EXCEPTION
-                    : ErrorMessage.NEGATIVE_SIZE_VALUE_EXCEPTION;
-                throw new IllegalArgumentException(errorMessage);
+                throw new IllegalArgumentException(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION, param));
             }
+
             return value;
         } catch (NumberFormatException e) {
-            String errorMessage = param.equals(PAGE)
-                ? ErrorMessage.INVALID_PAGE_VALUE_EXCEPTION
-                : ErrorMessage.INVALID_SIZE_VALUE_EXCEPTION;
-            throw new IllegalArgumentException(errorMessage, e);
+            throw new IllegalArgumentException(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, param), e);
         }
     }
 }

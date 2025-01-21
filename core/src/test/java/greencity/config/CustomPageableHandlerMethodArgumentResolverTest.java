@@ -60,7 +60,8 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 resolver.resolveArgument(null, null, webRequest, null));
 
-        assertEquals(ErrorMessage.NEGATIVE_PAGE_VALUE_EXCEPTION, exception.getMessage());
+        assertEquals(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION,"page"),
+                exception.getMessage());
     }
 
     @Test
@@ -71,7 +72,8 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 resolver.resolveArgument(null, null, webRequest, null));
 
-        assertEquals(ErrorMessage.NEGATIVE_SIZE_VALUE_EXCEPTION, exception.getMessage());
+        assertEquals(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION,"size"),
+                exception.getMessage());
     }
 
     @Test
@@ -92,7 +94,8 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 resolver.resolveArgument(null, null, webRequest, null));
 
-        assertEquals(ErrorMessage.INVALID_PAGE_VALUE_EXCEPTION, exception.getMessage());
+        assertEquals(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, "page"),
+                exception.getMessage());
     }
 
     @Test
@@ -103,7 +106,7 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 resolver.resolveArgument(null, null, webRequest, null));
 
-        assertEquals(ErrorMessage.INVALID_SIZE_VALUE_EXCEPTION, exception.getMessage());
+        assertEquals(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, "size"), exception.getMessage());
     }
 
 }

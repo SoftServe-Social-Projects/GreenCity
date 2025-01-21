@@ -227,9 +227,7 @@ public class ErrorMessage {
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
-    public static final String INVALID_SIZE_VALUE_EXCEPTION = "Invalid value for size: must be an integer";
-    public static final String NEGATIVE_SIZE_VALUE_EXCEPTION = "Size must be a positive";
-    public static final String NEGATIVE_PAGE_VALUE_EXCEPTION = "Page must be a positive number";
     public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
-    public static final String INVALID_PAGE_VALUE_EXCEPTION = "Invalid value for page: must be an integer";
+    public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
+    public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
 }
