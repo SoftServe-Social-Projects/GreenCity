@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -142,12 +141,8 @@ public class ManagementEventController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         Model model) {
-        Set<EventAttenderDto> eventAttenders = eventService.getAllEventAttenders(eventId);
         Pageable pageable = PageRequest.of(page, size);
-        Page<EventAttenderDto> attandersPage = new PageImpl<>(eventAttenders.stream()
-            .skip((long) page * size)
-            .limit(size)
-            .toList(), pageable, eventAttenders.size());
+        Page<EventAttenderDto> attandersPage = eventService.getAttendersPage(eventId, pageable);
         model.addAttribute("attendersPage", attandersPage);
         return "core/fragments/attenders-table";
     }
@@ -157,12 +152,8 @@ public class ManagementEventController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         Model model) {
-        Set<UserProfilePictureDto> usersLikedEvent = eventService.getUsersLikedByEvent(eventId);
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserProfilePictureDto> usersLikedPage = new PageImpl<>(usersLikedEvent.stream()
-            .skip((long) page * size)
-            .limit(size)
-            .toList(), pageable, usersLikedEvent.size());
+        Page<UserProfilePictureDto> usersLikedPage = eventService.getUsersLikedEventPage(eventId, pageable);
         model.addAttribute("usersLikedPage", usersLikedPage);
         return "core/fragments/likes-table";
     }
@@ -172,12 +163,8 @@ public class ManagementEventController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         Model model) {
-        Set<UserProfilePictureDto> usersDislikedEvent = eventService.getUsersDislikedByEvent(eventId);
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserProfilePictureDto> usersLikedPage = new PageImpl<>(usersDislikedEvent.stream()
-            .skip((long) page * size)
-            .limit(size)
-            .toList(), pageable, usersDislikedEvent.size());
+        Page<UserProfilePictureDto> usersLikedPage = eventService.getUsersDislikedEventPage(eventId, pageable);
         model.addAttribute("usersLikedPage", usersLikedPage);
         return "core/fragments/dislikes-table";
     }

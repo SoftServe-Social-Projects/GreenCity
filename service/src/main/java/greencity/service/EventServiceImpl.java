@@ -999,6 +999,30 @@ public class EventServiceImpl implements EventService {
             NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<EventAttenderDto> getAttendersPage(Long eventId, Pageable pageable) {
+        return eventRepo.getAttendersPageByEventId(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<UserProfilePictureDto> getUsersLikedEventPage(Long eventId, Pageable pageable) {
+        return eventRepo.getUsersLikedEventProfilePicturesPage(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable) {
+        return eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable);
+    }
+
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
         final LikeNotificationDto likeNotificationDto = LikeNotificationDto.builder()
             .targetUserVO(modelMapper.map(targetUser, UserVO.class))

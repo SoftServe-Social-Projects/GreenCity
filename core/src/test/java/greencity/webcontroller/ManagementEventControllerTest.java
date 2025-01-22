@@ -10,13 +10,13 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagDto;
-import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.event.Event;
 import greencity.enums.TagType;
 import greencity.repository.EventRepo;
 import greencity.service.EventService;
 import greencity.service.TagsService;
+
 import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,9 +45,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -304,10 +307,8 @@ class ManagementEventControllerTest {
         Long eventId = 1L;
         int page = 0;
         int size = 1;
-        Set<EventAttenderDto> attenders =
-            Set.of(EventAttenderDto.builder().id(1L).name("user1").imagePath("image1.png").build());
-
-        when(eventService.getAllEventAttenders(eventId)).thenReturn(attenders);
+        Pageable pageable = PageRequest.of(page, size);
+        when(eventService.getAttendersPage(eventId, pageable)).thenReturn(mock(Page.class));
 
         mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}/attenders", eventId)
             .param("page", String.valueOf(page))
@@ -323,9 +324,8 @@ class ManagementEventControllerTest {
         Long eventId = 1L;
         int page = 0;
         int size = 1;
-        Set<UserProfilePictureDto> usersLiked = Set.of(new UserProfilePictureDto(1L, "user1", "image1.png"));
-
-        when(eventService.getUsersLikedByEvent(eventId)).thenReturn(usersLiked);
+        Pageable pageable = PageRequest.of(page, size);
+        when(eventService.getUsersLikedEventPage(eventId, pageable)).thenReturn(mock(Page.class));
 
         mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}/likes", eventId)
             .param("page", String.valueOf(page))
@@ -341,9 +341,8 @@ class ManagementEventControllerTest {
         Long eventId = 1L;
         int page = 0;
         int size = 1;
-        Set<UserProfilePictureDto> usersDisliked = Set.of(new UserProfilePictureDto(1L, "user1", "image1.png"));
-
-        when(eventService.getUsersDislikedByEvent(eventId)).thenReturn(usersDisliked);
+        Pageable pageable = PageRequest.of(page, size);
+        when(eventService.getUsersDislikedEventPage(eventId, pageable)).thenReturn(mock(Page.class));
 
         mockMvc.perform(get(MANAGEMENT_EVENTS_LINK + "/{eventId}/dislikes", eventId)
             .param("page", String.valueOf(page))
@@ -351,5 +350,6 @@ class ManagementEventControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name("core/fragments/dislikes-table"))
             .andExpect(model().attributeExists("usersLikedPage"));
+
     }
 }

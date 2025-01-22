@@ -1938,4 +1938,98 @@ class EventServiceImplTest {
         verify(modelMapper).map(userVO, User.class);
         verify(eventRepo).findById(any());
     }
+
+    @Test
+    void getAttendersPageWithContent() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        List<EventAttenderDto> content = List.of(
+            new EventAttenderDto(1L, "Ivan", "image1.jpg"),
+            new EventAttenderDto(2L, "John", "image2.jpg"));
+        Page<EventAttenderDto> page = new PageImpl<>(content, pageable, content.size());
+
+        when(eventRepo.getAttendersPageByEventId(eventId, pageable)).thenReturn(page);
+
+        Page<EventAttenderDto> result = eventService.getAttendersPage(eventId, pageable);
+
+        assertEquals(2, result.getContent().size());
+        assertEquals("Ivan", result.getContent().get(0).getName());
+        assertEquals("John", result.getContent().get(1).getName());
+    }
+
+    @Test
+    void getAttendersPageEmptyPage() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<EventAttenderDto> emptyPage = Page.empty(pageable);
+
+        when(eventRepo.getAttendersPageByEventId(eventId, pageable)).thenReturn(emptyPage);
+
+        Page<EventAttenderDto> result = eventService.getAttendersPage(eventId, pageable);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getUsersLikedEventPageWithContent() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        List<UserProfilePictureDto> content = List.of(
+            new UserProfilePictureDto(1L, "Ivan", "image1.jpg"),
+            new UserProfilePictureDto(2L, "John", "image2.jpg"));
+        Page<UserProfilePictureDto> page = new PageImpl<>(content, pageable, content.size());
+
+        when(eventRepo.getUsersLikedEventProfilePicturesPage(eventId, pageable)).thenReturn(page);
+
+        Page<UserProfilePictureDto> result = eventService.getUsersLikedEventPage(eventId, pageable);
+
+        assertEquals(2, result.getContent().size());
+        assertEquals("Ivan", result.getContent().getFirst().getName());
+        assertEquals("image1.jpg", result.getContent().getFirst().getProfilePicturePath());
+    }
+
+    @Test
+    void getUsersLikedEventPageEmptyPage() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<UserProfilePictureDto> emptyPage = Page.empty(pageable);
+
+        when(eventRepo.getUsersLikedEventProfilePicturesPage(eventId, pageable)).thenReturn(emptyPage);
+
+        Page<UserProfilePictureDto> result = eventService.getUsersLikedEventPage(eventId, pageable);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getUsersDislikedEventPageWithContent() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        List<UserProfilePictureDto> content = List.of(
+            new UserProfilePictureDto(1L, "Ivan", "image1.jpg"),
+            new UserProfilePictureDto(2L, "John", "image2.jpg"));
+        Page<UserProfilePictureDto> page = new PageImpl<>(content, pageable, content.size());
+
+        when(eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable)).thenReturn(page);
+
+        Page<UserProfilePictureDto> result = eventService.getUsersDislikedEventPage(eventId, pageable);
+
+        assertEquals(2, result.getContent().size());
+        assertEquals("Ivan", result.getContent().getFirst().getName());
+        assertEquals("image1.jpg", result.getContent().getFirst().getProfilePicturePath());
+    }
+
+    @Test
+    void getUsersDislikedEventPageEmptyPage() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<UserProfilePictureDto> emptyPage = Page.empty(pageable);
+
+        when(eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable)).thenReturn(emptyPage);
+
+        Page<UserProfilePictureDto> result = eventService.getUsersDislikedEventPage(eventId, pageable);
+
+        assertTrue(result.isEmpty());
+    }
+
 }
