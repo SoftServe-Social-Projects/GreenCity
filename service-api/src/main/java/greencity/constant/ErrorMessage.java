@@ -229,4 +229,7 @@ public class ErrorMessage {
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
     public static final String DATES_LIST_COULD_NOT_BE_EMPTY = "Dates list cannot be empty";
     public static final String DATES_COULD_NOT_BE_NULL = "Dates could not be null";
+    public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
+    public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
+    public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
 }
