@@ -1,7 +1,6 @@
 package greencity.constant;
 
 import lombok.experimental.UtilityClass;
-
 import java.time.format.DateTimeFormatter;
 
 @UtilityClass
@@ -22,8 +21,8 @@ public class ManagementConstant {
     public static final String AUTHOR = "author";
     public static final String ADD_EVENT_DTO_REQUEST = "addEventDtoRequest";
     public static final String CITIES = "cities";
-    public static final String EVENT_ATTENDERS_AVATARS="eventAttendersAvatars";
-    public static final String ATTENDERS_PAGE= "attendersPage";
-    public static final String USERS_LIKED_PAGE= "usersLikedPage";
-    public static final String USERS_DISLIKED_PAGE= "usersDislikedPage";
+    public static final String EVENT_ATTENDERS_AVATARS = "eventAttendersAvatars";
+    public static final String ATTENDERS_PAGE = "attendersPage";
+    public static final String USERS_LIKED_PAGE = "usersLikedPage";
+    public static final String USERS_DISLIKED_PAGE = "usersDislikedPage";
 }
