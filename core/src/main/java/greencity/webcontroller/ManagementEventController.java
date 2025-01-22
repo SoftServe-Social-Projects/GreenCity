@@ -4,6 +4,7 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
+import greencity.constant.ManagementConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AbstractEventDateLocationDto;
 import greencity.dto.event.AddEventDtoRequest;
@@ -48,13 +49,32 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import static greencity.constant.ManagementConstant.ADD_EVENT_DTO_REQUEST;
+import static greencity.constant.ManagementConstant.ATTENDERS_PAGE;
+import static greencity.constant.ManagementConstant.AUTHOR;
+import static greencity.constant.ManagementConstant.BACKEND_ADDRESS_ATTRIBUTE;
+import static greencity.constant.ManagementConstant.CITIES;
+import static greencity.constant.ManagementConstant.DATE_TIME_FORMATTER;
+import static greencity.constant.ManagementConstant.EVENT_ATTENDERS;
+import static greencity.constant.ManagementConstant.EVENT_ATTENDERS_AVATARS;
+import static greencity.constant.ManagementConstant.EVENT_DTO;
+import static greencity.constant.ManagementConstant.EVENT_TAGS;
+import static greencity.constant.ManagementConstant.FILTER_EVENT_DTO;
+import static greencity.constant.ManagementConstant.FORMATTED_DATE;
+import static greencity.constant.ManagementConstant.GOOGLE_MAP_API_KEY;
+import static greencity.constant.ManagementConstant.IMAGES;
+import static greencity.constant.ManagementConstant.IMAGE_URLS;
+import static greencity.constant.ManagementConstant.PAGEABLE;
+import static greencity.constant.ManagementConstant.PAGE_SIZE;
+import static greencity.constant.ManagementConstant.SORT_MODEL;
+import static greencity.constant.ManagementConstant.USERS_DISLIKED_PAGE;
+import static greencity.constant.ManagementConstant.USERS_LIKED_PAGE;
 import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
 @Slf4j
@@ -62,7 +82,6 @@ import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 @RequiredArgsConstructor
 @RequestMapping("/management/events")
 public class ManagementEventController {
-    public static final String BACKEND_ADDRESS_ATTRIBUTE = "backendAddress";
     private final EventService eventService;
     private final TagsService tagsService;
     private final RestClient restClient;
@@ -94,7 +113,7 @@ public class ManagementEventController {
         } else {
             allEvents = eventService.getEventsManagement(pageable, filterEventDto, null);
         }
-        model.addAttribute("pageable", allEvents);
+        model.addAttribute(PAGEABLE, allEvents);
         Sort sort = pageable.getSort();
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
@@ -105,12 +124,12 @@ public class ManagementEventController {
                 orderUrl.append("sort=").append(order.getProperty()).append(",").append(order.getDirection().name());
             }
         }
-        model.addAttribute("filterEventDto", filterEventDto);
-        model.addAttribute("sortModel", orderUrl.toString());
-        model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, locale.getLanguage()));
-        model.addAttribute("pageSize", pageable.getPageSize());
+        model.addAttribute(FILTER_EVENT_DTO, filterEventDto);
+        model.addAttribute(SORT_MODEL, orderUrl.toString());
+        model.addAttribute(EVENT_TAGS, tagsService.findByTypeAndLanguageCode(TagType.EVENT, locale.getLanguage()));
+        model.addAttribute(PAGE_SIZE, pageable.getPageSize());
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
-        model.addAttribute("cities",
+        model.addAttribute(CITIES,
             eventService.getAllEventsAddresses().stream()
                 .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUa())
                 .distinct()
@@ -128,11 +147,11 @@ public class ManagementEventController {
             .map(EventAttenderDto::getImagePath)
             .filter(Objects::nonNull)
             .toList();
-        model.addAttribute("eventDto", eventDto);
-        model.addAttribute("formattedDate", getFormattedDates(eventDto.getDates()));
-        model.addAttribute("imageUrls", getImageUrls(eventDto));
-        model.addAttribute("eventAttenders", eventAttenders);
-        model.addAttribute("eventAttendersAvatars", attendersAvatars);
+        model.addAttribute(EVENT_DTO, eventDto);
+        model.addAttribute(FORMATTED_DATE, getFormattedDates(eventDto.getDates()));
+        model.addAttribute(IMAGE_URLS, getImageUrls(eventDto));
+        model.addAttribute(EVENT_ATTENDERS, eventAttenders);
+        model.addAttribute(EVENT_ATTENDERS_AVATARS, attendersAvatars);
         return "core/management_event";
     }
 
@@ -143,7 +162,7 @@ public class ManagementEventController {
         Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<EventAttenderDto> attandersPage = eventService.getAttendersPage(eventId, pageable);
-        model.addAttribute("attendersPage", attandersPage);
+        model.addAttribute(ATTENDERS_PAGE, attandersPage);
         return "core/fragments/attenders-table";
     }
 
@@ -154,7 +173,7 @@ public class ManagementEventController {
         Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserProfilePictureDto> usersLikedPage = eventService.getUsersLikedEventPage(eventId, pageable);
-        model.addAttribute("usersLikedPage", usersLikedPage);
+        model.addAttribute(USERS_LIKED_PAGE, usersLikedPage);
         return "core/fragments/likes-table";
     }
 
@@ -164,18 +183,18 @@ public class ManagementEventController {
         @RequestParam(defaultValue = "10") int size,
         Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserProfilePictureDto> usersLikedPage = eventService.getUsersDislikedEventPage(eventId, pageable);
-        model.addAttribute("usersLikedPage", usersLikedPage);
+        Page<UserProfilePictureDto> usersDislikedPage = eventService.getUsersDislikedEventPage(eventId, pageable);
+        model.addAttribute(USERS_DISLIKED_PAGE, usersDislikedPage);
         return "core/fragments/dislikes-table";
     }
 
     @GetMapping("/create-event")
     public String getEventCreatePage(Model model, Principal principal) {
-        model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[] {});
+        model.addAttribute(ADD_EVENT_DTO_REQUEST, new AddEventDtoRequest());
+        model.addAttribute(IMAGES, new MultipartFile[] {});
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
-        model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
-        model.addAttribute("googleMapApiKey", googleMapApiKey);
+        model.addAttribute(AUTHOR, restClient.findByEmail(principal.getName()).getName());
+        model.addAttribute(GOOGLE_MAP_API_KEY, googleMapApiKey);
         return "core/management_create_event";
     }
 
@@ -184,8 +203,8 @@ public class ManagementEventController {
         @RequestPart("images") MultipartFile[] images,
         Principal principal,
         Model model) {
-        model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[] {});
+        model.addAttribute(ADD_EVENT_DTO_REQUEST, new AddEventDtoRequest());
+        model.addAttribute(IMAGES, new MultipartFile[] {});
         eventService.save(addEventDtoRequest, principal.getName(), images);
         return "redirect:/management/events";
     }
@@ -226,14 +245,13 @@ public class ManagementEventController {
     @GetMapping("/edit/{id}")
     public String editEvent(@PathVariable("id") Long id, Model model, Principal principal) {
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
-        model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
-        model.addAttribute("eventDto", eventService.getEvent(id, principal));
-        model.addAttribute("googleMapApiKey", googleMapApiKey);
+        model.addAttribute(AUTHOR, restClient.findByEmail(principal.getName()).getName());
+        model.addAttribute(EVENT_DTO, eventService.getEvent(id, principal));
+        model.addAttribute(GOOGLE_MAP_API_KEY, googleMapApiKey);
         return "core/management_edit_event";
     }
 
     private String getFormattedDates(List<EventDateLocationDto> dates) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy");
         EventDateLocationDto firstDateDto = dates.stream()
             .min(Comparator.comparing(AbstractEventDateLocationDto::getStartDate))
             .orElseThrow(() -> new IllegalArgumentException("Dates list cannot be empty"));
@@ -243,10 +261,10 @@ public class ManagementEventController {
             .orElseThrow(() -> new IllegalArgumentException("Dates list cannot be empty"));
 
         if (firstDateDto.getStartDate().toLocalDate().equals(lastDateDto.getStartDate().toLocalDate())) {
-            return firstDateDto.getStartDate().format(formatter);
+            return firstDateDto.getStartDate().format(DATE_TIME_FORMATTER);
         } else {
-            return firstDateDto.getStartDate().format(formatter) + " - "
-                + lastDateDto.getFinishDate().format(formatter);
+            return firstDateDto.getStartDate().format(DATE_TIME_FORMATTER) + " - "
+                + lastDateDto.getFinishDate().format(DATE_TIME_FORMATTER);
         }
     }
 

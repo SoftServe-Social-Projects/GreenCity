@@ -349,7 +349,7 @@ class ManagementEventControllerTest {
             .param("size", String.valueOf(size)))
             .andExpect(status().isOk())
             .andExpect(view().name("core/fragments/dislikes-table"))
-            .andExpect(model().attributeExists("usersLikedPage"));
+            .andExpect(model().attributeExists("usersDislikedPage"));
 
     }
 }
