@@ -191,7 +191,7 @@ public class EcoNewsController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
-    @ApiPageable
+    @ApiPageable(dtoClass = EcoNewsGenericDto.class)
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findAll(
         @Parameter(hidden = true) Pageable page,

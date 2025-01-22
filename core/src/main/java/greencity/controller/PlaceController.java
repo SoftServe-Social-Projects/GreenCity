@@ -19,6 +19,7 @@ import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.AddPlaceDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
@@ -246,7 +247,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{status}")
-    @ApiPageable
+    @ApiPageable(dtoClass = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> getPlacesByStatus(
         @PathVariable PlaceStatus status,
         @Parameter(hidden = true) Pageable pageable) {
@@ -336,7 +337,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/filter/predicate")
-    @ApiPageable
+    @ApiPageable(dtoClass = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
         @Parameter(hidden = true) Pageable pageable) {
@@ -513,7 +514,7 @@ public class PlaceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @ApiPageable
+    @ApiPageable(dtoClass = AdminPlaceDto.class)
     @GetMapping("all")
     public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@Parameter(hidden = true) Pageable page,
         @Parameter(hidden = true) Principal principal) {

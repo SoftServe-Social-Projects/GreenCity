@@ -1,6 +1,8 @@
 package greencity.dto.ratingstatistics;
 
+import greencity.dto.Sortable;
 import java.time.ZonedDateTime;
+import java.util.List;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,7 +16,7 @@ import lombok.Builder;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class RatingStatisticsDtoForTables {
+public class RatingStatisticsDtoForTables implements Sortable {
     private Long id;
     private ZonedDateTime createDate;
     private String eventName;
@@ -22,4 +24,9 @@ public class RatingStatisticsDtoForTables {
     private float rating;
     private long userId;
     private String userEmail;
+
+    @Override
+    public List<String> getSortableFields() {
+        return List.of();
+    }
 }

@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
 import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.service.PlaceCommentService;
@@ -97,7 +98,7 @@ public class PlaceCommentController {
      * @return PageableDto
      * @author Rostyslav Khasanov
      */
-    @ApiPageable
+    @ApiPageable(dtoClass = PlaceCommentAdminDto.class)
     @Operation(summary = "Get comments by page")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,

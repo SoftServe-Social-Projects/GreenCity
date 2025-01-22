@@ -43,7 +43,7 @@ public class ManagementRatingStatisticsController {
      * @return model
      * @author Dovganyuk Taras
      */
-    @ApiPageable
+    @ApiPageable(dtoClass = RatingStatisticsDtoForTables.class)
     @Operation(summary = "Get management page with User rating statistics.")
     @GetMapping
     public String getUserRatingStatistics(Model model,

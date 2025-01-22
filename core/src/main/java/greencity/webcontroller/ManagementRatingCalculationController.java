@@ -38,7 +38,7 @@ public class ManagementRatingCalculationController {
      * @param pageable Pageable configuration for pagination
      * @return the name of the view
      */
-    @ApiPageable
+    @ApiPageable(dtoClass = RatingPointsDto.class)
     @Operation(summary = "Retrieve the management page with Rating Points.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),

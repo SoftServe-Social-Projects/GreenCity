@@ -165,7 +165,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/user/{userId}")
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserManagementDto>> findUserFriendsByUserId(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @PathVariable long userId) {
@@ -194,7 +194,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{userId}/all-user-friends")
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @PathVariable long userId,
@@ -226,7 +226,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/not-friends-yet")
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
@@ -261,7 +261,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/recommended-friends")
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) RecommendedFriendsType type,
@@ -289,7 +289,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/friendRequests")
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> getAllUserFriendsRequests(
         @RequestParam(required = false, defaultValue = "") String name,
         @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
@@ -317,7 +317,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
         @RequestParam(required = false, defaultValue = "") String name,
         @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
@@ -351,7 +351,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/mutual-friends")
-    @ApiPageable
+    @ApiPageable(dtoClass = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> getMutualFriends(
         @RequestParam Long friendId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,

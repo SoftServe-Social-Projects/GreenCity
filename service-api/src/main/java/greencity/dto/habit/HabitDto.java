@@ -1,6 +1,7 @@
 package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
+import greencity.dto.Sortable;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
@@ -21,7 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class HabitDto {
+public class HabitDto implements Sortable {
     private Integer defaultDuration;
     private Long amountAcquiredUsers;
     private HabitTranslationDto habitTranslation;
@@ -40,4 +41,9 @@ public class HabitDto {
     private Boolean isFavorite;
     private int likes;
     private int dislikes;
+
+    @Override
+    public List<String> getSortableFields() {
+        return List.of();
+    }
 }

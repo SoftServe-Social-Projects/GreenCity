@@ -56,7 +56,7 @@ public class ManagementHabitController {
      * @return View template path {@link String}.
      */
     @GetMapping
-    @ApiPageable
+    @ApiPageable(dtoClass = HabitManagementDto.class)
     public String findAllHabits(Model model, @Parameter(hidden = true) Pageable pageable,
         @RequestParam(value = "searchReg", required = false) String searchReg,
         @RequestParam(value = "durationFrom", required = false) Integer durationFrom,
