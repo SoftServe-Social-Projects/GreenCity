@@ -1,5 +1,6 @@
 package greencity.annotations;
 
+import greencity.dto.Sortable;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,4 +22,5 @@ import java.lang.annotation.Target;
     in = ParameterIn.QUERY, description = "Sorting criteria in the format: property(asc|desc). "
         + "Default sort order is ascending. " + "Multiple sort criteria are supported.")
 public @interface ApiPageable {
+    Class<? extends Sortable> dtoClass();
 }
