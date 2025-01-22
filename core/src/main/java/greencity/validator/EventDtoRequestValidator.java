@@ -39,20 +39,30 @@ public class EventDtoRequestValidator
      */
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value instanceof AddEventDtoRequest addEventDtoRequest) {
-            validateDateLocations(addEventDtoRequest.getDatesLocations());
-            convertToUTC(addEventDtoRequest.getDatesLocations());
-            validateEventDateLocations(addEventDtoRequest.getDatesLocations());
-            validateTags(addEventDtoRequest.getTags());
-        } else if (value instanceof UpdateEventRequestDto updateEventDto) {
-            validateDateLocations(updateEventDto.getDatesLocations());
-            convertToUTC(updateEventDto.getDatesLocations());
-            validateEventDateLocations(updateEventDto.getDatesLocations());
-            validateTags(updateEventDto.getTags());
-        } else {
+        try {
+            switch (value) {
+                case AddEventDtoRequest addEventDtoRequest -> {
+                    validateDateLocations(addEventDtoRequest.getDatesLocations());
+                    convertToUTC(addEventDtoRequest.getDatesLocations());
+                    validateEventDateLocations(addEventDtoRequest.getDatesLocations());
+                    validateTags(addEventDtoRequest.getTags());
+                }
+                case UpdateEventRequestDto updateEventDto -> {
+                    validateDateLocations(updateEventDto.getDatesLocations());
+                    convertToUTC(updateEventDto.getDatesLocations());
+                    validateEventDateLocations(updateEventDto.getDatesLocations());
+                    validateTags(updateEventDto.getTags());
+                }
+                default -> {
+                    return false;
+                }
+            }
+            return true;
+        } catch (EventDtoValidationException ex) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ex.getMessage()).addConstraintViolation();
             return false;
         }
-        return true;
     }
 
     private <T extends AbstractEventDateLocationDto> void validateDateLocations(List<T> dates) {
