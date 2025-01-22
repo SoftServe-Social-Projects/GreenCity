@@ -3,8 +3,8 @@ package greencity.webcontroller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
-import greencity.constant.ManagementConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AbstractEventDateLocationDto;
 import greencity.dto.event.AddEventDtoRequest;
@@ -55,6 +55,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+
+import static greencity.constant.ErrorMessage.DATES_COULD_NOT_BE_NULL;
+import static greencity.constant.ErrorMessage.DATES_LIST_COULD_NOT_BE_EMPTY;
 import static greencity.constant.ManagementConstant.ADD_EVENT_DTO_REQUEST;
 import static greencity.constant.ManagementConstant.ATTENDERS_PAGE;
 import static greencity.constant.ManagementConstant.AUTHOR;
@@ -252,13 +255,17 @@ public class ManagementEventController {
     }
 
     private String getFormattedDates(List<EventDateLocationDto> dates) {
+        if (Objects.isNull(dates)) {
+            throw new IllegalArgumentException(DATES_COULD_NOT_BE_NULL);
+        }
+
         EventDateLocationDto firstDateDto = dates.stream()
             .min(Comparator.comparing(AbstractEventDateLocationDto::getStartDate))
-            .orElseThrow(() -> new IllegalArgumentException("Dates list cannot be empty"));
+            .orElseThrow(() -> new IllegalArgumentException(DATES_LIST_COULD_NOT_BE_EMPTY));
 
         EventDateLocationDto lastDateDto = dates.stream()
             .max(Comparator.comparing(AbstractEventDateLocationDto::getFinishDate))
-            .orElseThrow(() -> new IllegalArgumentException("Dates list cannot be empty"));
+            .orElseThrow(() -> new IllegalArgumentException(DATES_LIST_COULD_NOT_BE_EMPTY));
 
         if (firstDateDto.getStartDate().toLocalDate().equals(lastDateDto.getStartDate().toLocalDate())) {
             return firstDateDto.getStartDate().format(DATE_TIME_FORMATTER);
