@@ -41,18 +41,10 @@ public class EventDtoRequestValidator
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         try {
             switch (value) {
-                case AddEventDtoRequest addEventDtoRequest -> {
-                    validateDateLocations(addEventDtoRequest.getDatesLocations());
-                    convertToUTC(addEventDtoRequest.getDatesLocations());
-                    validateEventDateLocations(addEventDtoRequest.getDatesLocations());
-                    validateTags(addEventDtoRequest.getTags());
-                }
-                case UpdateEventRequestDto updateEventDto -> {
-                    validateDateLocations(updateEventDto.getDatesLocations());
-                    convertToUTC(updateEventDto.getDatesLocations());
-                    validateEventDateLocations(updateEventDto.getDatesLocations());
-                    validateTags(updateEventDto.getTags());
-                }
+                case AddEventDtoRequest addEventDtoRequest ->
+                    validateEventDto(addEventDtoRequest.getDatesLocations(), addEventDtoRequest.getTags());
+                case UpdateEventRequestDto updateEventDto ->
+                    validateEventDto(updateEventDto.getDatesLocations(), updateEventDto.getTags());
                 default -> {
                     return false;
                 }
@@ -86,6 +78,12 @@ public class EventDtoRequestValidator
     }
 
     private <T extends AbstractEventDateLocationDto> void validateEventDateLocations(List<T> eventDateLocationDtos) {
+        validateUniqueDates(eventDateLocationDtos);
+        validateDateRanges(eventDateLocationDtos);
+        validateLocationDetails(eventDateLocationDtos);
+    }
+
+    private <T extends AbstractEventDateLocationDto> void validateUniqueDates(List<T> eventDateLocationDtos) {
         Set<LocalDateTime> startDateSet = new HashSet<>();
         Set<LocalDateTime> finishDateSet = new HashSet<>();
 
@@ -96,14 +94,22 @@ public class EventDtoRequestValidator
             if (!startDateSet.add(startDate) || !finishDateSet.add(finishDate)) {
                 throw new EventDtoValidationException(ErrorMessage.SAME_EVENT_DATES);
             }
+        }
+    }
 
+    private <T extends AbstractEventDateLocationDto> void validateDateRanges(List<T> eventDateLocationDtos) {
+        for (T eventDateLocationDto : eventDateLocationDtos) {
             if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC))
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
                 || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC)
                     .plusYears(MAX_YEARS_OF_PLANNING))) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
+        }
+    }
 
+    private <T extends AbstractEventDateLocationDto> void validateLocationDetails(List<T> eventDateLocationDtos) {
+        for (T eventDateLocationDto : eventDateLocationDtos) {
             if (eventDateLocationDto.getOnlineLink() == null && eventDateLocationDto.getCoordinates() == null) {
                 throw new EventDtoValidationException(ErrorMessage.NO_EVENT_LINK_OR_ADDRESS);
             }
@@ -119,5 +125,12 @@ public class EventDtoRequestValidator
         if (tagsSize > ValidationConstants.MAX_AMOUNT_OF_TAGS) {
             throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_TAGS_EXCEPTION);
         }
+    }
+
+    private <T extends AbstractEventDateLocationDto> void validateEventDto(List<T> datesLocations, List<String> tags) {
+        validateDateLocations(datesLocations);
+        convertToUTC(datesLocations);
+        validateEventDateLocations(datesLocations);
+        validateTags(tags);
     }
 }

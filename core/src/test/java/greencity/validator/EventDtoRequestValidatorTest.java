@@ -182,6 +182,6 @@ class EventDtoRequestValidatorTest {
                 .build()))
                 .tags(List.of("first", "second", "third")).build();
         boolean isValid = validator.isValid(updateEventRequestDto, constraintValidatorContext);
-        assertFalse(isValid);
+        assertFalse(isValid, "Validation should fail for null dates in UpdateEventRequestDto");
     }
 }
