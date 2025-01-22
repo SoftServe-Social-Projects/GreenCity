@@ -5,9 +5,13 @@ import java.time.format.DateTimeFormatter;
 
 @UtilityClass
 public class ManagementConstant {
+    /**
+     * Formats dates as "MMM d, yyyy" (e.g., "Jan 1, 2024"). Note: Uses system
+     * default locale.
+     */
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MMM d, yyyy");
     public static final String FILTER_EVENT_DTO = "filterEventDto";
-    public static final String FORMATTED_DATE = "formatedDate";
+    public static final String FORMATTED_DATE = "formattedDate";
     public static final String EVENT_DTO = "eventDto";
     public static final String PAGEABLE = "pageable";
     public static final String IMAGE_URLS = "imageUrls";

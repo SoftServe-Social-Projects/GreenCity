@@ -3,7 +3,6 @@ package greencity.webcontroller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.client.RestClient;
-import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AbstractEventDateLocationDto;
@@ -55,7 +54,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-
 import static greencity.constant.ErrorMessage.DATES_COULD_NOT_BE_NULL;
 import static greencity.constant.ErrorMessage.DATES_LIST_COULD_NOT_BE_EMPTY;
 import static greencity.constant.ManagementConstant.ADD_EVENT_DTO_REQUEST;
