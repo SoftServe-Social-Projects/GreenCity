@@ -2,6 +2,7 @@ package greencity.dto.friends;
 
 import greencity.dto.Sortable;
 import greencity.dto.location.UserLocationDto;
+import greencity.enums.SortableFields;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,6 +53,11 @@ public class UserFriendDto implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of("id", "name", "email", "rating", "mutualFriends");
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.NAME.getFieldName(),
+            SortableFields.EMAIL.getFieldName(),
+            SortableFields.RATING.getFieldName(),
+            SortableFields.MUTUAL_FRIENDS.getFieldName());
     }
 }

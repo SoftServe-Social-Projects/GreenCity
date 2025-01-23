@@ -1,4 +1,4 @@
-package greencity.config.pageableConfig;
+package greencity.handler;
 
 import greencity.dto.Sortable;
 import greencity.validator.SortPageableValidator;
@@ -13,7 +13,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class CustomPageableHandlerMethodArgumentResolver extends PageableHandlerMethodArgumentResolver {
-
     private final SortPageableValidator sortPageableValidator;
 
     public CustomPageableHandlerMethodArgumentResolver(SortPageableValidator sortPageableValidator) {
@@ -23,9 +22,9 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
     @Override
     @Nonnull
     public Pageable resolveArgument(@Nonnull MethodParameter parameter,
-                                    @Nullable ModelAndViewContainer mavContainer,
-                                    @Nonnull NativeWebRequest webRequest,
-                                    @Nullable WebDataBinderFactory binderFactory) {
+        @Nullable ModelAndViewContainer mavContainer,
+        @Nonnull NativeWebRequest webRequest,
+        @Nullable WebDataBinderFactory binderFactory) {
         Pageable pageable = super.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 
         ApiPageable apiPageable = parameter.getMethodAnnotation(ApiPageable.class);

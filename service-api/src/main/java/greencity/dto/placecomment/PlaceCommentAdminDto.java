@@ -3,12 +3,12 @@ package greencity.dto.placecomment;
 import greencity.dto.Sortable;
 import greencity.dto.photo.PhotoReturnDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.enums.SortableFields;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Sort;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +22,8 @@ public class PlaceCommentAdminDto implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.CREATED_DATE.getFieldName());
     }
 }

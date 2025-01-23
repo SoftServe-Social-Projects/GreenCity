@@ -1,6 +1,7 @@
 package greencity.dto.ratingstatistics;
 
 import greencity.dto.Sortable;
+import greencity.enums.SortableFields;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,10 @@ public class RatingStatisticsDtoForTables implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.CREATE_DATE.getFieldName(),
+            SortableFields.EVENT_NAME.getFieldName(),
+            SortableFields.RATING.getFieldName());
     }
 }

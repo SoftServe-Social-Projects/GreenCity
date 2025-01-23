@@ -6,6 +6,7 @@ import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.enums.PlaceStatus;
+import greencity.enums.SortableFields;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,10 @@ public class AdminPlaceDto implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.NAME.getFieldName(),
+            SortableFields.MODIFIED_DATE.getFieldName(),
+            SortableFields.IS_FAVORITE.getFieldName());
     }
 }

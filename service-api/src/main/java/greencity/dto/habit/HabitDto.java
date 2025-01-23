@@ -5,6 +5,7 @@ import greencity.dto.Sortable;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.enums.SortableFields;
 import java.util.List;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -44,6 +45,12 @@ public class HabitDto implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.DEFAULT_DURATION.getFieldName(),
+            SortableFields.AMOUNT_ACQUIRED_USERS.getFieldName(),
+            SortableFields.COMPLEXITY.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.DISLIKES.getFieldName());
     }
 }

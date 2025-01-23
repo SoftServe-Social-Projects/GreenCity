@@ -1,6 +1,7 @@
 package greencity.dto.comment;
 
 import greencity.dto.Sortable;
+import greencity.enums.SortableFields;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -53,6 +54,12 @@ public class CommentDto implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.CREATED_DATE.getFieldName(),
+            SortableFields.MODIFIED_DATE.getFieldName(),
+            SortableFields.REPLIES.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.DISLIKES.getFieldName());
     }
 }

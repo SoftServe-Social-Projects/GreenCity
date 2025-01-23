@@ -2,13 +2,13 @@ package greencity.dto.econews;
 
 import greencity.dto.Sortable;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.enums.SortableFields;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Getter;
 import lombok.Builder;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -61,6 +61,12 @@ public class EcoNewsGenericDto implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.TITLE.getFieldName(),
+            SortableFields.CREATION_DATE.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.COUNT_COMMENTS.getFieldName(),
+            SortableFields.COUNT_OF_ECO_NEWS.getFieldName());
     }
 }

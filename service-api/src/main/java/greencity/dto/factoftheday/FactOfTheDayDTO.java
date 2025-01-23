@@ -1,6 +1,7 @@
 package greencity.dto.factoftheday;
 
 import greencity.dto.Sortable;
+import greencity.enums.SortableFields;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,9 @@ public class FactOfTheDayDTO implements Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.NAME.getFieldName(),
+            SortableFields.CREATE_DATE.getFieldName());
     }
 }

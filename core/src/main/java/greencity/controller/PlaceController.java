@@ -19,7 +19,6 @@ import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.AddPlaceDto;
-import greencity.dto.placecomment.PlaceCommentAdminDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;

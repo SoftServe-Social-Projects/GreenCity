@@ -3,6 +3,7 @@ package greencity.dto.habit;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.Sortable;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
+import greencity.enums.SortableFields;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.validation.Valid;
@@ -35,6 +36,9 @@ public class HabitManagementDto implements Serializable, Sortable {
 
     @Override
     public List<String> getSortableFields() {
-        return List.of();
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.COMPLEXITY.getFieldName(),
+            SortableFields.DEFAULT_DURATION.getFieldName());
     }
 }
