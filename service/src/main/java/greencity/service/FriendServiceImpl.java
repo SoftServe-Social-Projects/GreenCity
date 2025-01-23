@@ -14,7 +14,6 @@ import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import java.util.Collections;
@@ -107,11 +106,7 @@ public class FriendServiceImpl implements FriendService {
     public PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId) {
         validateUserExistence(userId);
         Page<User> friends;
-        if (pageable.getSort().isEmpty()) {
-            friends = userRepo.getAllUserFriendsPage(pageable, userId);
-        } else {
-            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-        }
+        friends = userRepo.getAllUserFriendsPage(pageable, userId);
         List<UserManagementDto> friendList =
             friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
                 .collect(Collectors.toList());
@@ -129,12 +124,7 @@ public class FriendServiceImpl implements FriendService {
     public PageableDto<UserFriendDto> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(Pageable pageable,
         long userId, long currentUserId) {
         validateUserExistence(userId);
-        Page<User> friends;
-        if (pageable.getSort().isEmpty()) {
-            friends = userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
-        } else {
-            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-        }
+        Page<User> friends = userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
 
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
@@ -161,12 +151,9 @@ public class FriendServiceImpl implements FriendService {
         name = name != null ? name : "";
 
         Page<User> users;
-        if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
-                filterByFriendsOfFriends, filterByCity, pageable);
-        } else {
-            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-        }
+        users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
+            filterByFriendsOfFriends, filterByCity, pageable);
+
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
@@ -254,12 +241,8 @@ public class FriendServiceImpl implements FriendService {
         Objects.requireNonNull(pageable);
         validateUserExistence(userId);
 
-        Page<User> users;
-        if (pageable.getSort().isEmpty()) {
-            users = userRepo.findAllFriendsOfUser(userId, name, filterByCity, pageable);
-        } else {
-            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-        }
+        Page<User> users = userRepo.findAllFriendsOfUser(userId, name, filterByCity, pageable);
+
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
