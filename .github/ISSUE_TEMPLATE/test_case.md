@@ -1,3 +1,11 @@
+---
+name: "Test Case"
+about: "Шаблон для створення тестового кейсу"
+title: "[Test Case]: "
+labels: ["Test case"]
+assignees: []
+---
+
 **Date Time**
 MM-DD-YYYY HH:MM
 
