@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 issue_template:
   - name: "Test Case"
     about: "Шаблон для створення тестового кейсу"
