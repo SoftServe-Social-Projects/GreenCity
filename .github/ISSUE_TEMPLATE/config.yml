@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+issue_template:
+  - name: "Test Case"
+    about: "Шаблон для створення тестового кейсу"
+    file: test_case.md
