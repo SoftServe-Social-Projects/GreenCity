@@ -3406,6 +3406,8 @@ public class ModelUtils {
         Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
         placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
         return placesSearchResponse;
+    }
+
     public static PlaceUpdateDto getPlaceUpdateDto() {
         return PlaceUpdateDto.builder()
             .id(1L)
