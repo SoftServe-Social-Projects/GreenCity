@@ -8,6 +8,7 @@ import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.NotificationType;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
@@ -16,6 +17,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
+import java.util.Collections;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -189,7 +191,12 @@ public class FriendServiceImpl implements FriendService {
         } else if (type == RecommendedFriendsType.HABITS) {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else if (type == RecommendedFriendsType.CITY) {
-            mutualFriends = userRepo.findRecommendedFriendsByCity(userId, user.getUserLocation().getCityUa(), pageable);
+            UserLocation userLocation = user.getUserLocation();
+            if (userLocation != null && userLocation.getCityUa() != null) {
+                mutualFriends = userRepo.findRecommendedFriendsByCity(userId, userLocation.getCityUa(), pageable);
+            } else {
+                return new PageableDto<>(Collections.emptyList(), 0, pageable.getPageNumber(), 0);
+            }
         } else {
             mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }

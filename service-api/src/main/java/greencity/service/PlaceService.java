@@ -96,11 +96,20 @@ public interface PlaceService {
     List<PlaceVO> getAllCreatedPlacesByUserId(Long userId);
 
     /**
+     * Method for updating from admin panel {@link PlaceVO}.
+     *
+     * @param dto    - dto for Place entity
+     * @param images - array of photos
+     * @param email  - admin user email
+     * @return place {@link PlaceVO}
+     */
+    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email);
+
+    /**
      * Method for updating {@link PlaceVO}.
      *
      * @param dto - dto for Place entity
      * @return place {@link PlaceVO}
-     * @author Kateryna Horokh
      */
     PlaceVO update(PlaceUpdateDto dto);
 

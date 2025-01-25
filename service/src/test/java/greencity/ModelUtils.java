@@ -84,6 +84,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
@@ -97,6 +98,7 @@ import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
@@ -1808,6 +1810,7 @@ public class ModelUtils {
         event.setId(1L);
         event.setOrganizer(getUser());
         event.setFollowers(followers);
+        event.setRequesters(followers);
         event.setTitle("Title");
         event.setAttenders(new HashSet<>(Collections.singleton(getUser())));
         List<EventDateLocation> dates = new ArrayList<>();
@@ -3403,5 +3406,27 @@ public class ModelUtils {
         Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
         placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
         return placesSearchResponse;
+    public static PlaceUpdateDto getPlaceUpdateDto() {
+        return PlaceUpdateDto.builder()
+            .id(1L)
+            .name("Updated Place")
+            .category(getCategoryDto())
+            .location(getLocationAddressAndGeoForUpdateDto())
+            .build();
+    }
+
+    public static LocationAddressAndGeoForUpdateDto getLocationAddressAndGeoForUpdateDto() {
+        return new LocationAddressAndGeoForUpdateDto(
+            "Test Address",
+            50.4501,
+            30.5236,
+            "Тестова адреса");
+    }
+
+    public static CategoryDto getCategoryDto() {
+        return new CategoryDto(
+            "Category",
+            "Category Ua",
+            1L);
     }
 }

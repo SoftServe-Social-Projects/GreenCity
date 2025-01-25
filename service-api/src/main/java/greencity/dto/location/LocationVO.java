@@ -18,4 +18,5 @@ public class LocationVO {
     private Double lng;
     private String address;
     private PlaceVO place;
+    private String addressUa;
 }

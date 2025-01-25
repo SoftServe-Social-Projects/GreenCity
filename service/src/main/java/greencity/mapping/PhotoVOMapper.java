@@ -23,8 +23,8 @@ public class PhotoVOMapper extends AbstractConverter<Photo, PhotoVO> {
             .id(source.getId())
             .name(source.getName())
             .commentId(source.getComment() == null ? null : source.getComment().getId())
-            .placeId(source.getPlace().getId())
-            .userId(source.getUser().getId())
+            .placeId(source.getPlace() == null ? null : source.getPlace().getId())
+            .userId(source.getUser() == null ? null : source.getUser().getId())
             .build();
     }
 }

@@ -177,6 +177,11 @@ public class ErrorMessage {
     public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES =
         "User has already added this event to favorites.";
     public static final String EVENT_IS_NOT_IN_FAVORITES = "This event is not in favorites.";
+    public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED =
+        "User has already added this event to requested.";
+    public static final String EVENT_IS_NOT_IN_REQUESTED = "This event is not in requested.";
+    public static final String USER_DID_NOT_REQUEST_FOR_EVENT = "User with this id did not request to join event: ";
+    public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
@@ -225,4 +230,7 @@ public class ErrorMessage {
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
     public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
+    public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
+    public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
+    public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
 }
