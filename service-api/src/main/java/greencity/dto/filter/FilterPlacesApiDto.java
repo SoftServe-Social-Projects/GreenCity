@@ -24,8 +24,8 @@ public class FilterPlacesApiDto {
     public static final String defaultJson = """
         {
           "location": {
-            "lat": 0,
-            "lng": 0
+            "lat": 50.4500,
+            "lng": 30.5234
           },
           "radius": 0,
           "rankBy": "PROMINENCE",
