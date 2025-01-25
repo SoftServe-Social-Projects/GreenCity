@@ -227,7 +227,7 @@ class GoogleApiServiceTest {
         FilterPlacesApiDto filterDto = ModelUtils.getFilterPlacesApiDto();
         filterDto.setLocation(null);
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.getUserLocationDto().setLatitude(null);
+        userVO.getUserLocationDto().setLongitude(null);
 
         Locale localeUk = Locale.forLanguageTag("uk");
         Locale localeEn = Locale.forLanguageTag("en");
