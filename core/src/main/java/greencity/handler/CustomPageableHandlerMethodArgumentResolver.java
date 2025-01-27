@@ -14,9 +14,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class CustomPageableHandlerMethodArgumentResolver extends PageableHandlerMethodArgumentResolver {
     private final SortPageableValidator sortPageableValidator;
+    private final PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
-    public CustomPageableHandlerMethodArgumentResolver(SortPageableValidator sortPageableValidator) {
+    public CustomPageableHandlerMethodArgumentResolver(SortPageableValidator sortPageableValidator,
+        PageableHandlerMethodArgumentResolver pageableArgumentResolver) {
         this.sortPageableValidator = sortPageableValidator;
+        this.pageableArgumentResolver = pageableArgumentResolver;
     }
 
     @Override
@@ -25,7 +28,8 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
         @Nullable ModelAndViewContainer mavContainer,
         @Nonnull NativeWebRequest webRequest,
         @Nullable WebDataBinderFactory binderFactory) {
-        Pageable pageable = super.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
+        Pageable pageable =
+            pageableArgumentResolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 
         ApiPageable apiPageable = parameter.getMethodAnnotation(ApiPageable.class);
         if (apiPageable != null) {
