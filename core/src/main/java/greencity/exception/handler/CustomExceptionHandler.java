@@ -11,6 +11,7 @@ import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.MultipartXSSProcessingException;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -20,13 +21,14 @@ import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoToDoListItemsException;
 import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.ResourceNotFoundException;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
@@ -264,6 +266,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
     }
 
+    @ExceptionHandler(PlaceAlreadyExistsException.class)
+    public final ResponseEntity<Object> handlePlaceAlreadyExistsException(PlaceAlreadyExistsException ex,
+        WebRequest request) {
+        log.warn(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
     /**
      * Method interceptor for exceptions related to unsuccessful operations such as
      * {@link NotDeletedException}, {@link NotUpdatedException},
@@ -474,21 +484,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnsupportedSortException.class)
     public final ResponseEntity<Object> handleUnsupportedSortException(
         UnsupportedSortException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for EventDtoValidationException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(EventDtoValidationException.class)
-    public final ResponseEntity<Object> handleEventDtoValidationException(
-        EventDtoValidationException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

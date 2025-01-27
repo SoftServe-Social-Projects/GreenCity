@@ -11,4 +11,5 @@ public final class TestConst {
     public static final Long EVENT_ID = 1L;
     public static final Long USER_ID = 1L;
     public static final String MANAGEMENT_USER_LINK = "/management/users";
+    public static final String GREENCITY_USER_SERVER_ADDRESS = "http://localhost:8060/";
 }

@@ -1,15 +1,23 @@
 package greencity.service;
 
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
+import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.place.AddPlaceDto;
@@ -37,10 +45,12 @@ import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
+import greencity.repository.PhotoRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
@@ -50,6 +60,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -60,28 +71,40 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
+import static greencity.ModelUtils.getPlaceUpdateDto;
 import static greencity.ModelUtils.getSearchPlacesDto;
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlacesSearchResultEn;
+import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -93,6 +116,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,9 +125,6 @@ class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
         .name("test").build();
-    private final CategoryDto categoryDto = CategoryDto.builder()
-        .name("test")
-        .build();
     private final Language language = Language.builder()
         .id(2L)
         .code("en")
@@ -118,6 +139,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .language(language)
@@ -144,10 +166,16 @@ class PlaceServiceImplTest {
             .userStatus(UserStatus.ACTIVATED)
             .languageVO(languageVO)
             .build();
-    private final Place genericEntity1 = Place.builder()
+    Place genericEntity1 = Place.builder()
         .id(1L)
         .name("test1")
         .author(user)
+        .location(Location.builder()
+            .id(1L)
+            .lat(42.57)
+            .lng(46.53)
+            .address("Location")
+            .build())
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
@@ -158,11 +186,9 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private final LocationVO locationVO = LocationVO.builder()
+    private final CategoryDtoResponse categoryDtoResponse = CategoryDtoResponse.builder()
         .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
+        .name("Caterory")
         .build();
     @Mock
     private PlaceRepo placeRepo;
@@ -198,13 +224,17 @@ class PlaceServiceImplTest {
     private UserNotificationService userNotificationService;
     @Mock
     private RestClient restClient;
+    @Mock
+    private PhotoRepo photoRepo;
+    @InjectMocks
+    private PlaceServiceImpl placeServiceImpl;
 
     @BeforeEach
     void init() {
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
-            userNotificationService, restClient);
+            userNotificationService, restClient, photoRepo);
     }
 
     @Test
@@ -228,6 +258,25 @@ class PlaceServiceImplTest {
             EmailPreferencePeriodicity.IMMEDIATELY);
         verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), placeVO.getId(),
             placeVO.getCategory().getName(), placeVO.getName());
+    }
+
+    @Test
+    void savePlaceWithValidDataSucceedsTest() {
+        PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
+        PlaceVO placeVO = ModelUtils.getPlaceVO();
+        Place place = getPlace();
+        when(userService.findByEmail(user.getEmail())).thenReturn(userVOAdmin);
+        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
+        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
+        when(categoryRepo.findByName(placeAddDto.getCategory().getName())).thenReturn(category);
+        when(placeRepo.save(place)).thenReturn(place);
+        when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
+        PlaceVO savedPlace = placeService.save(placeAddDto, user.getEmail());
+        assertEquals(placeVO, savedPlace);
+        verify(userService).findByEmail(user.getEmail());
+        verify(proposePlaceMapper).checkLocationValues(placeAddDto.getLocation());
+        verify(categoryRepo).findByName(placeAddDto.getCategory().getName());
+        verify(placeRepo).save(place);
     }
 
     @Test
@@ -518,30 +567,6 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void updateTest() {
-        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        Place place = getPlace();
-        placeUpdateDto.setId(1L);
-        placeUpdateDto.setOpeningHoursList(new HashSet<>());
-        placeUpdateDto.setDiscountValues(new HashSet<>());
-        placeUpdateDto.setName("new Name");
-        placeUpdateDto.setCategory(categoryDto);
-        placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto());
-        CategoryDtoResponse categoryDtoResponce = CategoryDtoResponse.builder().build();
-        when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
-        when(categoryService.findByName(category.getName())).thenReturn(categoryDtoResponce);
-        when(modelMapper.map(categoryDtoResponce, Category.class)).thenReturn(category);
-        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-
-        PlaceVO updatedPlace = placeService.update(placeUpdateDto);
-
-        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
-        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(modelMapper).map(placeUpdateDto.getLocation(), LocationVO.class);
-        verify(locationService).update(place.getLocation().getId(), locationVO);
-    }
-
-    @Test
     void deleteByIdTest() {
         Place place = getPlace();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
@@ -644,6 +669,25 @@ class PlaceServiceImplTest {
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
         verify(modelMapper).map(genericEntity1, PlaceByBoundsDto.class);
+    }
+
+    @Test
+    void getPlacesByFilterFromApiTest() {
+        FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
+
+        when(googleApiService.getResultFromPlacesApi(filterDto, userVO)).thenReturn(getPlacesSearchResultEn());
+
+        var result = placeService.getPlacesByFilter(filterDto, userVO);
+        List<PlaceByBoundsDto> updatedResult = result.stream().map(el -> {
+            el.setId(1L);
+            el.getLocation().setId(1L);
+            return el;
+        }).toList();
+        List<PlaceByBoundsDto> expectedResult = getPlaceByBoundsDtoFromApi();
+
+        Assertions.assertArrayEquals(updatedResult.toArray(), expectedResult.toArray());
+
+        verify(googleApiService).getResultFromPlacesApi(filterDto, userVO);
     }
 
     @Test
@@ -754,8 +798,32 @@ class PlaceServiceImplTest {
 
         assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
+        verify(userRepo).findByEmail(user.getEmail());
+    }
+
+    @Test
+    void addPlaceFromUiSaveAlreadyExistingLocation() {
+        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
+        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
+        String email = user.getEmail();
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
+        when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
+
+        double lat = ModelUtils.getGeocodingResult().getFirst().geometry.location.lat;
+        double lng = ModelUtils.getGeocodingResult().getFirst().geometry.location.lng;
+
+        when(locationService.existsByLatAndLng(lat, lng)).thenReturn(true);
+
+        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, email, null));
+
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
+        verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
+        verify(locationService).existsByLatAndLng(lat, lng);
+
+        verify(modelMapper, times(0)).map(placeResponse, Place.class);
     }
 
     @Test
@@ -958,5 +1026,155 @@ class PlaceServiceImplTest {
         verify(userRepo).findByEmail(dto.getEmail());
         verify(placeRepo).save(place);
         verify(restClient, times(0)).sendEmailNotificationChangesPlaceStatus(dto);
+    }
+
+    @Test
+    void updateOpeningThrowsExceptionForInvalidOperationTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        updatedPlace.setOpeningHoursList(null);
+
+        Set<OpeningHoursDto> hoursUpdateDtoSet = new HashSet<>();
+        OpeningHoursDto openingHoursDto = new OpeningHoursDto();
+        hoursUpdateDtoSet.add(openingHoursDto);
+
+        Mockito.doThrow(new RuntimeException("Test exception"))
+            .when(openingHoursService)
+            .deleteAllByPlaceId(Mockito.anyLong());
+
+        Assertions.assertThrows(RuntimeException.class,
+            () -> placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace),
+            "Expected updateOpening to throw an exception");
+    }
+
+    @Test
+    void updateDiscountThrowsExceptionForInvalidOperationTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+
+        Set<DiscountValueDto> discounts = new HashSet<>();
+        DiscountValueDto discountValueDto = new DiscountValueDto();
+        discounts.add(discountValueDto);
+
+        Mockito.doThrow(new RuntimeException("Test exception"))
+            .when(discountService)
+            .deleteAllByPlaceId(Mockito.anyLong());
+
+        Assertions.assertThrows(RuntimeException.class,
+            () -> placeServiceImpl.updateDiscount(discounts, updatedPlace),
+            "Expected updateDiscount to throw an exception");
+    }
+
+    @Test
+    void updateOpeningExecutesCorrectlyForValidInputTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        Set<OpeningHoursDto> hoursUpdateDtoSet = new HashSet<>();
+        OpeningHoursDto openingHoursDto = new OpeningHoursDto();
+        hoursUpdateDtoSet.add(openingHoursDto);
+        Set<OpeningHoursVO> existingOpeningHoursVO = new HashSet<>();
+        OpeningHoursVO openingHoursVO = new OpeningHoursVO();
+        existingOpeningHoursVO.add(openingHoursVO);
+
+        Mockito.when(openingHoursService.findAllByPlaceId(updatedPlace.getId()))
+            .thenReturn(existingOpeningHoursVO);
+
+        placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace);
+        Mockito.verify(openingHoursService).deleteAllByPlaceId(updatedPlace.getId());
+        Mockito.verify(openingHoursService, Mockito.times(hoursUpdateDtoSet.size()))
+            .save(Mockito.any(OpeningHoursVO.class));
+    }
+
+    @Test
+    void updateDiscountDoesNotThrowExceptionTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        Set<DiscountValueDto> discounts = new HashSet<>();
+
+        Mockito.when(discountService.findAllByPlaceId(Mockito.anyLong()))
+            .thenReturn(new HashSet<>());
+        Mockito.doAnswer(invocation -> null)
+            .when(discountService).deleteAllByPlaceId(Mockito.anyLong());
+        Mockito.doAnswer(invocation -> null)
+            .when(discountService).save(Mockito.any(DiscountValueVO.class));
+
+        Assertions.assertDoesNotThrow(() -> placeServiceImpl.updateDiscount(discounts, updatedPlace));
+    }
+
+    @Test
+    void updateFromUISucceedsForValidPlaceTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setName("Updated Place");
+        dto.setCategory(new CategoryDto("Test Category", "Test Category Ua", 1L));
+        dto.setLocation(new LocationAddressAndGeoForUpdateDto("New Address", 50.45, 30.52, "New Address Ua"));
+
+        MultipartFile[] images = new MultipartFile[] {
+            new MockMultipartFile("image1.jpg", "image1.jpg", "image/jpeg", new byte[0])
+        };
+        LocationVO locationVO = LocationVO.builder()
+            .id(1L)
+            .address("New Address")
+            .lat(50.45)
+            .lng(30.52)
+            .addressUa("New Address Ua")
+            .build();
+        when(categoryService.findByName("Test Category")).thenReturn(categoryDtoResponse);
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
+        when(userRepo.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(locationService.findById(1L)).thenReturn(locationVO);
+        List<GeocodingResult> geocodingResults = new ArrayList<>();
+        GeocodingResult ukrLang = new GeocodingResult();
+        ukrLang.formattedAddress = "New Address";
+        ukrLang.geometry = new Geometry();
+        ukrLang.geometry.location = new LatLng(50.45, 30.52);
+        GeocodingResult engLang = new GeocodingResult();
+        engLang.formattedAddress = "New Address Ua";
+        engLang.geometry = new Geometry();
+        engLang.geometry.location = new LatLng(50.45, 30.52);
+        geocodingResults.add(ukrLang);
+        geocodingResults.add(engLang);
+        when(googleApiService.getResultFromGeoCode("New Address")).thenReturn(geocodingResults);
+        PlaceVO result = placeServiceImpl.updateFromUI(dto, images, "test@example.com");
+
+        assertNotNull(result);
+        assertEquals("Updated Place", result.getName());
+        verify(placeRepo, atLeastOnce()).save(any(Place.class));
+        verify(photoRepo, times(1)).save(any(Photo.class));
+        verify(locationService, times(1)).update(anyLong(), any(LocationVO.class));
+    }
+
+    @Test
+    void updateFromUIThrowsNotFoundExceptionForUserTest() {
+        PlaceUpdateDto dto = getPlaceUpdateDto();
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+            () -> placeService.updateFromUI(dto, null, "invalid_email@example.com"));
+    }
+
+    @Test
+    void updateFromUIThrowsNotFoundExceptionForCategoryTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setCategory(new CategoryDto("Nonexistent Category", "Nonexistent Category", 1L));
+
+        when(categoryService.findByName("Nonexistent Category"))
+            .thenThrow(new NotFoundException("Category not found"));
+        assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, "test@example.com"));
+    }
+
+    @Test
+    void updateCategoryThrowsNotFoundExceptionTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setCategory(new CategoryDto("Non-existent Category", "Non-existent Category Ua", 2L));
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
+        when(categoryService.findByName("Non-existent Category"))
+            .thenThrow(new NotFoundException("Category not found"));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeServiceImpl.update(dto));
+        assertEquals("Category not found", exception.getMessage());
+        verify(placeRepo, never()).save(any(Place.class));
     }
 }

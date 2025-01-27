@@ -76,12 +76,15 @@ public class LocationServiceImpl implements LocationService {
     public LocationVO update(Long id, LocationVO location) {
         log.info(LogMessage.IN_UPDATE, location);
 
-        LocationVO updatable = findById(id);
+        Location updatable = locationRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
 
         updatable.setLat(location.getLat());
         updatable.setLng(location.getLng());
         updatable.setAddress(location.getAddress());
-        Location savedLocation = locationRepo.save(modelMapper.map(updatable, Location.class));
+        updatable.setAddressUa(location.getAddressUa());
+        Location savedLocation = locationRepo.save(updatable);
+
         return modelMapper.map(savedLocation, LocationVO.class);
     }
 
@@ -112,5 +115,15 @@ public class LocationServiceImpl implements LocationService {
             return Optional.of(locationVO);
         }
         return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Hrenevych Ivan
+     */
+    @Override
+    public boolean existsByLatAndLng(Double lat, Double lng) {
+        return locationRepo.existsByLatAndLng(lat, lng);
     }
 }

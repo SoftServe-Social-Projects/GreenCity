@@ -1,8 +1,8 @@
 package greencity.controller;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -44,7 +44,6 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.specification.SpecificationNameDto;
@@ -54,6 +53,8 @@ import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import static greencity.ModelUtils.getFilterPlaceDto;
 import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlaceByBoundsDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -62,7 +63,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.enums.PlaceStatus.APPROVED;
@@ -216,90 +216,6 @@ class PlaceControllerTest {
     }
 
     @Test
-    void updatePlace() throws Exception {
-        LocationAddressAndGeoForUpdateDto locationAddressAndGeoDto = LocationAddressAndGeoForUpdateDto.builder()
-            .address("Lviv")
-            .lat(1.0)
-            .lng(1.0)
-            .build();
-
-        String json = """
-            {
-              "category": {
-                "name": "test"
-              },
-              "discountValues": [
-                {
-                  "specification": {
-                    "name": "test"
-                  },
-                  "value": 1
-                }
-              ],
-              "id": 1,
-              "location": {
-                "address": "Lviv",
-                "lat": 1.0,
-                "lng": 1.0
-              },
-              "name": "test",
-              "openingHoursList": [
-                {
-                  "breakTime": {
-                    "endTime": "14:00",
-                    "startTime": "13:00"
-                  },
-                  "closeTime": "20:00",
-                  "openTime": "08:00",
-                  "weekDay": "MONDAY"
-                }
-              ]
-            }
-            """;
-
-        CategoryDto categoryDto = CategoryDto.builder().name("test").build();
-
-        Set<DiscountValueDto> discountValuesDtos = new HashSet<>();
-        DiscountValueDto discountValueDto = new DiscountValueDto();
-        SpecificationNameDto specificationNameDto = new SpecificationNameDto();
-        specificationNameDto.setName("test");
-        discountValueDto.setSpecification(specificationNameDto);
-        discountValuesDtos.add(discountValueDto);
-
-        BreakTimeDto breakTimeDto = BreakTimeDto.builder()
-            .endTime(LocalTime.of(14, 0))
-            .startTime(LocalTime.of(13, 0))
-            .build();
-        Set<OpeningHoursDto> openingHoursDtos = new HashSet<>();
-        OpeningHoursDto openingHoursDto = OpeningHoursDto.builder()
-            .breakTime(breakTimeDto)
-            .closeTime(LocalTime.of(20, 0))
-            .openTime(LocalTime.of(8, 0))
-            .weekDay(DayOfWeek.MONDAY)
-            .build();
-        openingHoursDtos.add(openingHoursDto);
-
-        PlaceUpdateDto placeUpdateDto = PlaceUpdateDto.builder()
-            .id(1L)
-            .category(categoryDto)
-            .discountValues(discountValuesDtos)
-            .location(locationAddressAndGeoDto)
-            .name("test")
-            .openingHoursList(openingHoursDtos)
-            .build();
-
-        when(modelMapper.map(placeService.update(any()), PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
-
-        this.mockMvc.perform(put(placeLink + "/update")
-            .content(json)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-
-        verify(placeService).update(placeUpdateDto);
-    }
-
-    @Test
     void getInfo() throws Exception {
         this.mockMvc.perform(get(placeLink + "/info/{id}", 1))
             .andExpect(status().isOk());
@@ -427,6 +343,36 @@ class PlaceControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(placeService).getPlacesByFilter(filterPlaceDto, userVO);
+    }
+
+    @Test
+    void getFilteredPlacesFromApi() throws Exception {
+        UserVO userVO = getUserVO();
+        FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
+        String json = """
+            {
+              "location": {
+                "lat": 0,
+                "lng": 0
+              },
+              "radius": 10000,
+              "rankBy": "PROMINENCE",
+              "keyword": "test",
+              "minPrice": "0",
+              "maxPrice": "4",
+              "openNow": true
+            }
+            """;
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(placeService.getPlacesByFilter(filterDto, userVO)).thenReturn(getPlaceByBoundsDto());
+
+        this.mockMvc.perform(post(placeLink + "/filter/api")
+            .content(json)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(placeService).getPlacesByFilter(filterDto, userVO);
     }
 
     @Test

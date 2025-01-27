@@ -15,7 +15,7 @@
     <name>dao</name>
     <properties>
         <junit-jupiter.version>5.10.1</junit-jupiter.version>
-        <postgresql.version>42.6.0</postgresql.version>
+        <postgresql.version>42.6.1</postgresql.version>
         <testcontainers.version>1.19.1</testcontainers.version>
         <h2.version>2.2.224</h2.version>
         <hibernate.jpamodelgen.version>6.4.1.Final</hibernate.jpamodelgen.version>

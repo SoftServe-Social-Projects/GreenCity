@@ -8,6 +8,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -15,6 +16,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
@@ -515,5 +517,109 @@ public class EventController {
     @GetMapping("/organizers/count")
     public ResponseEntity<Long> getOrganizersCount(@RequestParam(name = "user-id") Long userId) {
         return ResponseEntity.ok().body(eventService.getCountOfOrganizedEventsByUserId(userId));
+    }
+
+    /**
+     * Method for adding an event to requested by event id.
+     *
+     * @author Olha Pitsyk.
+     */
+    @Operation(summary = "Add an event to requested")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/{eventId}/addToRequested")
+    public ResponseEntity<Object> addToRequested(@PathVariable Long eventId,
+        @Parameter(hidden = true) Principal principal) {
+        eventService.addToRequested(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for removing an event from requested by event id.
+     *
+     * @author Olha Pitsyk.
+     */
+    @Operation(summary = "Remove an event from requested")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/{eventId}/removeFromRequested")
+    public ResponseEntity<Object> removeFromRequested(@PathVariable Long eventId,
+        @Parameter(hidden = true) Principal principal) {
+        eventService.removeFromRequested(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting all users who made request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    @Operation(summary = "List of requested users")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/{eventId}/requested-users")
+    public ResponseEntity<PageableDto<UserForListDto>> getRequestedUsers(
+        @PathVariable Long eventId,
+        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getRequestedUsers(eventId, principal.getName(), pageable));
+    }
+
+    /**
+     * Method for approving join request.
+     *
+     * @author Olha Pitsyk.
+     */
+    @Operation(summary = "Approve join request")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/{eventId}/requested-users/{userId}/approve")
+    public ResponseEntity<Object> approveRequest(@PathVariable Long eventId, @PathVariable Long userId,
+        @Parameter(hidden = true) Principal principal) {
+        eventService.approveRequest(eventId, principal.getName(), userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for declining join request.
+     *
+     * @author Olha Pitsyk.
+     */
+    @Operation(summary = "Decline join request")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/{eventId}/requested-users/{userId}/decline")
+    public ResponseEntity<Object> declineRequest(@PathVariable Long eventId, @PathVariable Long userId,
+        @Parameter(hidden = true) Principal principal) {
+        eventService.declineRequest(eventId, principal.getName(), userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

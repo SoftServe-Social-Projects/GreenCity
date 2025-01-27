@@ -51,6 +51,7 @@ public class ErrorMessage {
         "Subscriber with this email address and subscription type is exists.";
     public static final String UBSCRIPTION_BY_TOKEN_NOT_FOUND = "Subscriber with this token not found.";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
+    public static final String LOCATION_NOT_FOUND = "Location must be provided either in filterDto or userVO";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
     public static final String HABIT_IS_NOT_ENROLLED_ON_CURRENT_DATE = "Habit is not enrolled on ";
@@ -127,6 +128,7 @@ public class ErrorMessage {
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "You can't reply on reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
+    public static final String PLACE_ALREADY_EXISTS = "Place with lat: %.4f and lng: %.4f already exists";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
@@ -175,6 +177,11 @@ public class ErrorMessage {
     public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES =
         "User has already added this event to favorites.";
     public static final String EVENT_IS_NOT_IN_FAVORITES = "This event is not in favorites.";
+    public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED =
+        "User has already added this event to requested.";
+    public static final String EVENT_IS_NOT_IN_REQUESTED = "This event is not in requested.";
+    public static final String USER_DID_NOT_REQUEST_FOR_EVENT = "User with this id did not request to join event: ";
+    public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
@@ -222,4 +229,8 @@ public class ErrorMessage {
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
+    public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
+    public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
+    public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
+    public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
 }

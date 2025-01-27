@@ -1,11 +1,12 @@
 package greencity.webcontroller;
 
+import greencity.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,10 +47,12 @@ public class ManagementController {
 
     @GetMapping("/management/login")
     public String login() {
-        boolean anonymousUser =
-            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser");
-        if (anonymousUser) {
-            return "redirect:" + greenCityUserServerAddress + "/management/login";
+        if (!SecurityUtils.isAuthenticated()) {
+            String managementLoginUrl = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress)
+                .path("/management/login")
+                .build()
+                .toUriString();
+            return "redirect:" + managementLoginUrl;
         } else {
             return "redirect:/management";
         }

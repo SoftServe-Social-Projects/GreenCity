@@ -270,6 +270,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + LIKES,
                     EVENTS + EVENT_ID + LIKES + COUNT,
                     EVENTS + EVENT_ID + DISLIKES + COUNT,
+                    EVENTS + EVENT_ID + "/requested-users",
                     "/user/to-do-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomToDoListsInprogress",
@@ -308,6 +309,9 @@ public class SecurityConfig {
                     EVENTS_COMMENTS + LIKE + COMMENT_ID,
                     EVENTS,
                     EVENTS + EVENT_ID + ATTENDERS,
+                    "/events/{eventId}/requested-users/{userId}/decline",
+                    "/events/{eventId}/requested-users/{userId}/approve",
+                    EVENTS + EVENT_ID + "/addToRequested",
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
@@ -329,6 +333,7 @@ public class SecurityConfig {
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
+                    "/place/filter/api",
                     USER_CUSTOM_TO_DO_LIST_ITEMS,
                     USER_TO_DO_LIST,
                     "/user/{userId}/habit",
@@ -403,7 +408,8 @@ public class SecurityConfig {
                     "/notification/{notificationId}",
                     "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
-                    HABIT_INVITE + INVITATION_ID + "/reject")
+                    HABIT_INVITE + INVITATION_ID + "/reject",
+                    EVENTS + EVENT_ID + "/removeFromRequested")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
