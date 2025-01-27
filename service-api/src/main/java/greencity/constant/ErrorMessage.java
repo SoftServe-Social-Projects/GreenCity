@@ -124,7 +124,6 @@ public class ErrorMessage {
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION =
         "The comment with entered id or other params doesn't exist";
-    public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "You can't reply on reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
