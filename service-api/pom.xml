@@ -108,5 +108,11 @@
             <version>1.18.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.maps</groupId>
+            <artifactId>google-maps-services</artifactId>
+            <version>2.2.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

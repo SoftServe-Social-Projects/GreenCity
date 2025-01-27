@@ -1,10 +1,14 @@
 package greencity;
 
-import com.google.maps.model.AddressComponent;
-import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.PlacesSearchResult;
+import com.google.maps.model.PlacesSearchResponse;
+import com.google.maps.model.RankBy;
+import com.google.maps.model.PriceLevel;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
@@ -54,6 +58,7 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
@@ -540,6 +545,11 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
             .languageVO(getLanguageVO())
+            .userLocationDto(
+                UserLocationDto.builder()
+                    .latitude(1d)
+                    .longitude(1d)
+                    .build())
             .build();
     }
 
@@ -3325,6 +3335,77 @@ public class ModelUtils {
                 new String[] {"id", "email", "name", "profile_picture", "has_invitation", "has_accepted_invitation"}),
             new Object[] {3L, "ivan@example.com", "Ivan", "/image/path/ivan.png", false, false});
         return List.of(tuple1, tuple2);
+    }
+
+    public static FilterPlacesApiDto getFilterPlacesApiDto() {
+        return FilterPlacesApiDto.builder()
+            .location(new LatLng(0d, 0d))
+            .radius(10000)
+            .keyword("test")
+            .rankBy(RankBy.PROMINENCE)
+            .openNow(true)
+            .minPrice(PriceLevel.FREE)
+            .maxPrice(PriceLevel.VERY_EXPENSIVE)
+            .build();
+    }
+
+    public static List<PlaceByBoundsDto> getPlaceByBoundsDto() {
+        return List.of(PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("testx")
+            .location(new LocationDto())
+            .build());
+    }
+
+    public static List<PlaceByBoundsDto> getPlaceByBoundsDtoFromApi() {
+        return List.of(PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("testName")
+            .location(new LocationDto(1L, 1d, 1d, "testVicinity"))
+            .build());
+    }
+
+    public static List<PlacesSearchResult> getPlacesSearchResultUk() {
+        PlacesSearchResult placesSearchResult = new PlacesSearchResult();
+        placesSearchResult.name = "тестІмя";
+        placesSearchResult.vicinity = "тестАдреса";
+        placesSearchResult.geometry = new Geometry();
+        placesSearchResult.geometry.location = new LatLng(1d, 1d);
+        return List.of(placesSearchResult);
+    }
+
+    public static List<PlacesSearchResult> getPlacesSearchResultEn() {
+        PlacesSearchResult placesSearchResult = new PlacesSearchResult();
+        placesSearchResult.name = "testName";
+        placesSearchResult.vicinity = "testVicinity";
+        placesSearchResult.geometry = new Geometry();
+        placesSearchResult.geometry.location = new LatLng(1d, 1d);
+        return List.of(placesSearchResult);
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponse() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
+        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponseEn() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponseUk() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
     }
 
     public static PlaceUpdateDto getPlaceUpdateDto() {

@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -8,8 +9,10 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.AddPlaceLocation;
+import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
@@ -44,9 +47,7 @@ import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.PlaceStatusException;
-import greencity.exception.exceptions.UserBlockedException;
+import greencity.exception.exceptions.*;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PhotoRepo;
@@ -432,7 +433,22 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method that filtering places by distance.
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto, UserVO userVO) {
+        List<PlacesSearchResult> fromPlacesApi = googleApiService.getResultFromPlacesApi(filterDto, userVO);
+        return fromPlacesApi.stream()
+            .map(el -> new PlaceByBoundsDto(
+                System.currentTimeMillis(),
+                el.name,
+                new LocationDto(System.currentTimeMillis(), el.geometry.location.lat, el.geometry.location.lng,
+                    el.vicinity)))
+            .toList();
+    }
+
+    /**
+     * Method that filters places by distance.
      *
      * @param filterDto - {@link FilterPlaceDto} DTO.
      * @param placeList - {@link List} of {@link Place} that will be filtered.
@@ -530,18 +546,27 @@ public class PlaceServiceImpl implements PlaceService {
         }.getType());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
-        PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
-
-        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocationName());
-        placeResponse.setLocationAddressAndGeoDto(geoDetails);
-
+        PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
+        List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
+        if (geocodingResults.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.GEOCODING_RESULT_IS_EMPTY);
+        }
+        double lat = geocodingResults.getFirst().geometry.location.lat;
+        double lng = geocodingResults.getFirst().geometry.location.lng;
+        if (locationService.existsByLatAndLng(lat, lng)) {
+            throw new PlaceAlreadyExistsException(ErrorMessage.PLACE_ALREADY_EXISTS.formatted(lat, lng));
+        }
+        placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
         place.setAuthor(user);

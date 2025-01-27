@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.AddPlaceDto;
@@ -52,6 +53,8 @@ import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import static greencity.ModelUtils.getFilterPlaceDto;
 import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlaceByBoundsDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -340,6 +343,36 @@ class PlaceControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(placeService).getPlacesByFilter(filterPlaceDto, userVO);
+    }
+
+    @Test
+    void getFilteredPlacesFromApi() throws Exception {
+        UserVO userVO = getUserVO();
+        FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
+        String json = """
+            {
+              "location": {
+                "lat": 0,
+                "lng": 0
+              },
+              "radius": 10000,
+              "rankBy": "PROMINENCE",
+              "keyword": "test",
+              "minPrice": "0",
+              "maxPrice": "4",
+              "openNow": true
+            }
+            """;
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(placeService.getPlacesByFilter(filterDto, userVO)).thenReturn(getPlaceByBoundsDto());
+
+        this.mockMvc.perform(post(placeLink + "/filter/api")
+            .content(json)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(placeService).getPlacesByFilter(filterDto, userVO);
     }
 
     @Test
