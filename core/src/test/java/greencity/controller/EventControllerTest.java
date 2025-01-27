@@ -503,45 +503,45 @@ class EventControllerTest {
             .andExpect(status().isBadRequest());
     }
 
-//    @Test
-//    @SneakyThrows
-//    void getEventTest() {
-//        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}", 1L).principal(principal))
-//            .andExpect(status().isOk());
-//
-//        verify(eventService).getEvent(1L, principal);
-//    }
+    @Test
+    @SneakyThrows
+    void getEventTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}", 1L).principal(principal))
+            .andExpect(status().isOk());
 
-//    @Test
-//    @SneakyThrows
-//    void getEventFailedTest() {
-//        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}", "not_number").principal(principal))
-//            .andExpect(status().isBadRequest());
-//
-//        verify(eventService, times(0)).getEvent(1L, principal);
-//    }
+        verify(eventService).getEvent(1L, principal);
+    }
 
-//    @Test
-//    @SneakyThrows
-//    void getEventResponseTest() {
-//        EventDto eventDto = getEventDto();
-//
-//        when(eventService.getEvent(1L, principal)).thenReturn(eventDto);
-//
-//        MvcResult result = mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}", 1L)
-//            .principal(principal)
-//            .accept(MediaType.APPLICATION_JSON)
-//            .contentType(MediaType.APPLICATION_JSON))
-//            .andExpect(status().isOk()).andReturn();
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.findAndRegisterModules();
-//        EventDto responseEventDto = objectMapper.readValue(result.getResponse().getContentAsString(), EventDto.class);
-//
-//        assertEquals(eventDto, responseEventDto);
-//
-//        verify(eventService).getEvent(1L, principal);
-//    }
+    @Test
+    @SneakyThrows
+    void getEventFailedTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}", "not_number").principal(principal))
+            .andExpect(status().isBadRequest());
+
+        verify(eventService, times(0)).getEvent(1L, principal);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventResponseTest() {
+        EventDto eventDto = getEventDto();
+
+        when(eventService.getEvent(1L, principal)).thenReturn(eventDto);
+
+        MvcResult result = mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        EventDto responseEventDto = objectMapper.readValue(result.getResponse().getContentAsString(), EventDto.class);
+
+        assertEquals(eventDto, responseEventDto);
+
+        verify(eventService).getEvent(1L, principal);
+    }
 
     @Test
     @SneakyThrows

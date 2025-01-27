@@ -1,15 +1,24 @@
 package greencity.mapping.events;
 
 import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.tag.TagUaEnDto;
+import greencity.entity.User;
 import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.localization.TagTranslation;
+import greencity.service.CommentService;
+import lombok.NonNull;
 import org.modelmapper.AbstractConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +31,13 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
     private static final String LANGUAGE_EN = "en";
     private static final int MAX_ADDITIONAL_IMAGES = 4;
 
+    private final CommentService commentService;
+
+    @Autowired
+    public EventMapper(@Lazy CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     /**
      * Converts an {@link Event} into {@link EventResponseDto}.
      *
@@ -33,7 +49,6 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
         EventInformationDto eventInformation = EventInformationDto.builder()
             .title(event.getTitle())
             .description(event.getDescription())
-            .isOpen(event.isOpen())
             .tags(event.getTags().stream()
                 .map(tag -> TagUaEnDto.builder()
                     .id(tag.getId())
@@ -48,11 +63,14 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
                         .map(TagTranslation::getName)
                         .orElse(null))
                     .build())
-                .collect(Collectors.toList()))
+                .toList())
             .build();
+
+        User organizer = event.getOrganizer();
 
         List<EventDateInformationDto> dateInformation = event.getDates().stream()
             .map(date -> EventDateInformationDto.builder()
+                .id(date.getId())
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
                 .onlineLink(date.getOnlineLink())
@@ -74,19 +92,42 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
                 .build())
             .collect(Collectors.toList());
 
-        String titleImage = event.getTitleImage();
-        List<String> additionalImages = event.getAdditionalImages().stream()
-            .map(EventImages::getLink)
-            .toList();
-
         return EventResponseDto.builder()
+            .id(event.getId())
             .eventInformation(eventInformation)
+            .organizer(EventAuthorDto.builder()
+                .id(organizer.getId())
+                .name(organizer.getName())
+                .organizerRating(organizer.getEventOrganizerRating())
+                .email(organizer.getEmail())
+                .build())
+            .creationDate(event.getCreationDate())
+            .isOpen(event.isOpen())
             .dates(dateInformation)
             .titleImage(event.getTitleImage())
+            .isRelevant(isRelevantCheck(event.getDates()))
+            .likes(event.getUsersLikedEvents().size())
+            .dislikes(event.getUsersDislikedEvents().size())
+            .countComments(commentService.countCommentsForEvent(event.getId()))
+            .type(event.getType())
+            .eventRate(calculateEventRate(event.getEventGrades()))
+            .currentUserGrade(organizer.getRating())
             .additionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink)
                 .limit(MAX_ADDITIONAL_IMAGES)
-                .collect(Collectors.toList()))
+                .toList())
             .build();
+    }
+
+    private boolean isRelevantCheck(@NonNull List<EventDateLocation> dates) {
+        return dates.getLast().getFinishDate().isAfter(ZonedDateTime.now())
+            || dates.getLast().getFinishDate().isEqual(ZonedDateTime.now());
+    }
+
+    private double calculateEventRate(List<EventGrade> eventGrades) {
+        return eventGrades.stream()
+            .mapToInt(EventGrade::getGrade)
+            .average()
+            .orElse(0.0);
     }
 }

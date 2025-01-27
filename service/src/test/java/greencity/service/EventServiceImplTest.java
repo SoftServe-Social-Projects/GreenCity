@@ -518,51 +518,51 @@ class EventServiceImplTest {
         verify(eventRepo).findById(1L);
     }
 
-//    @Test
-//    void getEventWithoutUser() {
-//        Event event = ModelUtils.getEvent();
-//        EventDto eventDto = ModelUtils.getEventDto();
-//
-//        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-//        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-//
-//        EventDto actual = eventService.getEvent(1L, null);
-//
-//        assertEquals(eventDto.getId(), actual.getId());
-//        assertEquals(eventDto.getAdditionalImages(), actual.getAdditionalImages());
-//        assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
-//        assertFalse(actual.isSubscribed());
-//        assertFalse(actual.isFavorite());
-//        assertNull(actual.getCurrentUserGrade());
-//        verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
-//        verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
-//    }
+    @Test
+    void getEventWithoutUser() {
+        Event event = ModelUtils.getEvent();
+        EventDto eventDto = ModelUtils.getEventDto();
 
-//    @Test
-//    void getEventWithCurrentUser() {
-//        Event event = ModelUtils.getEvent();
-//        EventDto eventDto = ModelUtils.getEventDto();
-//        List<Long> eventIds = List.of(eventDto.getId());
-//        Principal principal = ModelUtils.getPrincipal();
-//        User user = ModelUtils.getUser();
-//
-//        event.setEventGrades(List.of(EventGrade.builder().grade(5).user(user).event(event).build()));
-//
-//        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
-//        when(restClient.findByEmail(principal.getName())).thenReturn(testUserVo);
-//        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
-//        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-//        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
-//        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
-//
-//        EventDto actual = eventService.getEvent(1L, principal);
-//
-//        assertTrue(actual.isSubscribed());
-//        assertTrue(actual.isFavorite());
-//        assertEquals(5, actual.getCurrentUserGrade());
-//        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
-//        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
-//    }
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+
+        EventDto actual = eventService.getEvent(1L, null);
+
+        assertEquals(eventDto.getId(), actual.getId());
+        assertEquals(eventDto.getAdditionalImages(), actual.getAdditionalImages());
+        assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
+        assertFalse(actual.isSubscribed());
+        assertFalse(actual.isFavorite());
+        assertNull(actual.getCurrentUserGrade());
+        verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
+        verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
+    }
+
+    @Test
+    void getEventWithCurrentUser() {
+        Event event = ModelUtils.getEvent();
+        EventDto eventDto = ModelUtils.getEventDto();
+        List<Long> eventIds = List.of(eventDto.getId());
+        Principal principal = ModelUtils.getPrincipal();
+        User user = ModelUtils.getUser();
+
+        event.setEventGrades(List.of(EventGrade.builder().grade(5).user(user).event(event).build()));
+
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(restClient.findByEmail(principal.getName())).thenReturn(testUserVo);
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+
+        EventDto actual = eventService.getEvent(1L, principal);
+
+        assertTrue(actual.isSubscribed());
+        assertTrue(actual.isFavorite());
+        assertEquals(5, actual.getCurrentUserGrade());
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+    }
 
     @Test
     void addAttenderToOpenEvent() {

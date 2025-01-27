@@ -158,10 +158,31 @@ public class EventController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventResponseDto> getEvent(
+    public ResponseEntity<EventDto> getEvent(
         @PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.ok().body(eventService.getEvent(eventId, principal));
+    }
+
+    /**
+     * Method for getting the event by event id version 2.
+     *
+     * @return {@link EventResponseDto} instance.
+     * @author Yurii Osovskyi.
+     */
+    @Operation(summary = "Get the event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/v2/{eventId}")
+    public ResponseEntity<EventResponseDto> getEventV2(
+        @PathVariable Long eventId,
+        @Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok().body(eventService.getEventV2(eventId, principal));
     }
 
     /**

@@ -193,6 +193,7 @@ public class SecurityConfig {
                     EVENTS,
                     EVENTS + "/addresses",
                     EVENTS + EVENT_ID,
+                    EVENTS + "/v2" + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
                     "/languages/codes",
                     SEARCH + ECO_NEWS,

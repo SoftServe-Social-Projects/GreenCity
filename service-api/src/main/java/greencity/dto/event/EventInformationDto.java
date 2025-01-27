@@ -15,7 +15,6 @@ import java.util.List;
 public class EventInformationDto {
     private String title;
     private String description;
-    private boolean isOpen;
     @NotEmpty
     private List<TagUaEnDto> tags;
 }

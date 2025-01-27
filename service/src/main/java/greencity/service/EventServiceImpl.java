@@ -224,26 +224,26 @@ public class EventServiceImpl implements EventService {
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_EVENT"), userVO);
     }
 
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // public EventDto getEvent(Long eventId, Principal principal) {
-    // Event event = eventRepo.findById(eventId)
-    // .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-    // if (principal != null) {
-    // User currentUser =
-    // modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-    // return buildEventDto(event, currentUser.getId());
-    // }
-    // return buildEventDto(event);
-    // }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EventDto getEvent(Long eventId, Principal principal) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        if (principal != null) {
+            User currentUser =
+                modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            return buildEventDto(event, currentUser.getId());
+        }
+        return buildEventDto(event);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public EventResponseDto getEvent(Long eventId, Principal principal) {
+    public EventResponseDto getEventV2(Long eventId, Principal principal) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         if (principal != null) {

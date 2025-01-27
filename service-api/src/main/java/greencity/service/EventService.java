@@ -41,8 +41,15 @@ public interface EventService {
      * @param eventId - event id.
      * @return {@link EventDto} instance.
      */
-    EventResponseDto getEvent(Long eventId, Principal principal);
-    // EventDto getEvent(Long eventId, Principal principal);
+    EventDto getEvent(Long eventId, Principal principal);
+
+    /**
+     * Method for getting Event instance.
+     *
+     * @param eventId - event id.
+     * @return {@link EventResponseDto} instance.
+     */
+    EventResponseDto getEventV2(Long eventId, Principal principal);
 
     /**
      * Method for getting all Event instances filtered.

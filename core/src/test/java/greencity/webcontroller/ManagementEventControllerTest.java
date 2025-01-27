@@ -211,23 +211,23 @@ class ManagementEventControllerTest {
         verify(eventService, times(1)).update(any(UpdateEventRequestDto.class), eq("user"), any(MultipartFile[].class));
     }
 
-//    @Test
-//    void testGetEditPage() throws Exception {
-//        EventDto mockEventDto = new EventDto();
-//        when(restClient.findByEmail(anyString())).thenReturn(new UserVO());
-//        mockEventDto.setId(1L);
-//
-//        when(eventService.getEvent(eq(1L), any(Principal.class))).thenReturn(mockEventDto);
-//
-//        mockMvc.perform(get(managementEventsLink + "/edit/{id}", 1L)
-//            .principal(() -> "user"))
-//            .andExpect(status().isOk())
-//            .andExpect(view().name("core/management_edit_event"))
-//            .andExpect(model().attributeExists("eventDto"))
-//            .andExpect(model().attribute("eventDto", mockEventDto));
-//
-//        verify(eventService, times(1)).getEvent(eq(1L), any(Principal.class));
-//    }
+    @Test
+    void testGetEditPage() throws Exception {
+        EventDto mockEventDto = new EventDto();
+        when(restClient.findByEmail(anyString())).thenReturn(new UserVO());
+        mockEventDto.setId(1L);
+
+        when(eventService.getEvent(eq(1L), any(Principal.class))).thenReturn(mockEventDto);
+
+        mockMvc.perform(get(managementEventsLink + "/edit/{id}", 1L)
+            .principal(() -> "user"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/management_edit_event"))
+            .andExpect(model().attributeExists("eventDto"))
+            .andExpect(model().attribute("eventDto", mockEventDto));
+
+        verify(eventService, times(1)).getEvent(eq(1L), any(Principal.class));
+    }
 
     @Test
     @SneakyThrows
