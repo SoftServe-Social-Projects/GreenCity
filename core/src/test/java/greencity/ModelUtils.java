@@ -1,5 +1,8 @@
 package greencity;
 
+import com.google.maps.model.LatLng;
+import com.google.maps.model.PriceLevel;
+import com.google.maps.model.RankBy;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.PageableDto;
@@ -24,6 +27,7 @@ import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -32,7 +36,9 @@ import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
@@ -561,5 +567,25 @@ public class ModelUtils {
         Map<String, String> body = new HashMap<>();
         body.put("role", ROLE_ADMIN);
         return body;
+    }
+
+    public static FilterPlacesApiDto getFilterPlacesApiDto() {
+        return FilterPlacesApiDto.builder()
+            .location(new LatLng(0d, 0d))
+            .radius(10000)
+            .keyword("test")
+            .rankBy(RankBy.PROMINENCE)
+            .openNow(true)
+            .minPrice(PriceLevel.FREE)
+            .maxPrice(PriceLevel.VERY_EXPENSIVE)
+            .build();
+    }
+
+    public static List<PlaceByBoundsDto> getPlaceByBoundsDto() {
+        return List.of(PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("testx")
+            .location(new LocationDto())
+            .build());
     }
 }

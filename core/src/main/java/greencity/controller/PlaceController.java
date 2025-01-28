@@ -5,6 +5,7 @@ import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
@@ -255,8 +256,9 @@ public class PlaceController {
     }
 
     /**
-     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * The method which return a list of {@link PlaceByBoundsDto} filtered by values
      * contained in the incoming {@link FilterPlaceDto} object.
+     * {@link PlaceByBoundsDto} are retrieved from the database
      *
      * @param filterDto contains all information about the filtering of the list.
      * @return a list of {@code PlaceByBoundsDto}
@@ -278,7 +280,38 @@ public class PlaceController {
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
         @Valid @RequestBody FilterPlaceDto filterDto,
-        @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
+    }
+
+    /**
+     * The method which return a list of {@link PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlacesApiDto} object.
+     * {@link PlaceByBoundsDto} are retrieved from Google Places API
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @return a list of {@code PlaceByBoundsDto}
+     */
+    @Operation(summary = "Return a list places from Google Geocoding API filtered by values contained "
+        + "in the incoming FilterPlaceDto object")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(example = FilterPlacesApiDto.defaultJson))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/filter/api")
+    public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlacesFromApi(
+        @Schema(
+            description = "Filters for places from API",
+            name = "FilterPlacesApiDto",
+            type = "object",
+            example = FilterPlacesApiDto.defaultJson) @RequestBody FilterPlacesApiDto filterDto,
+        @CurrentUser @Parameter(hidden = true) UserVO userVO) {
         return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
     }
 
