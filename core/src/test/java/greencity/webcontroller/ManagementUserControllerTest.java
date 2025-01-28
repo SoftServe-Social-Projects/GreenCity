@@ -184,10 +184,10 @@ class ManagementUserControllerTest {
     void saveUserTest() throws Exception {
         UserManagementDto dto = ModelUtils.getUserManagementDto();
 
-        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("id", dto.getId().toString()).param("name", dto.getName()).param("email", dto.getEmail())
-            .param("userCredo", dto.getUserCredo()).param("role", dto.getRole().toString())
-            .param("userStatus", dto.getUserStatus().toString())).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(dto)))
+            .andExpect(status().is2xxSuccessful());
 
         verify(restClient).managementRegisterUser(dto);
     }

@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Validated
@@ -98,9 +100,17 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    public String saveUser(@Valid UserManagementDto userDto) {
-        restClient.managementRegisterUser(userDto);
-        return "redirect:/management/users";
+    public ResponseEntity<?> saveUser(@Valid @RequestBody UserManagementDto userDto) {
+        try {
+            restClient.managementRegisterUser(userDto);
+            return ResponseEntity.ok().body(Map.of("message", "User successfully added!"));
+        } catch (HttpClientErrorException.BadRequest e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(List.of(Map.of("name", "email", "message", ErrorMessage.USER_WITH_EMAIL_EXIST)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", HttpStatus.INTERNAL_SERVER_ERROR));
+        }
     }
 
     /**

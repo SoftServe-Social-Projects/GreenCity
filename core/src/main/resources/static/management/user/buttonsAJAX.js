@@ -240,13 +240,38 @@ $(document).ready(function () {
 
     // Submit button in addUserModal
     $('#submitAddBtn').on('click', function (event) {
-        let form = document.getElementById("addUserForm");
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
+        event.preventDefault();
+
+        let form = $('#addUserForm');
+        if (!form[0].checkValidity()) {
+            form.addClass("was-validated");
+            return;
         }
-        form.classList.add("was-validated");
-    })
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(Object.fromEntries(new FormData(form[0]))),
+            success: function (response) {
+                alert(response.message);
+                window.location.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 400) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        let errorMessage = response.find(e => e.name === "email")?.message || "Невідома помилка.";
+                        alert("Помилка: " + errorMessage);
+                    } catch (e) {
+                        alert("Не вдалося розібрати відповідь сервера.");
+                    }
+                } else {
+                    alert("Помилка сервера. Статус: " + xhr.status);
+                }
+            }
+        });
+    });
 
     // Edit user button (popup)
     $('td .edit.eBtn').on('click', function (event) {
