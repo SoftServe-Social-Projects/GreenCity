@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CustomPageableHandlerMethodArgumentResolverTest {
+class CustomPageableHandlerMethodArgumentResolverTest {
     @Mock
     private SortPageableValidator sortPageableValidator;
 

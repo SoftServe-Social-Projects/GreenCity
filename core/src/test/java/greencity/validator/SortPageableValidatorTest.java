@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SortPageableValidatorTest {
+class SortPageableValidatorTest {
     private final SortPageableValidator sortPageableValidator = new SortPageableValidator();
 
     @Test
