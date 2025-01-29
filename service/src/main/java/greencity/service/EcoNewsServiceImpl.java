@@ -31,6 +31,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
+import greencity.rating.constant.RatingPointsNames;
 import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -102,8 +103,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"),
-            userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.CREATE_NEWS), userVO);
         userNotificationService.createNewNotification(userVO, NotificationType.ECONEWS_CREATED, toSave.getId(),
             toSave.getTitle());
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
@@ -118,7 +118,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
         final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         UserVO user = userService.findByEmail(email);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"), user);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.CREATE_NEWS), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         return ecoNewsDto;
@@ -240,7 +240,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNews.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_NEWS"), user);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.UNDO_CREATE_NEWS),
+            user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
 
