@@ -3,6 +3,12 @@ package greencity.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Defines the set of valid sortable fields used across the application. This
+ * enum is used in conjunction with the {@code Sortable} interface to validate
+ * sort parameters at the handler layer, preventing invalid sort fields from
+ * causing SQL errors.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum SortableFields {

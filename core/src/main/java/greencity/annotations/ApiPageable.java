@@ -22,5 +22,11 @@ import java.lang.annotation.Target;
     in = ParameterIn.QUERY, description = "Sorting criteria in the format: property(asc|desc). "
         + "Default sort order is ascending. " + "Multiple sort criteria are supported.")
 public @interface ApiPageable {
+    /**
+     * Specifies the DTO class that defines the sortable fields for this pageable
+     * endpoint. The class must implement the Sortable interface.
+     *
+     * @return the class of the DTO that defines valid sort fields
+     */
     Class<? extends Sortable> dtoClass();
 }

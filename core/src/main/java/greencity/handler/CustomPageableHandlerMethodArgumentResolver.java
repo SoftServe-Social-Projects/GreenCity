@@ -59,5 +59,4 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
             throw new IllegalArgumentException(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, param), e);
         }
     }
-
 }

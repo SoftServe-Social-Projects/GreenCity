@@ -39,6 +39,17 @@ class SortPageableValidatorTest {
     }
 
     @Test
+    void validateSortParametersWithMultipleSortFields() {
+        String sortableField1 = "id";
+        String sortableField2 = "name";
+        Sort multiSort = Sort.by(
+            Sort.Order.asc(sortableField1),
+            Sort.Order.desc(sortableField2));
+
+        sortPageableValidator.validateSortParameters(multiSort, UserFriendDto.class);
+    }
+
+    @Test
     void validateSortParametersWithInvalidDtoClass() {
         String sortableField = "id";
         Sort sort = Sort.by(sortableField);

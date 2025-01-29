@@ -151,8 +151,8 @@ public class ErrorMessage {
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not REQUESTED or user has not any assigned habits";
-    public static final String INVALID_SORTING_VALUE = "Invalid sorting value or direction (asc|desc)";
-    public static final String INVALID_DTO_CLASS = "Invalid DTO class";
+    public static final String INVALID_SORTING_VALUE = "Invalid sorting value";
+    public static final String INVALID_DTO_CLASS = "Invalid DTO class for sorting: must implement Sortable interface";
 
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
     public static final String WRONG_COUNT_OF_EVENT_DATES =

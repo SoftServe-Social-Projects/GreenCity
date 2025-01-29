@@ -122,5 +122,4 @@ class CustomPageableHandlerMethodArgumentResolverTest {
 
         assertEquals(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, "size"), exception.getMessage());
     }
-
 }

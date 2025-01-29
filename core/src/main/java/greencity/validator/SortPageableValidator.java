@@ -21,20 +21,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SortPageableValidator {
-    private static final Map<Class<? extends Sortable>, List<String>> VALID_FIELDS_MAP = new HashMap<>();
+    private static final Map<Class<? extends Sortable>, List<String>> VALID_FIELDS_MAP = initValidFieldsMap();
 
-    static {
-        VALID_FIELDS_MAP.put(AdminPlaceDto.class, new AdminPlaceDto().getSortableFields());
-        VALID_FIELDS_MAP.put(CommentDto.class, new CommentDto().getSortableFields());
-        VALID_FIELDS_MAP.put(EcoNewsGenericDto.class, new EcoNewsGenericDto().getSortableFields());
-        VALID_FIELDS_MAP.put(FactOfTheDayDTO.class, new FactOfTheDayDTO().getSortableFields());
-        VALID_FIELDS_MAP.put(HabitDto.class, new HabitDto().getSortableFields());
-        VALID_FIELDS_MAP.put(HabitManagementDto.class, new HabitManagementDto().getSortableFields());
-        VALID_FIELDS_MAP.put(PlaceCommentAdminDto.class, new PlaceCommentAdminDto().getSortableFields());
-        VALID_FIELDS_MAP.put(RatingPointsDto.class, new RatingPointsDto().getSortableFields());
-        VALID_FIELDS_MAP.put(RatingStatisticsDtoForTables.class,
+    private static Map<Class<? extends Sortable>, List<String>> initValidFieldsMap() {
+        Map<Class<? extends Sortable>, List<String>> validFieldsMap = new HashMap<>();
+        validFieldsMap.put(AdminPlaceDto.class, new AdminPlaceDto().getSortableFields());
+        validFieldsMap.put(CommentDto.class, new CommentDto().getSortableFields());
+        validFieldsMap.put(EcoNewsGenericDto.class, new EcoNewsGenericDto().getSortableFields());
+        validFieldsMap.put(FactOfTheDayDTO.class, new FactOfTheDayDTO().getSortableFields());
+        validFieldsMap.put(HabitDto.class, new HabitDto().getSortableFields());
+        validFieldsMap.put(HabitManagementDto.class, new HabitManagementDto().getSortableFields());
+        validFieldsMap.put(PlaceCommentAdminDto.class, new PlaceCommentAdminDto().getSortableFields());
+        validFieldsMap.put(RatingPointsDto.class, new RatingPointsDto().getSortableFields());
+        validFieldsMap.put(RatingStatisticsDtoForTables.class,
             new RatingStatisticsDtoForTables().getSortableFields());
-        VALID_FIELDS_MAP.put(UserFriendDto.class, new UserFriendDto().getSortableFields());
+        validFieldsMap.put(UserFriendDto.class, new UserFriendDto().getSortableFields());
+        return validFieldsMap;
     }
 
     public void validateSortParameters(Sort sort, Class<? extends Sortable> dtoClass) {
