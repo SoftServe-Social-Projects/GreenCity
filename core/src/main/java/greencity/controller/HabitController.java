@@ -531,7 +531,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/friends")
-    @ApiPageable(dtoClass = HabitDto.class)
+    @ApiPageable(dtoClass = UserFriendHabitInviteDto.class)
     public ResponseEntity<PageableDto<UserFriendHabitInviteDto>> findAllFriendsOfUserToBeInvited(
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) @Nullable String name,

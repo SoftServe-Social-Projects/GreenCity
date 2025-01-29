@@ -1,10 +1,13 @@
 package greencity.dto.friends;
 
 import greencity.dto.location.UserLocationDto;
+import greencity.enums.SortableFields;
 import org.junit.jupiter.api.Test;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserFriendDtoTest {
     @Test
@@ -56,4 +59,15 @@ class UserFriendDtoTest {
         assertNull(userFriendDto.getUserLocationDto());
     }
 
+    @Test
+    void getSortableFieldsShouldReturnExpectedFieldsTest() {
+        UserFriendDto dto = new UserFriendDto();
+        List<String> sortableFields = dto.getSortableFields();
+
+        assertTrue(sortableFields.contains(SortableFields.ID.getFieldName()));
+        assertTrue(sortableFields.contains(SortableFields.NAME.getFieldName()));
+        assertTrue(sortableFields.contains(SortableFields.EMAIL.getFieldName()));
+        assertTrue(sortableFields.contains(SortableFields.RATING.getFieldName()));
+        assertTrue(sortableFields.contains(SortableFields.MUTUAL_FRIENDS.getFieldName()));
+    }
 }

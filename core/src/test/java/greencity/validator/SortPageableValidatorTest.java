@@ -43,7 +43,7 @@ class SortPageableValidatorTest {
         String sortableField = "id";
         Sort sort = Sort.by(sortableField);
 
-        Class<? extends Sortable> dtoClass = UnknownDto.class;
+        Class<? extends Sortable> dtoClass = UnknownTestDto.class;
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> sortPageableValidator.validateSortParameters(sort, dtoClass));
@@ -51,7 +51,7 @@ class SortPageableValidatorTest {
         assertEquals(ErrorMessage.INVALID_DTO_CLASS, exception.getMessage());
     }
 
-    private static class UnknownDto implements Sortable {
+    private static class UnknownTestDto implements Sortable {
         @Override
         public List<String> getSortableFields() {
             return Collections.emptyList();
