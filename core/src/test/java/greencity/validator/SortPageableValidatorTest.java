@@ -7,8 +7,6 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,22 +18,22 @@ class SortPageableValidatorTest {
     @Test
     void validateSortParametersWithValidSortField() {
         String sortableField = "id";
-        Pageable pageable = PageRequest.of(0, 2, Sort.by(sortableField));
+        Sort sort = Sort.by(sortableField);
 
         Class<? extends Sortable> dtoClass = UserFriendDto.class;
 
-        sortPageableValidator.validateSortParameters(pageable, dtoClass);
+        sortPageableValidator.validateSortParameters(sort, dtoClass);
     }
 
     @Test
     void validateSortParametersWithInvalidSortField() {
         String invalidSortField = "1";
-        Pageable pageable = PageRequest.of(0, 2, Sort.by(invalidSortField));
+        Sort sort = Sort.by(invalidSortField);
 
         Class<? extends Sortable> dtoClass = UserFriendDto.class;
 
         UnsupportedSortException exception = assertThrows(UnsupportedSortException.class,
-            () -> sortPageableValidator.validateSortParameters(pageable, dtoClass));
+            () -> sortPageableValidator.validateSortParameters(sort, dtoClass));
 
         assertEquals(ErrorMessage.INVALID_SORTING_VALUE, exception.getMessage());
     }
@@ -43,12 +41,12 @@ class SortPageableValidatorTest {
     @Test
     void validateSortParametersWithInvalidDtoClass() {
         String sortableField = "id";
-        Pageable pageable = PageRequest.of(0, 2, Sort.by(sortableField));
+        Sort sort = Sort.by(sortableField);
 
         Class<? extends Sortable> dtoClass = UnknownDto.class;
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> sortPageableValidator.validateSortParameters(pageable, dtoClass));
+            () -> sortPageableValidator.validateSortParameters(sort, dtoClass));
 
         assertEquals(ErrorMessage.INVALID_DTO_CLASS, exception.getMessage());
     }

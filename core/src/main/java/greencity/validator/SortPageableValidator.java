@@ -16,7 +16,7 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,14 +37,14 @@ public class SortPageableValidator {
         VALID_FIELDS_MAP.put(UserFriendDto.class, new UserFriendDto().getSortableFields());
     }
 
-    public void validateSortParameters(Pageable pageable, Class<? extends Sortable> dtoClass) {
+    public void validateSortParameters(Sort sort, Class<? extends Sortable> dtoClass) {
         List<String> validFields = VALID_FIELDS_MAP.get(dtoClass);
 
         if (validFields == null) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_DTO_CLASS);
         }
 
-        pageable.getSort().forEach(order -> {
+        sort.forEach(order -> {
             String property = order.getProperty();
             if (!validFields.contains(property)) {
                 throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
