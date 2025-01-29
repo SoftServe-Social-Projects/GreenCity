@@ -1,6 +1,8 @@
 package greencity.service;
 
+import com.google.maps.model.GeocodingResult;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
@@ -193,7 +195,20 @@ public interface PlaceService {
      * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
-    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO);
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto,
+        UserVO userVO);
+
+    /**
+     * The method finds all {@link GeocodingResult}'s from {@link GoogleApiService}
+     * filtered by the parameters contained in {@param filterDto} object.
+     *
+     * @param filterDto contains objects whose values determine the filter
+     *                  parameters of the returned list.
+     * @return a list of {@link PlaceByBoundsDto}
+     * @author Hrenevych Ivan
+     */
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlacesApiDto filterDto,
+        UserVO userVO);
 
     /**
      * The method finds all {@link PlaceVO}'s filtered by the parameters contained
@@ -250,7 +265,7 @@ public interface PlaceService {
     List<FilterPlaceCategory> getAllPlaceCategories();
 
     /**
-     * Method for create new place From UI.
+     * Method to create new place From UI.
      */
     PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images);
 

@@ -12,6 +12,7 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
@@ -44,6 +45,7 @@ import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
@@ -74,6 +76,9 @@ import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
 import static greencity.ModelUtils.getPlaceUpdateDto;
 import static greencity.ModelUtils.getSearchPlacesDto;
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlacesSearchResultEn;
+import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -134,6 +139,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .language(language)
@@ -666,6 +672,25 @@ class PlaceServiceImplTest {
     }
 
     @Test
+    void getPlacesByFilterFromApiTest() {
+        FilterPlacesApiDto filterDto = getFilterPlacesApiDto();
+
+        when(googleApiService.getResultFromPlacesApi(filterDto, userVO)).thenReturn(getPlacesSearchResultEn());
+
+        var result = placeService.getPlacesByFilter(filterDto, userVO);
+        List<PlaceByBoundsDto> updatedResult = result.stream().map(el -> {
+            el.setId(1L);
+            el.getLocation().setId(1L);
+            return el;
+        }).toList();
+        List<PlaceByBoundsDto> expectedResult = getPlaceByBoundsDtoFromApi();
+
+        Assertions.assertArrayEquals(updatedResult.toArray(), expectedResult.toArray());
+
+        verify(googleApiService).getResultFromPlacesApi(filterDto, userVO);
+    }
+
+    @Test
     void filterPlaceBySearchPredicateTest() {
         Place place = getPlace();
         Pageable pageable = PageRequest.of(0, 1);
@@ -773,8 +798,32 @@ class PlaceServiceImplTest {
 
         assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
+        verify(userRepo).findByEmail(user.getEmail());
+    }
+
+    @Test
+    void addPlaceFromUiSaveAlreadyExistingLocation() {
+        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
+        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
+        String email = user.getEmail();
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
+        when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
+
+        double lat = ModelUtils.getGeocodingResult().getFirst().geometry.location.lat;
+        double lng = ModelUtils.getGeocodingResult().getFirst().geometry.location.lng;
+
+        when(locationService.existsByLatAndLng(lat, lng)).thenReturn(true);
+
+        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, email, null));
+
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
+        verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
+        verify(locationService).existsByLatAndLng(lat, lng);
+
+        verify(modelMapper, times(0)).map(placeResponse, Place.class);
     }
 
     @Test
