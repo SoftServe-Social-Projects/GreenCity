@@ -1,6 +1,7 @@
 package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.validation.annotation.Validated;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,4 +41,5 @@ public class CustomHabitDtoRequest {
     @Size(min = 1, message = ServiceValidationConstants.TAG_LIST_MIN_LENGTH)
     @Size(max = 3, message = ServiceValidationConstants.TAG_LIST_MAX_LENGTH)
     private Set<Long> tagIds;
+    private Set<UserFriendDto> friendsToInvite = new HashSet<>();
 }

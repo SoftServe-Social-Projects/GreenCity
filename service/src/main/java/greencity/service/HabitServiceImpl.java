@@ -5,6 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.HabitTranslationFilterDto;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
@@ -45,9 +46,11 @@ import greencity.repository.RatingPointsRepo;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
@@ -375,6 +378,8 @@ public class HabitServiceImpl implements HabitService {
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomToDoListItemToHabit(addCustomHabitDtoRequest, habit, user);
+        inviteFriendsToJoinHabit(addCustomHabitDtoRequest, user, habit);
+
         return buildAddCustomHabitDtoResponse(habit, user.getId());
     }
 
@@ -502,14 +507,15 @@ public class HabitServiceImpl implements HabitService {
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
             languageRepo.findByCode(AppConstant.LANGUAGE_CODE_UA).orElseThrow(NoSuchElementException::new)));
-        habitTranslationRepo.saveAll(habitTranslationListForUa);
 
         List<HabitTranslation> habitTranslationListForEn =
             mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.DEFAULT_LANGUAGE_CODE);
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
             languageRepo.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE).orElseThrow(NoSuchElementException::new)));
-        habitTranslationRepo.saveAll(habitTranslationListForEn);
+
+        habit.setHabitTranslations(Stream.concat(habitTranslationListForUa.stream(), habitTranslationListForEn.stream())
+            .collect(Collectors.toList()));
     }
 
     private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
@@ -530,6 +536,17 @@ public class HabitServiceImpl implements HabitService {
         customToDoListItems.forEach(customToDoListItem -> customToDoListItem.setUser(user));
         customToDoListItemRepo.saveAll(customToDoListItems);
         habit.setCustomToDoListItems(customToDoListItems);
+    }
+
+    private void inviteFriendsToJoinHabit(CustomHabitDtoRequest addCustomHabitDtoRequest, User user, Habit habit) {
+        if (!addCustomHabitDtoRequest.getFriendsToInvite().isEmpty()) {
+            List<Long> friendsIds = addCustomHabitDtoRequest.getFriendsToInvite().stream()
+                .map(UserFriendDto::getId)
+                .collect(Collectors.toList());
+            habitAssignService.inviteFriendForYourHabitWithEmailNotification(
+                modelMapper.map(user, UserVO.class), friendsIds, habit.getId(),
+                Locale.of(user.getLanguage().getCode()));
+        }
     }
 
     private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {

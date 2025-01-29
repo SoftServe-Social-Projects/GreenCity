@@ -65,6 +65,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -667,6 +668,8 @@ class HabitServiceImplTest {
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
         verify(fileService).convertToMultipartImage(any());
+        verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
 
     @Test
@@ -738,6 +741,8 @@ class HabitServiceImplTest {
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
         verify(fileService).upload(any(MultipartFile.class));
+        verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
 
     @Test
@@ -808,6 +813,83 @@ class HabitServiceImplTest {
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
+        verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
+    }
+
+    @Test
+    void addCustomHabitWithInvitedFriendsTest() throws IOException {
+        User user = ModelUtils.getUser();
+        Tag tag = ModelUtils.getTagHabitForServiceTest();
+        Language languageUa = ModelUtils.getLanguageUa();
+        Language languageEn = ModelUtils.getLanguage();
+        Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        habit.setTags(Set.of(tag));
+        habit.setUserId(1L);
+        habit.setImage(imageToEncode);
+        CustomToDoListItemResponseDto customToDoListItemResponseDto =
+            ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
+        CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
+
+        CustomHabitDtoRequest addCustomHabitDtoRequest =
+            ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
+        addCustomHabitDtoRequest.setFriendsToInvite(Set.of(ModelUtils.getUserFriendDto()));
+        CustomHabitDtoResponse addCustomHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
+        addCustomHabitDtoResponse.setImage(imageToEncode);
+
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
+
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(
+            habitTranslationDto.setLanguageCode("en"),
+            habitTranslationDto.setLanguageCode("ua"));
+
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
+        List<HabitTranslation> habitTranslationList = List.of(
+            habitTranslationUa.setLanguage(languageEn),
+            habitTranslationUa.setLanguage(languageUa));
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
+        when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "ua"))
+            .thenReturn(List.of(habitTranslationUa));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto), "en"))
+            .thenReturn(List.of(habitTranslationUa));
+        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
+        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
+        when(customToDoListMapper.mapAllToList(List.of(customToDoListItemResponseDto)))
+            .thenReturn(List.of(customToDoListItem));
+        when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
+        when(customToDoListResponseDtoMapper.mapAllToList(List.of(customToDoListItem)))
+            .thenReturn(List.of(customToDoListItemResponseDto));
+        when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
+        when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
+        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
+        doNothing().when(habitAssignService).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
+
+        assertEquals(addCustomHabitDtoResponse,
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+
+        verify(userRepo).findByEmail(user.getEmail());
+        verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
+        verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
+        verify(tagsRepo).findById(20L);
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "en");
+        verify(languageRepo, times(2)).findByCode(anyString());
+        verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
+        verify(customToDoListMapper).mapAllToList(anyList());
+        verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
+        verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
+        verify(habitTranslationRepo).findAllByHabit(habit);
+        verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
+        verify(habitAssignService, times(1)).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
 
     @Test
@@ -846,6 +928,8 @@ class HabitServiceImplTest {
         verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
         verify(habitTranslationMapper, times(0)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo).findByCode(anyString());
+        verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
 
     @Test
@@ -886,6 +970,8 @@ class HabitServiceImplTest {
         verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "ua");
         verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDto), "en");
         verify(languageRepo, times(2)).findByCode(anyString());
+        verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
+            any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
 
     @Test
