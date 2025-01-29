@@ -24,6 +24,7 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -897,6 +898,28 @@ public class EventServiceImpl implements EventService {
         return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersLikedEvents().stream().map(u -> modelMapper.map(u, UserProfilePictureDto.class))
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersDislikedEvents().stream().map(u -> modelMapper.map(u, UserProfilePictureDto.class))
+            .collect(Collectors.toSet());
+    }
+
     @Override
     public void addToRequested(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
@@ -1004,6 +1027,30 @@ public class EventServiceImpl implements EventService {
 
         userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
             NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<EventAttenderDto> getAttendersPage(Long eventId, Pageable pageable) {
+        return eventRepo.getAttendersPageByEventId(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<UserProfilePictureDto> getUsersLikedEventPage(Long eventId, Pageable pageable) {
+        return eventRepo.getUsersLikedEventProfilePicturesPage(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable) {
+        return eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable);
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {

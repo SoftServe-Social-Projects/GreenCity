@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="dropdownWrapper(title, total, id)">
+    <div class="dropdown__header"
+         th:data-id="${id}"
+         onclick="handleDropDownClick(this)">
+        <h3 class="dropdown__title" th:text="${title} + ': ' + ${total}"></h3>
+        <span class="dropdown__arrow">▼</span>
+    </div>
+    <div th:attr="id=${id}" class="dropdown__content-item" style="display: none;"></div>
+</div>
+</body>
+</html>
