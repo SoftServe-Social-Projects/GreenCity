@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<span th:fragment="avatarList(images, maxImages)">
+    <div th:if="${images != null and not #lists.isEmpty(images)}" class="avatar-container">
+        <div th:each="image, iterStat : ${images}"
+             th:if="${iterStat.index < maxImages}"
+             class="avatar-wrapper"
+             th:style="|z-index: ${iterStat.index + 1}|">
+            <img th:src="@{${image}}" class="rounded-circle avatar">
+        </div>
+    </div>
+</span>
+</body>
+</html>
