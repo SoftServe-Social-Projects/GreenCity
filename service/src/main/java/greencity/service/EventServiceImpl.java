@@ -743,6 +743,7 @@ public class EventServiceImpl implements EventService {
             .orElse(null);
         setFollowers(List.of(), userId);
         setSubscribes(List.of(), userId);
+        eventResponseDto.setCurrentUserGrade(currentUserGrade);
 
         return eventResponseDto;
     }

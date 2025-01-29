@@ -13,6 +13,7 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
@@ -538,6 +539,51 @@ class EventServiceImplTest {
         assertNull(actual.getCurrentUserGrade());
         verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
         verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
+    }
+
+    @Test
+    void getEventV2WithoutUserTest() {
+        Event event = ModelUtils.getEvent();
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(event, EventResponseDto.class)).thenReturn(eventResponseDto);
+
+        EventResponseDto actual = eventService.getEventV2(1L, null);
+
+        assertEquals(eventResponseDto.getId(), actual.getId());
+        assertEquals(eventResponseDto.getAdditionalImages(), actual.getAdditionalImages());
+        assertEquals(eventResponseDto.getTitleImage(), actual.getTitleImage());
+        assertFalse(actual.isSubscribed());
+        assertFalse(actual.isFavorite());
+
+        verify(eventRepo).findById(1L);
+        verify(modelMapper).map(event, EventResponseDto.class);
+    }
+
+    @Test
+    void getEventV2WithCurrentUserTest() {
+        Event event = ModelUtils.getEvent();
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+        Principal principal = ModelUtils.getPrincipal();
+        User user = ModelUtils.getUser();
+
+        event.setEventGrades(List.of(EventGrade.builder().grade(50).user(user).event(event).build()));
+
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(restClient.findByEmail(principal.getName())).thenReturn(testUserVo);
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(event, EventResponseDto.class)).thenReturn(eventResponseDto);
+
+        EventResponseDto actual = eventService.getEventV2(1L, principal);
+
+        assertFalse(actual.isSubscribed());
+        assertFalse(actual.isFavorite());
+        assertEquals(50, actual.getCurrentUserGrade());
+
+        verify(restClient).findByEmail(principal.getName());
+        verify(eventRepo).findById(1L);
+        verify(modelMapper).map(event, EventResponseDto.class);
     }
 
     @Test

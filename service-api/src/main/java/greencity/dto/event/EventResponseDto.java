@@ -53,5 +53,5 @@ public class EventResponseDto {
 
     private Double eventRate;
 
-    private Double currentUserGrade;
+    private Integer currentUserGrade;
 }

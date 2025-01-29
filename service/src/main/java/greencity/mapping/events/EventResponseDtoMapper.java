@@ -8,17 +8,14 @@ import greencity.dto.event.EventResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.User;
 import greencity.entity.event.Event;
-import greencity.entity.event.EventDateLocation;
-import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
-import lombok.NonNull;
+import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +23,7 @@ import java.util.stream.Collectors;
  * Mapper class for converting {@link Event} into {@link EventResponseDto}.
  */
 @Component
-public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
+public class EventResponseDtoMapper extends AbstractConverter<Event, EventResponseDto> {
     private static final String LANGUAGE_UA = "ua";
     private static final String LANGUAGE_EN = "en";
     private static final int MAX_ADDITIONAL_IMAGES = 4;
@@ -34,7 +31,7 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
     private final CommentService commentService;
 
     @Autowired
-    public EventMapper(@Lazy CommentService commentService) {
+    public EventResponseDtoMapper(@Lazy CommentService commentService) {
         this.commentService = commentService;
     }
 
@@ -53,12 +50,12 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
                 .map(tag -> TagUaEnDto.builder()
                     .id(tag.getId())
                     .nameUa(tag.getTagTranslations().stream()
-                        .filter(tt -> LANGUAGE_EN.equals(tt.getLanguage().getCode()))
+                        .filter(tt -> LANGUAGE_UA.equals(tt.getLanguage().getCode()))
                         .findFirst()
                         .map(TagTranslation::getName)
                         .orElse(null))
                     .nameEn(tag.getTagTranslations().stream()
-                        .filter(tt -> LANGUAGE_UA.equals(tt.getLanguage().getCode()))
+                        .filter(tt -> LANGUAGE_EN.equals(tt.getLanguage().getCode()))
                         .findFirst()
                         .map(TagTranslation::getName)
                         .orElse(null))
@@ -105,29 +102,16 @@ public class EventMapper extends AbstractConverter<Event, EventResponseDto> {
             .isOpen(event.isOpen())
             .dates(dateInformation)
             .titleImage(event.getTitleImage())
-            .isRelevant(isRelevantCheck(event.getDates()))
+            .isRelevant(EventUtils.isRelevant(event.getDates()))
             .likes(event.getUsersLikedEvents().size())
             .dislikes(event.getUsersDislikedEvents().size())
             .countComments(commentService.countCommentsForEvent(event.getId()))
             .type(event.getType())
-            .eventRate(calculateEventRate(event.getEventGrades()))
-            .currentUserGrade(organizer.getRating())
+            .eventRate(EventUtils.calculateEventRate(event.getEventGrades()))
             .additionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink)
                 .limit(MAX_ADDITIONAL_IMAGES)
                 .toList())
             .build();
-    }
-
-    private boolean isRelevantCheck(@NonNull List<EventDateLocation> dates) {
-        return dates.getLast().getFinishDate().isAfter(ZonedDateTime.now())
-            || dates.getLast().getFinishDate().isEqual(ZonedDateTime.now());
-    }
-
-    private double calculateEventRate(List<EventGrade> eventGrades) {
-        return eventGrades.stream()
-            .mapToInt(EventGrade::getGrade)
-            .average()
-            .orElse(0.0);
     }
 }

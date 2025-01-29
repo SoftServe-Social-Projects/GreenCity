@@ -42,8 +42,11 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventInformationDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
@@ -3430,5 +3433,42 @@ public class ModelUtils {
             "Category",
             "Category Ua",
             1L);
+    }
+
+    public static EventResponseDto getEventResponseDto() {
+        return EventResponseDto.builder()
+            .id(1L)
+            .eventInformation(EventInformationDto.builder()
+                .title("Title")
+                .description("New Test Event")
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build()))
+                .build())
+            .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
+            .creationDate(LocalDate.of(2025, 1, 10))
+            .isOpen(true)
+            .dates(List.of(
+                EventDateInformationDto.builder()
+                    .startDate(ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC))
+                    .finishDate(ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC))
+                    .onlineLink("www.link.com")
+                    .coordinates(getAddressDtoCorrect()).build()))
+            .type(EventType.OFFLINE)
+            .isRelevant(true)
+            .countComments(1)
+            .isSubscribed(false)
+            .isFavorite(false)
+            .isOrganizedByFriend(false)
+            .build();
+    }
+
+    public static EventDateLocation createEventDateLocation(ZonedDateTime start, ZonedDateTime finish) {
+        return EventDateLocation.builder()
+            .startDate(start)
+            .finishDate(finish)
+            .build();
     }
 }

@@ -18,8 +18,11 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventInformationDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -39,6 +42,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
@@ -59,6 +63,7 @@ import greencity.entity.User;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
+import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
@@ -66,8 +71,11 @@ import greencity.enums.UserStatus;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -587,5 +595,56 @@ public class ModelUtils {
             .name("testx")
             .location(new LocationDto())
             .build());
+    }
+
+    public static EventResponseDto getEventResponseDto() {
+        return EventResponseDto.builder()
+            .id(1L)
+            .eventInformation(EventInformationDto.builder()
+                .title("Test Event")
+                .description("New Test Event")
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build()))
+                .build())
+            .organizer(EventAuthorDto.builder().id(1L).name("Test").email("test@email.com").build())
+            .creationDate(LocalDate.of(2025, 1, 10))
+            .isOpen(true)
+            .dates(List.of(
+                EventDateInformationDto.builder()
+                    .startDate(ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC))
+                    .finishDate(ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC))
+                    .onlineLink("www.testlink.com")
+                    .coordinates(AddressDto.builder()
+                        .latitude(50.44628775288652)
+                        .longitude(30.49364829378446)
+                        .streetEn("Halytska Square")
+                        .streetUa("Галицька площа")
+                        .houseNumber("1")
+                        .cityEn("Kyiv")
+                        .cityUa("Київ")
+                        .regionEn("Kyiv")
+                        .regionUa("місто Київ")
+                        .countryEn("Ukraine")
+                        .countryUa("Україна")
+                        .formattedAddressEn("Halytska Sq, 1, Kyiv, Ukraine, 02000")
+                        .formattedAddressUa("Галицька пл., 1, Київ, Україна, 02000")
+                        .build())
+                    .build()))
+            .titleImage("https://test.png")
+            .additionalImages(List.of("https://test1.png", "https://test2.png"))
+            .type(EventType.OFFLINE)
+            .isRelevant(true)
+            .likes(3)
+            .dislikes(1)
+            .countComments(1)
+            .eventRate(20.0)
+            .currentUserGrade(50)
+            .isSubscribed(false)
+            .isFavorite(false)
+            .isOrganizedByFriend(false)
+            .build();
     }
 }
