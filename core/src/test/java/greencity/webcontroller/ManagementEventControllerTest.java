@@ -78,6 +78,7 @@ class ManagementEventControllerTest {
 
     @BeforeEach
     void setUp() {
+        Locale.setDefault(Locale.ENGLISH);
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .setValidator(mockValidator)
