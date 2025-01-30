@@ -34,6 +34,9 @@ public class AdminPlaceDto implements Sortable {
     private Boolean isFavorite;
     private List<String> images;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

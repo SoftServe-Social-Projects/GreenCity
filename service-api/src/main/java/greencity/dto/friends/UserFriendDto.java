@@ -51,6 +51,9 @@ public class UserFriendDto implements Sortable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

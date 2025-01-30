@@ -19,6 +19,9 @@ public class RatingPointsDto implements Sortable {
     private Integer points;
     private Status status;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

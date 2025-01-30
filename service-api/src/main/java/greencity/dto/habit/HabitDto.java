@@ -43,6 +43,9 @@ public class HabitDto implements Sortable {
     private int likes;
     private int dislikes;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

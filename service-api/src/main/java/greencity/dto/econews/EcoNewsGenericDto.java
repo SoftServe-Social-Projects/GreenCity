@@ -59,6 +59,9 @@ public class EcoNewsGenericDto implements Sortable {
 
     private boolean isFavorite;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

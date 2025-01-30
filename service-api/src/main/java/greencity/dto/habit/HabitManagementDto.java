@@ -34,6 +34,9 @@ public class HabitManagementDto implements Serializable, Sortable {
     private Boolean isCustomHabit;
     private Boolean isDeleted;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

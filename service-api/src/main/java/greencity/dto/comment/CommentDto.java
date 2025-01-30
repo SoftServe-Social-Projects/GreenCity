@@ -52,6 +52,9 @@ public class CommentDto implements Sortable {
     @Max(5)
     private List<String> additionalImages;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

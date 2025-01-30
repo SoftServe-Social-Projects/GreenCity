@@ -26,6 +26,9 @@ public class RatingStatisticsDtoForTables implements Sortable {
     private long userId;
     private String userEmail;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

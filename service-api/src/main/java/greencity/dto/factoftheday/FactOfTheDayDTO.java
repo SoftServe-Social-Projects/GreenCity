@@ -22,6 +22,9 @@ public class FactOfTheDayDTO implements Sortable {
     private ZonedDateTime createDate;
     private Set<TagDto> tags;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(

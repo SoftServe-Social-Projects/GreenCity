@@ -12,6 +12,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class PageableConfig implements WebMvcConfigurer {
+    private final CustomSortHandlerMethodArgumentResolver customSortResolver;
+
+    public PageableConfig(CustomSortHandlerMethodArgumentResolver customSortResolver) {
+        this.customSortResolver = customSortResolver;
+    }
+
     @Bean
     public SortPageableValidator sortPageableValidator() {
         return new SortPageableValidator();
@@ -30,16 +36,12 @@ public class PageableConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Sets max page size for pageable objects and adds custom validation for sort
-     * parameters.
+     * Adds custom pageable and sort resolvers to the list of argument resolvers.
      */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         CustomPageableHandlerMethodArgumentResolver customResolver =
-            new CustomPageableHandlerMethodArgumentResolver(customSortResolver(
-                sortPageableValidator(),
-                sortHandlerMethodArgumentResolver()));
-        customResolver.setMaxPageSize(100);
+            new CustomPageableHandlerMethodArgumentResolver(customSortResolver);
         argumentResolvers.add(customResolver);
         WebMvcConfigurer.super.addArgumentResolvers(argumentResolvers);
     }

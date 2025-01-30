@@ -1,10 +1,12 @@
 package greencity.dto.habit;
 
 import greencity.enums.SortableFields;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HabitDtoTest {
 
@@ -12,12 +14,14 @@ class HabitDtoTest {
     void getSortableFields() {
         HabitDto habitDto = new HabitDto();
         List<String> sortableFields = habitDto.getSortableFields();
+        Set<String> expectedFields = Set.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.DEFAULT_DURATION.getFieldName(),
+            SortableFields.AMOUNT_ACQUIRED_USERS.getFieldName(),
+            SortableFields.COMPLEXITY.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.DISLIKES.getFieldName());
 
-        assertTrue(sortableFields.contains(SortableFields.ID.getFieldName()));
-        assertTrue(sortableFields.contains(SortableFields.DEFAULT_DURATION.getFieldName()));
-        assertTrue(sortableFields.contains(SortableFields.AMOUNT_ACQUIRED_USERS.getFieldName()));
-        assertTrue(sortableFields.contains(SortableFields.COMPLEXITY.getFieldName()));
-        assertTrue(sortableFields.contains(SortableFields.LIKES.getFieldName()));
-        assertTrue(sortableFields.contains(SortableFields.DISLIKES.getFieldName()));
+        assertEquals(expectedFields, new HashSet<>(sortableFields));
     }
 }

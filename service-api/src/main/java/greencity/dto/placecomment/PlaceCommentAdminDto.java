@@ -20,6 +20,9 @@ public class PlaceCommentAdminDto implements Sortable {
     private List<PhotoReturnDto> photos;
     private AdminPlaceDto place;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSortableFields() {
         return List.of(
