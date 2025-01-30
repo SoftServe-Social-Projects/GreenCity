@@ -346,6 +346,52 @@ $(document).ready(function () {
 
     });
 
+    //generate EcoNews content button in addEcoNewsModal
+    $('#toggleGenerateEcoNewsForm').on('click', function (event) {
+        const form = document.getElementById('generateEcoNewsForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+
+    $('#generateEcoNewsContent').on('click', function (event) {
+        const query = $('#generateQueryInput').val().trim();
+        const language = localStorage.getItem("language") || "en";
+        const locale = language === "ua" ? "uk-UA" : "en-US";
+
+        const $button = $(this);
+        $button.prop('disabled', true);
+        document.getElementById("errorModalGenerateContent").innerText = 'Generating content...';
+
+        $.ajax({
+            url: '/ai/generate/eco-news',
+            type: 'GET',
+            data: { query: query },
+            headers: { 'Accept-Language': locale },
+            contentType: 'application/json',
+            success: function (response) {
+                const titleMatch = response.match(/\*\*Title:\s*(.+?)\s*\*\*/) || response.match(/\*\*\s*(.+?)\s*\*\*/);
+
+                if (titleMatch) {
+                    const title = titleMatch[1];
+                    $('#inputTitle').val(title);
+
+                    const updatedContent = response.replace(titleMatch[0], '').trim();
+
+                    tinymce.get('ecoNewsContent').setContent(updatedContent);
+                } else {
+                    tinymce.get('ecoNewsContent').setContent(response);
+                }
+                document.getElementById("errorModalGenerateContent").innerText = '';
+            },
+            error: function (xhr, status, error) {
+                document.getElementById("errorModalGenerateContent").innerText =
+                    'Failed to generate Eco News content. Please try again.';
+            },
+            complete: function() {
+                $button.prop('disabled', false);
+            }
+        });
+    });
+
     //view users who liked/disliked modal
     $('.open-likesButton').on("click", function () {
         let newsId = $(this).data('id');
