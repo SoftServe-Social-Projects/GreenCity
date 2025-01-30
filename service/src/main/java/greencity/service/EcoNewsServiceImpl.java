@@ -102,8 +102,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"),
-            modelMapper.map(toSave, UserVO.class));
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"), userVO);
         userNotificationService.createNewNotification(userVO, NotificationType.ECONEWS_CREATED, toSave.getId(),
             toSave.getTitle());
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
