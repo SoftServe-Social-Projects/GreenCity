@@ -357,6 +357,10 @@ $(document).ready(function () {
         const language = localStorage.getItem("language") || "en";
         const locale = language === "ua" ? "uk-UA" : "en-US";
 
+        const $button = $(this);
+        $button.prop('disabled', true);
+        document.getElementById("errorModalGenerateContent").innerText = 'Generating content...';
+
         $.ajax({
             url: '/ai/generate/eco-news',
             type: 'GET',
@@ -376,11 +380,14 @@ $(document).ready(function () {
                 } else {
                     tinymce.get('ecoNewsContent').setContent(response);
                 }
+                document.getElementById("errorModalGenerateContent").innerText = '';
             },
             error: function (xhr, status, error) {
-                console.error('Error generating Eco News content:', status, error);
                 document.getElementById("errorModalGenerateContent").innerText =
                     'Failed to generate Eco News content. Please try again.';
+            },
+            complete: function() {
+                $button.prop('disabled', false);
             }
         });
     });
