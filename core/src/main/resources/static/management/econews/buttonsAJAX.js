@@ -364,7 +364,6 @@ $(document).ready(function () {
             headers: { 'Accept-Language': locale },
             contentType: 'application/json',
             success: function (response) {
-                console.log(response);
                 const titleMatch = response.match(/\*\*Title:\s*(.+?)\s*\*\*/) || response.match(/\*\*\s*(.+?)\s*\*\*/);
 
                 if (titleMatch) {
