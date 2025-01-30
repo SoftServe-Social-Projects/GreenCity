@@ -64,4 +64,16 @@ class AIControllerTest {
 
         verify(aiService, times(1)).getNews(eq(testLocale.getDisplayLanguage()), any());
     }
+
+    @Test
+    void creatingEcoNewsReturnsEcoNewsFromAIServiceWithLocaleUATest() throws Exception {
+        Locale testLocale = Locale.forLanguageTag("ua");
+
+        mockMvc.perform(get("/ai/generate/eco-news")
+            .principal(principal)
+            .locale(testLocale))
+            .andExpect(status().isOk());
+
+        verify(aiService, times(1)).getNews(eq("українська"), any());
+    }
 }
