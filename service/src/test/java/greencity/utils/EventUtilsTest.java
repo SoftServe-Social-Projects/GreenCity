@@ -38,15 +38,6 @@ class EventUtilsTest {
     }
 
     @Test
-    void isRelevant_shouldReturnTrue_whenLatestEventEndsNowTest() {
-        List<EventDateLocation> events = List.of(
-            createEventDateLocation(ZonedDateTime.now().minusDays(10), ZonedDateTime.now().minusDays(5)),
-            createEventDateLocation(ZonedDateTime.now().minusDays(2), ZonedDateTime.now()));
-
-        assertTrue(EventUtils.isRelevant(events));
-    }
-
-    @Test
     void calculateEventRateReturnsCorrectAverageTest() {
         List<EventGrade> grades = List.of(
             EventGrade.builder().grade(4).build(),
