@@ -51,4 +51,22 @@ class EventUtilsTest {
         List<EventGrade> grades = List.of(EventGrade.builder().grade(5).build());
         assertEquals(5.0, EventUtils.calculateEventRate(grades));
     }
+
+    @Test
+    void calculateEventRateReturnsZeroForEmptyListTest() {
+        assertEquals(0.0, EventUtils.calculateEventRate(List.of()));
+    }
+
+    @Test
+    void calculateEventRateHandlesNullInputTest() {
+        assertEquals(0.0, EventUtils.calculateEventRate(null));
+    }
+
+    @Test
+    void calculateEventRateHandlesInvalidGradesTest() {
+        List<EventGrade> grades = List.of(
+            EventGrade.builder().grade(-1).build(),
+            EventGrade.builder().grade(6).build());
+        assertEquals(6.0, EventUtils.calculateEventRate(grades));
+    }
 }

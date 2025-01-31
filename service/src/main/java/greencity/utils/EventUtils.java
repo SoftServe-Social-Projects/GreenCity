@@ -17,8 +17,12 @@ public class EventUtils {
     }
 
     public static double calculateEventRate(List<EventGrade> eventGrades) {
+        if (eventGrades == null) {
+            return 0.0;
+        }
         return eventGrades.stream()
             .mapToInt(EventGrade::getGrade)
+            .filter(grade -> grade > 0)
             .average()
             .orElse(0.0);
     }

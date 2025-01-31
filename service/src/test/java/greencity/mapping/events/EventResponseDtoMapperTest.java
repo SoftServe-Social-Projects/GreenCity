@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import static greencity.ModelUtils.getEvent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 class EventResponseDtoMapperTest {
@@ -39,10 +37,10 @@ class EventResponseDtoMapperTest {
     }
 
     @Test
-    void isRelevantFieldTest() {
-        when(commentService.countCommentsForEvent(any())).thenReturn(0);
+    void convertHasNullAddressTest() {
         Event event = getEvent();
-        EventResponseDto result = mapper.convert(event);
-        assertTrue(result.getIsRelevant());
+        event.getDates().forEach(date -> date.setAddress(null));
+
+        assertThrows(AssertionError.class, () -> mapper.convert(event));
     }
 }

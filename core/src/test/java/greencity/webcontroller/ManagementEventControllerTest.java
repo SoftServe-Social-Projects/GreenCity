@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,14 +76,22 @@ class ManagementEventControllerTest {
     private Principal principal;
     @Mock
     private Validator mockValidator;
+    @Mock
+    private Locale defaultLocale;
 
     @BeforeEach
     void setUp() {
+        defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.ENGLISH);
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .setValidator(mockValidator)
             .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        Locale.setDefault(defaultLocale);
     }
 
     @Test

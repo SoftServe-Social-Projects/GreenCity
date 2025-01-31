@@ -615,22 +615,7 @@ public class ModelUtils {
                     .startDate(ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC))
                     .finishDate(ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC))
                     .onlineLink("www.testlink.com")
-                    .coordinates(AddressDto.builder()
-                        .latitude(50.44628775288652)
-                        .longitude(30.49364829378446)
-                        .streetEn("Halytska Square")
-                        .streetUa("Галицька площа")
-                        .houseNumber("1")
-                        .cityEn("Kyiv")
-                        .cityUa("Київ")
-                        .regionEn("Kyiv")
-                        .regionUa("місто Київ")
-                        .countryEn("Ukraine")
-                        .countryUa("Україна")
-                        .formattedAddressEn("Halytska Sq, 1, Kyiv, Ukraine, 02000")
-                        .formattedAddressUa("Галицька пл., 1, Київ, Україна, 02000")
-                        .build())
-                    .build()))
+                    .coordinates(getAddressDtoCorrect()).build()))
             .titleImage("https://test.png")
             .additionalImages(List.of("https://test1.png", "https://test2.png"))
             .type(EventType.OFFLINE)
@@ -643,6 +628,22 @@ public class ModelUtils {
             .isSubscribed(false)
             .isFavorite(false)
             .isOrganizedByFriend(false)
+            .build();
+    }
+
+    public static AddressDto getAddressDtoCorrect() {
+        return AddressDto.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
             .build();
     }
 }
