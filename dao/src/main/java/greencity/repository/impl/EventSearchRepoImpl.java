@@ -145,7 +145,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     private void addEventTimePredicate(EventTime eventTime, Root<Event> eventRoot, List<Predicate> predicates) {
         if (eventTime != null) {
             ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates, JoinType.LEFT);
-            if (eventTime == EventTime.FUTURE) {
+            if (eventTime == EventTime.UPCOMING) {
                 predicates.add(
                     criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
             } else if (eventTime == EventTime.PAST) {
