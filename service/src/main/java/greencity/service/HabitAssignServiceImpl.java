@@ -42,9 +42,9 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitInvitationStatus;
-import greencity.enums.ToDoListItemStatus;
+import greencity.enums.InvitationStatus;
 import greencity.enums.NotificationType;
+import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -1652,7 +1652,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .inviterHabitAssign(inviterHabitAssign)
             .inviter(inviterHabitAssign.getUser())
             .invitee(inviteeHabitAssign.getUser())
-            .status(HabitInvitationStatus.PENDING)
+            .status(InvitationStatus.PENDING)
             .build();
     }
 

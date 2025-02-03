@@ -1,6 +1,6 @@
 package greencity.enums;
 
-public enum HabitInvitationStatus {
+public enum InvitationStatus {
     PENDING,
     ACCEPTED,
     REJECTED

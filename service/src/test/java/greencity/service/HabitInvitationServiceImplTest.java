@@ -7,7 +7,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitInvitationStatus;
+import greencity.enums.InvitationStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
@@ -59,7 +59,7 @@ class HabitInvitationServiceImplTest {
         habitInvitation1.setInviterHabitAssign(habitAssign1);
         HabitInvitation habitInvitation2 = new HabitInvitation();
         habitInvitation2.setInviteeHabitAssign(habitAssign2);
-        habitInvitation2.setStatus(HabitInvitationStatus.ACCEPTED);
+        habitInvitation2.setStatus(InvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findByInviteeHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation1));
         when(habitInvitationRepo.findByInviterHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation2));
@@ -87,9 +87,9 @@ class HabitInvitationServiceImplTest {
         habitAssign2.setUser(user2);
 
         HabitInvitation habitInvitation1 = new HabitInvitation();
-        habitInvitation1.setInviterHabitAssign(habitAssign1).setStatus(HabitInvitationStatus.ACCEPTED);
+        habitInvitation1.setInviterHabitAssign(habitAssign1).setStatus(InvitationStatus.ACCEPTED);
         HabitInvitation habitInvitation2 = new HabitInvitation();
-        habitInvitation2.setInviteeHabitAssign(habitAssign2).setStatus(HabitInvitationStatus.ACCEPTED);
+        habitInvitation2.setInviteeHabitAssign(habitAssign2).setStatus(InvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findByInviteeHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation1));
         when(habitInvitationRepo.findByInviterHabitAssignId(habitAssignId)).thenReturn(List.of(habitInvitation2));
@@ -152,13 +152,13 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.PENDING);
+        habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
         when(habitAssignRepo.findById(habitAssign1.getId())).thenReturn(Optional.of(habitAssign1));
         habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
 
-        assertEquals(HabitInvitationStatus.ACCEPTED, habitInvitation.getStatus());
+        assertEquals(InvitationStatus.ACCEPTED, habitInvitation.getStatus());
         verify(habitInvitationRepo).save(habitInvitation);
     }
 
@@ -176,7 +176,7 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.PENDING);
+        habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
         when(habitAssignRepo.findById(habitAssign1.getId())).thenReturn(Optional.empty());
@@ -217,7 +217,7 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.PENDING);
+        habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
@@ -238,7 +238,7 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.ACCEPTED);
+        habitInvitation.setStatus(InvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
@@ -263,7 +263,7 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.PENDING);
+        habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
@@ -301,7 +301,7 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.PENDING);
+        habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
@@ -326,7 +326,7 @@ class HabitInvitationServiceImplTest {
         HabitInvitation habitInvitation = new HabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
-        habitInvitation.setStatus(HabitInvitationStatus.ACCEPTED);
+        habitInvitation.setStatus(InvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 

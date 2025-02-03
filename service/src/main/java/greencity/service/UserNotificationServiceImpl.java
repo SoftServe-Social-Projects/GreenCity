@@ -7,9 +7,11 @@ import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.User;
+import greencity.enums.InvitationStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.exception.exceptions.NotFoundException;
@@ -48,6 +50,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final HabitInvitationService habitInvitationService;
+    private final NotificationFriendService notificationFriendService;
     private final SimpMessagingTemplate messagingTemplate;
     private static final String TOPIC = "/topic/";
     private static final String NOTIFICATION = "/notification";
@@ -353,6 +357,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     private NotificationDto createNotificationDto(Notification notification, String language) {
         NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
+
+        if (NotificationType.isInviteOrRequest(notification.getNotificationType())) {
+            NotificationInviteDto inviteDto = modelMapper.map(dto, NotificationInviteDto.class);
+            InvitationStatus status = getInvitationStatus(notification);
+            inviteDto.setStatus(status != null ? status.name() : null);
+
+            dto = inviteDto;
+        }
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         String notificationType = dto.getNotificationType();
@@ -431,6 +443,25 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                     likeNotificationDto.getSecondMessageText());
             }
         });
+    }
+
+    /**
+     * Retrieves the invitation status based on the type of notification.
+     * @param notification the notification object for which the status is being retrieved.
+     * @return the {@link InvitationStatus} corresponding to the notification's type.
+     *         If the notification type doesn't match any of the cases, returns {@code null}.
+     */
+    private InvitationStatus getInvitationStatus(Notification notification) {
+        return switch (notification.getNotificationType()) {
+            case FRIEND_REQUEST_RECEIVED -> notificationFriendService.getFriendRequestStatus(
+                notification.getTargetUser().getId(),
+                notification.getActionUsers().getFirst().getId()
+            ) ;
+            case HABIT_INVITE -> habitInvitationService.getHabitInvitationStatus(
+                notification.getSecondMessageId()
+            ) ;
+            default -> null;
+        };
     }
 
     private void generateNotification(final UserVO targetUserVO, final UserVO actionUserVO,

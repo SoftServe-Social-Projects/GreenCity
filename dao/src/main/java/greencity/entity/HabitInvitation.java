@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.enums.HabitInvitationStatus;
+import greencity.enums.InvitationStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,5 +44,5 @@ public class HabitInvitation {
     private User invitee;
 
     @Enumerated(EnumType.STRING)
-    private HabitInvitationStatus status;
+    private InvitationStatus status;
 }

@@ -1,20 +1,20 @@
 package greencity.dto.notification;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.ZonedDateTime;
 import java.util.List;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-@Builder
+@SuperBuilder
 public class NotificationDto {
     private Long notificationId;
     private String projectName;

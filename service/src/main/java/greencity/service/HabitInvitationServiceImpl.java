@@ -7,7 +7,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitInvitationStatus;
+import greencity.enums.InvitationStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
@@ -64,11 +64,11 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             throw new BadRequestException(ErrorMessage.CANNOT_ACCEPT_HABIT_INVITATION);
         }
 
-        if (HabitInvitationStatus.ACCEPTED.equals(invitation.getStatus())) {
+        if (InvitationStatus.ACCEPTED.equals(invitation.getStatus())) {
             throw new BadRequestException(ErrorMessage.YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION);
         }
 
-        invitation.setStatus(HabitInvitationStatus.ACCEPTED);
+        invitation.setStatus(InvitationStatus.ACCEPTED);
         habitInvitationRepo.save(invitation);
 
         HabitAssign habitAssign = habitAssignRepo.findById(invitation.getInviteeHabitAssign().getId())
@@ -90,12 +90,22 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
 
         if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())
-            || !HabitInvitationStatus.PENDING.equals(invitation.getStatus())) {
+            || !InvitationStatus.PENDING.equals(invitation.getStatus())) {
             throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }
         habitInvitationRepo.delete(invitation);
         checkAndDeleteHabitAssignIfUnused(invitation.getInviteeHabitAssign());
         checkAndDeleteHabitAssignIfUnused(invitation.getInviterHabitAssign());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InvitationStatus getHabitInvitationStatus(Long invitationId) {
+        return habitInvitationRepo.findById(invitationId)
+            .map(HabitInvitation::getStatus)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
     }
 
     private List<Long> getUsersIdWhoInvitedMe(Long currentUserId, Long habitAssignId) {
@@ -109,7 +119,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
 
     private List<Long> getUsersIdWhoIHaveInvited(Long currentUserId, Long habitAssignId) {
         return habitInvitationRepo.findByInviterHabitAssignId(habitAssignId).stream()
-            .filter(hi -> HabitInvitationStatus.ACCEPTED.equals(hi.getStatus()))
+            .filter(hi -> InvitationStatus.ACCEPTED.equals(hi.getStatus()))
             .map(HabitInvitation::getInviteeHabitAssign)
             .map(HabitAssign::getUser)
             .map(User::getId)
@@ -126,7 +136,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
 
     private List<HabitAssign> getHabitAssignsWhoIHaveInvited(Long currentUserId, Long habitAssignId) {
         return habitInvitationRepo.findByInviterHabitAssignId(habitAssignId).stream()
-            .filter(hi -> HabitInvitationStatus.ACCEPTED.equals(hi.getStatus()))
+            .filter(hi -> InvitationStatus.ACCEPTED.equals(hi.getStatus()))
             .map(HabitInvitation::getInviteeHabitAssign)
             .filter(habitAssign -> !habitAssign.getUser().getId().equals(currentUserId))
             .collect(Collectors.toList());
