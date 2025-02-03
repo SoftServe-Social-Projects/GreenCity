@@ -73,25 +73,54 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 9. If you did everything correctly, you should be able to access swagger by this URL: http://localhost:8080/swagger-ui.html#/
 
-### 4.3. How to work with swagger UI in our project
+### 4.3. How to work with Swagger UI in our project
 
-1. Run GreenCity project (look up paragraph [How to run](#42-how-to-run)).
+> [!IMPORTANT]
+> The user authentication and authorization logic 
+> is contained in separate project, GreenCityUser.
+> You will need to clone it as well to get going with GreenCity.
+>
+> ```git clone https://github.com/ita-social-projects/GreenCityUser.git```
 
-2. Use the following link to open Swagger UI: http://localhost:8080/swagger-ui.html#/
+> [!WARNING]
+> Endpoints are subject to change, so if you cannot
+> find some of the specified below, please contact
+> project members.
 
-3. Use POST method with `/ownSecurity/signUp` to create an account. If you set a valid email credentials, you should receive an email with verification link. Verify the registration by following that link. We highly recommend to use gmail, it's free of charge and easy to get going: [how to allow email sending from gmail](https://support.google.com/accounts/answer/6010255?authuser=2&p=less-secure-apps&hl=en&authuser=2&visit_id=637098532320915318-4087823934&rd=1),  [Google client id](https://developers.google.com/adwords/api/docs/guides/authentication). Alternatively you can drop a record in `verify_email` table on your local database.
-
-4. Use POST method with `/ownSecurity/signIn` to sign in. After entering the credentials you should receive access and refresh tokens. 
-
-5. Copy the given access token and put it into Authentication Header. Press **Authorize** button.
-
-   ![Authentication-button-swagger](./docs-photos/authentication-swagger.png)
-
-   Insert the given token into input field. The scheme should be like this `<given_token>`. Press **Authorize** button.
-
-   ![Bearer-examle](./docs-photos/auth.png)
-
-6. Now you can use swagger UI to test REST API. Some controllers require *ADMIN* role. By default, new registered users have role *USER*. To overcome this you need to update record that corresponds to your user in the local database. For example, `UPDATE users SET role = 1 WHERE id = <your_user_id>`.
+1. Create database called "greencity". Here's example with Docker CLI:
+```shell
+docker run -d --name greencity_postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB="greencity" -e POSTGRES_USER="greencity_admin" docker.io/postgres
+```
+2. Run GreenCityUser project with all necessary environment variables in place.
+> [!NOTE]
+> If you start your project locally, don't forget to change DATASOURCE_URL 
+> environment variable so that it points to localhost:5432.
+3. Navigate to localhost:8060/swagger-ui.html.
+4. Find "own-security controller" tab, open it.
+5. find POST /ownSecurity/signUp endpoint.
+6. Register user and click "Execute". The example of user data can be seen above
+![](docs-photos/signup.png)
+7. Change your status in the database to activated, using command
+`UPDATE users SET user_status = 2 WHERE id = <your_user_id>;`.
+Also, you will need to delete the email verification record.
+This is done with the following SQL statement:
+`DELETE FROM verify_emails WHERE user_id = <your_user_id>;`
+7. Navigate to /ownSecurity/signIn endpoint and input your data. 
+You will need to enter captcha code,
+you can generate one [here](https://gc-captcha-generator-2.pages.dev).
+8. When you log in, you will receive similar output to the one above. 
+Copy accessToken and proceed to GreenCity Swagger web interface.
+![](docs-photos/signin_access.png)
+9. Press authorize, input access token and you're done! 
+On successful login, you will see "authorized" text.
+![](docs-photos/signin_bearer1.jpg)
+![](docs-photos/signin_bearer2.jpg)
+10. Now you can use swagger UI to test REST API. 
+Some controllers require *ADMIN* role. 
+By default, new registered users have role *USER*. 
+To overcome this you need to update record that corresponds 
+to your user in the local database. 
+For example, `UPDATE users SET role = 1 WHERE id = <your_user_id>;`.
 
 ### 4.4. Connect with front-end
 
