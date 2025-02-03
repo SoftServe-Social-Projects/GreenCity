@@ -1,0 +1,32 @@
+/* dropdown.css */
+.dropdown__header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dropdown__title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 500;
+    text-decoration: underline 1px solid var(--black-ash);
+    color: var(--black-ash);
+}
+
+.dropdown__arrow {
+    margin-left: 8px;
+    font-size: 1.25rem;
+    color: var(--black-ash);
+
+}
+
+.dropdown__content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 5px;
+    padding: 15px;
+    box-shadow: var(--black-shadow);
+    display: none;
+}

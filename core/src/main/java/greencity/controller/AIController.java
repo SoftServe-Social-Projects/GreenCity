@@ -60,6 +60,7 @@ public class AIController {
     public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) Locale locale,
         @RequestParam(required = false) String query) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.getNews(locale.getDisplayLanguage(), query));
+            .body(
+                aiService.getNews(locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage(), query));
     }
 }

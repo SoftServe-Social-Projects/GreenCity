@@ -1,0 +1,17 @@
+.avatar-container {
+    display: inline-flex;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    margin-right: -10px;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--white);
+    border-radius: 50%;
+}
