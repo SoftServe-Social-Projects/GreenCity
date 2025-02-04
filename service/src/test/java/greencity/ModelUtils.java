@@ -134,59 +134,14 @@ import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.BreakTime;
-import greencity.entity.Category;
-import greencity.entity.Comment;
-import greencity.entity.CommentImages;
-import greencity.entity.CustomToDoListItem;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Filter;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.Location;
-import greencity.entity.Notification;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.PlaceComment;
-import greencity.entity.ToDoListItem;
-import greencity.entity.SocialNetworkImage;
-import greencity.entity.Specification;
-import greencity.entity.Tag;
-import greencity.entity.User;
-import greencity.entity.UserAchievement;
-import greencity.entity.UserAction;
-import greencity.entity.UserToDoListItem;
-import greencity.entity.VerifyEmail;
-import greencity.entity.RatingPoints;
+import greencity.entity.*;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.EventType;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.PlaceStatus;
-import greencity.enums.ProfilePrivacyPolicy;
-import greencity.enums.Role;
-import greencity.enums.ToDoListItemStatus;
-import greencity.enums.TagType;
-import greencity.enums.UserStatus;
+import greencity.enums.*;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import org.hibernate.sql.results.internal.TupleElementImpl;
@@ -1736,6 +1691,13 @@ public class ModelUtils {
             .habitStatistic(null)
             .habitStatusCalendars(null)
             .lastEnrollmentDate(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
+            .build();
+    }
+
+    public static HabitInvitation getHabitInvitation() {
+        return HabitInvitation.builder()
+            .id(1L)
+            .status(InvitationStatus.ACCEPTED)
             .build();
     }
 

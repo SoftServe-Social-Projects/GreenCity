@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.UserVO;
@@ -41,6 +42,8 @@ class HabitInvitationServiceImplTest {
     private HabitInvitationServiceImpl habitInvitationService;
 
     private final Long userId = 1L;
+    private final Long user2Id = 2L;
+    private final Long invitationId = 1L;
     private final Long habitAssignId = 2L;
 
     @Test
@@ -73,6 +76,7 @@ class HabitInvitationServiceImplTest {
         verify(habitInvitationRepo).findByInviteeHabitAssignId(habitAssignId);
         verify(habitInvitationRepo).findByInviterHabitAssignId(habitAssignId);
     }
+
 
     @Test
     void testGetHabitAssignsTrackingHabitList() {
@@ -140,22 +144,23 @@ class HabitInvitationServiceImplTest {
 
     @Test
     void testAcceptHabitInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(3L);
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(userId);
 
-        User user1 = new User();
-        user1.setId(3L);
-        HabitAssign habitAssign1 = new HabitAssign();
-        habitAssign1.setUser(user1).setId(1L).setStatus(HabitAssignStatus.REQUESTED);
+        User user1 = ModelUtils.getUser();
+        user1.setId(userId);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssignForMapper();
+        habitAssign1.setUser(user1).setId(habitAssignId).setStatus(HabitAssignStatus.REQUESTED);
+
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
         when(habitAssignRepo.findById(habitAssign1.getId())).thenReturn(Optional.of(habitAssign1));
+
         habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
 
         assertEquals(InvitationStatus.ACCEPTED, habitInvitation.getStatus());
@@ -164,16 +169,16 @@ class HabitInvitationServiceImplTest {
 
     @Test
     void testAcceptHabitInvitation_HabitAssignNotFound() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(3L);
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(userId);
 
-        User user1 = new User();
-        user1.setId(3L);
-        HabitAssign habitAssign1 = new HabitAssign();
+        User user1 = ModelUtils.getUser();
+        user1.setId(userId);
+
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssignForMapper();
         habitAssign1.setUser(user1);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.PENDING);
@@ -181,86 +186,78 @@ class HabitInvitationServiceImplTest {
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
         when(habitAssignRepo.findById(habitAssign1.getId())).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
-        });
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssign1.getId(), exception.getMessage());
     }
 
     @Test
     void testAcceptHabitInvitation_NoInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(3L);
+        UserVO invitedUser = ModelUtils.getUserVO();
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
-        });
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.INVITATION_NOT_FOUND, exception.getMessage());
     }
 
     @Test
     void testAcceptHabitInvitation_NotAllowedToAcceptHabitInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(4L);
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(user2Id);
 
-        User user1 = new User();
-        user1.setId(3L);
-        HabitAssign habitAssign1 = new HabitAssign();
+        User user1 = ModelUtils.getUser();
+        user1.setId(userId);
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssign();
         habitAssign1.setUser(user1);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
-        });
+        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.CANNOT_ACCEPT_HABIT_INVITATION, exception.getMessage());
     }
 
     @Test
     void testAcceptHabitInvitation_AlreadyAcceptedHabitInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(4L);
-        HabitAssign habitAssign1 = new HabitAssign().setUser(new User().setId(4L));
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(userId);
+        User user1 = ModelUtils.getUser().setId(userId);
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssign().setUser(user1);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser);
-        });
+        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION, exception.getMessage());
     }
 
     @Test
     void testRejectHabitInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(3L);
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(userId);
 
-        User user1 = new User();
-        user1.setId(3L);
-        HabitAssign habitAssign1 = new HabitAssign();
+        User user1 = ModelUtils.getUser();
+        user1.setId(userId);
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssign();
         habitAssign1.setUser(user1);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.PENDING);
@@ -274,66 +271,81 @@ class HabitInvitationServiceImplTest {
 
     @Test
     void testRejectHabitInvitation_NoInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(3L);
+        UserVO invitedUser = ModelUtils.getUserVO();
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser);
-        });
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.INVITATION_NOT_FOUND, exception.getMessage());
     }
 
     @Test
     void testRejectHabitInvitation_NotAllowedToRejectHabitInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(4L);
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(user2Id);
 
-        User user1 = new User();
-        user1.setId(3L);
-        HabitAssign habitAssign1 = new HabitAssign();
+        User user1 = ModelUtils.getUser();
+        user1.setId(userId);
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssign();
         habitAssign1.setUser(user1);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.PENDING);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser);
-        });
+        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
     }
 
     @Test
     void testRejectHabitInvitation_NotPendingStatusInvitation() {
-        Long invitationId = 1L;
-        UserVO invitedUser = new UserVO();
-        invitedUser.setId(3L);
+        UserVO invitedUser = ModelUtils.getUserVO();
+        invitedUser.setId(user2Id);
 
         User user1 = new User();
-        user1.setId(3L);
-        HabitAssign habitAssign1 = new HabitAssign();
+        user1.setId(userId);
+        HabitAssign habitAssign1 = ModelUtils.getHabitAssign();
         habitAssign1.setUser(user1);
 
-        HabitInvitation habitInvitation = new HabitInvitation();
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
         habitInvitation.setId(invitationId);
         habitInvitation.setInviteeHabitAssign(habitAssign1);
         habitInvitation.setStatus(InvitationStatus.ACCEPTED);
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser);
-        });
+        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
+    }
+
+    @Test
+    void getHabitInvitationStatusReturnsStatusWhenExistsTest() {
+        HabitInvitation habitInvitation = ModelUtils.getHabitInvitation();
+
+        when(habitInvitationRepo.findById(habitInvitation.getId())).thenReturn(Optional.of(habitInvitation));
+
+        InvitationStatus result = habitInvitationService.getHabitInvitationStatus(habitInvitation.getId());
+
+        assertEquals(InvitationStatus.ACCEPTED, result);
+    }
+
+    @Test
+    void getHabitInvitationStatusReturnsRejectedWhenNotExistsTest() {
+        Long invitationId = 1L;
+
+        when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.empty());
+
+        InvitationStatus result = habitInvitationService.getHabitInvitationStatus(invitationId);
+
+        assertEquals(InvitationStatus.REJECTED, result);
     }
 }
