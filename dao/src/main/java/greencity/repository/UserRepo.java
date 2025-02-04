@@ -217,6 +217,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
     /**
      * Retrieves the friend request status. Handles both directions.
+     *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend.
      * @return the status of request.

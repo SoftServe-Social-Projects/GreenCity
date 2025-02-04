@@ -207,11 +207,9 @@ class UserNotificationServiceImplTest {
         NotificationInviteDto habitInviteInviteDto = getNotificationInviteDto();
         friendRequestInviteDto.setNotificationType(NotificationType.HABIT_INVITE.toString());
 
-
         PageRequest page = PageRequest.of(0, 2);
         PageImpl<Notification> notificationPage = new PageImpl<>(
-            List.of(friendRequestNotification, habitInviteNotification), page, 2
-        );
+            List.of(friendRequestNotification, habitInviteNotification), page, 2);
 
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
@@ -231,8 +229,7 @@ class UserNotificationServiceImplTest {
             .thenReturn(habitInviteInviteDto);
 
         PageableAdvancedDto<NotificationDto> expected = getPageableAdvancedDtoForNotificationInviteDto(
-            List.of(friendRequestInviteDto, habitInviteInviteDto)
-        );
+            List.of(friendRequestInviteDto, habitInviteInviteDto));
 
         PageableAdvancedDto<NotificationDto> result = userNotificationService
             .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null,

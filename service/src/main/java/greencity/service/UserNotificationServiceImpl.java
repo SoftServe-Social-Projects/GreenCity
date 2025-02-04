@@ -458,9 +458,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     /**
-     * Maps a {@link NotificationDto} to a {@link NotificationInviteDto} and assigns the invitation status.
+     * Maps a {@link NotificationDto} to a {@link NotificationInviteDto} and assigns
+     * the invitation status.
      *
-     * @param dto         the base notification DTO to map from.
+     * @param dto          the base notification DTO to map from.
      * @param notification the notification entity containing additional data.
      * @return a {@link NotificationInviteDto} with an assigned invitation status.
      */
@@ -473,27 +474,29 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     /**
      * Retrieves the invitation status based on the type of notification.
-     * @param notification the notification object for which the status is being retrieved.
-     * @return the {@link InvitationStatus} corresponding to the notification's type.
-     *         If the notification type doesn't match any of the cases, returns {@code null}.
+     *
+     * @param notification the notification object for which the status is being
+     *                     retrieved.
+     * @return the {@link InvitationStatus} corresponding to the notification's
+     *         type. If the notification type doesn't match any of the cases,
+     *         returns {@code null}.
      */
     private InvitationStatus getInvitationStatus(Notification notification) {
         return switch (notification.getNotificationType()) {
             case FRIEND_REQUEST_RECEIVED -> notificationFriendService.getFriendRequestStatus(
                 notification.getTargetUser().getId(),
-                notification.getActionUsers().getFirst().getId()
-            ) ;
+                notification.getActionUsers().getFirst().getId());
             case HABIT_INVITE -> habitInvitationService.getHabitInvitationStatus(
-                notification.getSecondMessageId()
-            ) ;
+                notification.getSecondMessageId());
             default -> null;
         };
     }
 
     /**
-     * Extracts unique action users from the notification and assigns their names and IDs to the DTO.
+     * Extracts unique action users from the notification and assigns their names
+     * and IDs to the DTO.
      *
-     * @param dto         the notification DTO where user details should be set.
+     * @param dto          the notification DTO where user details should be set.
      * @param notification the notification entity containing the action users.
      */
     private void setActionUserDetails(NotificationDto dto, Notification notification) {
@@ -503,8 +506,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     /**
-     * Generates a localized body text for the notification based on the number of unique action users.
-     * Replaces placeholders "{user}" and "{times}" dynamically.
+     * Generates a localized body text for the notification based on the number of
+     * unique action users. Replaces placeholders "{user}" and "{times}"
+     * dynamically.
      *
      * @param notification the notification entity to generate text for.
      * @param bundle       the resource bundle containing localized text templates.
@@ -525,8 +529,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             int messagesCount = notification.getActionUsers().size();
             bodyText = uniqueUserCount == 1
                 ? bodyText.replace("{times}", language.equals("ua")
-                ? resolveTimesInUkrainian(messagesCount)
-                : resolveTimesInEnglish(messagesCount))
+                    ? resolveTimesInUkrainian(messagesCount)
+                    : resolveTimesInEnglish(messagesCount))
                 : bodyText.replace("{times}", "");
         }
 

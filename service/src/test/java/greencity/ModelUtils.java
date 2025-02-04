@@ -3128,8 +3128,7 @@ public class ModelUtils {
     }
 
     public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationInviteDto(
-        List<NotificationDto> notificationDtos
-    ) {
+        List<NotificationDto> notificationDtos) {
         return new PageableAdvancedDto<>(notificationDtos,
             2, 0, 1, 0,
             false, false, true, true);

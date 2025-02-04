@@ -42,8 +42,7 @@ public enum NotificationType {
     }
 
     private static final EnumSet<NotificationType> INVITE_REQUEST_TYPES = EnumSet.of(
-        FRIEND_REQUEST_RECEIVED, HABIT_INVITE
-    );
+        FRIEND_REQUEST_RECEIVED, HABIT_INVITE);
 
     public static boolean isInviteOrRequest(final NotificationType notificationType) {
         return INVITE_REQUEST_TYPES.contains(notificationType);

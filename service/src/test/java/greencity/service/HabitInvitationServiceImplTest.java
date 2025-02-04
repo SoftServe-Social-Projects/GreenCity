@@ -77,7 +77,6 @@ class HabitInvitationServiceImplTest {
         verify(habitInvitationRepo).findByInviterHabitAssignId(habitAssignId);
     }
 
-
     @Test
     void testGetHabitAssignsTrackingHabitList() {
         User user1 = new User();
@@ -186,8 +185,8 @@ class HabitInvitationServiceImplTest {
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
         when(habitAssignRepo.findById(habitAssign1.getId())).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssign1.getId(), exception.getMessage());
     }
@@ -198,8 +197,8 @@ class HabitInvitationServiceImplTest {
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.INVITATION_NOT_FOUND, exception.getMessage());
     }
@@ -221,8 +220,8 @@ class HabitInvitationServiceImplTest {
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.CANNOT_ACCEPT_HABIT_INVITATION, exception.getMessage());
     }
@@ -241,8 +240,8 @@ class HabitInvitationServiceImplTest {
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitInvitationService.acceptHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.YOU_HAS_ALREADY_ACCEPT_THIS_INVITATION, exception.getMessage());
     }
@@ -275,8 +274,8 @@ class HabitInvitationServiceImplTest {
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.INVITATION_NOT_FOUND, exception.getMessage());
     }
@@ -298,8 +297,8 @@ class HabitInvitationServiceImplTest {
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
     }
@@ -321,8 +320,8 @@ class HabitInvitationServiceImplTest {
 
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.of(habitInvitation));
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitInvitationService.rejectHabitInvitation(invitationId, invitedUser));
 
         assertEquals(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION, exception.getMessage());
     }

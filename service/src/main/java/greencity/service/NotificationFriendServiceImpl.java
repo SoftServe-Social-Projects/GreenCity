@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of {@link NotificationFriendService}.
- * Needed for {@link UserNotificationService}
+ * Implementation of {@link NotificationFriendService}. Needed for
+ * {@link UserNotificationService}
  */
 @Service
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class NotificationFriendServiceImpl implements NotificationFriendService 
     public InvitationStatus getFriendRequestStatus(Long currentUserId, Long friendId) {
         String status = userRepo.getFriendRequestStatus(currentUserId, friendId);
         if (status == null) {
-            return  InvitationStatus.CANCELED;
+            return InvitationStatus.CANCELED;
         }
 
         return switch (status) {

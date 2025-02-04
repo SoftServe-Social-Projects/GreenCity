@@ -13,6 +13,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class NotificationInviteDto extends NotificationDto{
+public class NotificationInviteDto extends NotificationDto {
     private String status;
 }
