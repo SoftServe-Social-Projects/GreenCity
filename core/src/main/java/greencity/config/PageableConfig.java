@@ -12,12 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class PageableConfig implements WebMvcConfigurer {
-    private final CustomSortHandlerMethodArgumentResolver customSortResolver;
-
-    public PageableConfig(CustomSortHandlerMethodArgumentResolver customSortResolver) {
-        this.customSortResolver = customSortResolver;
-    }
-
     @Bean
     public SortPageableValidator sortPageableValidator() {
         return new SortPageableValidator();
@@ -32,7 +26,15 @@ public class PageableConfig implements WebMvcConfigurer {
     public CustomSortHandlerMethodArgumentResolver customSortResolver(
         SortPageableValidator sortPageableValidator,
         SortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver) {
-        return new CustomSortHandlerMethodArgumentResolver(sortPageableValidator, sortHandlerMethodArgumentResolver);
+        return new CustomSortHandlerMethodArgumentResolver(
+            sortPageableValidator,
+            sortHandlerMethodArgumentResolver);
+    }
+
+    @Bean
+    public CustomPageableHandlerMethodArgumentResolver customPageableResolver(
+        CustomSortHandlerMethodArgumentResolver customSortResolver) {
+        return new CustomPageableHandlerMethodArgumentResolver(customSortResolver);
     }
 
     /**
@@ -40,9 +42,9 @@ public class PageableConfig implements WebMvcConfigurer {
      */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        CustomPageableHandlerMethodArgumentResolver customResolver =
-            new CustomPageableHandlerMethodArgumentResolver(customSortResolver);
-        argumentResolvers.add(customResolver);
+        argumentResolvers.add(customPageableResolver(customSortResolver(
+            sortPageableValidator(),
+            sortHandlerMethodArgumentResolver())));
         WebMvcConfigurer.super.addArgumentResolvers(argumentResolvers);
     }
 }
