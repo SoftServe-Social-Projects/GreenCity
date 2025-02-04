@@ -1,17 +1,20 @@
 package greencity.service;
 
+import greencity.TestConst;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.InvitationStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.repository.HabitAssignRepo;
@@ -42,10 +45,9 @@ import java.util.stream.Stream;
 
 import static greencity.ModelUtils.*;
 import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
+import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
 import static greencity.enums.ProjectName.GREENCITY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -69,6 +71,10 @@ class UserNotificationServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private NotificationFriendService notificationFriendService;
+    @Mock
+    private HabitInvitationService habitInvitationService;
     @Mock
     private UserService userService;
     @Mock
@@ -174,8 +180,75 @@ class UserNotificationServiceImplTest {
 
         verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo)
-            .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, pageRequest);
+            .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true,
+                pageRequest);
         verify(modelMapper).map(notification, NotificationDto.class);
+    }
+
+    @Test
+    void getNotificationsFilteredWhenNotificationTypeInviteTest() {
+        User targetUser = getUser().setId(1L);
+        List<User> actionUsers = List.of(getUser().setId(2L));
+        Notification friendRequestNotification = getNotification()
+            .setNotificationType(NotificationType.FRIEND_REQUEST_RECEIVED)
+            .setTargetUser(targetUser)
+            .setActionUsers(actionUsers);
+        Notification habitInviteNotification = getNotification()
+            .setNotificationType(NotificationType.HABIT_INVITE)
+            .setSecondMessageId(3L);
+
+        NotificationDto friendRequestDto = getNotificationDto()
+            .setNotificationType(NotificationType.FRIEND_REQUEST_RECEIVED.toString());
+        NotificationDto habitInviteDto = getNotificationDto()
+            .setNotificationType(NotificationType.HABIT_INVITE.toString());
+
+        NotificationInviteDto friendRequestInviteDto = getNotificationInviteDto();
+        friendRequestInviteDto.setNotificationType(NotificationType.FRIEND_REQUEST_RECEIVED.toString());
+        NotificationInviteDto habitInviteInviteDto = getNotificationInviteDto();
+        friendRequestInviteDto.setNotificationType(NotificationType.HABIT_INVITE.toString());
+
+
+        PageRequest page = PageRequest.of(0, 2);
+        PageImpl<Notification> notificationPage = new PageImpl<>(
+            List.of(friendRequestNotification, habitInviteNotification), page, 2
+        );
+
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
+            true, page))
+            .thenReturn(notificationPage);
+        when(modelMapper.map(friendRequestNotification, NotificationDto.class)).thenReturn(friendRequestDto);
+        when(modelMapper.map(habitInviteNotification, NotificationDto.class)).thenReturn(habitInviteDto);
+
+        when(notificationFriendService.getFriendRequestStatus(1L, 2L))
+            .thenReturn(InvitationStatus.PENDING);
+        when(habitInvitationService.getHabitInvitationStatus(3L))
+            .thenReturn(InvitationStatus.ACCEPTED);
+
+        when(modelMapper.map(friendRequestDto, NotificationInviteDto.class))
+            .thenReturn(friendRequestInviteDto);
+        when(modelMapper.map(habitInviteDto, NotificationInviteDto.class))
+            .thenReturn(habitInviteInviteDto);
+
+        PageableAdvancedDto<NotificationDto> expected = getPageableAdvancedDtoForNotificationInviteDto(
+            List.of(friendRequestInviteDto, habitInviteInviteDto)
+        );
+
+        PageableAdvancedDto<NotificationDto> result = userNotificationService
+            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null,
+                true);
+
+        NotificationInviteDto notificationInviteDto = (NotificationInviteDto) result.getPage().getFirst();
+
+        assertEquals(expected, result);
+        assertEquals(InvitationStatus.PENDING.toString(), notificationInviteDto.getStatus());
+        verify(userService).findByEmail("danylo@gmail.com");
+        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
+            true, page);
+        verify(modelMapper).map(friendRequestNotification, NotificationDto.class);
+        verify(modelMapper).map(habitInviteNotification, NotificationDto.class);
+        verify(notificationFriendService).getFriendRequestStatus(1L, 2L);
+        verify(habitInvitationService).getHabitInvitationStatus(3L);
     }
 
     static Stream<Arguments> getNotificationScenariosInUkrainian() {

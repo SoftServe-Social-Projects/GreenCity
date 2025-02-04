@@ -32,5 +32,4 @@ public class NotificationFriendServiceImpl implements NotificationFriendService 
             default -> InvitationStatus.CANCELED;
         };
     }
-
 }

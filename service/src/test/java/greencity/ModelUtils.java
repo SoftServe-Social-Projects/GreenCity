@@ -90,6 +90,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
@@ -3027,6 +3028,24 @@ public class ModelUtils {
             .build();
     }
 
+    public static NotificationInviteDto getNotificationInviteDto() {
+        return NotificationInviteDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(String.valueOf(EVENT_CREATED))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText("You have created event")
+            .bodyText("You successfully created event {message}.")
+            .actionUserId(Collections.singletonList(1L))
+            .actionUserText(Collections.singletonList("Taras"))
+            .targetId(1L)
+            .message("Message")
+            .secondMessage("Second message")
+            .secondMessageId(2L)
+            .build();
+    }
+
     public static NotificationDto getBaseOfNotificationDtoForEventCommentUserTag(
         String titleText, String bodyText, List<Long> actionUserId, List<String> actionUserText) {
         return NotificationDto.builder()
@@ -3105,6 +3124,14 @@ public class ModelUtils {
     public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationDto() {
         return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
             1, 0, 1, 0,
+            false, false, true, true);
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationInviteDto(
+        List<NotificationDto> notificationDtos
+    ) {
+        return new PageableAdvancedDto<>(notificationDtos,
+            2, 0, 1, 0,
             false, false, true, true);
     }
 
