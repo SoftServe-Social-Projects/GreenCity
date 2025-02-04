@@ -357,47 +357,21 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     private NotificationDto createNotificationDto(Notification notification, String language) {
         NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
-
-        if (NotificationType.isInviteOrRequest(notification.getNotificationType())) {
-            NotificationInviteDto inviteDto = modelMapper.map(dto, NotificationInviteDto.class);
-            InvitationStatus status = getInvitationStatus(notification);
-            inviteDto.setStatus(status != null ? status.name() : null);
-
-            dto = inviteDto;
-        }
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
-        String notificationType = dto.getNotificationType();
-        dto.setTitleText(bundle.getString(notificationType + "_TITLE"));
-        final List<User> uniqueActionUsers =
-            new ArrayList<>(notification.getActionUsers().stream().distinct().toList());
-        int size = new HashSet<>(uniqueActionUsers).size();
-        dto.setActionUserText(uniqueActionUsers.stream().map(User::getName).toList());
-        dto.setActionUserId(uniqueActionUsers.stream().map(User::getId).toList());
 
-        String bodyTextTemplate = bundle.getString(notificationType);
-        String bodyText;
-        switch (size) {
-            case 1 -> bodyText = bodyTextTemplate;
-            case 2 -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("TWO_USERS"));
-            default -> bodyText = bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
+        if (NotificationType.isInviteOrRequest(notification.getNotificationType())) {
+            dto = mapToNotificationInviteDto(dto, notification);
         }
-        final int messagesCount = notification.getActionUsers().size();
-        final String times_in_dto = "{times}";
-        if (bodyText.contains(times_in_dto)) {
-            if (size == 1) {
-                bodyText = bodyText.replace(times_in_dto, language.equals("ua")
-                    ? resolveTimesInUkrainian(messagesCount)
-                    : resolveTimesInEnglish(messagesCount));
-            } else {
-                bodyText = bodyText.replace(times_in_dto, "");
-            }
+
+        dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
+        setActionUserDetails(dto, notification);
+        dto.setBodyText(generateBodyText(notification, bundle, language));
+
+        if (dto.getMessage() != null && isMessageLocalizationRequired(dto.getNotificationType())) {
+            dto.setMessage(localizeMessage(dto.getMessage(), bundle));
         }
-        dto.setBodyText(bodyText);
-        String message = dto.getMessage();
-        if (message != null && isMessageLocalizationRequired(notificationType)) {
-            dto.setMessage(localizeMessage(message, bundle));
-        }
+
         return dto;
     }
 
@@ -500,5 +474,40 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .secondMessage(secondMessageText)
             .emailSent(false)
             .build();
+    }
+
+    private NotificationInviteDto mapToNotificationInviteDto(NotificationDto dto, Notification notification) {
+        NotificationInviteDto inviteDto = modelMapper.map(dto, NotificationInviteDto.class);
+        InvitationStatus status = getInvitationStatus(notification);
+        inviteDto.setStatus(status != null ? status.name() : null);
+        return inviteDto;
+    }
+
+    private void setActionUserDetails(NotificationDto dto, Notification notification) {
+        List<User> uniqueUsers = notification.getActionUsers().stream().distinct().toList();
+        dto.setActionUserText(uniqueUsers.stream().map(User::getName).toList());
+        dto.setActionUserId(uniqueUsers.stream().map(User::getId).toList());
+    }
+
+    private String generateBodyText(Notification notification, ResourceBundle bundle, String language) {
+        String bodyTextTemplate = bundle.getString(notification.getNotificationType().toString());
+        int uniqueUserCount = new HashSet<>(notification.getActionUsers()).size();
+
+        String bodyText = switch (uniqueUserCount) {
+            case 1 -> bodyTextTemplate;
+            case 2 -> bodyTextTemplate.replace("{user}", bundle.getString("TWO_USERS"));
+            default -> bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
+        };
+
+        if (bodyText.contains("{times}")) {
+            int messagesCount = notification.getActionUsers().size();
+            bodyText = uniqueUserCount == 1
+                ? bodyText.replace("{times}", language.equals("ua")
+                ? resolveTimesInUkrainian(messagesCount)
+                : resolveTimesInEnglish(messagesCount))
+                : bodyText.replace("{times}", "");
+        }
+
+        return bodyText;
     }
 }
