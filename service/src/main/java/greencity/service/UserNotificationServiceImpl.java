@@ -419,25 +419,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         });
     }
 
-    /**
-     * Retrieves the invitation status based on the type of notification.
-     * @param notification the notification object for which the status is being retrieved.
-     * @return the {@link InvitationStatus} corresponding to the notification's type.
-     *         If the notification type doesn't match any of the cases, returns {@code null}.
-     */
-    private InvitationStatus getInvitationStatus(Notification notification) {
-        return switch (notification.getNotificationType()) {
-            case FRIEND_REQUEST_RECEIVED -> notificationFriendService.getFriendRequestStatus(
-                notification.getTargetUser().getId(),
-                notification.getActionUsers().getFirst().getId()
-            ) ;
-            case HABIT_INVITE -> habitInvitationService.getHabitInvitationStatus(
-                notification.getSecondMessageId()
-            ) ;
-            default -> null;
-        };
-    }
-
     private void generateNotification(final UserVO targetUserVO, final UserVO actionUserVO,
         final NotificationType notificationType, final Long targetId,
         final String customMessage, final Long secondMessageId,
@@ -476,6 +457,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .build();
     }
 
+    /**
+     * Maps a {@link NotificationDto} to a {@link NotificationInviteDto} and assigns the invitation status.
+     *
+     * @param dto         the base notification DTO to map from.
+     * @param notification the notification entity containing additional data.
+     * @return a {@link NotificationInviteDto} with an assigned invitation status.
+     */
     private NotificationInviteDto mapToNotificationInviteDto(NotificationDto dto, Notification notification) {
         NotificationInviteDto inviteDto = modelMapper.map(dto, NotificationInviteDto.class);
         InvitationStatus status = getInvitationStatus(notification);
@@ -483,12 +471,46 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         return inviteDto;
     }
 
+    /**
+     * Retrieves the invitation status based on the type of notification.
+     * @param notification the notification object for which the status is being retrieved.
+     * @return the {@link InvitationStatus} corresponding to the notification's type.
+     *         If the notification type doesn't match any of the cases, returns {@code null}.
+     */
+    private InvitationStatus getInvitationStatus(Notification notification) {
+        return switch (notification.getNotificationType()) {
+            case FRIEND_REQUEST_RECEIVED -> notificationFriendService.getFriendRequestStatus(
+                notification.getTargetUser().getId(),
+                notification.getActionUsers().getFirst().getId()
+            ) ;
+            case HABIT_INVITE -> habitInvitationService.getHabitInvitationStatus(
+                notification.getSecondMessageId()
+            ) ;
+            default -> null;
+        };
+    }
+
+    /**
+     * Extracts unique action users from the notification and assigns their names and IDs to the DTO.
+     *
+     * @param dto         the notification DTO where user details should be set.
+     * @param notification the notification entity containing the action users.
+     */
     private void setActionUserDetails(NotificationDto dto, Notification notification) {
         List<User> uniqueUsers = notification.getActionUsers().stream().distinct().toList();
         dto.setActionUserText(uniqueUsers.stream().map(User::getName).toList());
         dto.setActionUserId(uniqueUsers.stream().map(User::getId).toList());
     }
 
+    /**
+     * Generates a localized body text for the notification based on the number of unique action users.
+     * Replaces placeholders "{user}" and "{times}" dynamically.
+     *
+     * @param notification the notification entity to generate text for.
+     * @param bundle       the resource bundle containing localized text templates.
+     * @param language     the language code for localization.
+     * @return the formatted body text with appropriate pluralization.
+     */
     private String generateBodyText(Notification notification, ResourceBundle bundle, String language) {
         String bodyTextTemplate = bundle.getString(notification.getNotificationType().toString());
         int uniqueUserCount = new HashSet<>(notification.getActionUsers()).size();

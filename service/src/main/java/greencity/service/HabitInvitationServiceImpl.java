@@ -105,7 +105,7 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
     public InvitationStatus getHabitInvitationStatus(Long invitationId) {
         return habitInvitationRepo.findById(invitationId)
             .map(HabitInvitation::getStatus)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
+            .orElse(InvitationStatus.REJECTED);
     }
 
     private List<Long> getUsersIdWhoInvitedMe(Long currentUserId, Long habitAssignId) {
