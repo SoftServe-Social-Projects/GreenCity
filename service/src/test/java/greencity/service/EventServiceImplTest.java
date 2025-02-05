@@ -551,9 +551,9 @@ class EventServiceImplTest {
 
         EventResponseDto actual = eventService.getEventV2(1L, null);
 
-        assertEquals(eventResponseDto.getId(), actual.getId());
-        assertEquals(eventResponseDto.getAdditionalImages(), actual.getAdditionalImages());
-        assertEquals(eventResponseDto.getTitleImage(), actual.getTitleImage());
+        assertEquals(eventResponseDto.id(), actual.id());
+        assertEquals(eventResponseDto.additionalImages(), actual.additionalImages());
+        assertEquals(eventResponseDto.titleImage(), actual.titleImage());
         assertFalse(actual.isSubscribed());
         assertFalse(actual.isFavorite());
 
@@ -579,7 +579,7 @@ class EventServiceImplTest {
 
         assertFalse(actual.isSubscribed());
         assertFalse(actual.isFavorite());
-        assertEquals(50, actual.getCurrentUserGrade());
+        assertEquals(50, actual.currentUserGrade());
 
         verify(restClient).findByEmail(principal.getName());
         verify(eventRepo).findById(1L);

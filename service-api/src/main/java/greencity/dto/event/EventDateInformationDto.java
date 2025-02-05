@@ -1,18 +1,12 @@
 package greencity.dto.event;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import jakarta.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
 
-@SuperBuilder
-@NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(callSuper = true)
-public class EventDateInformationDto extends AbstractEventDateLocationDto {
-    private Long id;
-    private EventResponseDto event;
-    private AddressDto coordinates;
+public record EventDateInformationDto(
+    Long id,
+    AddressDto coordinates,
+    @NotNull(message = "Start date must not be null or empty") ZonedDateTime startDate,
+    @NotNull(message = "Finish date must not be null or empty") ZonedDateTime finishDate,
+    String onlineLink) {
 }

@@ -2,19 +2,11 @@ package greencity.dto.event;
 
 import greencity.dto.tag.TagUaEnDto;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class EventInformationDto {
-    private String title;
-    private String description;
-    @NotEmpty
-    private List<TagUaEnDto> tags;
+public record EventInformationDto(
+    @Size(min = 1, max = 255) String title,
+    @Size(max = 5000) String description,
+    @NotEmpty List<TagUaEnDto> tags) {
 }

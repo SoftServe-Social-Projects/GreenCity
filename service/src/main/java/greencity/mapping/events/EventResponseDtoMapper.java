@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Mapper class for converting {@link Event} into {@link EventResponseDto}.
@@ -43,10 +43,10 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
      */
     @Override
     protected EventResponseDto convert(Event event) {
-        EventInformationDto eventInformation = EventInformationDto.builder()
-            .title(event.getTitle())
-            .description(event.getDescription())
-            .tags(event.getTags().stream()
+        EventInformationDto eventInformation = new EventInformationDto(
+            event.getTitle(),
+            event.getDescription(),
+            event.getTags().stream()
                 .map(tag -> TagUaEnDto.builder()
                     .id(tag.getId())
                     .nameUa(tag.getTagTranslations().stream()
@@ -60,61 +60,60 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                         .map(TagTranslation::getName)
                         .orElse(null))
                     .build())
-                .toList())
-            .build();
+                .toList());
 
         User organizer = event.getOrganizer();
 
         List<EventDateInformationDto> dateInformation = event.getDates().stream()
-            .map(date -> {
-                assert date.getAddress() != null;
-                return EventDateInformationDto.builder()
-                    .id(date.getId())
-                    .startDate(date.getStartDate())
-                    .finishDate(date.getFinishDate())
-                    .onlineLink(date.getOnlineLink())
-                    .coordinates(AddressDto.builder()
-                        .latitude(date.getAddress().getLatitude())
-                        .longitude(date.getAddress().getLongitude())
-                        .streetEn(date.getAddress().getStreetEn())
-                        .streetUa(date.getAddress().getStreetUa())
-                        .houseNumber(date.getAddress().getHouseNumber())
-                        .cityEn(date.getAddress().getCityEn())
-                        .cityUa(date.getAddress().getCityUa())
-                        .regionEn(date.getAddress().getRegionEn())
-                        .regionUa(date.getAddress().getRegionUa())
-                        .countryEn(date.getAddress().getCountryEn())
-                        .countryUa(date.getAddress().getCountryUa())
-                        .formattedAddressEn(date.getAddress().getFormattedAddressEn())
-                        .formattedAddressUa(date.getAddress().getFormattedAddressUa())
+            .map(date -> new EventDateInformationDto(
+                date.getId(),
+                Optional.ofNullable(date.getAddress())
+                    .map(address -> AddressDto.builder()
+                        .latitude(address.getLatitude())
+                        .longitude(address.getLongitude())
+                        .streetEn(address.getStreetEn())
+                        .streetUa(address.getStreetUa())
+                        .houseNumber(address.getHouseNumber())
+                        .cityEn(address.getCityEn())
+                        .cityUa(address.getCityUa())
+                        .regionEn(address.getRegionEn())
+                        .regionUa(address.getRegionUa())
+                        .countryEn(address.getCountryEn())
+                        .countryUa(address.getCountryUa())
+                        .formattedAddressEn(address.getFormattedAddressEn())
+                        .formattedAddressUa(address.getFormattedAddressUa())
                         .build())
-                    .build();
-            })
-            .collect(Collectors.toList());
+                    .orElse(null),
+                date.getStartDate(),
+                date.getFinishDate(),
+                date.getOnlineLink()))
+            .toList();
 
-        return EventResponseDto.builder()
-            .id(event.getId())
-            .eventInformation(eventInformation)
-            .organizer(EventAuthorDto.builder()
-                .id(organizer.getId())
-                .name(organizer.getName())
-                .organizerRating(organizer.getEventOrganizerRating())
-                .email(organizer.getEmail())
-                .build())
-            .creationDate(event.getCreationDate())
-            .isOpen(event.isOpen())
-            .dates(dateInformation)
-            .titleImage(event.getTitleImage())
-            .isRelevant(EventUtils.isRelevant(event.getDates()))
-            .likes(event.getUsersLikedEvents().size())
-            .dislikes(event.getUsersDislikedEvents().size())
-            .countComments(commentService.countCommentsForEvent(event.getId()))
-            .type(event.getType())
-            .eventRate(EventUtils.calculateEventRate(event.getEventGrades()))
-            .additionalImages(event.getAdditionalImages().stream()
+        return new EventResponseDto(
+            event.getId(),
+            eventInformation,
+            new EventAuthorDto(
+                organizer.getId(),
+                organizer.getName(),
+                organizer.getEventOrganizerRating(),
+                organizer.getEmail()),
+            event.getCreationDate(),
+            event.isOpen(),
+            dateInformation,
+            event.getTitleImage(),
+            event.getAdditionalImages().stream()
                 .map(EventImages::getLink)
                 .limit(MAX_ADDITIONAL_IMAGES)
-                .toList())
-            .build();
+                .toList(),
+            event.getType(),
+            false,
+            false,
+            EventUtils.isRelevant(event.getDates()),
+            event.getUsersLikedEvents().size(),
+            event.getUsersDislikedEvents().size(),
+            commentService.countCommentsForEvent(event.getId()),
+            false,
+            EventUtils.calculateEventRate(event.getEventGrades()),
+            null);
     }
 }

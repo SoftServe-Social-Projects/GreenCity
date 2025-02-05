@@ -596,39 +596,41 @@ public class ModelUtils {
     }
 
     public static EventResponseDto getEventResponseDto() {
-        return EventResponseDto.builder()
-            .id(1L)
-            .eventInformation(EventInformationDto.builder()
-                .title("Test Event")
-                .description("New Test Event")
-                .tags(List.of(TagUaEnDto.builder()
+        return new EventResponseDto(
+            1L,
+            new EventInformationDto(
+                "Test Event",
+                "New Test Event",
+                List.of(TagUaEnDto.builder()
                     .id(2L)
                     .nameUa("Соціальний")
                     .nameEn("Social")
-                    .build()))
-                .build())
-            .organizer(EventAuthorDto.builder().id(1L).name("Test").email("test@email.com").build())
-            .creationDate(LocalDate.of(2025, 1, 10))
-            .isOpen(true)
-            .dates(List.of(
-                EventDateInformationDto.builder()
-                    .startDate(ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC))
-                    .finishDate(ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC))
-                    .onlineLink("www.testlink.com")
-                    .coordinates(getAddressDtoCorrect()).build()))
-            .titleImage("https://test.png")
-            .additionalImages(List.of("https://test1.png", "https://test2.png"))
-            .type(EventType.OFFLINE)
-            .isRelevant(true)
-            .likes(3)
-            .dislikes(1)
-            .countComments(1)
-            .eventRate(20.0)
-            .currentUserGrade(50)
-            .isSubscribed(false)
-            .isFavorite(false)
-            .isOrganizedByFriend(false)
-            .build();
+                    .build())),
+            EventAuthorDto.builder()
+                .id(1L)
+                .name("Test")
+                .email("test@email.com")
+                .build(),
+            LocalDate.of(2025, 1, 10),
+            true,
+            List.of(new EventDateInformationDto(
+                null,
+                getAddressDtoCorrect(),
+                ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC),
+                ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC),
+                "www.link.com")),
+            null,
+            List.of("image1.jpg", "image2.jpg"),
+            EventType.OFFLINE,
+            false,
+            false,
+            true,
+            10,
+            2,
+            1,
+            false,
+            20.0,
+            50);
     }
 
     public static AddressDto getAddressDtoCorrect() {

@@ -735,17 +735,36 @@ public class EventServiceImpl implements EventService {
 
     private EventResponseDto buildEventResponseDto(Event event, Long userId) {
         EventResponseDto eventResponseDto = modelMapper.map(event, EventResponseDto.class);
+
         Integer currentUserGrade = event.getEventGrades()
             .stream()
             .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
             .map(EventGrade::getGrade)
             .findFirst()
             .orElse(null);
+
         setFollowers(List.of(), userId);
         setSubscribes(List.of(), userId);
-        eventResponseDto.setCurrentUserGrade(currentUserGrade);
 
-        return eventResponseDto;
+        return new EventResponseDto(
+            eventResponseDto.id(),
+            eventResponseDto.eventInformation(),
+            eventResponseDto.organizer(),
+            eventResponseDto.creationDate(),
+            eventResponseDto.isOpen(),
+            eventResponseDto.dates(),
+            eventResponseDto.titleImage(),
+            eventResponseDto.additionalImages(),
+            eventResponseDto.type(),
+            eventResponseDto.isSubscribed(),
+            eventResponseDto.isFavorite(),
+            eventResponseDto.isRelevant(),
+            eventResponseDto.likes(),
+            eventResponseDto.dislikes(),
+            eventResponseDto.countComments(),
+            eventResponseDto.isOrganizedByFriend(),
+            eventResponseDto.eventRate(),
+            currentUserGrade);
     }
 
     private EventDto buildEventDto(Event event, Long userId) {

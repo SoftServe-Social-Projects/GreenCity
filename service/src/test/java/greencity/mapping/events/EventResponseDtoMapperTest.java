@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import static greencity.ModelUtils.getEvent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
 class EventResponseDtoMapperTest {
@@ -32,8 +32,8 @@ class EventResponseDtoMapperTest {
 
         EventResponseDto result = mapper.convert(event);
 
-        assertEquals(expected.getEventInformation().getTitle(), result.getEventInformation().getTitle());
-        assertEquals(event.getUsersLikedEvents().size(), result.getLikes());
+        assertEquals(expected.eventInformation().title(), result.eventInformation().title());
+        assertEquals(event.getUsersLikedEvents().size(), result.likes());
     }
 
     @Test
@@ -41,6 +41,9 @@ class EventResponseDtoMapperTest {
         Event event = getEvent();
         event.getDates().forEach(date -> date.setAddress(null));
 
-        assertThrows(AssertionError.class, () -> mapper.convert(event));
+        EventResponseDto result = mapper.convert(event);
+
+        result.dates().forEach(dateInfo -> assertNull(dateInfo.coordinates()));
+        assertEquals(event.getId(), result.id());
     }
 }

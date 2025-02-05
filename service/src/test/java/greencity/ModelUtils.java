@@ -3436,33 +3436,40 @@ public class ModelUtils {
     }
 
     public static EventResponseDto getEventResponseDto() {
-        return EventResponseDto.builder()
-            .id(1L)
-            .eventInformation(EventInformationDto.builder()
-                .title("Title")
-                .description("New Test Event")
-                .tags(List.of(TagUaEnDto.builder()
+        return new EventResponseDto(
+            1L,
+            new EventInformationDto(
+                "Title",
+                "New Test Event",
+                List.of(TagUaEnDto.builder()
                     .id(2L)
                     .nameUa("Соціальний")
                     .nameEn("Social")
-                    .build()))
-                .build())
-            .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
-            .creationDate(LocalDate.of(2025, 1, 10))
-            .isOpen(true)
-            .dates(List.of(
-                EventDateInformationDto.builder()
-                    .startDate(ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC))
-                    .finishDate(ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC))
-                    .onlineLink("www.link.com")
-                    .coordinates(getAddressDtoCorrect()).build()))
-            .type(EventType.OFFLINE)
-            .isRelevant(true)
-            .countComments(1)
-            .isSubscribed(false)
-            .isFavorite(false)
-            .isOrganizedByFriend(false)
-            .build();
+                    .build())),
+            EventAuthorDto.builder()
+                .id(1L)
+                .name("Test")
+                .build(),
+            LocalDate.of(2025, 1, 10),
+            true,
+            List.of(new EventDateInformationDto(
+                null,
+                getAddressDtoCorrect(),
+                ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC),
+                ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC),
+                "www.link.com")),
+            null,
+            List.of("image1.jpg", "image2.jpg"),
+            EventType.OFFLINE,
+            false,
+            false,
+            true,
+            10,
+            2,
+            1,
+            false,
+            4.5,
+            null);
     }
 
     public static EventDateLocation createEventDateLocation(ZonedDateTime start, ZonedDateTime finish) {
