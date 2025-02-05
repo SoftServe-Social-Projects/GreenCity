@@ -34,6 +34,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import static greencity.constant.AppConstant.LANGUAGE_CODE_UA;
+import static greencity.constant.AppConstant.THREE_OR_MORE_USERS;
+import static greencity.constant.AppConstant.TIMES_PLACEHOLDER;
+import static greencity.constant.AppConstant.TWO_USERS;
+import static greencity.constant.AppConstant.USER_PLACEHOLDER;
 import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
 import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
@@ -521,17 +526,21 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
         String bodyText = switch (uniqueUserCount) {
             case 1 -> bodyTextTemplate;
-            case 2 -> bodyTextTemplate.replace("{user}", bundle.getString("TWO_USERS"));
-            default -> bodyTextTemplate.replace("{user}", bundle.getString("THREE_OR_MORE_USERS"));
+            case 2 -> bodyTextTemplate.replace(USER_PLACEHOLDER, bundle.getString(TWO_USERS));
+            default -> bodyTextTemplate.replace(USER_PLACEHOLDER, bundle.getString(THREE_OR_MORE_USERS));
         };
 
-        if (bodyText.contains("{times}")) {
+        if (bodyText.contains(TIMES_PLACEHOLDER)) {
             int messagesCount = notification.getActionUsers().size();
-            bodyText = uniqueUserCount == 1
-                ? bodyText.replace("{times}", language.equals("ua")
+            String resolvedTimes = "";
+
+            if (uniqueUserCount == 1) {
+                resolvedTimes = language.equals(LANGUAGE_CODE_UA)
                     ? resolveTimesInUkrainian(messagesCount)
-                    : resolveTimesInEnglish(messagesCount))
-                : bodyText.replace("{times}", "");
+                    : resolveTimesInEnglish(messagesCount);
+            }
+
+            bodyText = bodyText.replace(TIMES_PLACEHOLDER, resolvedTimes);
         }
 
         return bodyText;

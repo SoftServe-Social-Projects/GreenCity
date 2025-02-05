@@ -70,4 +70,13 @@ class NotificationFriendServiceImplTest {
 
         assertEquals(InvitationStatus.CANCELED, result);
     }
+
+    @Test
+    void getFriendRequestStatusHandlesInvalidUserIds() {
+        when(userRepo.getFriendRequestStatus(-1L, friendId)).thenReturn(null);
+
+        InvitationStatus result = notificationFriendService.getFriendRequestStatus(-1L, friendId);
+        assertEquals(InvitationStatus.CANCELED, result);
+        verify(userRepo).getFriendRequestStatus(-1L, friendId);
+    }
 }

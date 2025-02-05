@@ -24,4 +24,8 @@ public class AppConstant {
     public static final String DEFAULT_EVENT_IMAGES = "img/habits/default-habit-image.png";
     public static final String SELF_ACHIEVEMENT_CATEGORY = "ACHIEVEMENT";
     public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String TIMES_PLACEHOLDER = "{times}";
+    public static final String USER_PLACEHOLDER = "{user}";
+    public static final String TWO_USERS = "TWO_USERS";
+    public static final String THREE_OR_MORE_USERS = "THREE_OR_MORE_USERS";
 }

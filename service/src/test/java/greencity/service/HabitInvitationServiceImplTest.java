@@ -339,8 +339,6 @@ class HabitInvitationServiceImplTest {
 
     @Test
     void getHabitInvitationStatusReturnsRejectedWhenNotExistsTest() {
-        Long invitationId = 1L;
-
         when(habitInvitationRepo.findById(invitationId)).thenReturn(Optional.empty());
 
         InvitationStatus result = habitInvitationService.getHabitInvitationStatus(invitationId);
