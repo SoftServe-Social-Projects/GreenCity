@@ -4,6 +4,7 @@ import greencity.TestConst;
 import greencity.constant.FriendTupleConstant;
 import greencity.enums.InvitationStatus;
 import greencity.repository.UserRepo;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +28,7 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusReturnsCanceledWhenStatusIsNullTest() {
-        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).thenReturn(null);
+        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).thenReturn(Optional.empty());
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(currentUserId, friendId);
 
@@ -37,7 +38,8 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusReturnsPendingWhenStatusIsRequestTest() {
-        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).thenReturn(FriendTupleConstant.REQUEST_STATUS);
+        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).
+            thenReturn(Optional.of(FriendTupleConstant.REQUEST_STATUS));
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(currentUserId, friendId);
 
@@ -46,7 +48,8 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusReturnsAcceptedWhenStatusIsFriendTest() {
-        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).thenReturn(FriendTupleConstant.FRIEND_STATUS);
+        when(userRepo.getFriendRequestStatus(currentUserId, friendId))
+            .thenReturn(Optional.of(FriendTupleConstant.FRIEND_STATUS));
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(currentUserId, friendId);
 
@@ -55,7 +58,8 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusReturnsRejectedWhenStatusIsRejectedTest() {
-        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).thenReturn(FriendTupleConstant.REJECTED_STATUS);
+        when(userRepo.getFriendRequestStatus(currentUserId, friendId))
+            .thenReturn(Optional.of(FriendTupleConstant.REJECTED_STATUS));
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(currentUserId, friendId);
 
@@ -64,7 +68,8 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusReturnsCanceledWhenStatusIsUnknownTest() {
-        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).thenReturn(TestConst.UNKNOWN_STATUS);
+        when(userRepo.getFriendRequestStatus(currentUserId, friendId))
+            .thenReturn(Optional.of(TestConst.UNKNOWN_STATUS));
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(currentUserId, friendId);
 
@@ -73,7 +78,7 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusHandlesInvalidUserIds() {
-        when(userRepo.getFriendRequestStatus(-1L, friendId)).thenReturn(null);
+        when(userRepo.getFriendRequestStatus(-1L, friendId)).thenReturn(Optional.empty());
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(-1L, friendId);
         assertEquals(InvitationStatus.CANCELED, result);

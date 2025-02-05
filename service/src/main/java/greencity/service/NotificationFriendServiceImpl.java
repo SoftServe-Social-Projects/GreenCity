@@ -20,16 +20,13 @@ public class NotificationFriendServiceImpl implements NotificationFriendService 
      */
     @Override
     public InvitationStatus getFriendRequestStatus(Long currentUserId, Long friendId) {
-        String status = userRepo.getFriendRequestStatus(currentUserId, friendId);
-        if (status == null) {
-            return InvitationStatus.CANCELED;
-        }
-
-        return switch (status) {
-            case FriendTupleConstant.REQUEST_STATUS -> InvitationStatus.PENDING;
-            case FriendTupleConstant.FRIEND_STATUS -> InvitationStatus.ACCEPTED;
-            case FriendTupleConstant.REJECTED_STATUS -> InvitationStatus.REJECTED;
-            default -> InvitationStatus.CANCELED;
-        };
+        return userRepo.getFriendRequestStatus(currentUserId, friendId)
+            .map(status -> switch (status) {
+                case FriendTupleConstant.REQUEST_STATUS -> InvitationStatus.PENDING;
+                case FriendTupleConstant.FRIEND_STATUS -> InvitationStatus.ACCEPTED;
+                case FriendTupleConstant.REJECTED_STATUS -> InvitationStatus.REJECTED;
+                default -> InvitationStatus.CANCELED;
+            })
+            .orElse(InvitationStatus.CANCELED);
     }
 }

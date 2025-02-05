@@ -224,8 +224,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true,
         value = "SELECT status FROM users_friends WHERE (user_id = :userId AND friend_id = :friendId) "
-            + "OR (user_id = :friendId AND friend_id = :userId) LIMIT 1")
-    String getFriendRequestStatus(@Param("userId") Long userId, @Param("friendId") Long friendId);
+            + "OR (user_id = :friendId AND friend_id = :userId)")
+    Optional<String> getFriendRequestStatus(@Param("userId") Long userId, @Param("friendId") Long friendId);
 
     /**
      * Checks if a friend requested by current user with userId.
