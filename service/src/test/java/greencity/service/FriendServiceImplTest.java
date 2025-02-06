@@ -13,7 +13,6 @@ import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
@@ -31,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -524,19 +522,6 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findUserFriendsByUserIdWhenUnsupportedSortExceptionTest() {
-        long userId = 1L;
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
-
-        when(userRepo.existsById(userId)).thenReturn(true);
-
-        assertThrows(UnsupportedSortException.class,
-            () -> friendService.findUserFriendsByUserId(pageable, userId));
-
-        verify(userRepo).existsById(userId);
-    }
-
-    @Test
     void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserTest() {
         long userId = 1L;
         int page = 0;
@@ -571,21 +556,6 @@ class FriendServiceImplTest {
             pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
-    }
-
-    @Test
-    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserUnsupportedSortExceptionTest() {
-        long userId = 1L;
-        String name = "vi";
-        boolean filterByFriendsOfFriends = false;
-        boolean filterByCity = false;
-        PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
-
-        when(userRepo.existsById(userId)).thenReturn(true);
-
-        assertThrows(UnsupportedSortException.class,
-            () -> friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
-                userId, name, filterByFriendsOfFriends, filterByCity, pageable));
     }
 
     @ParameterizedTest
@@ -660,20 +630,6 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> friendService
-            .findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId, currentUserId));
-
-        verify(userRepo).existsById(userId);
-    }
-
-    @Test
-    void findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser_UnsupportedSortTest() {
-        long userId = 1L;
-        long currentUserId = 2L;
-        Pageable pageable = PageRequest.of(0, 1, Sort.by("id"));
-
-        when(userRepo.existsById(userId)).thenReturn(true);
-
-        assertThrows(UnsupportedSortException.class, () -> friendService
             .findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId, currentUserId));
 
         verify(userRepo).existsById(userId);
@@ -1077,21 +1033,6 @@ class FriendServiceImplTest {
         verify(userRepo).findAllFriendsOfUser(userId, null, filterByCity, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
-    }
-
-    @Test
-    void findAllFriendsOfUserWhenUnsupportedSortExceptionTest() {
-        long userId = 1L;
-        String name = "vi";
-        boolean filterByCity = false;
-        PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
-
-        when(userRepo.existsById(userId)).thenReturn(true);
-
-        assertThrows(UnsupportedSortException.class,
-            () -> friendService.findAllFriendsOfUser(1L, name, filterByCity, pageable));
-
-        verify(userRepo).existsById(1L);
     }
 
     @Test

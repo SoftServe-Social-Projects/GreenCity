@@ -1,5 +1,7 @@
 package greencity.dto.comment;
 
+import greencity.dto.Sortable;
+import greencity.enums.SortableFields;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class CommentDto {
+public class CommentDto implements Sortable {
     @NotNull
     @Min(1)
     private Long id;
@@ -49,4 +51,18 @@ public class CommentDto {
     @Nullable
     @Max(5)
     private List<String> additionalImages;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getSortableFields() {
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.CREATED_DATE.getFieldName(),
+            SortableFields.MODIFIED_DATE.getFieldName(),
+            SortableFields.REPLIES.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.DISLIKES.getFieldName());
+    }
 }

@@ -1,10 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.ApiPageableWithoutSort;
-import greencity.annotations.CurrentUser;
-import greencity.annotations.ImageArrayValidation;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -113,7 +109,7 @@ public class HabitCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/comments/{parentCommentId}/replies/active")
-    @ApiPageable
+    @ApiPageable(dtoClass = CommentDto.class)
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,

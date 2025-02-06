@@ -50,7 +50,7 @@ public class ManagementFactOfTheDayController {
      * @param model ModelAndView that will be configured and returned to user
      * @return model
      */
-    @ApiPageable
+    @ApiPageable(dtoClass = FactOfTheDayDTO.class)
     @Operation(summary = "Get management page with facts of the day.")
     @GetMapping("")
     public String getAllFacts(Model model, @Parameter(hidden = true) Pageable pageable) {
@@ -66,7 +66,7 @@ public class ManagementFactOfTheDayController {
      * @param query string to search
      * @return model
      */
-    @ApiPageable
+    @ApiPageable(dtoClass = FactOfTheDayDTO.class)
     @Operation(summary = "Get management page with facts of the day that satisfy query.")
     @GetMapping("/findAll")
     public String findAll(@RequestParam(required = false, name = "query") String query,

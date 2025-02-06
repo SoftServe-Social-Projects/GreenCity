@@ -1,6 +1,8 @@
 package greencity.dto.econews;
 
+import greencity.dto.Sortable;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.enums.SortableFields;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -19,7 +21,7 @@ import java.util.List;
 @ToString(exclude = "author")
 @Builder
 @EqualsAndHashCode
-public class EcoNewsGenericDto {
+public class EcoNewsGenericDto implements Sortable {
     @Min(1)
     private Long id;
 
@@ -56,4 +58,18 @@ public class EcoNewsGenericDto {
     private int countOfEcoNews;
 
     private boolean isFavorite;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getSortableFields() {
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.TITLE.getFieldName(),
+            SortableFields.CREATION_DATE.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.COUNT_COMMENTS.getFieldName(),
+            SortableFields.COUNT_OF_ECO_NEWS.getFieldName());
+    }
 }

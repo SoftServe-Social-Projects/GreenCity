@@ -125,7 +125,6 @@ public class ErrorMessage {
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION =
         "The comment with entered id or other params doesn't exist";
-    public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "You can't reply on reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String PLACE_ALREADY_EXISTS = "Place with lat: %.4f and lng: %.4f already exists";
@@ -152,7 +151,8 @@ public class ErrorMessage {
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not REQUESTED or user has not any assigned habits";
-    public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
+    public static final String INVALID_SORTING_VALUE = "Invalid sorting value";
+    public static final String INVALID_DTO_CLASS = "Invalid DTO class for sorting: must implement Sortable interface";
 
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
     public static final String WRONG_COUNT_OF_EVENT_DATES =

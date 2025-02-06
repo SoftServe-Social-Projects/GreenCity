@@ -1,9 +1,11 @@
 package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
+import greencity.dto.Sortable;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.enums.SortableFields;
 import java.util.List;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -21,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class HabitDto {
+public class HabitDto implements Sortable {
     private Integer defaultDuration;
     private Long amountAcquiredUsers;
     private HabitTranslationDto habitTranslation;
@@ -40,4 +42,18 @@ public class HabitDto {
     private Boolean isFavorite;
     private int likes;
     private int dislikes;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getSortableFields() {
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.DEFAULT_DURATION.getFieldName(),
+            SortableFields.AMOUNT_ACQUIRED_USERS.getFieldName(),
+            SortableFields.COMPLEXITY.getFieldName(),
+            SortableFields.LIKES.getFieldName(),
+            SortableFields.DISLIKES.getFieldName());
+    }
 }

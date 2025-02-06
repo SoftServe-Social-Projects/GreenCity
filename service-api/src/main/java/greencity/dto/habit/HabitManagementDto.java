@@ -1,7 +1,9 @@
 package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
+import greencity.dto.Sortable;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
+import greencity.enums.SortableFields;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.validation.Valid;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class HabitManagementDto implements Serializable {
+public class HabitManagementDto implements Serializable, Sortable {
     private Long id;
     private String image;
     @Min(value = 1, message = ServiceValidationConstants.HABIT_COMPLEXITY)
@@ -31,4 +33,15 @@ public class HabitManagementDto implements Serializable {
     private Integer defaultDuration;
     private Boolean isCustomHabit;
     private Boolean isDeleted;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getSortableFields() {
+        return List.of(
+            SortableFields.ID.getFieldName(),
+            SortableFields.COMPLEXITY.getFieldName(),
+            SortableFields.DEFAULT_DURATION.getFieldName());
+    }
 }
