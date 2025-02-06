@@ -42,8 +42,11 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventInformationDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
@@ -3430,5 +3433,49 @@ public class ModelUtils {
             "Category",
             "Category Ua",
             1L);
+    }
+
+    public static EventResponseDto getEventResponseDto() {
+        return new EventResponseDto(
+            1L,
+            new EventInformationDto(
+                "Title",
+                "New Test Event",
+                List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build())),
+            EventAuthorDto.builder()
+                .id(1L)
+                .name("Test")
+                .build(),
+            LocalDate.of(2025, 1, 10),
+            true,
+            List.of(new EventDateInformationDto(
+                null,
+                getAddressDtoCorrect(),
+                ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC),
+                ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC),
+                "www.link.com")),
+            null,
+            List.of("image1.jpg", "image2.jpg"),
+            EventType.OFFLINE,
+            false,
+            false,
+            true,
+            10,
+            2,
+            1,
+            false,
+            4.5,
+            null);
+    }
+
+    public static EventDateLocation createEventDateLocation(ZonedDateTime start, ZonedDateTime finish) {
+        return EventDateLocation.builder()
+            .startDate(start)
+            .finishDate(finish)
+            .build();
     }
 }
