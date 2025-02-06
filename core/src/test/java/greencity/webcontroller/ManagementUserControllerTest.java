@@ -3,6 +3,7 @@ package greencity.webcontroller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
@@ -32,9 +33,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.http.HttpHeaders;
+import java.nio.charset.StandardCharsets;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -52,11 +58,14 @@ import static greencity.TestConst.TEST_QUERY;
 import static greencity.TestConst.USER_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.doubleThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -190,6 +199,30 @@ class ManagementUserControllerTest {
             .andExpect(status().is2xxSuccessful());
 
         verify(restClient).managementRegisterUser(dto);
+    }
+
+    @Test
+    void saveUserTest_UserAlreadyExists() throws Exception {
+        UserManagementDto dto = ModelUtils.getUserManagementDto();
+
+        doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST))
+            .when(restClient).managementRegisterUser(dto);
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void saveUserTest_InternalServerError() throws Exception {
+        UserManagementDto dto = ModelUtils.getUserManagementDto();
+
+        doThrow(new RuntimeException()).when(restClient).managementRegisterUser(dto);
+
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isInternalServerError());
     }
 
     @Test

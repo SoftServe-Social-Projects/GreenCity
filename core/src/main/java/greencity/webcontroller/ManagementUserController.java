@@ -105,9 +105,12 @@ public class ManagementUserController {
         try {
             restClient.managementRegisterUser(userDto);
             return ResponseEntity.ok().body(Map.of(MESSAGE_KEY, "User successfully added!"));
-        } catch (HttpClientErrorException.BadRequest e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("name", "email", MESSAGE_KEY, ErrorMessage.USER_WITH_EMAIL_EXIST));
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("name", "email", MESSAGE_KEY, ErrorMessage.USER_WITH_EMAIL_EXIST));
+            }
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of(MESSAGE_KEY, HttpStatus.INTERNAL_SERVER_ERROR.toString()));
