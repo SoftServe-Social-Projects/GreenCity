@@ -57,6 +57,7 @@ public class ManagementUserController {
     private final UserService userService;
     private final HabitAssignService habitAssignService;
     private final FilterService filterService;
+    public static final String MESSAGE_KEY = "message";
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -100,16 +101,16 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@Valid @RequestBody UserManagementDto userDto) {
+    public ResponseEntity<Map<String, String>> saveUser(@Valid @RequestBody UserManagementDto userDto) {
         try {
             restClient.managementRegisterUser(userDto);
-            return ResponseEntity.ok().body(Map.of("message", "User successfully added!"));
+            return ResponseEntity.ok().body(Map.of(MESSAGE_KEY, "User successfully added!"));
         } catch (HttpClientErrorException.BadRequest e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(List.of(Map.of("name", "email", "message", ErrorMessage.USER_WITH_EMAIL_EXIST)));
+                .body(Map.of("name", "email", MESSAGE_KEY, ErrorMessage.USER_WITH_EMAIL_EXIST));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", HttpStatus.INTERNAL_SERVER_ERROR));
+                .body(Map.of(MESSAGE_KEY, HttpStatus.INTERNAL_SERVER_ERROR.toString()));
         }
     }
 
