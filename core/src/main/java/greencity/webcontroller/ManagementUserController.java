@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Validated
@@ -55,6 +57,7 @@ public class ManagementUserController {
     private final UserService userService;
     private final HabitAssignService habitAssignService;
     private final FilterService filterService;
+    public static final String MESSAGE_KEY = "message";
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -98,9 +101,20 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    public String saveUser(@Valid UserManagementDto userDto) {
-        restClient.managementRegisterUser(userDto);
-        return "redirect:/management/users";
+    public ResponseEntity<Map<String, String>> saveUser(@Valid @RequestBody UserManagementDto userDto) {
+        try {
+            restClient.managementRegisterUser(userDto);
+            return ResponseEntity.ok().body(Map.of(MESSAGE_KEY, "User successfully added!"));
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("name", "email", MESSAGE_KEY, ErrorMessage.USER_WITH_EMAIL_EXIST));
+            }
+            throw e;
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(MESSAGE_KEY, HttpStatus.INTERNAL_SERVER_ERROR.toString()));
+        }
     }
 
     /**
