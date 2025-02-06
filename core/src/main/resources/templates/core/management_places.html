@@ -166,7 +166,7 @@
                                 </div>
                             </div>
                         </th>
-                        <th colspan="3">
+                        <th colspan="4">
                             <span class="header-text">[[#{greenCity.pages.table.opening.hours}]]</span>
                         </th>
                         <th rowspan="2">
@@ -210,10 +210,10 @@
                             </div>
                         </th>
                         <th rowspan="2">
-                            <span class="header-text">Lat</span>
+                            <span class="header-text">[[#{greenCity.pages.table.break.lat}]]</span>
                         </th>
                         <th rowspan="2">
-                            <span class="header-text">Lng</span>
+                            <span class="header-text">[[#{greenCity.pages.table.break.lng}]]</span>
                         </th>
                         <th rowspan="2">
                             <span>[[#{greenCity.pages.table.image}]]</span>
@@ -222,10 +222,11 @@
                             <span>[[#{greenCity.pages.table.actions}]]</span>
                         </th>
                     </tr>
-                    <tr>
-                        <th>Day</th>
-                        <th>Open Time</th>
-                        <th>Close Time</th>
+                    <tr rowspan="4">
+                        <th>[[#{greenCity.pages.table.day}]]</th>
+                        <th>[[#{greenCity.pages.table.open.time}]]</th>
+                        <th>[[#{greenCity.pages.table.close.time}]]</th>
+                        <th>[[#{greenCity.pages.table.break.time}]]</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -242,7 +243,7 @@
                             <td th:text="${place.getId()}"></td>
                             <td th:text="${place.getName()}"></td>
                             <td th:text="${place.getStatus()}"></td>
-                            <td colspan="3">
+                            <td colspan="4">
                                 <div th:if="${!place.getOpeningHoursList().isEmpty()}">
                                     <table class="table table-borderless m-0 table-child">
                                         <tbody>
@@ -251,6 +252,9 @@
                                                 <td th:text="${openingHours.weekDay}"></td>
                                                 <td th:text="${openingHours.openTime}"></td>
                                                 <td th:text="${openingHours.closeTime}"></td>
+                                                <td th:if="${openingHours.breakTime != null}"
+                                                    th:text="${openingHours.breakTime.startTime} + ' - ' + ${openingHours.breakTime.endTime}"></td>
+                                                <td th:if="${openingHours.breakTime == null}">---</td>
                                             </tr>
                                         </th:block>
                                         </tbody>
