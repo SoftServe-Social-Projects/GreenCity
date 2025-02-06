@@ -18,8 +18,11 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventInformationDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -59,6 +62,7 @@ import greencity.entity.User;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
+import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
@@ -66,8 +70,10 @@ import greencity.enums.UserStatus;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -587,5 +593,59 @@ public class ModelUtils {
             .name("testx")
             .location(new LocationDto())
             .build());
+    }
+
+    public static EventResponseDto getEventResponseDto() {
+        return new EventResponseDto(
+            1L,
+            new EventInformationDto(
+                "Test Event",
+                "New Test Event",
+                List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build())),
+            EventAuthorDto.builder()
+                .id(1L)
+                .name("Test")
+                .email("test@email.com")
+                .build(),
+            LocalDate.of(2025, 1, 10),
+            true,
+            List.of(new EventDateInformationDto(
+                null,
+                getAddressDtoCorrect(),
+                ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC),
+                ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC),
+                "www.link.com")),
+            null,
+            List.of("image1.jpg", "image2.jpg"),
+            EventType.OFFLINE,
+            false,
+            false,
+            true,
+            10,
+            2,
+            1,
+            false,
+            20.0,
+            50);
+    }
+
+    public static AddressDto getAddressDtoCorrect() {
+        return AddressDto.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
     }
 }

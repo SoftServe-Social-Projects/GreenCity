@@ -6,6 +6,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
@@ -44,6 +45,14 @@ public interface EventService {
      * @return {@link EventDto} instance.
      */
     EventDto getEvent(Long eventId, Principal principal);
+
+    /**
+     * Method for getting Event instance.
+     *
+     * @param eventId - event id.
+     * @return {@link EventResponseDto} instance.
+     */
+    EventResponseDto getEventV2(Long eventId, Principal principal);
 
     /**
      * Method for getting all Event instances filtered.

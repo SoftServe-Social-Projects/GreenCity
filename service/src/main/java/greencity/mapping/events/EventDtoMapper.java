@@ -9,10 +9,9 @@ import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
-import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
-import java.time.ZonedDateTime;
 import greencity.service.CommentService;
+import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +50,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
         eventDto.setType(event.getType());
-        eventDto.setIsRelevant(isRelevant(event.getDates()));
+        eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
         eventDto.setLikes(event.getUsersLikedEvents().size());
         eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
@@ -80,7 +79,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             eventDto.setAdditionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
-        eventDto.setEventRate(calculateEventRate(event.getEventGrades()));
+        eventDto.setEventRate(EventUtils.calculateEventRate(event.getEventGrades()));
         return eventDto;
     }
 
@@ -110,17 +109,5 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             eventDateLocationDto.setCoordinates(addressDto);
         }
         return eventDateLocationDto;
-    }
-
-    private double calculateEventRate(List<EventGrade> eventGrades) {
-        return eventGrades.stream()
-            .mapToInt(EventGrade::getGrade)
-            .average()
-            .orElse(0.0);
-    }
-
-    private boolean isRelevant(List<EventDateLocation> dates) {
-        return dates.getLast().getFinishDate().isAfter(ZonedDateTime.now())
-            || dates.getLast().getFinishDate().isEqual(ZonedDateTime.now());
     }
 }
