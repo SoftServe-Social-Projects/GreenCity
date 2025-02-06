@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.InvitationStatus;
 import java.util.List;
 
 public interface HabitInvitationService {
@@ -48,4 +49,12 @@ public interface HabitInvitationService {
      * @param invitedUser  the user who is rejecting the invitation
      */
     void rejectHabitInvitation(Long invitationId, UserVO invitedUser);
+
+    /**
+     * Retrieves a status of the invitation.
+     *
+     * @param invitationId the ID of the habit invitation.
+     * @return the {@link InvitationStatus} of the habit invitation.
+     */
+    InvitationStatus getHabitInvitationStatus(Long invitationId);
 }

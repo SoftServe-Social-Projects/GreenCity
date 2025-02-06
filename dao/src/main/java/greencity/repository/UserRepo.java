@@ -216,6 +216,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean isFriendRequested(Long userId, Long friendId);
 
     /**
+     * Retrieves the friend request status. Handles both directions.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend.
+     * @return the status of request.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT status FROM users_friends WHERE (user_id = :userId AND friend_id = :friendId) "
+            + "OR (user_id = :friendId AND friend_id = :userId)")
+    Optional<String> getFriendRequestStatus(@Param("userId") Long userId, @Param("friendId") Long friendId);
+
+    /**
      * Checks if a friend requested by current user with userId.
      *
      * @param userId   The ID of the user.

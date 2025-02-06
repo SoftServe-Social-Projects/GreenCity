@@ -40,4 +40,11 @@ public enum NotificationType {
     public static boolean isCommentLike(final NotificationType notificationType) {
         return COMMENT_LIKE_TYPES.contains(notificationType);
     }
+
+    private static final EnumSet<NotificationType> INVITE_REQUEST_TYPES = EnumSet.of(
+        FRIEND_REQUEST_RECEIVED, HABIT_INVITE);
+
+    public static boolean isInviteOrRequest(final NotificationType notificationType) {
+        return INVITE_REQUEST_TYPES.contains(notificationType);
+    }
 }
