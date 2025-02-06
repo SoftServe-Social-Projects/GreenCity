@@ -93,6 +93,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
@@ -152,6 +153,7 @@ import greencity.entity.FavoritePlace;
 import greencity.entity.Filter;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatistic;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
@@ -162,16 +164,16 @@ import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.PlaceComment;
-import greencity.entity.ToDoListItem;
+import greencity.entity.RatingPoints;
 import greencity.entity.SocialNetworkImage;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
+import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.VerifyEmail;
-import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -184,11 +186,12 @@ import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
+import greencity.enums.InvitationStatus;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
+import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
@@ -1742,6 +1745,13 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitInvitation getHabitInvitation() {
+        return HabitInvitation.builder()
+            .id(1L)
+            .status(InvitationStatus.ACCEPTED)
+            .build();
+    }
+
     private static UserStatusDto createUserStatusDto() {
         return UserStatusDto.builder()
             .id(2L)
@@ -3068,6 +3078,24 @@ public class ModelUtils {
             .build();
     }
 
+    public static NotificationInviteDto getNotificationInviteDto() {
+        return NotificationInviteDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(String.valueOf(EVENT_CREATED))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText("You have created event")
+            .bodyText("You successfully created event {message}.")
+            .actionUserId(Collections.singletonList(1L))
+            .actionUserText(Collections.singletonList("Taras"))
+            .targetId(1L)
+            .message("Message")
+            .secondMessage("Second message")
+            .secondMessageId(2L)
+            .build();
+    }
+
     public static NotificationDto getBaseOfNotificationDtoForEventCommentUserTag(
         String titleText, String bodyText, List<Long> actionUserId, List<String> actionUserText) {
         return NotificationDto.builder()
@@ -3146,6 +3174,13 @@ public class ModelUtils {
     public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationDto() {
         return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
             1, 0, 1, 0,
+            false, false, true, true);
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationInviteDto(
+        List<NotificationDto> notificationDtos) {
+        return new PageableAdvancedDto<>(notificationDtos,
+            2, 0, 1, 0,
             false, false, true, true);
     }
 
