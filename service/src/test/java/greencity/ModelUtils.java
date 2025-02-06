@@ -2637,6 +2637,7 @@ public class ModelUtils {
                     .name(habitTranslationName)
                     .build()))
             .tagIds(Set.of(20L))
+            .friendsToInvite(new HashSet<>())
             .build();
     }
 
